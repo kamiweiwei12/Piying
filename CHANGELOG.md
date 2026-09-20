@@ -24,6 +24,51 @@
 
 ---
 
+## [2026-09-20] M1 - 可重現的純 C# 判定核心
+
+### 新增
+
+* `YingYun.Runtime` asmdef：隔離新遊戲執行期程式，啟用 `noEngineReferences`，避免判定核心依賴 Unity API。
+* `YingYun.Rhythm.Judgment`：加入 `ISongClock`、音符/輸入/判定結果資料契約、可調 `TimingConfig` 與
+  `JudgmentEngine`。
+* `YingYun.Tests` EditMode 測試程序集與 12 個測試案例。
+
+### 修改
+
+* `DEVELOPMENT.md`：標記 M1 完成，並將目前里程碑推進至 M2。
+
+### 測試
+
+* 指令：`unity test "D:\Unity\program\My project" --editor-version 6000.6.2f1 --mode EditMode --filter YingYun.Tests --timeout 180 --format json`
+* Unity Test Framework / NUnit 最終回歸結果：`total=12`、`passed=12`、`failed=0`、`skipped=0`，耗時約 0.081 秒。
+* 覆蓋：Perfect/Good early/late 包含邊界、超窗輸入保留、同批輸入取最近者、超時 Miss、Combo 中斷、
+  Score/Accuracy、Hold tick、合法/提早釋放、段落完成/中斷、相同 chart + replay 結果一致。
+
+### 驗收結果
+
+* ✅ 判定程序集不引用 UnityEngine；引擎時間只讀取注入的 `ISongClock`。
+* ✅ 判定窗內部以 `double` 秒運算，結果輸出毫秒，並以極小 epsilon 穩定處理浮點邊界。
+* ✅ 配對從所有合法音符—輸入組合選擇絕對誤差最小者，未使用輸入留在佇列。
+* ✅ Tap、Hold、Miss、Combo、Score、Accuracy 與舞蹈段結果由單一引擎狀態產生。
+* ✅ Replay 測試證明同一譜面與同一輸入序列可重現相同事件簽章。
+* ✅ `Advance` 寫入呼叫端可重用的結果清單，正式熱路徑不需為每幀事件配置新陣列。
+
+### Git Commit
+
+* **待提交**
+
+### 風險 / 已知問題
+
+* `TimingConfig` 目前是純 C# 值型別；M2/M4 可再由 ScriptableObject 設定資產轉換，不應讓核心直接依賴資產。
+* M1 僅驗證數學與狀態機，尚未接入 `AudioSettings.dspTime`、Input System 或場景。
+* Pipeline 的內建 `run_tests` 在含空格的專案路徑下曾錯誤啟動測試程序；本次改用官方 `unity test` headless 命令完成驗收。
+
+### 下一步
+
+* M2：建立 `DspSongClock`、ClockBridge、Input System 事件佇列與最小 Gameplay 場景，並以 `PlayScheduled` 接通單曲流程。
+
+---
+
 ## [2026-09-20] M0 - 音訊與輸入時鐘行為基線
 
 ### 新增

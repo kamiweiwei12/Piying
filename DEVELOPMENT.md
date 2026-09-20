@@ -40,7 +40,7 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M0 已完成**；下一步為 M1 判定核心 |
+| 目前 Milestone | **M1 已完成**；下一步為 M2 節奏執行期 |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
 | 重大缺口 | ⚠️ 專案**沒有任何 `.unity` 場景**（`Assets/Scenes/` 為空，`EditorBuildSettings` 仍指向不存在的 `SampleScene.unity`） |
 | 版控 | Git 已初始化，`main` 為目前主線 |
@@ -74,11 +74,11 @@
 - [x] 結果寫入 `CHANGELOG.md`；若結論影響 Skill/Rules，**提出**修改建議（不自行修改）
 
 ### M1 — 判定核心
-- [ ] 純 C#（不依賴 `MonoBehaviour` / `AudioSource`），時間來源以介面注入
-- [ ] EditMode 測試全綠，至少涵蓋：判定窗邊界（early/late 對稱）、多輸入同幀配對（取最近且其餘不丟棄）、
+- [x] 純 C#（不依賴 `MonoBehaviour` / `AudioSource`），時間來源以介面注入
+- [x] EditMode 測試全綠，至少涵蓋：判定窗邊界（early/late 對稱）、多輸入同幀配對（取最近且其餘不丟棄）、
       超時自動 Miss、Hold tick 與釋放、Combo 中斷、Score/Accuracy 累計、舞蹈段完成判定
-- [ ] 同一份譜面 + 同一組 replay 輸入 → **結果可重現**
-- [ ] 測試指令與結果貼入 `CHANGELOG.md`
+- [x] 同一份譜面 + 同一組 replay 輸入 → **結果可重現**
+- [x] 測試指令與結果貼入 `CHANGELOG.md`
 
 ### M2 — 節奏執行期
 - [ ] 音樂以 `AudioSource.PlayScheduled(dspTime)` 起播（**禁用 `Play()` 當判定基準**）
