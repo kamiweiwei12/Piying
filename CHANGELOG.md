@@ -24,7 +24,53 @@
 
 ---
 
+## [2026-09-20] Infra-2 - 開發工作流程 Rule（`.clinerules/00-development-workflow.md`）
+
+### 新增
+
+* `.clinerules/00-development-workflow.md`：always-on 強制流程 Rule，把 `DEVELOPMENT.md` 的
+  附錄 A（STEP 0–7）、§8（最小修改）、§9（測試）、§10（回報）、§12（高風險）、§5（Git）、§6（CHANGELOG）、
+  附錄 C / E 摘要為 **16 條必遵守流程**（開始前 6 條、批准 1 條、修改中 2 條、完成後 5 條、收尾 2 條）。
+
+### 修改
+
+* `CHANGELOG.md`（本檔）：補記 F1 baseline commit hash；新增本條目。
+
+### 測試
+
+* 文件類工作，依 `DEVELOPMENT.md` §9「文件 / 設定 / 版控」要求驗證：
+  * 檔案存在與路徑：`.clinerules/00-development-workflow.md` ✅
+  * 編碼：UTF-8 無 BOM、CRLF（與 `01~03` 一致）✅
+  * 內容一致性：逐條對照 `DEVELOPMENT.md` §5／§6／§8／§9／§10／§12／附錄 A／附錄 C／附錄 E，
+    確認 16 條無與規範衝突之敘述 ✅
+  * diff 檢查：`git status --short` 僅出現本條目涉及之檔案 ✅
+
+### 驗收結果
+
+* ✅ Rule 覆蓋使用者要求的 16 項強制事項（逐條可對應）
+* ✅ 未修改 `DEVELOPMENT.md`（依指示不修改其餘內容；附錄 G 的草稿為精簡版，尚待使用者決定是否同步為完整版）
+* ✅ 未新增其他 Rule
+* ⚠️ Cline UI 內是否實際載入本 Rule（Rules 面板是否出現 `00-development-workflow`）**待使用者於 UI 確認**
+
+### Git Commit
+
+* 本條目與 `docs(rules): add mandatory development workflow rule` 同屬一次提交（hash 於下一次文件更新時補記）
+
+### 風險 / 已知問題
+
+* `DEVELOPMENT.md` 附錄 G 仍保留 7 點精簡草稿，與已建立的 16 條完整版內容方向一致但詳略不同；
+  如需一致，須經使用者同意後修改 `DEVELOPMENT.md`（本輪未動）。
+* `DEVELOPMENT.md` §2「目前 Milestone」尚未更新為 Infra 完成（依指示本輪不修改）。
+
+### 下一步
+
+* 依 `DEVELOPMENT.md` 附錄 C 第 8 步更新 §2 進度（需批准）。
+* M0 前置：附錄 F2（建立測試場景）與 F4（asmdef）需批准後才可進入 M0。
+
+---
+
 ## [2026-09-20] Infra-1 - 工程管理基礎設施（Git 規範 / CHANGELOG / DEVELOPMENT）
+
 
 ### 新增
 
@@ -42,28 +88,35 @@
 
 * 無程式測試（本條目僅新增文件）。已驗證：Git 未初始化（無 `.git`，上層目錄亦無 repo）；
   `git config --global user.name` / `user.email` 已設定，具備 commit 條件。
+* `.gitignore` 功能測試（於系統暫存目錄建立拋棄式 repo，測完刪除，未觸碰本專案）：
+  建立 26 個代表性檔案 → `git init -b main` → `git add -A` → `git diff --cached --name-only`：
+  必須保留者 **10/10 全部被追蹤**、必須忽略者 **15/15 全部被忽略**。
 
 ### 驗收結果
 
-* ✅ 三份文件建立完成且可讀
-* ⏳ **尚未驗收**：`git init` 與首次 baseline commit 未執行（依規定需使用者批准 → 見 `DEVELOPMENT.md` 附錄 F）
-* ⚠️ 依 §11 定義，本條目**尚未構成完成的里程碑**，Git Commit 欄位為「待提交」
+* ✅ 三份文件建立完成且可讀（`.gitignore` / `CHANGELOG.md` / `DEVELOPMENT.md`）
+* ✅ 附錄 E 判定「不算完成」的項目已於 Infra-2 補齊（Git 初始化 + baseline commit）
+* ✅ Git 已初始化（branch `main`）；baseline commit 內容稽核：**957 檔**
+  （`Assets` 894、`ProjectSettings` 31、`.cline` 23、`.clinerules` 3、`Packages` 2、根目錄 4），
+  其中 `.meta` 480 檔；**無** `Library/`、`Temp/`、`Logs/`、`UserSettings/`、`*.csproj`、`*.sln`、`*.pdb` 等
 
 ### Git Commit
 
-* 待提交（Repo 尚未初始化）
+* `8bd25fc7d8ca8b1c66f15073efe85785d9512bf3`（short `8bd25fc`）
+  `chore(repository): add git ignore rules and development workflow docs`
 
 ### 風險 / 已知問題
 
-* Git 尚未初始化 → 目前任何修改都無法回溯。
-* `init.defaultBranch` 未設定（建議以 `git init -b main` 初始化）。
-* `core.autocrlf` 未設定 → 建議後續評估加入 `.gitattributes`（尚未建立，需批准）。
+* `core.autocrlf=true` 來自 **System 層級** `C:/Program Files/Git/etc/gitconfig`（Git for Windows 預設），
+  非本專案設定；`git add` 產生大量「LF will be replaced by CRLF」警告，但**不會改寫工作區檔案**；
+  `git add` 後 3 個新增檔仍為 CRLF、Unity 檔案未被更動。
+* 未建立 `.gitattributes`（使用者指示不執行 F5）→ 跨平台換行正規化尚待決定。
 * 本專案無任何 `.unity` 場景檔（`Assets/Scenes/` 為空，`EditorBuildSettings` 仍指向不存在的 `SampleScene.unity`）。
 
 ### 下一步
 
-* 取得批准後執行 `git init -b main` 並建立 baseline commit（涵蓋現有 Unity 專案 + Cline Skills/Rules）。
-* 之後才可進入 M0（時鐘行為實測）。
+* 依 `DEVELOPMENT.md` 附錄 C 第 8 步更新 §2 進度（需批准）。
+* 之後才可進入 M0（時鐘行為實測），M0 前置為附錄 F2（測試場景）與 F4（asmdef）。
 
 ---
 
