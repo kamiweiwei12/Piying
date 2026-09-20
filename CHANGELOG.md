@@ -48,7 +48,7 @@
 
 ### Git Commit
 
-* 待提交。
+* `690976a` `docs(repository): synchronize project development contract`
 
 ### 風險 / 已知問題
 
