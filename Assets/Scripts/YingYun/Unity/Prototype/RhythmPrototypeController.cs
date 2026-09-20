@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using YingYun.Rhythm.Input;
 using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.Timing;
+using YingYun.Rhythm.View;
 
 namespace YingYun.Rhythm.Prototype
 {
@@ -26,6 +27,7 @@ namespace YingYun.Rhythm.Prototype
         private ClockBridge _bridge;
         private InputSystemNoteInputSource _input;
         private JudgmentEngine _judgment;
+        private RadialNotePresenter _presenter;
         private int _lastBeat = int.MinValue;
 
         public void Configure(AudioClip clip, InputActionAsset actions)
@@ -52,6 +54,12 @@ namespace YingYun.Rhythm.Prototype
             _bridge = new ClockBridge();
             _bridge.Capture(AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
             _input = new InputSystemNoteInputSource(inputActions, _bridge, _clock, inputOffsetSeconds);
+            _presenter = GetComponent<RadialNotePresenter>();
+            if (_presenter == null)
+            {
+                _presenter = gameObject.AddComponent<RadialNotePresenter>();
+            }
+
             Restart();
         }
 
@@ -70,10 +78,12 @@ namespace YingYun.Rhythm.Prototype
                 _judgment.EnqueueInput(input);
             }
 
+            _presenter.Tick(_clock.SongTime);
             _judgment.Advance(_frameResults);
             for (int i = 0; i < _frameResults.Count; i++)
             {
                 JudgmentResult result = _frameResults[i];
+                _presenter.OnJudged(result);
                 if (result.EventKind != JudgmentEventKind.NoteJudged)
                 {
                     continue;
@@ -137,7 +147,9 @@ namespace YingYun.Rhythm.Prototype
             _frameResults.Clear();
             _hitErrorsMs.Clear();
             _lastBeat = int.MinValue;
-            _judgment = new JudgmentEngine(CreatePrototypeChart(), TimingConfig.Prototype, _clock);
+            NoteData[] notes = CreatePrototypeChart();
+            _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
+            _presenter.Begin(notes);
             _clock.Schedule(music, leadInSeconds, audioOffsetSeconds);
 
             Debug.Log(string.Format(
@@ -173,7 +185,7 @@ namespace YingYun.Rhythm.Prototype
             }
         }
 
-        private IEnumerable<NoteData> CreatePrototypeChart()
+        private NoteData[] CreatePrototypeChart()
         {
             double beatDuration = 60d / bpm;
             int noteCount = (int)Math.Floor(PrototypeDurationSeconds / beatDuration);

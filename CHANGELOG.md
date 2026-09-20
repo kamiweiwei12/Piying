@@ -24,6 +24,58 @@
 
 ---
 
+## [2026-09-21] M3 - 六部位放射式音符視覺
+
+### 新增
+
+* `RadialNoteGeometry`：由絕對 `songTime`、音符時間與可見提前量計算音符進度／位置，不使用 `deltaTime` 累加。
+* `RadialNotePresenter`：六個身體部位判定環、六方向音符生成、24 個 View 的預熱物件池、判定文字與回收流程。
+* `RadialNoteView`：單顆音符的純畫面表示，只接受 Presenter 給予的位置與判定結果，不包含判定窗或分數邏輯。
+* `RadialNoteGeometryTests`：新增 5 個位置／進度邊界測試。
+
+### 修改
+
+* `RhythmPrototypeController`：每次 Restart 只建立一份 `NoteData[]`，同時交給既有 `JudgmentEngine` 與新的 Presenter；將既有 `JudgmentResult` 單向轉發至 View。
+* M3 畫面採執行期幾何佔位（`SpriteRenderer`／`LineRenderer`／`TextMesh`），不新增正式美術、Prefab、第三方套件、asmdef 參考或 ProjectSettings 變更。
+* `YingYun_Gameplay.unity` 最終維持原狀；Presenter 由 Controller 在執行期以最小整合掛載。
+
+### 測試
+
+* **編譯**：Unity Editor recompile → `completed`、`compilationFailed=false`、errors=0。
+* **EditMode 回歸**：`YingYun.Tests` → **total=20 / passed=20 / failed=0 / skipped=0**（既有 15 + M3 幾何 5）。
+* **Play Mode**：1280×720、1366×768（16:9）、1280×800（16:10）皆可完整顯示六個判定環、鍵位／部位標籤、中央佔位與六方向音符。
+* **物件池**：穩態量測 `active=4 / pooled=20 / created=24`；持續播放後 `created` 仍為 24，沒有逐拍建立物件。
+* **命中／失敗回收**：注入單次 `Perfect` 結果後 `noteId=2` 於回饋時間後回收，`created=24`；自動 Miss 同樣顯示文字並回收。
+* **暫停／續播／重開**：Pause 3 秒期間同一音符位置與 `active=4 / created=24` 不變；Resume 正常；Restart 後 `active=0 / pooled=24 / created=24`。
+* **Console**：最終 Play Mode `error=0 / warn=0`，無 compile error。
+
+### 驗收結果
+
+| M3 完成條件 | 結果 |
+|---|---|
+| 音符依 `songTime` 出現／移動，物件池無每幀 Instantiate | ✅ 位置只由絕對歌曲時間計算；24 個 View 預熱後數量保持不變 |
+| 命中／失敗後消失並回收 | ✅ Perfect 注入與實際自動 Miss 皆完成回收 |
+| View 層不含判定邏輯 | ✅ View 只接收 `NoteData`、位置與 `JudgmentResult`；判定仍由純 C# `JudgmentEngine` 負責 |
+| 判定文字與音符消失時機一致 | ✅ 兩者共用 `releaseDelaySeconds=0.18` 與同一 `songTime` 清除時點 |
+
+* **結論：M3 驗收通過。** 六部位環形操偶介面的核心可讀性已建立；正式皮影角色與部位動作仍保留至 M6。
+
+### Git Commit
+
+* 待提交。
+
+### 風險 / 已知問題
+
+* 目前為幾何佔位，不代表最終皮影美術；中央角色僅用舞台佔位表示。
+* 六軌固定為 Q 頭部、W 身體、E 右手、A 左手、S 左腳、D 右腳；仍需真人 Playtest 觀察誤按分布與直覺性。
+* 本次只完成 M3 視覺驗收，沒有把 M2 遺留的真人樣本／Windows build 補測混入同一工作單位。
+
+### 下一步
+
+* 使用已有視覺提示補齊 M2 真人驗收：Editor 與 Windows build 各累積非 Miss 樣本 n ≥ 60、取得單次連續 ≥180 秒播放，並驗證 Windows build Resume／Restart；完成後再進入 M4。
+
+---
+
 ## [2026-09-21] Infra - 同步開發契約與專案事實
 
 ### 新增

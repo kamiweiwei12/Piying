@@ -35,7 +35,7 @@
 | 組件 | 新遊戲程式已拆分為 `YingYun.Runtime`（純 C#）、`YingYun.Unity`（Unity 執行期）與 `YingYun.Tests`（EditMode 測試）asmdef；Platformer 舊碼仍維持原架構 |
 | 場景 | `Assets/Scenes/YingYun_Gameplay.unity` 為目前節奏原型場景，已註冊至 `EditorBuildSettings` |
 | 版控 | Git 已初始化；`main` 為主線，M0、M1、M2 已完成並提交 |
-| 目前 Milestone | **M2 已結案**；下一步為 **M3 音符視覺** |
+| 目前 Milestone | **M3 已結案**；下一步補齊 M2 真人驗收，完成後進入 **M4 計分與結算** |
 | Cline 設定 | Skills：`.cline/skills/`（10 個）；Rules：`.clinerules/`（`00`–`03` 共 4 份） |
 
 ## 開發語言與溝通

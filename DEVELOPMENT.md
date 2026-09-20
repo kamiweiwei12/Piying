@@ -40,9 +40,9 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M2 已結案**（驗收依使用者指示以現有數據結案；2 項未達判讀線已記錄於 `CHANGELOG.md`）；下一步為 M3 音符視覺 |
+| 目前 Milestone | **M3 已結案**；下一個工作單位為補齊 M2 真人驗收（n ≥ 60、單次連續 ≥180 秒、Windows build Resume／Restart），完成後再進入 M4 計分與結算 |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | ⚠️ 音符**完全沒有視覺呈現**（屬 M3 範圍，畫面上只有 Camera 背景，玩家無法得知何時打、打哪個鍵）；⚠️ 真人驗收樣本不足（Editor n=40、Windows build n=8，判讀線 60），且未取得單次連續 ≥180 秒的播放區段 |
+| 重大缺口 | M3 已提供六部位放射式幾何佔位音符與判定環；正式皮影美術／部位動畫仍屬 M6。⚠️ M2 真人驗收樣本仍不足（Editor n=40、Windows build n=8，判讀線 60），且未取得單次連續 ≥180 秒的播放區段 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
@@ -89,10 +89,10 @@
 - [ ] 既有 Platformer 程式未被破壞（Console 無新增 error）
 
 ### M3 — 音符視覺
-- [ ] 音符依 `songTime` 正確出現與移動，物件池生效（無每幀 `Instantiate`）
-- [ ] 命中 / 失敗後正確消失並回收
-- [ ] **判定邏輯不得出現在 View 層**（程式碼審查要確認）
-- [ ] 判定文字與音符消失時機一致
+- [x] 音符依 `songTime` 正確出現與移動，物件池生效（無每幀 `Instantiate`）
+- [x] 命中 / 失敗後正確消失並回收
+- [x] **判定邏輯不得出現在 View 層**（程式碼審查要確認）
+- [x] 判定文字與音符消失時機一致
 
 ### M4 — 計分與結算
 - [ ] Combo / Score / Accuracy 只在 Judgment 端計算，UI 只讀
@@ -457,4 +457,5 @@ git --no-pager log --oneline -10
 | 1.0 | 2026-09-20 | 建立本規範：專案目標、階段落點、M0–M7 里程碑與完成條件、Git / CHANGELOG / Skill / 測試 / 回報規範、最小修改原則、風險管理、禁止事項、附錄 A–G |
 | 1.1 | 2026-09-21 | M2 收尾：更新 §2「目前 Milestone」與「重大缺口」（`.unity` 場景與 asmdef 已就位、音符視覺尚未實作、真人驗收樣本缺口），M2 驗收數據記於 `CHANGELOG.md` |
 | 1.2 | 2026-09-21 | 同步 M0–M2 完成後的專案事實、Cline Rule 數量與附錄 F 批准狀態 |
+| 1.3 | 2026-09-21 | M3 結案：六部位放射式音符視覺、物件池與判定回饋通過驗收；下一步回補 M2 真人數據 |
 
