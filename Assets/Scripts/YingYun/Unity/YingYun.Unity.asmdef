@@ -1,0 +1,17 @@
+{
+  "name": "YingYun.Unity",
+  "rootNamespace": "YingYun.Rhythm",
+  "references": [
+    "YingYun.Runtime",
+    "Unity.InputSystem"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

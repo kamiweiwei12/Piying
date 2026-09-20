@@ -2,7 +2,8 @@
   "name": "YingYun.Tests",
   "rootNamespace": "YingYun.Rhythm.Tests",
   "references": [
-    "YingYun.Runtime"
+    "YingYun.Runtime",
+    "YingYun.Unity"
   ],
   "includePlatforms": [
     "Editor"
