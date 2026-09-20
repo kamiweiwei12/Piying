@@ -98,7 +98,10 @@
 ### Git Commit
 
 * `3e30379` `feat(m2): integrate dsp rhythm prototype`
-* 驗收與文件收尾（含本條目、`DEVELOPMENT.md` §2、`.gitignore`、`ProjectSettings` 收錄與散檔清理）：**待提交**
+* `af83301` `chore(repository): track unity generated settings and ignore ide upgrade log`
+  （`ProjectSettings` 三處收錄、`.gitignore` 新增 `UpgradeLog*.htm`／`UpgradeLog*.xml`、刪除 `UpgradeLog.htm` 與
+  `Assets/New Folder.meta`＋空資料夾）
+* `9006142` `docs(m2): record dsp rhythm prototype acceptance`（本條目與 `DEVELOPMENT.md` §2 更新）
 
 ### 風險 / 已知問題
 
