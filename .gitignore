@@ -1,0 +1,103 @@
+# ============================================================
+# 《影韵》Unity 2D Rhythm Game — .gitignore
+# ============================================================
+# 原則：只忽略「Unity / IDE 可重新產生」以及「本機專屬」的檔案。
+#
+# 【必須進版控，絕不可忽略】
+#   Assets/                （含所有 *.meta，.meta 是資產的識別，必須進版控）
+#   Packages/manifest.json, Packages/packages-lock.json
+#   ProjectSettings/
+#   .cline/                （Cline Skills，屬於專案的一部分）
+#   .clinerules/           （Cline Rules，屬於專案的一部分）
+#   CHANGELOG.md, DEVELOPMENT.md, .gitignore, .vsconfig
+#
+# 相關規範見 DEVELOPMENT.md §5「Git 規則」。
+# ============================================================
+
+# ------------------------------------------------------------
+# Unity 產生、可重建
+# ------------------------------------------------------------
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Unity 自動產生、可由專案重建的 IDE / 專案檔
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.VC.VC.opendb
+
+# 建置產物（Windows / WebGL / 行動 / 桌機）
+[Bb]uild[Ll]og.*
+sysinfo.txt
+crashlytics-build.properties
+*.apk
+*.aab
+*.app
+*.ipa
+*.unitypackage
+*.stackdump
+
+# Unity Asset Store 工具與 Exporter 暫存
+/[Aa]ssets/[Aa]ssetStoreTools*
+/[Aa]ssets/[Pp]lugins/[Ee]ditor/JetBrains*
+[Ee]xported[Oo]bj/
+.utmp/
+
+# Unity 產生的 UnityConnect / Accelerator 快取
+/[Aa]ssets/[Uu]nityConnectSettings.asset
+/[Aa]ssets/[Cc]rashReport*
+
+# ------------------------------------------------------------
+# IDE / 編輯器本機設定
+# ------------------------------------------------------------
+.vs/
+.vsconfig.user
+.idea/
+.consulo/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ------------------------------------------------------------
+# 一般暫存檔
+# ------------------------------------------------------------
+*~
+*.bak
+*.orig
+*.rej
+
+# ------------------------------------------------------------
+# 安全網：明確保護「必須進版控」的路徑
+# （若上面的規則意外命中，這裡強制收回）
+# ------------------------------------------------------------
+!.cline/
+!.cline/**
+!.clinerules/
+!.clinerules/**
+!Assets/
+!Assets/**
+!Packages/
+!Packages/**
+!ProjectSettings/
+!ProjectSettings/**
+!CHANGELOG.md
+!DEVELOPMENT.md
+!.vsconfig
