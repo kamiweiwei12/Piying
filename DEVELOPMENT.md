@@ -40,10 +40,10 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M0 尚未開始**；前置工程（Infra）進行中 |
+| 目前 Milestone | **M0 已完成**；下一步為 M1 判定核心 |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
 | 重大缺口 | ⚠️ 專案**沒有任何 `.unity` 場景**（`Assets/Scenes/` 為空，`EditorBuildSettings` 仍指向不存在的 `SampleScene.unity`） |
-| 版控 | Git **尚未初始化**（待批准，見附錄 F） |
+| 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 3 份 Rule |
 
 ## 3. 開發里程碑 M0 → M7
@@ -66,12 +66,12 @@
 > 通則：**實作 + 測試 + 驗收 + 文件 + Git commit** 缺一不可（見附錄 E）。下列為各里程碑的專屬條件。
 
 ### M0 — 時鐘行為實測
-- [ ] 以實驗量測並記錄四情境：正常播放 / `AudioSource.Pause()` / `AudioListener.pause = true` / 應用失焦（`runInBackground = 0`）
-- [ ] 每個情境記錄 `AudioSettings.dspTime`、`Time.realtimeSinceStartup`、`Time.unscaledTime`、Input System 事件時間的變化
-- [ ] 明確回答：**暫停期間 `dspTime` 是否前進？**（Unity 6.6 文件稱 audio system 被暫停時 dspTime 不更新，必須以實測為準）
-- [ ] 產出暫停數學定案（是否需要 `pausedTotal` 補償）
-- [ ] 產出 ClockBridge 設計結論（輸入時間戳 → songTime 的映射公式與誤差量級）
-- [ ] 結果寫入 `CHANGELOG.md`；若結論影響 Skill/Rules，**提出**修改建議（不自行修改）
+- [x] 以實驗量測並記錄四情境：正常播放 / `AudioSource.Pause()` / `AudioListener.pause = true` / 應用失焦（`runInBackground = 0`）
+- [x] 每個情境記錄 `AudioSettings.dspTime`、`Time.realtimeSinceStartup`、`Time.unscaledTime`、Input System 事件時間的變化
+- [x] 明確回答：**暫停期間 `dspTime` 是否前進？**（Unity 6.6 文件稱 audio system 被暫停時 dspTime 不更新，必須以實測為準）
+- [x] 產出暫停數學定案（是否需要 `pausedTotal` 補償）
+- [x] 產出 ClockBridge 設計結論（輸入時間戳 → songTime 的映射公式與誤差量級）
+- [x] 結果寫入 `CHANGELOG.md`；若結論影響 Skill/Rules，**提出**修改建議（不自行修改）
 
 ### M1 — 判定核心
 - [ ] 純 C#（不依賴 `MonoBehaviour` / `AudioSource`），時間來源以介面注入
