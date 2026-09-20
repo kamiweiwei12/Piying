@@ -75,6 +75,9 @@ crashlytics-build.properties
 .DS_Store
 Thumbs.db
 desktop.ini
+# Visual Studio / IDE 的升級紀錄（開啟 .sln 時自動產生，可重建）
+UpgradeLog*.htm
+UpgradeLog*.xml
 
 # ------------------------------------------------------------
 # 一般暫存檔

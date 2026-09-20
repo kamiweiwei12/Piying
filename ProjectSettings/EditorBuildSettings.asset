@@ -9,4 +9,5 @@ EditorBuildSettings:
     path: Assets/Scenes/YingYun_Gameplay.unity
     guid: 98a1a58edeece3c4fb44bc7f401e3615
   m_configObjects:
+    com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 5e716bb9195b9eb49a2ccb4c51691dc6, type: 3}
