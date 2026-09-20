@@ -42,7 +42,7 @@
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
 | 目前 Milestone | **M3 已結案**；下一個工作單位為補齊 M2 真人驗收（n ≥ 60、單次連續 ≥180 秒、Windows build Resume／Restart），完成後再進入 M4 計分與結算 |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | M3 已提供六部位放射式幾何佔位音符與判定環；正式皮影美術／部位動畫仍屬 M6。⚠️ M2 真人驗收樣本仍不足（Editor n=40、Windows build n=8，判讀線 60），且未取得單次連續 ≥180 秒的播放區段 |
+| 重大缺口 | M3 已提供六部位放射式幾何佔位音符與判定環；正式皮影美術／部位動畫仍屬 M6。M2 Editor 真人驗收已達標（非 Miss n=404、最長 194.52 秒、Pause／Resume／Restart 均有記錄）；Windows build 仍不足（非 Miss n=46，已記錄 Pause，但 Resume／Restart 未進入日誌），因此 M2 補充驗收尚未結案 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 

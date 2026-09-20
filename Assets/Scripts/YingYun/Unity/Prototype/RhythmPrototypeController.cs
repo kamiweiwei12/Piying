@@ -188,7 +188,7 @@ namespace YingYun.Rhythm.Prototype
         private NoteData[] CreatePrototypeChart()
         {
             double beatDuration = 60d / bpm;
-            int noteCount = (int)Math.Floor(PrototypeDurationSeconds / beatDuration);
+            int noteCount = (int)Math.Floor(PrototypeDurationSeconds / beatDuration) + 1;
             var notes = new NoteData[noteCount];
             for (int i = 0; i < noteCount; i++)
             {

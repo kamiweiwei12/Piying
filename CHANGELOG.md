@@ -24,6 +24,54 @@
 
 ---
 
+## [2026-09-21] M2 補充驗收 - 三分鐘譜面邊界修正與真人採樣
+
+### 新增
+
+* 無。
+
+### 修改
+
+* `RhythmPrototypeController.CreatePrototypeChart()` 的音符數量納入 180 秒終點，將最後音符由 179.5 秒修正為 180.0 秒。
+* 此修改只修正驗收譜面的右開區間邊界；不變更 BPM、判定窗、輸入映射、Scene、Packages 或 ProjectSettings。
+
+### 測試
+
+* Unity recompile：`completed`、`compilationFailed=false`、errors=0。
+* 邊界探針：`count=361`、`lastTimeSec=180`。
+* EditMode 回歸：`YingYun.Tests` → **total=20 / passed=20 / failed=0 / skipped=0**。
+* Windows 修正版建置：StandaloneWindows64、`Succeeded`、errors=0、warnings=1；警告為未設定可選的 Runtime Pipeline Config。
+* Editor 真人採樣：非 Miss **n=404**（Perfect 214、Good 190）、Miss 107、最長 `songTime=194.52s`；Pause 2、Resume 1、Schedule/Restart 5。
+* Windows 真人採樣：非 Miss **n=46**（Perfect 25、Good 21）、Miss 44；Pause 1。Player 日誌另有 6 次 Unity TLS 憑證驗證失敗，未造成遊戲流程例外。
+
+### 驗收結果
+
+| M2 補充驗收項目 | 結果 |
+|---|---|
+| 測試譜面覆蓋完整 180 秒 | ✅ 最後音符時間為 180.0 秒 |
+| Editor 非 Miss n ≥ 60 | ✅ n=404 |
+| 單次連續播放 ≥180 秒 | ✅ Editor 最長 194.52 秒 |
+| Editor Pause／Resume／Restart | ✅ 日誌均有記錄 |
+| Windows build 非 Miss n ≥ 60 | ⚠️ n=46，尚差 14 |
+| Windows build Resume／Restart | ⚠️ Pause 已記錄；Resume／Restart 未進入日誌 |
+
+* **結論：邊界修正與 Editor 補充驗收通過；M2 補充驗收仍未結案。** 依使用者收尾指示，本輪不再要求重複操作，也不把未達項記為通過。
+
+### Git Commit
+
+* 待提交。
+
+### 風險 / 已知問題
+
+* Windows 樣本不足與 Resume／Restart 缺證據屬驗收缺口，不等同已定位的程式缺陷。
+* Windows Player 的 Unity TLS 憑證警告來自外部連線驗證；目前未觀察到對離線節奏核心的影響，後續若導入雲端服務需另行處理。
+
+### 下一步
+
+* 下次只需在 Windows build 補足至少 14 次非 Miss，並確認 Resume 與 Restart 日誌，即可關閉 M2 補充驗收；完成前不推進 M4。
+
+---
+
 ## [2026-09-21] M3 - 六部位放射式音符視覺
 
 ### 新增
