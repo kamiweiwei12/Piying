@@ -62,7 +62,7 @@
 
 ### Git Commit
 
-* 待提交。
+* `4ca3007` `feat(m3): add radial body-part note visualization`
 
 ### 風險 / 已知問題
 
