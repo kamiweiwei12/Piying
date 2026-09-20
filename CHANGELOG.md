@@ -24,6 +24,105 @@
 
 ---
 
+## [2026-09-21] M2 - 節奏執行期（DSP 時鐘 / 輸入橋接 / Windows build）
+
+### 新增
+
+* `YingYun.Unity` asmdef（引用 `YingYun.Runtime`、`Unity.InputSystem`）：新遊戲的 Unity 端執行期程式。
+* `YingYun.Rhythm.Timing.DspSongClock`：以 `AudioSettings.dspTime` 為唯一基準的歌曲時鐘；音樂以
+  `AudioSource.PlayScheduled(dspStart)` 起播，暫停期間累加 `pausedTotal`（不使用 `Play()`、不用 `Time.time`）。
+* `YingYun.Rhythm.Timing.ClockBridge`：取樣 `dspTime − realtimeSinceStartup`（平滑係數 0.1），
+  把 Input System 事件時間映射為 DSP 時間與 song time。
+* `YingYun.Rhythm.Input.InputSystemNoteInputSource`：訂閱 `Rhythm` action map，保留事件時間戳後入列，
+  不做「這幀才處理」的近似。
+* `YingYun.Rhythm.Prototype.RhythmPrototypeController`：單曲原型整合（180 秒、120 BPM、每拍一顆、
+  lane 以 1→6 循環）；Console 逐拍輸出 `songTime` / `dsp` / `bridgeMs` / `inputMedianMs`，
+  逐判定輸出 `grade` / `errorMs` / `combo` / `score` / `accuracy`；P = 暫停／續播、R = 重開。
+* `Assets/Scenes/YingYun_Gameplay.unity`：專案第一個可版控場景（Main Camera + Rhythm Prototype），
+  並註冊進 `EditorBuildSettings`。
+* `Assets/Settings/InputSystem_Actions.inputactions`：新增 `Rhythm` action map（Q/W/E/A/S/D → Lane1–6）。
+* `YingYun.Tests` 新增 `ClockBridgeTests`（3 個案例）。
+* Windows build 產物 `Builds/M2/YingYun.exe`（StandaloneWindows64、Mono；`Builds/` 不進版控）。
+
+### 修改
+
+* `Assets/Tests/EditMode/YingYun.Tests.asmdef`：新增 `YingYun.Unity` 參考。
+* `ProjectSettings/EditorBuildSettings.asset`、`ProjectSettings/ProjectSettings.asset`、
+  `ProjectSettings/Packages/com.unity.learn.iet-framework/Settings.json`：Unity 自動產生的設定變更原樣收錄。
+
+### 測試
+
+* **EditMode 回歸**（Unity 6000.6.2f1）：
+  `unity test "D:\Unity\program\My project" --editor-path "D:\Unity\Editor\6000.6.2f1\Editor\Unity.exe" --mode EditMode --filter YingYun.Tests --timeout 180 --output "…\Logs\M2-editmode-results.xml" --format json`
+  → **total=15 / passed=15 / failed=0 / skipped=0**（`JudgmentEngineTests` 12、`ClockBridgeTests` 3），
+  `duration=0.0881676 s`，`result=Passed`。報告檔 `Logs/M2-editmode-results.xml`（未進版控）。
+  備註：`--editor-version 6000.6.2f1` 與直接呼叫 `Unity.exe -batchmode -runTests` 皆失敗
+  （前者 CLI 找不到安裝、後者 headless 授權不足），改用 `--editor-path` 後成功。
+* **Editor 真人實測**（音訊 48000 Hz、DSP buffer 1024 samples × 4 buffers）：
+  * 判定 467 筆：Perfect 19 / Good 21 / Miss 427；**非 Miss 樣本 n = 40**。
+  * 誤差分布：median **+11.314 ms**、mean −0.853 ms、min −99.413 ms、max +83.354 ms、標準差 55.72 ms；
+    平均值的 95% 信賴區間 **[−18.12, +16.41] ms（涵蓋 0）**。
+  * 誤差對時間的線性趨勢：+17.0 ms/min（標準誤 11.7、t = 1.46，**不顯著**）。
+  * 播放區段：R 重開前 143.5 秒（beats 0–287）、重開後 89.0 秒（beats 0–178），合計 232.5 秒。
+    `dsp − songTime` 漂移 **0.000 s**（兩段）；相鄰拍 `dsp/songTime` 比值中位數 **1.000000**；
+    `bridgeMs` 區間 34115.3–34139.3 / 34112.1–34136.9，趨勢漂移 −2.80 ms / −1.69 ms。
+  * Miss 的 `errorMs` 全部落在 101.3–121.3 ms（中位數 112）= late 窗超時自動 Miss，代表未輸入，非判定錯誤。
+  * Pause：`paused | songTime=89.453333 | dsp=270.720000`，且之後**無任何 beat/judgment 行**（時鐘確實凍結）。
+  * Restart：第二次 `scheduled | dspStart=181.266667`。
+  * Console 無 error（僅 Unity 授權訊息 `Licensing::Client Error: Code 404`，與專案無關）。
+* **Windows build 真人實測**（48000 Hz、DSP buffer 1024 × 4）：
+  * 判定 51 筆：Perfect 1 / Good 7 / Miss 43；**非 Miss 樣本 n = 8**。
+  * 誤差分布：median −47.690 ms、min −99.956 ms、max +85.166 ms。
+  * 播放 25.5 秒（beats 0–50）；`bridgeMs` 區間 7574.6–7590.4 ms；
+    Pause 有記錄（`songTime=25.133333`）；**未測 Resume 與 Restart**。
+  * Player log 無 error。
+* 輔助證據（headless，非真人）：`Logs/M2-player-3min.log` 連續 194.5 秒、漂移 0.000 s、
+  比值 1.000000、`bridgeMs` 趨勢漂移 −1.55 ms；但全程無鍵盤輸入（n = 0），僅供節奏穩定性參考。
+
+### 驗收結果
+
+| M2 完成條件 | 結果 |
+|---|---|
+| 音樂以 `AudioSource.PlayScheduled(dspTime)` 起播（禁用 `Play()` 當判定基準） | ✅ |
+| 連續播放 3 分鐘以上，節拍指示與音樂不漂移 | ⚠️ 已量測區段的漂移為 **0.000 s**，但**最長連續僅 143.5 秒（Editor）**，未達 180 秒 |
+| 輸入誤差分布中位數接近 0（列出樣本數與中位數） | ⚠️ Editor median **+11.314 ms（n=40）**、Build median −47.690 ms（n=8）；**兩邊 n 皆未達 60** |
+| Editor 與 Windows build 各測一次並記錄差異 | ⚠️ 兩邊皆已完成實測與記錄，但 Build 端樣本極小且未測 Resume / Restart |
+| 暫停 / 續播 / 重開曲目行為正確 | ⚠️ Editor：Pause ✅、Restart ✅、Resume 於首次實測有記錄（`pausedTotal=1.984`）、第二次未測；Build：僅 Pause |
+| 既有 Platformer 程式未被破壞（Console 無新增 error） | ✅ EditMode 15/15、Editor log 與 player log 皆無 error |
+
+* **結論：依使用者指示，以現有驗收數據結案（不再補測）。** 程式、測試、文件與版控皆已完成；
+  上表 ⚠️ 三項為已知驗收缺口，詳見下方「風險 / 已知問題」。
+* 未達項**不是程式缺陷**：原型目前完全沒有音符視覺（音符生成／顯示屬 M3），真人只能在無畫面提示下
+  盲打，因此命中樣本數與連續播放時長無法達標；時間與判定本身經實測無系統性偏移。
+
+### Git Commit
+
+* `3e30379` `feat(m2): integrate dsp rhythm prototype`
+* 驗收與文件收尾（含本條目、`DEVELOPMENT.md` §2、`.gitignore`、`ProjectSettings` 收錄與散檔清理）：**待提交**
+
+### 風險 / 已知問題
+
+* **驗收缺口（未達判讀線，非程式錯誤）**：
+  1. Editor 非 Miss 樣本 n = 40（判讀線 60）；Windows build n = 8。
+  2. 未取得單次連續 ≥180 秒的播放區段（最長 143.5 秒）。
+  3. Windows build 端未測 Resume 與 Restart。
+  4. 無音符視覺下只能盲打：Build 的 median −47.690 ms（n=8）不具統計意義，不可作為偏移結論。
+* **未發現系統性時間偏移**：Editor 平均誤差 −0.853 ms（95% CI 涵蓋 0）、趨勢斜率不顯著（t = 1.46）、
+  兩段漂移 0.000 s、`bridgeMs` 趨勢漂移 < 3 ms；`Music.wav` 與譜面 120 BPM 無逐漸脫節跡象。
+* `bridgeMs` 絕對值偏大（Editor 約 34.1 s、Build 約 7.6 s）屬正常現象：`dspTime` 與
+  `realtimeSinceStartup` 起算點不同，差值為常數並在映射時抵消；程式於 `Awake` 每次重新取樣。
+* 分 lane 中位數（Q −1.70 / W −64.34 / E −81.94 / A +57.78 / S +30.15 / D +33.21 ms，每 lane 僅 4–10 筆）
+  不具統計意義；六鍵共用同一條 `actionTriggered → ClockBridge → Judgment` 路徑，無 per-lane 差異邏輯。
+* `Assets/Scripts/M0/ClockProbe.cs` 仍以 `RuntimeInitializeOnLoadMethod` 自動執行並在 `Logs/` 產生 CSV；
+  進入正式執行期前應移除或以條件編譯隔離（需使用者批准）。數字鍵 0–5／空白鍵屬該探針專用。
+
+### 下一步
+
+* M3 音符視覺：接近圈音符生成／回收（物件池）、命中消失、判定文字與音符消失時機一致；
+  完成後再回頭補齊 M2 遺留的真人驗收（n ≥ 60、單次連續 ≥180 秒、Windows build 的 Resume/Restart）。
+
+---
+
 ## [2026-09-20] M1 - 可重現的純 C# 判定核心
 
 ### 新增

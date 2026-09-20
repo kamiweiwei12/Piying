@@ -40,9 +40,9 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M1 已完成**；下一步為 M2 節奏執行期 |
+| 目前 Milestone | **M2 已結案**（驗收依使用者指示以現有數據結案；2 項未達判讀線已記錄於 `CHANGELOG.md`）；下一步為 M3 音符視覺 |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | ⚠️ 專案**沒有任何 `.unity` 場景**（`Assets/Scenes/` 為空，`EditorBuildSettings` 仍指向不存在的 `SampleScene.unity`） |
+| 重大缺口 | ⚠️ 音符**完全沒有視覺呈現**（屬 M3 範圍，畫面上只有 Camera 背景，玩家無法得知何時打、打哪個鍵）；⚠️ 真人驗收樣本不足（Editor n=40、Windows build n=8，判讀線 60），且未取得單次連續 ≥180 秒的播放區段 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 3 份 Rule |
 
@@ -455,4 +455,5 @@ git --no-pager log --oneline -10
 | 版本 | 日期 | 變更 |
 |---|---|---|
 | 1.0 | 2026-09-20 | 建立本規範：專案目標、階段落點、M0–M7 里程碑與完成條件、Git / CHANGELOG / Skill / 測試 / 回報規範、最小修改原則、風險管理、禁止事項、附錄 A–G |
+| 1.1 | 2026-09-21 | M2 收尾：更新 §2「目前 Milestone」與「重大缺口」（`.unity` 場景與 asmdef 已就位、音符視覺尚未實作、真人驗收樣本缺口），M2 驗收數據記於 `CHANGELOG.md` |
 
