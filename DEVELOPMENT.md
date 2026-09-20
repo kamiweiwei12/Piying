@@ -40,9 +40,9 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M3 已結案**；下一個工作單位為補齊 M2 真人驗收（n ≥ 60、單次連續 ≥180 秒、Windows build Resume／Restart），完成後再進入 M4 計分與結算 |
+| 目前 Milestone | **M4 已結案**；下一個工作單位為 **M5 進階音符**（Hold、組合音符、舞蹈連貫度） |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | M3 已提供六部位放射式幾何佔位音符與判定環；正式皮影美術／部位動畫仍屬 M6。M2 Editor 真人驗收已達標（非 Miss n=404、最長 194.52 秒、Pause／Resume／Restart 均有記錄）；Windows build 仍不足（非 Miss n=46，已記錄 Pause，但 Resume／Restart 未進入日誌），因此 M2 補充驗收尚未結案 |
+| 重大缺口 | M3 已提供六部位放射式幾何佔位音符與判定環；M4 已提供中文計分 HUD、`DifficultyConfig` 評級門檻與結算面板。正式皮影美術／部位動畫仍屬 M6；Windows build 的鍵盤重開尚未以實體輸入補測 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
@@ -95,9 +95,9 @@
 - [x] 判定文字與音符消失時機一致
 
 ### M4 — 計分與結算
-- [ ] Combo / Score / Accuracy 只在 Judgment 端計算，UI 只讀
-- [ ] 結算數字與執行中 Console 統計一致
-- [ ] 評級（S~D）門檻放於 `DifficultyConfig`
+- [x] Combo / Score / Accuracy 只在 Judgment 端計算，UI 只讀
+- [x] 結算數字與執行中 Console 統計一致
+- [x] 評級（S~D）門檻放於 `DifficultyConfig`
 
 ### M5 — 進階音符
 - [ ] Hold 音符：按住期間、提早放開、超時未放開皆有正確判定
@@ -458,4 +458,5 @@ git --no-pager log --oneline -10
 | 1.1 | 2026-09-21 | M2 收尾：更新 §2「目前 Milestone」與「重大缺口」（`.unity` 場景與 asmdef 已就位、音符視覺尚未實作、真人驗收樣本缺口），M2 驗收數據記於 `CHANGELOG.md` |
 | 1.2 | 2026-09-21 | 同步 M0–M2 完成後的專案事實、Cline Rule 數量與附錄 F 批准狀態 |
 | 1.3 | 2026-09-21 | M3 結案：六部位放射式音符視覺、物件池與判定回饋通過驗收；下一步回補 M2 真人數據 |
+| 1.4 | 2026-09-21 | M4 結案：四檔判定、`DifficultyConfig` 評級門檻、中文 HUD／結算面板、EditMode 32/32 與 Windows build 驗收 |
 

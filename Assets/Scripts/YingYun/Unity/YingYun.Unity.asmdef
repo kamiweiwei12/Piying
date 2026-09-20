@@ -3,7 +3,8 @@
   "rootNamespace": "YingYun.Rhythm",
   "references": [
     "YingYun.Runtime",
-    "Unity.InputSystem"
+    "Unity.InputSystem",
+    "Unity.ugui"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],

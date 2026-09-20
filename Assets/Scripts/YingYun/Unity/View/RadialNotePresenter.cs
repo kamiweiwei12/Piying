@@ -42,7 +42,7 @@ namespace YingYun.Rhythm.View
 
         private static readonly string[] LaneLabels =
         {
-            "Q  HEAD", "W  BODY", "E  R-HAND", "A  L-HAND", "S  L-FOOT", "D  R-FOOT"
+            "Q  头部", "W  身体", "E  右手", "A  左手", "S  左脚", "D  右脚"
         };
 
         [SerializeField, Min(0.1f)] private float visibleLeadSeconds = 1.75f;
@@ -59,6 +59,7 @@ namespace YingYun.Rhythm.View
         private Sprite _noteSprite;
         private Texture2D _noteTexture;
         private Material _lineMaterial;
+        private Font _chineseFont;
         private int _nextNoteIndex;
         private double _currentSongTime;
         private double _judgmentTextClearSongTime = double.PositiveInfinity;
@@ -147,7 +148,7 @@ namespace YingYun.Rhythm.View
 
             if (_judgmentText != null)
             {
-                _judgmentText.text = result.Grade.ToString().ToUpperInvariant();
+                _judgmentText.text = GradeText(result.Grade);
                 _judgmentText.color = resultColor;
                 _judgmentTextClearSongTime = _currentSongTime + releaseDelaySeconds;
             }
@@ -166,6 +167,9 @@ namespace YingYun.Rhythm.View
                 new Vector2(0.5f, 0.5f),
                 64f);
             _lineMaterial = new Material(Shader.Find("Sprites/Default"));
+            _chineseFont = Font.CreateDynamicFontFromOSFont(
+                new[] { "Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Arial Unicode MS" },
+                64);
 
             BuildCenterMarker();
             for (int lane = 0; lane < LaneCount; lane++)
@@ -188,6 +192,7 @@ namespace YingYun.Rhythm.View
             _judgmentText.fontSize = 64;
             _judgmentText.fontStyle = FontStyle.Bold;
             _judgmentText.text = string.Empty;
+            ApplyChineseFont(_judgmentText);
             _judgmentText.GetComponent<MeshRenderer>().sortingOrder = 30;
         }
 
@@ -211,7 +216,8 @@ namespace YingYun.Rhythm.View
             text.fontSize = 52;
             text.fontStyle = FontStyle.Bold;
             text.color = new Color(1f, 0.82f, 0.35f);
-            text.text = "SHADOW\nPUPPET";
+            text.text = "皮影偶";
+            ApplyChineseFont(text);
             text.GetComponent<MeshRenderer>().sortingOrder = 5;
         }
 
@@ -248,6 +254,7 @@ namespace YingYun.Rhythm.View
             text.fontStyle = FontStyle.Bold;
             text.color = LaneColors[lane];
             text.text = LaneLabels[lane];
+            ApplyChineseFont(text);
             text.GetComponent<MeshRenderer>().sortingOrder = 15;
         }
 
@@ -299,12 +306,26 @@ namespace YingYun.Rhythm.View
             {
                 case JudgmentGrade.Perfect:
                     return new Color(1f, 0.86f, 0.25f);
+                case JudgmentGrade.Great:
+                    return new Color(1f, 0.55f, 0.20f);
                 case JudgmentGrade.Good:
                     return new Color(0.25f, 0.95f, 0.55f);
                 case JudgmentGrade.Miss:
                     return new Color(1f, 0.25f, 0.25f);
                 default:
                     return Color.white;
+            }
+        }
+
+        private static string GradeText(JudgmentGrade grade)
+        {
+            switch (grade)
+            {
+                case JudgmentGrade.Perfect: return "契合";
+                case JudgmentGrade.Great: return "协律";
+                case JudgmentGrade.Good: return "应拍";
+                case JudgmentGrade.Miss: return "空引";
+                default: return string.Empty;
             }
         }
 
@@ -334,6 +355,17 @@ namespace YingYun.Rhythm.View
             return texture;
         }
 
+        private void ApplyChineseFont(TextMesh text)
+        {
+            if (_chineseFont == null)
+            {
+                return;
+            }
+
+            text.font = _chineseFont;
+            text.GetComponent<MeshRenderer>().sharedMaterial = _chineseFont.material;
+        }
+
         private void OnDestroy()
         {
             if (_lineMaterial != null)
@@ -349,6 +381,11 @@ namespace YingYun.Rhythm.View
             if (_noteTexture != null)
             {
                 Destroy(_noteTexture);
+            }
+
+            if (_chineseFont != null)
+            {
+                Destroy(_chineseFont);
             }
         }
     }

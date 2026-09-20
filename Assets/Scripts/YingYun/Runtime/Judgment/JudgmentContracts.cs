@@ -23,6 +23,7 @@ namespace YingYun.Rhythm.Judgment
     {
         None,
         Perfect,
+        Great,
         Good,
         Miss
     }
@@ -89,6 +90,7 @@ namespace YingYun.Rhythm.Judgment
     {
         public TimingConfig(
             double perfectWindowSec,
+            double greatWindowSec,
             double goodWindowSec,
             double holdTickIntervalSec,
             int baseScorePerNote = 1000,
@@ -105,6 +107,11 @@ namespace YingYun.Rhythm.Judgment
                 throw new ArgumentOutOfRangeException(nameof(goodWindowSec));
             }
 
+            if (greatWindowSec < perfectWindowSec || goodWindowSec < greatWindowSec)
+            {
+                throw new ArgumentOutOfRangeException(nameof(greatWindowSec));
+            }
+
             if (holdTickIntervalSec <= 0d)
             {
                 throw new ArgumentOutOfRangeException(nameof(holdTickIntervalSec));
@@ -116,6 +123,7 @@ namespace YingYun.Rhythm.Judgment
             }
 
             PerfectWindowSec = perfectWindowSec;
+            GreatWindowSec = greatWindowSec;
             GoodWindowSec = goodWindowSec;
             HoldTickIntervalSec = holdTickIntervalSec;
             BaseScorePerNote = baseScorePerNote;
@@ -124,13 +132,14 @@ namespace YingYun.Rhythm.Judgment
         }
 
         public double PerfectWindowSec { get; }
+        public double GreatWindowSec { get; }
         public double GoodWindowSec { get; }
         public double HoldTickIntervalSec { get; }
         public int BaseScorePerNote { get; }
         public int HoldTickScore { get; }
         public int MaxComboBonus { get; }
 
-        public static TimingConfig Prototype => new TimingConfig(0.040d, 0.100d, 0.250d);
+        public static TimingConfig Prototype => new TimingConfig(0.040d, 0.070d, 0.100d, 0.250d);
     }
 
     public readonly struct JudgmentResult

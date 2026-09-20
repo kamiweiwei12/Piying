@@ -12,10 +12,12 @@ namespace YingYun.Rhythm.Tests
             public double SongTime { get; set; }
         }
 
-        private static readonly TimingConfig Config = new TimingConfig(0.040d, 0.100d, 0.250d);
+        private static readonly TimingConfig Config = new TimingConfig(0.040d, 0.070d, 0.100d, 0.250d);
 
         [TestCase(-0.040d, JudgmentGrade.Perfect)]
         [TestCase(0.040d, JudgmentGrade.Perfect)]
+        [TestCase(-0.070d, JudgmentGrade.Great)]
+        [TestCase(0.070d, JudgmentGrade.Great)]
         [TestCase(-0.100d, JudgmentGrade.Good)]
         [TestCase(0.100d, JudgmentGrade.Good)]
         public void TimingWindow_InclusiveAndSymmetric(double offset, JudgmentGrade expected)
@@ -122,14 +124,14 @@ namespace YingYun.Rhythm.Tests
             var clock = new FakeSongClock();
             var engine = new JudgmentEngine(notes, Config, clock);
             engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
-            engine.EnqueueInput(new HitInput(2.080d, 0, InputKind.Press));
+            engine.EnqueueInput(new HitInput(2.060d, 0, InputKind.Press));
             AdvanceTo(engine, clock, 2.1d);
             AdvanceTo(engine, clock, 3.101d);
 
             Assert.That(engine.Combo, Is.Zero);
             Assert.That(engine.MaxCombo, Is.EqualTo(2));
-            Assert.That(engine.Score, Is.EqualTo(1520));
-            Assert.That(engine.Accuracy, Is.EqualTo(0.5d).Within(0.000001d));
+            Assert.That(engine.Score, Is.EqualTo(1775));
+            Assert.That(engine.Accuracy, Is.EqualTo(7d / 12d).Within(0.000001d));
         }
 
         [Test]

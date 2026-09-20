@@ -24,6 +24,68 @@
 
 ---
 
+## [2026-09-21] M4 - 国风判定 HUD 与结算
+
+### 新增
+
+* `GameplayStatistics`：由 `JudgmentResult` 单向累积四档中文判定统计、最高连击、得分与准确率。
+* `DifficultyConfig`：集中保存「天成／传神／入韵／初成」准确率门槛；`ResultGradeCalculator` 只读此配置。
+* `GameplayHudPresenter`：运行时 uGUI 中文 HUD 与结算面板，使用安全区域锚点与 1920×1080 缩放基准。
+* `GameplayStatisticsTests`：新增四档统计、配置化评价边界、重置，以及同一条 `JudgmentResult` 流下与 `JudgmentEngine` 最终数值一致的测试。
+
+### 修改
+
+* 判定核心增加 `Great` 档：40 ms 内「契合」、40–70 ms「协律」、70–100 ms「应拍」、超过 100 ms「空引」。
+* 协律权重为 0.75；契合、应拍、空引权重保持 1.0、0.5、0.0；Combo／Score／Accuracy 仍只有 `JudgmentEngine` 计算。
+* `RadialNotePresenter` 与六部位标签完全中文化；不再向玩家显示 Perfect／Great／Good／Miss 或英文部位名称。
+* `RhythmPrototypeController` 在最后一颗音符判定后暂停歌曲并显示结算；`R` 重新开始时清空 HUD 与统计。
+* `YingYun.Unity.asmdef` 仅增加 `Unity.ugui` 引用；未新增 Scene、Prefab、Packages 或 ProjectSettings 变更。
+
+### 测试
+
+* Unity 编译：`compilationFailed=false`，Console error=0。
+* EditMode 回归：`YingYun.Tests` → **total=32 / passed=32 / failed=0 / skipped=0**，duration=0.1533774 s。
+  * 指令：`unity test "D:\Unity\program\My project" --editor-path "D:\Unity\Editor\6000.6.2f1\Editor\Unity.exe" --mode EditMode --filter YingYun.Tests --timeout 240 --output "…\Logs\M4-editmode-results.xml" --format json`。
+* 结算数字一致性：`Statistics_MatchJudgmentEngineForMixedJudgments` 以同一组谱面与输入跑出
+  Perfect／Great／Good／Miss 各 1 颗，断言 `GameplayStatistics` 的四档计数、JudgedCount、MaxCombo、Score、Accuracy
+  全数与 `JudgmentEngine` 一致。
+* 结算画面：以 EditMode 离屏渲染真实 uGUI Canvas 至 1280×720 RenderTexture，画面显示总评「入韵」、
+  总分 156,256、准确率 85.42%、最高连击 115、契合 75／协律 30／应拍 10／空引 5、完成 120/120 与「按 R 再奏」；
+  中文字体完整，无缺字或裁切。
+* Windows build：`Builds/M4/YingYun.exe`（StandaloneWindows64、Mono；`Builds/` 不进版控）。实际启动 Player 后，
+  361 颗音符在无输入情况下依次 Miss，最后输出 `[M4] result | score=0 | accuracy=0.00 % | maxCombo=0`，
+  证明结算分支在 Windows build 正常触发；玩家日志无脚本异常。
+* 中文字体：使用 Windows 动态中文字体作为占位显示；未复制系统字体文件进项目。
+
+### 验收结果
+
+| M4 条件 | 结果 |
+|---|---|
+| Combo／Score／Accuracy 只在 Judgment 端计算，UI 只读 | ✅ `GameplayStatistics` 只消费 `JudgmentResult`；View 层无计分公式 |
+| 结算数字与执行中 Console 统计一致 | ✅ 同一结果流逐项断言 Engine 最终 Score／Accuracy／MaxCombo／计数一致 |
+| 评级（S~D）门槛放于 `DifficultyConfig` | ✅ 门槛已集中配置，并用自定义门槛测试边界 |
+| 中文实时 HUD 与结算面板 | ✅ 离屏 uGUI 1280×720 截图检查；四档文字、评级与明细完整 |
+| Windows build 结算 | ✅ Player 实际跑到最后判定并输出 `[M4] result` |
+
+* **结论：M4 完成。** 三项专属完成条件全部达成，EditMode 回归、结算画面与 Windows build 触发均有记录。
+
+### Git Commit
+
+* 待提交。
+
+### 风险 / 已知问题
+
+* 结算截图使用注入的确定性样本，用途是布局、字体与评级显示验收；实时数值一致性由 EditMode 判定回放测试独立证明。
+* 自动化会话中的 Windows Player 无可见窗口句柄，因此未能对 build 画面做人工截图；已以 Editor uGUI 离屏图与
+  Windows Player 的 `[M4] result` 日志组成双重证据。
+* `R` 重开逻辑已接入并通过代码路径检查；本次未在不可交互的自动化 Player 会话中注入实体按键。
+
+### 下一步
+
+* 进入 M5 进阶音符：Hold、组合音符与舞蹈连贯度。
+
+---
+
 ## [2026-09-21] M2 補充驗收 - 三分鐘譜面邊界修正與真人採樣
 
 ### 新增

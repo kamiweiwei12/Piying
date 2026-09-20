@@ -266,7 +266,14 @@ namespace YingYun.Rhythm.Judgment
         private JudgmentGrade GradeForError(double errorSec)
         {
             double absoluteError = Math.Abs(errorSec);
-            return absoluteError <= _config.PerfectWindowSec + TimeEpsilon ? JudgmentGrade.Perfect : JudgmentGrade.Good;
+            if (absoluteError <= _config.PerfectWindowSec + TimeEpsilon)
+            {
+                return JudgmentGrade.Perfect;
+            }
+
+            return absoluteError <= _config.GreatWindowSec + TimeEpsilon
+                ? JudgmentGrade.Great
+                : JudgmentGrade.Good;
         }
 
         private void CompleteNote(NoteState note, JudgmentGrade grade, double errorMs)
@@ -285,7 +292,9 @@ namespace YingYun.Rhythm.Judgment
             {
                 Combo++;
                 MaxCombo = Math.Max(MaxCombo, Combo);
-                weight = grade == JudgmentGrade.Perfect ? 1d : 0.5d;
+                weight = grade == JudgmentGrade.Perfect
+                    ? 1d
+                    : grade == JudgmentGrade.Great ? 0.75d : 0.5d;
                 double comboMultiplier = 1d + Math.Min(Combo, _config.MaxComboBonus) / (double)_config.MaxComboBonus;
                 Score += (int)Math.Round(_config.BaseScorePerNote * weight * comboMultiplier, MidpointRounding.AwayFromZero);
             }

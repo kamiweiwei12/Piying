@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using YingYun.Rhythm.Input;
 using YingYun.Rhythm.Judgment;
+using YingYun.Rhythm.Scoring;
 using YingYun.Rhythm.Timing;
 using YingYun.Rhythm.View;
 
@@ -28,7 +29,10 @@ namespace YingYun.Rhythm.Prototype
         private InputSystemNoteInputSource _input;
         private JudgmentEngine _judgment;
         private RadialNotePresenter _presenter;
+        private GameplayHudPresenter _hud;
         private int _lastBeat = int.MinValue;
+        private int _noteCount;
+        private bool _isComplete;
 
         public void Configure(AudioClip clip, InputActionAsset actions)
         {
@@ -60,6 +64,12 @@ namespace YingYun.Rhythm.Prototype
                 _presenter = gameObject.AddComponent<RadialNotePresenter>();
             }
 
+            _hud = GetComponent<GameplayHudPresenter>();
+            if (_hud == null)
+            {
+                _hud = gameObject.AddComponent<GameplayHudPresenter>();
+            }
+
             Restart();
         }
 
@@ -71,6 +81,10 @@ namespace YingYun.Rhythm.Prototype
             }
 
             HandleTransportControls();
+            if (_isComplete)
+            {
+                return;
+            }
 
             _bridge.Capture(AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
             while (_input.TryDequeue(out HitInput input))
@@ -84,6 +98,7 @@ namespace YingYun.Rhythm.Prototype
             {
                 JudgmentResult result = _frameResults[i];
                 _presenter.OnJudged(result);
+                _hud.OnJudged(result);
                 if (result.EventKind != JudgmentEventKind.NoteJudged)
                 {
                     continue;
@@ -103,6 +118,19 @@ namespace YingYun.Rhythm.Prototype
                     result.ComboAfter,
                     result.ScoreAfter,
                     result.AccuracyAfter));
+            }
+
+            if (!_isComplete && _judgment.JudgedNoteCount >= _noteCount)
+            {
+                _isComplete = true;
+                _clock.Pause();
+                _hud.ShowResult();
+                Debug.Log(string.Format(
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    "[M4] result | score={0} | accuracy={1:P2} | maxCombo={2}",
+                    _judgment.Score,
+                    _judgment.Accuracy,
+                    _judgment.MaxCombo));
             }
 
             LogMetronome();
@@ -147,9 +175,12 @@ namespace YingYun.Rhythm.Prototype
             _frameResults.Clear();
             _hitErrorsMs.Clear();
             _lastBeat = int.MinValue;
+            _isComplete = false;
             NoteData[] notes = CreatePrototypeChart();
+            _noteCount = notes.Length;
             _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
             _presenter.Begin(notes);
+            _hud.Begin(notes.Length, DifficultyConfig.Prototype);
             _clock.Schedule(music, leadInSeconds, audioOffsetSeconds);
 
             Debug.Log(string.Format(
@@ -174,14 +205,15 @@ namespace YingYun.Rhythm.Prototype
                 return;
             }
 
-            if (keyboard.pKey.wasPressedThisFrame)
-            {
-                TogglePause();
-            }
-
             if (keyboard.rKey.wasPressedThisFrame)
             {
                 Restart();
+                return;
+            }
+
+            if (!_isComplete && keyboard.pKey.wasPressedThisFrame)
+            {
+                TogglePause();
             }
         }
 
