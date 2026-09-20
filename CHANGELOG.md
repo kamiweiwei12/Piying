@@ -54,7 +54,9 @@
 
 ### Git Commit
 
-* 本條目與 `docs(rules): add mandatory development workflow rule` 同屬一次提交（hash 於下一次文件更新時補記）
+* `bad91f80bbebddff4c76f7b17a149feaf6059a7a`（short `bad91f8`）
+  `docs(rules): add mandatory development workflow rule`
+  （本條目內容與 `.clinerules/00-development-workflow.md` 同屬此提交）
 
 ### 風險 / 已知問題
 
