@@ -55,7 +55,7 @@
 
 ### Git Commit
 
-* **待提交**
+* `bac26de` `feat(m1): add deterministic judgment core`
 
 ### 風險 / 已知問題
 
