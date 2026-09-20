@@ -71,7 +71,7 @@
 
 ### Git Commit
 
-* 待提交。
+* `21da038` `feat(m4): add scoring hud and result screen`
 
 ### 风险 / 已知问题
 
