@@ -24,6 +24,43 @@
 
 ---
 
+## [2026-09-21] Infra - 同步開發契約與專案事實
+
+### 新增
+
+* 無。
+
+### 修改
+
+* `.clinerules/01-project-context.md`：同步 Git、節奏原型場景、asmdef、目前 Milestone 與 Rule 數量。
+* `DEVELOPMENT.md`：將 Rules 閱讀範圍更新為 `00`–`03`，同步 Cline 資產數量，並標記附錄 F 中已完成的 F1–F4、F10。
+* 將附錄 G 從「尚未建立的建議」改為已建立的工作流程 Rule 說明。
+
+### 測試
+
+* 文件／版控驗證：`git diff --check`。
+* 檢查 `git status --short` 與 `git diff --stat`，確認只有本條目列出的三份文件發生變更。
+
+### 驗收結果
+
+* `git diff --check` 通過；僅出現既有換行策略的 LF→CRLF 提示，沒有 whitespace error。
+* `git status --short` 與 `git diff --stat` 確認只有 `.clinerules/01-project-context.md`、`DEVELOPMENT.md`、`CHANGELOG.md` 三份文件變更。
+
+### Git Commit
+
+* 待提交。
+
+### 風險 / 已知問題
+
+* 本次只同步既有事實，不修改 Unity 程式、Scene、Prefab、Packages、ProjectSettings 或 Input Actions。
+* F5–F9 仍維持原本狀態；未經另行批准不得執行。
+
+### 下一步
+
+* 提出 M3 音符視覺的完整 Plan；涉及改寫 `YingYun_Gameplay.unity` 時仍須另行確認具體修改範圍。
+
+---
+
 ## [2026-09-21] M2 - 節奏執行期（DSP 時鐘 / 輸入橋接 / Windows build）
 
 ### 新增

@@ -32,10 +32,11 @@
 | UI | **uGUI**（`Assets/Prefabs/UI Canvas.prefab`、`MainUIController`、`MetaGameController`），不是 UI Toolkit |
 | 相機 | Cinemachine 6.6.0 |
 | 音訊 | `Assets/Audio/*.wav`（含 `Music.wav`）、`PlayAudioClip.cs`（StateMachineBehaviour）；**尚無 AudioMixer** |
-| 組件 | `Scripts/` 無 asmdef → 走 `Assembly-CSharp`；僅 `Assets/Tutorials/` 有 asmdef |
-| 場景 | ⚠️ `Assets/Scenes/` 目前**是空的**，整個專案沒有任何 `.unity`；`EditorBuildSettings` 仍指向已不存在的 `Assets/Scenes/SampleScene.unity` |
-| 版控 | 尚未 `git init` |
-| Cline 設定 | Skills：`.cline/skills/`；Rules：`.clinerules/`（本檔） |
+| 組件 | 新遊戲程式已拆分為 `YingYun.Runtime`（純 C#）、`YingYun.Unity`（Unity 執行期）與 `YingYun.Tests`（EditMode 測試）asmdef；Platformer 舊碼仍維持原架構 |
+| 場景 | `Assets/Scenes/YingYun_Gameplay.unity` 為目前節奏原型場景，已註冊至 `EditorBuildSettings` |
+| 版控 | Git 已初始化；`main` 為主線，M0、M1、M2 已完成並提交 |
+| 目前 Milestone | **M2 已結案**；下一步為 **M3 音符視覺** |
+| Cline 設定 | Skills：`.cline/skills/`（10 個）；Rules：`.clinerules/`（`00`–`03` 共 4 份） |
 
 ## 開發語言與溝通
 

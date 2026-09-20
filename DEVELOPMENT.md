@@ -7,13 +7,13 @@
 
 | 文件 | 角色 | 更新時機 |
 |---|---|---|
-| `.clinerules/01~03` | Cline 每次對話自動載入的專案情境 / 慣例 / 護欄 | 專案事實變動時（需使用者同意） |
+| `.clinerules/00~03` | Cline 每次對話自動載入的開發流程 / 專案情境 / 慣例 / 護欄 | 專案事實變動時（需使用者同意） |
 | `DEVELOPMENT.md`（本檔） | 開發流程、里程碑、完成條件 | 流程或里程碑進度變更時 |
 | `CHANGELOG.md` | 已完成工作記錄（只記真正完成者） | 每個工作單位完成並 commit 後 |
 | `.cline/skills/` | 領域知識（節奏時序、Input、UI、音訊…） | 新增 / 修正 Skill 時（需使用者同意） |
 
 **每次工作閱讀順序**：
-`.clinerules/01 → 02 → 03` → 本次任務相關 `SKILL.md` → 該 Skill 的相關 `references/` → 本檔 →
+`.clinerules/00 → 01 → 02 → 03` → 本次任務相關 `SKILL.md` → 該 Skill 的相關 `references/` → 本檔 →
 檢查 Git → 確認目前 Milestone → 定出最小修改範圍。
 
 ## 1. 專案目標
@@ -44,7 +44,7 @@
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
 | 重大缺口 | ⚠️ 音符**完全沒有視覺呈現**（屬 M3 範圍，畫面上只有 Camera 背景，玩家無法得知何時打、打哪個鍵）；⚠️ 真人驗收樣本不足（Editor n=40、Windows build n=8，判讀線 60），且未取得單次連續 ≥180 秒的播放區段 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
-| Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 3 份 Rule |
+| Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
 ## 3. 開發里程碑 M0 → M7
 
@@ -419,20 +419,20 @@ git --no-pager log --oneline -10
 
 | # | 項目 | 影響 | 現況 |
 |---|---|---|---|
-| F1 | `git init -b main` + baseline commit | 建立版控基線，讓所有修改可回溯 | **等待批准** |
-| F2 | 建立第一個 Scene（`YingYun_Gameplay.unity`） | 目前專案**沒有任何 `.unity`**，不建則無法 Play 驗收 | 等待批准（M0/M2 需要） |
-| F3 | 在 `InputSystem_Actions.inputactions` 新增 `Rhythm` action map（6 鍵 + 暫停） | 修改既有輸入資產 | 等待批准（M2 需要） |
-| F4 | 新增 asmdef：`YingYun.Runtime` / `YingYun.Tests` | 改變 Assembly 結構（可隔離 Platformer 舊碼、可寫 EditMode 測試） | 建議採用，等待批准（M1 需要） |
+| F1 | `git init -b main` + baseline commit | 建立版控基線，讓所有修改可回溯 | **已批准並完成（M0）** |
+| F2 | 建立第一個 Scene（`YingYun_Gameplay.unity`） | 建立可 Play 驗收的節奏原型場景 | **已批准並完成（M2）** |
+| F3 | 在 `InputSystem_Actions.inputactions` 新增 `Rhythm` action map（6 鍵） | 修改既有輸入資產；暫停／重開由原型控制器直接讀取 P／R | **已批准並完成（M2）** |
+| F4 | 新增 asmdef：`YingYun.Runtime` / `YingYun.Unity` / `YingYun.Tests` | 隔離純 C# 核心、Unity 執行期與 EditMode 測試 | **已批准並完成（M1／M2）** |
 | F5 | `.gitattributes`（`* text=auto`、LF 規範） | 避免跨平台換行造成 diff 噪音 | 建議採用，等待批准 |
 | F6 | CJK TMP 字型資產（中文 UI） | 目前 TMP 只有 `LiberationSans`（英文），無法顯示中文 | 等待批准（M7 需要） |
 | F7 | `ProjectSettings` 調整（產品名《影韵》、解析度 1920×1080、`runInBackground`） | 影響 PC 節奏遊戲體驗 | 等待批准 |
 | F8 | 切換 URP Renderer → Renderer2D（啟用 Light2D） | 影響渲染設定 | **建議延後**，M6 先用 Sprite/材質/粒子替代 |
 | F9 | 清除無用的 Platformer 程式 / 資產 | 專案乾淨度 | 需先提出清單，等待批准 |
-| F10 | 新增 `.clinerules/00-development-workflow.md` | 讓 STEP 0–7 每次自動生效 | 建議採用，等待批准（見 §附錄 G） |
+| F10 | 新增 `.clinerules/00-development-workflow.md` | 讓 STEP 0–7 每次自動生效 | **已批准並完成** |
 
-## 附錄 G：建議新增的 Cline Rule（方案，尚未建立）
+## 附錄 G：Cline 開發工作流程 Rule（已建立）
 
-建議建立 `.clinerules/00-development-workflow.md`（always-on，內容精簡，指向本檔）：
+`.clinerules/00-development-workflow.md` 已建立為 always-on 摘要；實際內容以該檔案為準，核心要求如下：
 
 ```markdown
 # 00 開發工作流程（每次工作必遵守）
@@ -456,4 +456,5 @@ git --no-pager log --oneline -10
 |---|---|---|
 | 1.0 | 2026-09-20 | 建立本規範：專案目標、階段落點、M0–M7 里程碑與完成條件、Git / CHANGELOG / Skill / 測試 / 回報規範、最小修改原則、風險管理、禁止事項、附錄 A–G |
 | 1.1 | 2026-09-21 | M2 收尾：更新 §2「目前 Milestone」與「重大缺口」（`.unity` 場景與 asmdef 已就位、音符視覺尚未實作、真人驗收樣本缺口），M2 驗收數據記於 `CHANGELOG.md` |
+| 1.2 | 2026-09-21 | 同步 M0–M2 完成後的專案事實、Cline Rule 數量與附錄 F 批准狀態 |
 
