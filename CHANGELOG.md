@@ -59,7 +59,7 @@
 
 ### Git Commit
 
-* 待提交。
+* `05c8c4f` `fix(m2): include three-minute chart endpoint`
 
 ### 風險 / 已知問題
 
