@@ -66,7 +66,7 @@
 
 ### Git Commit
 
-* **待提交**
+* `7c868c6` `feat(m0): establish audio and input clock baseline`
 
 ### 風險 / 已知問題
 
