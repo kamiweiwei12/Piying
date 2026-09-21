@@ -44,6 +44,8 @@ namespace YingYun.Rhythm.View
         public float LeftUpperArmRotation => _leftUpperArmJoint == null ? 0f : _leftUpperArmJoint.localEulerAngles.z;
         public float RightUpperArmRotation => _rightUpperArmJoint == null ? 0f : _rightUpperArmJoint.localEulerAngles.z;
         public float RightThighRotation => _rightThighJoint == null ? 0f : _rightThighJoint.localEulerAngles.z;
+        public float HeadRotation => _headJoint == null ? 0f : _headJoint.localEulerAngles.z;
+        public float TorsoRotation => _torsoJoint == null ? 0f : _torsoJoint.localEulerAngles.z;
         public float GetStringTension(int lane) => _tensions[lane];
 
         private void Awake()
@@ -95,10 +97,6 @@ namespace YingYun.Rhythm.View
             if (result.EventKind == JudgmentEventKind.NoteJudged)
             {
                 _evaluator.ReleaseHold(result.RequiredLanesMask, _songTime);
-                if (result.Grade == JudgmentGrade.Miss)
-                {
-                    _evaluator.Fail(_songTime);
-                }
             }
         }
 

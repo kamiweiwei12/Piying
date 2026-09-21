@@ -69,6 +69,32 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void AutomaticMissWithoutInput_DoesNotMovePuppet()
+        {
+            var root = new GameObject("Puppet Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.Tick(1d);
+            presenter.OnJudged(new JudgmentResult(
+                JudgmentEventKind.NoteJudged,
+                1,
+                0,
+                JudgmentGrade.Miss,
+                0d,
+                0,
+                0,
+                0d,
+                1 << 4));
+            presenter.Tick(1d);
+
+            Assert.That(Mathf.DeltaAngle(0f, presenter.HeadRotation), Is.Zero.Within(0.0001f));
+            Assert.That(Mathf.DeltaAngle(0f, presenter.TorsoRotation), Is.Zero.Within(0.0001f));
+            Assert.That(presenter.GetStringTension(4), Is.Zero);
+
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void HoldStarted_KeepsControlStringTautAcrossTime()
         {
             var root = new GameObject("Puppet Test");
