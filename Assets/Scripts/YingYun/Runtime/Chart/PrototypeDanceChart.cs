@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using YingYun.Rhythm.Judgment;
+using YingYun.Rhythm.Scoring;
 
 namespace YingYun.Rhythm.Chart
 {
@@ -33,6 +34,11 @@ namespace YingYun.Rhythm.Chart
 
         public static NoteData[] Create(double bpm, double durationSeconds)
         {
+            return Create(bpm, durationSeconds, PlayDifficulty.Normal);
+        }
+
+        public static NoteData[] Create(double bpm, double durationSeconds, PlayDifficulty difficulty)
+        {
             if (bpm <= 0d)
             {
                 throw new ArgumentOutOfRangeException(nameof(bpm));
@@ -61,12 +67,15 @@ namespace YingYun.Rhythm.Chart
 
                 notes.Add(Tap(noteId++, LeftHandLane, start, phrase));
                 notes.Add(Tap(noteId++, RightHandLane, start + beatDuration, phrase));
-                notes.Add(Chord(
-                    noteId++,
-                    LeftHandLane,
-                    Mask(LeftHandLane, RightHandLane),
-                    start + (2d * beatDuration),
-                    phrase));
+                if (difficulty != PlayDifficulty.Easy || phrase % 2 == 0)
+                {
+                    notes.Add(Chord(
+                        noteId++,
+                        LeftHandLane,
+                        Mask(LeftHandLane, RightHandLane),
+                        start + (2d * beatDuration),
+                        phrase));
+                }
 
                 if (footHold)
                 {
@@ -98,7 +107,21 @@ namespace YingYun.Rhythm.Chart
 
                 notes.Add(Tap(noteId++, LeftFootLane, start + (6d * beatDuration), phrase));
                 notes.Add(Tap(noteId++, RightFootLane, start + (7d * beatDuration), phrase));
-                notes.Add(Tap(noteId++, BodyLane, start + (7d * beatDuration), phrase));
+                if (difficulty != PlayDifficulty.Easy)
+                {
+                    notes.Add(Tap(noteId++, BodyLane, start + (7d * beatDuration), phrase));
+                }
+
+                if (difficulty == PlayDifficulty.Hard)
+                {
+                    notes.Add(Tap(noteId++, BodyLane, start + (0.5d * beatDuration), phrase));
+                    notes.Add(Chord(
+                        noteId++,
+                        LeftFootLane,
+                        Mask(LeftFootLane, RightFootLane),
+                        start + (6.5d * beatDuration),
+                        phrase));
+                }
             }
 
             int finaleSegment = phraseCount;
@@ -108,6 +131,7 @@ namespace YingYun.Rhythm.Chart
                 Mask(LeftHandLane, RightHandLane),
                 durationSeconds,
                 finaleSegment));
+            notes.Sort((left, right) => left.TimeSec.CompareTo(right.TimeSec));
             return notes.ToArray();
         }
 

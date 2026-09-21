@@ -24,6 +24,48 @@
 
 ---
 
+## [2026-09-21] M7 候选版 - 选曲、三难度与延迟校准
+
+### 新增
+
+* 单曲选曲入口《试灯》，提供「入门／行当／名角」三档难度及清楚的密度说明。
+* `PlayDifficulty` 与难度说明契约；Easy 减少合奏与同拍操作，Normal 保留标准谱面，Hard 加入半拍点按与双脚合奏。
+* `CalibrationSettings`：音频输出与输入路径偏移独立保存，范围限制为 -300～+300 ms，可在菜单以 5 ms 步进调整。
+* M7 uGUI 流程画面与 EventSystem：选曲 → 游玩 → 结算 → 返回选曲不需 Editor 介入。
+
+### 修改
+
+* `DspSongClock.AudioOffsetSeconds` 与 `InputSystemNoteInputSource.InputOffsetSeconds` 支持运行时即时生效；校准值写入 `PlayerPrefs`。
+* 结算提示加入 Enter 返回选曲；R 仍可用当前难度重新演奏。
+* 谱面生成器按时间重新排序，保证 Hard 新增的半拍音符仍符合判定引擎的有序输入契约。
+
+### 测试
+
+* Unity EditMode 全量测试：**96/96 通过**，0 failed／0 skipped。
+* Play Mode 实测：选曲菜单正常显示，可选择 Hard 进入游玩；Unity Console 0 error。
+* UI 验收图：`Logs/M7-song-select.png`。
+* Connected Editor Windows build：`Builds/M7/YingYun.exe`，**Succeeded**，0 error，134,400,328 bytes，12.185 秒。
+
+### 验收结果
+
+* 自动化与开发机 Play Mode 验收通过；等待使用者实机确认菜单操作、三难度体感与校准方向。
+
+### Git Commit
+
+* `feat(m7): add playable demo flow`（本条目所在的里程碑提交）
+
+### 風險 / 已知問題
+
+* 当前只有一首原型曲《试灯》，选曲流程已成立但尚无第二首歌曲内容。
+* 中文继续使用 Windows 动态系统字体；最终跨平台包仍应补正式 CJK TMP 字体资产。
+* 音频／输入偏移的数值可即时调整与保存，但玩家仍需凭听感手动校准，尚未加入自动节拍采样向导。
+
+### 下一步
+
+* 使用者实机验收 M7 候选版；通过后补正式 CJK TMP 字体并将 M7 结案，或先按反馈调整三难度密度与校准交互。
+
+---
+
 ## [2026-09-21] M6.5 修正 - Hold 持續操演與音符類型配色
 
 ### 新增

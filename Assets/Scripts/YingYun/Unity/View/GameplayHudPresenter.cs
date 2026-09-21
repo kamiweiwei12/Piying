@@ -23,6 +23,14 @@ namespace YingYun.Rhythm.View
         public bool IsResultVisible => _resultPanel != null && _resultPanel.activeSelf;
         public GameplayStatistics Statistics => _statistics;
 
+        public void SetVisible(bool visible)
+        {
+            if (_safeArea != null)
+            {
+                _safeArea.gameObject.SetActive(visible);
+            }
+        }
+
         private void Awake()
         {
             BuildHud();
@@ -63,7 +71,7 @@ namespace YingYun.Rhythm.View
                 $"契合　{_statistics.PerfectCount}　协律　{_statistics.GreatCount}\n" +
                 $"应拍　{_statistics.GoodCount}　空引　{_statistics.MissCount}\n\n" +
                 $"完成　{_statistics.JudgedCount}/{_totalNotes}\n" +
-                "按 R 再奏";
+                "按 Enter 返回选曲　·　按 R 再奏";
             _resultPanel.SetActive(true);
         }
 

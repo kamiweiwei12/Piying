@@ -15,6 +15,8 @@ namespace YingYun.Rhythm.Prototype
     public sealed class RhythmPrototypeController : MonoBehaviour
     {
         private const double PrototypeDurationSeconds = 180d;
+        private const string AudioOffsetPreference = "YingYun.AudioOffsetMs";
+        private const string InputOffsetPreference = "YingYun.InputOffsetMs";
 
         [SerializeField] private AudioClip music;
         [SerializeField] private InputActionAsset inputActions;
@@ -32,6 +34,10 @@ namespace YingYun.Rhythm.Prototype
         private RadialNotePresenter _presenter;
         private ShadowPuppetPresenter _puppet;
         private GameplayHudPresenter _hud;
+        private DemoFlowPresenter _flow;
+        private AudioSource _musicSource;
+        private CalibrationSettings _calibration;
+        private PlayDifficulty _difficulty = PlayDifficulty.Normal;
         private int _lastBeat = int.MinValue;
         private int _noteCount;
         private bool _isComplete;
@@ -51,15 +57,18 @@ namespace YingYun.Rhythm.Prototype
                 return;
             }
 
-            var source = GetComponent<AudioSource>();
-            source.playOnAwake = false;
-            source.loop = true;
-            source.spatialBlend = 0f;
+            _musicSource = GetComponent<AudioSource>();
+            _musicSource.playOnAwake = false;
+            _musicSource.loop = true;
+            _musicSource.spatialBlend = 0f;
 
-            _clock = new DspSongClock(source);
+            _calibration = new CalibrationSettings(
+                PlayerPrefs.GetFloat(AudioOffsetPreference, (float)(audioOffsetSeconds * 1000d)),
+                PlayerPrefs.GetFloat(InputOffsetPreference, (float)(inputOffsetSeconds * 1000d)));
+            _clock = new DspSongClock(_musicSource);
             _bridge = new ClockBridge();
             _bridge.Capture(AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
-            _input = new InputSystemNoteInputSource(inputActions, _bridge, _clock, inputOffsetSeconds);
+            _input = new InputSystemNoteInputSource(inputActions, _bridge, _clock, _calibration.InputOffsetMs / 1000d);
             _presenter = GetComponent<RadialNotePresenter>();
             if (_presenter == null)
             {
@@ -83,7 +92,15 @@ namespace YingYun.Rhythm.Prototype
                 _hud = gameObject.AddComponent<GameplayHudPresenter>();
             }
 
-            Restart();
+            _flow = GetComponent<DemoFlowPresenter>();
+            if (_flow == null)
+            {
+                _flow = gameObject.AddComponent<DemoFlowPresenter>();
+            }
+
+            _flow.PlayRequested += StartPerformance;
+            _flow.CalibrationAdjusted += AdjustCalibration;
+            ShowSongSelection();
         }
 
         private void Update()
@@ -94,6 +111,11 @@ namespace YingYun.Rhythm.Prototype
             }
 
             HandleTransportControls();
+            if (_flow.IsMenuVisible)
+            {
+                return;
+            }
+
             if (_isComplete)
             {
                 return;
@@ -215,25 +237,61 @@ namespace YingYun.Rhythm.Prototype
             _hitErrorsMs.Clear();
             _lastBeat = int.MinValue;
             _isComplete = false;
-            NoteData[] notes = PrototypeDanceChart.Create(bpm, PrototypeDurationSeconds);
+            NoteData[] notes = PrototypeDanceChart.Create(bpm, PrototypeDurationSeconds, _difficulty);
             _noteCount = notes.Length;
             _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
             _presenter.Begin(notes);
             _puppet.Begin();
             _hud.Begin(notes.Length, DifficultyConfig.Prototype);
-            _clock.Schedule(music, leadInSeconds, audioOffsetSeconds);
+            _clock.Schedule(music, leadInSeconds, _calibration.AudioOffsetMs / 1000d);
 
             Debug.Log(string.Format(
                 System.Globalization.CultureInfo.InvariantCulture,
-                "[M2] scheduled | dspStart={0:F6} | leadIn={1:F3}s | bpm={2:F3} | clip={3} | loop=true | controls=P pause/resume,R restart",
+                "[M7] scheduled | difficulty={0} | dspStart={1:F6} | leadIn={2:F3}s | bpm={3:F3} | clip={4} | audioOffsetMs={5:F1} | inputOffsetMs={6:F1}",
+                _difficulty,
                 _clock.DspStart,
                 leadInSeconds,
                 bpm,
-                music.name));
+                music.name,
+                _calibration.AudioOffsetMs,
+                _calibration.InputOffsetMs));
+        }
+
+        public void StartPerformance(PlayDifficulty difficulty)
+        {
+            _difficulty = difficulty;
+            _flow.HideMenu();
+            _hud.SetVisible(true);
+            Restart();
+        }
+
+        public void ShowSongSelection()
+        {
+            _musicSource?.Stop();
+            _isComplete = true;
+            _hud.SetVisible(false);
+            _flow.ShowMenu(_calibration.AudioOffsetMs, _calibration.InputOffsetMs);
+        }
+
+        public void AdjustCalibration(double audioDeltaMs, double inputDeltaMs)
+        {
+            _calibration.AdjustAudio(audioDeltaMs);
+            _calibration.AdjustInput(inputDeltaMs);
+            PlayerPrefs.SetFloat(AudioOffsetPreference, (float)_calibration.AudioOffsetMs);
+            PlayerPrefs.SetFloat(InputOffsetPreference, (float)_calibration.InputOffsetMs);
+            PlayerPrefs.Save();
+            _clock.AudioOffsetSeconds = _calibration.AudioOffsetMs / 1000d;
+            _input.InputOffsetSeconds = _calibration.InputOffsetMs / 1000d;
+            _flow.RefreshCalibration(_calibration.AudioOffsetMs, _calibration.InputOffsetMs);
         }
 
         private void OnDestroy()
         {
+            if (_flow != null)
+            {
+                _flow.PlayRequested -= StartPerformance;
+                _flow.CalibrationAdjusted -= AdjustCalibration;
+            }
             _input?.Dispose();
         }
 
@@ -242,6 +300,24 @@ namespace YingYun.Rhythm.Prototype
             Keyboard keyboard = Keyboard.current;
             if (keyboard == null)
             {
+                return;
+            }
+
+            if (_flow.IsMenuVisible)
+            {
+                if (keyboard.digit1Key.wasPressedThisFrame) StartPerformance(PlayDifficulty.Easy);
+                else if (keyboard.digit2Key.wasPressedThisFrame) StartPerformance(PlayDifficulty.Normal);
+                else if (keyboard.digit3Key.wasPressedThisFrame) StartPerformance(PlayDifficulty.Hard);
+                else if (keyboard.leftBracketKey.wasPressedThisFrame) AdjustCalibration(-5d, 0d);
+                else if (keyboard.rightBracketKey.wasPressedThisFrame) AdjustCalibration(5d, 0d);
+                else if (keyboard.minusKey.wasPressedThisFrame) AdjustCalibration(0d, -5d);
+                else if (keyboard.equalsKey.wasPressedThisFrame) AdjustCalibration(0d, 5d);
+                return;
+            }
+
+            if (_isComplete && keyboard.enterKey.wasPressedThisFrame)
+            {
+                ShowSongSelection();
                 return;
             }
 

@@ -26,6 +26,11 @@ namespace YingYun.Rhythm.Timing
         public double DspStart => _dspStart;
         public double PausedTotal => _pausedTotal;
         public bool IsRunning => _isScheduled && !_isPaused;
+        public double AudioOffsetSeconds
+        {
+            get => _audioOffsetSeconds;
+            set => _audioOffsetSeconds = value;
+        }
 
         public void Schedule(AudioClip clip, double leadInSeconds, double audioOffsetSeconds = 0d)
         {

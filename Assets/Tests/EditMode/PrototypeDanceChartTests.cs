@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using YingYun.Rhythm.Chart;
 using YingYun.Rhythm.Judgment;
+using YingYun.Rhythm.Scoring;
 
 namespace YingYun.Rhythm.Tests
 {
@@ -90,6 +91,24 @@ namespace YingYun.Rhythm.Tests
                             (1 << PrototypeDanceChart.RightHandLane);
             Assert.That(openingChord.RequiredLanesMask, Is.EqualTo(bothHands));
             Assert.That(notes.Any(x => x.Lane == PrototypeDanceChart.BodyLane && x.Kind == NoteKind.Hold), Is.True);
+        }
+
+        [Test]
+        public void Create_DifficultiesIncreaseDensityAndKeepAllNoteKinds()
+        {
+            NoteData[] easy = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Easy);
+            NoteData[] normal = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Normal);
+            NoteData[] hard = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Hard);
+
+            Assert.That(easy.Length, Is.LessThan(normal.Length));
+            Assert.That(normal.Length, Is.LessThan(hard.Length));
+            foreach (NoteData[] chart in new[] { easy, normal, hard })
+            {
+                Assert.That(chart.Zip(chart.Skip(1), (left, right) => left.TimeSec <= right.TimeSec).All(x => x), Is.True);
+                Assert.That(chart.Any(x => x.Kind == NoteKind.Tap && !x.IsChord), Is.True);
+                Assert.That(chart.Any(x => x.Kind == NoteKind.Hold), Is.True);
+                Assert.That(chart.Any(x => x.IsChord), Is.True);
+            }
         }
 
         [TestCase(0d)]

@@ -13,7 +13,13 @@ namespace YingYun.Rhythm.Input
         private readonly ClockBridge _bridge;
         private readonly DspSongClock _clock;
         private readonly Queue<HitInput> _queue = new Queue<HitInput>();
-        private readonly double _inputOffsetSeconds;
+        private double _inputOffsetSeconds;
+
+        public double InputOffsetSeconds
+        {
+            get => _inputOffsetSeconds;
+            set => _inputOffsetSeconds = value;
+        }
 
         public InputSystemNoteInputSource(
             InputActionAsset actions,
