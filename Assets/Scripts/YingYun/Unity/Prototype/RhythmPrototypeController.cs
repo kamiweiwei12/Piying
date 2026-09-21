@@ -15,13 +15,13 @@ namespace YingYun.Rhythm.Prototype
     public sealed class RhythmPrototypeController : MonoBehaviour
     {
         private const double PrototypeDurationSeconds = 180d;
+        private const double CountdownLeadInSeconds = 3d;
         private const string AudioOffsetPreference = "YingYun.AudioOffsetMs";
         private const string InputOffsetPreference = "YingYun.InputOffsetMs";
 
         [SerializeField] private AudioClip music;
         [SerializeField] private InputActionAsset inputActions;
         [SerializeField] private double bpm = 120d;
-        [SerializeField] private double leadInSeconds = 1d;
         [SerializeField] private double audioOffsetSeconds;
         [SerializeField] private double inputOffsetSeconds;
 
@@ -41,6 +41,7 @@ namespace YingYun.Rhythm.Prototype
         private int _lastBeat = int.MinValue;
         private int _noteCount;
         private bool _isComplete;
+        private bool _isPaused;
 
         public void Configure(AudioClip clip, InputActionAsset actions)
         {
@@ -100,6 +101,9 @@ namespace YingYun.Rhythm.Prototype
 
             _flow.PlayRequested += StartPerformance;
             _flow.CalibrationAdjusted += AdjustCalibration;
+            _flow.ResumeRequested += ResumePerformance;
+            _flow.RestartRequested += RestartFromPause;
+            _flow.ReturnRequested += ShowSongSelection;
             ShowSongSelection();
         }
 
@@ -116,12 +120,18 @@ namespace YingYun.Rhythm.Prototype
                 return;
             }
 
+            if (_isPaused)
+            {
+                return;
+            }
+
             if (_isComplete)
             {
                 return;
             }
 
             _bridge.Capture(AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
+            _hud.TickSongTime(_clock.SongTime);
             while (_input.TryDequeue(out HitInput input))
             {
                 _puppet.OnInput(input);
@@ -207,15 +217,19 @@ namespace YingYun.Rhythm.Prototype
             if (_clock.IsRunning)
             {
                 _clock.Pause();
+                _isPaused = true;
+                _flow.ShowPause();
                 Debug.Log(string.Format(
                     System.Globalization.CultureInfo.InvariantCulture,
                     "[M2] paused | songTime={0:F6} | dsp={1:F6}",
                     _clock.SongTime,
                     AudioSettings.dspTime));
             }
-            else
+            else if (_isPaused)
             {
                 _clock.Resume();
+                _isPaused = false;
+                _flow.HidePause();
                 Debug.Log(string.Format(
                     System.Globalization.CultureInfo.InvariantCulture,
                     "[M2] resumed | songTime={0:F6} | dsp={1:F6} | pausedTotal={2:F6}",
@@ -237,20 +251,22 @@ namespace YingYun.Rhythm.Prototype
             _hitErrorsMs.Clear();
             _lastBeat = int.MinValue;
             _isComplete = false;
+            _isPaused = false;
+            _flow.HidePause();
             NoteData[] notes = PrototypeDanceChart.Create(bpm, PrototypeDurationSeconds, _difficulty);
             _noteCount = notes.Length;
             _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
             _presenter.Begin(notes);
             _puppet.Begin();
             _hud.Begin(notes.Length, DifficultyConfig.Prototype);
-            _clock.Schedule(music, leadInSeconds, _calibration.AudioOffsetMs / 1000d);
+            _clock.Schedule(music, CountdownLeadInSeconds, _calibration.AudioOffsetMs / 1000d);
 
             Debug.Log(string.Format(
                 System.Globalization.CultureInfo.InvariantCulture,
                 "[M7] scheduled | difficulty={0} | dspStart={1:F6} | leadIn={2:F3}s | bpm={3:F3} | clip={4} | audioOffsetMs={5:F1} | inputOffsetMs={6:F1}",
                 _difficulty,
                 _clock.DspStart,
-                leadInSeconds,
+                CountdownLeadInSeconds,
                 bpm,
                 music.name,
                 _calibration.AudioOffsetMs,
@@ -261,14 +277,34 @@ namespace YingYun.Rhythm.Prototype
         {
             _difficulty = difficulty;
             _flow.HideMenu();
+            _flow.HidePause();
             _hud.SetVisible(true);
+            Restart();
+        }
+
+        public void ResumePerformance()
+        {
+            if (_isPaused)
+            {
+                TogglePause();
+            }
+        }
+
+        public void RestartFromPause()
+        {
+            _flow.HidePause();
             Restart();
         }
 
         public void ShowSongSelection()
         {
             _musicSource?.Stop();
+            _input?.Clear();
             _isComplete = true;
+            _isPaused = false;
+            _flow.HidePause();
+            _presenter.Begin(Array.Empty<NoteData>());
+            _puppet.Begin();
             _hud.SetVisible(false);
             _flow.ShowMenu(_calibration.AudioOffsetMs, _calibration.InputOffsetMs);
         }
@@ -291,6 +327,9 @@ namespace YingYun.Rhythm.Prototype
             {
                 _flow.PlayRequested -= StartPerformance;
                 _flow.CalibrationAdjusted -= AdjustCalibration;
+                _flow.ResumeRequested -= ResumePerformance;
+                _flow.RestartRequested -= RestartFromPause;
+                _flow.ReturnRequested -= ShowSongSelection;
             }
             _input?.Dispose();
         }
@@ -315,6 +354,15 @@ namespace YingYun.Rhythm.Prototype
                 return;
             }
 
+            if (_flow.IsPauseVisible)
+            {
+                if (keyboard.pKey.wasPressedThisFrame || keyboard.escapeKey.wasPressedThisFrame)
+                {
+                    ResumePerformance();
+                }
+                return;
+            }
+
             if (_isComplete && keyboard.enterKey.wasPressedThisFrame)
             {
                 ShowSongSelection();
@@ -327,7 +375,7 @@ namespace YingYun.Rhythm.Prototype
                 return;
             }
 
-            if (!_isComplete && keyboard.pKey.wasPressedThisFrame)
+            if (!_isComplete && (keyboard.pKey.wasPressedThisFrame || keyboard.escapeKey.wasPressedThisFrame))
             {
                 TogglePause();
             }

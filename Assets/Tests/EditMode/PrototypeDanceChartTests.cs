@@ -94,7 +94,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void Create_DifficultiesIncreaseDensityAndKeepAllNoteKinds()
+        public void Create_DifficultiesIncreaseDensityAndRemainSorted()
         {
             NoteData[] easy = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Easy);
             NoteData[] normal = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Normal);
@@ -107,7 +107,39 @@ namespace YingYun.Rhythm.Tests
                 Assert.That(chart.Zip(chart.Skip(1), (left, right) => left.TimeSec <= right.TimeSec).All(x => x), Is.True);
                 Assert.That(chart.Any(x => x.Kind == NoteKind.Tap && !x.IsChord), Is.True);
                 Assert.That(chart.Any(x => x.Kind == NoteKind.Hold), Is.True);
-                Assert.That(chart.Any(x => x.IsChord), Is.True);
+            }
+
+            Assert.That(easy.Any(x => x.IsChord), Is.False);
+            Assert.That(normal.Any(x => x.IsChord), Is.True);
+            Assert.That(hard.Any(x => x.IsChord), Is.True);
+        }
+
+        [Test]
+        public void Create_EasyRequiresOnlyOneKeyAndAtMostOneNotePerSecond()
+        {
+            NoteData[] easy = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Easy);
+
+            Assert.That(easy.All(x => (x.RequiredLanesMask & (x.RequiredLanesMask - 1)) == 0), Is.True);
+            Assert.That(
+                easy.Zip(easy.Skip(1), (left, right) => right.TimeSec - left.TimeSec >= 1d - 1e-9d).All(x => x),
+                Is.True);
+        }
+
+        [TestCase(PlayDifficulty.Easy)]
+        [TestCase(PlayDifficulty.Normal)]
+        [TestCase(PlayDifficulty.Hard)]
+        public void Create_AllDifficultiesAvoidSameLaneOverlap(PlayDifficulty difficulty)
+        {
+            NoteData[] notes = PrototypeDanceChart.Create(120d, 40d, difficulty);
+
+            foreach (IGrouping<int, NoteData> lane in notes.GroupBy(x => x.Lane))
+            {
+                NoteData[] ordered = lane.OrderBy(x => x.TimeSec).ToArray();
+                for (int i = 1; i < ordered.Length; i++)
+                {
+                    Assert.That(ordered[i - 1].TimeSec + ordered[i - 1].DurationSec,
+                        Is.LessThanOrEqualTo(ordered[i].TimeSec + 1e-9d));
+                }
             }
         }
 

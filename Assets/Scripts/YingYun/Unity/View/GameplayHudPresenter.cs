@@ -15,10 +15,13 @@ namespace YingYun.Rhythm.View
         private UnityEngine.UI.Text _resultTitle;
         private UnityEngine.UI.Text _resultDetails;
         private GameObject _resultPanel;
+        private GameObject _countdownPanel;
+        private UnityEngine.UI.Text _countdownText;
         private Font _runtimeFont;
         private int _totalNotes;
         private Rect _lastSafeArea;
         private DifficultyConfig _difficulty;
+        private bool _wasCountingDown;
 
         public bool IsResultVisible => _resultPanel != null && _resultPanel.activeSelf;
         public GameplayStatistics Statistics => _statistics;
@@ -47,6 +50,38 @@ namespace YingYun.Rhythm.View
             }
 
             RefreshHud(0, 0, 0d);
+            _wasCountingDown = true;
+            if (_countdownPanel != null)
+            {
+                _countdownPanel.SetActive(true);
+            }
+        }
+
+        public void TickSongTime(double songTime)
+        {
+            if (_countdownPanel == null)
+            {
+                return;
+            }
+
+            if (songTime < 0d)
+            {
+                int count = Mathf.Clamp(Mathf.CeilToInt((float)-songTime), 1, 3);
+                _countdownText.text = count.ToString();
+                _countdownPanel.SetActive(true);
+                _wasCountingDown = true;
+                return;
+            }
+
+            if (_wasCountingDown && songTime < 0.35d)
+            {
+                _countdownText.text = "开演";
+                _countdownPanel.SetActive(true);
+                return;
+            }
+
+            _wasCountingDown = false;
+            _countdownPanel.SetActive(false);
         }
 
         public void OnJudged(JudgmentResult result)
@@ -104,6 +139,25 @@ namespace YingYun.Rhythm.View
             Anchor(_accuracyText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(460f, 80f), new Vector2(0.5f, 1f));
 
             BuildResultPanel();
+            BuildCountdownPanel();
+        }
+
+        private void BuildCountdownPanel()
+        {
+            _countdownPanel = new GameObject("开演倒数", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            _countdownPanel.transform.SetParent(_safeArea, false);
+            RectTransform rect = (RectTransform)_countdownPanel.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(360f, 260f);
+            UnityEngine.UI.Image image = _countdownPanel.GetComponent<UnityEngine.UI.Image>();
+            image.color = new Color(0.10f, 0.022f, 0.014f, 0.88f);
+            image.raycastTarget = false;
+            _countdownText = CreateText("倒数", rect, "3", 118, TextAnchor.MiddleCenter);
+            Anchor(_countdownText.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
+            _countdownText.color = new Color(1f, 0.76f, 0.23f);
+            _countdownPanel.SetActive(false);
         }
 
         private void BuildResultPanel()

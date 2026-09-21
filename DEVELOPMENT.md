@@ -40,9 +40,9 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M7 候选版待实机验收**：选曲 → 三难度 → 游玩 → 结算 → 返回选曲流程已打通，双偏移校准可即时生效并保存 |
+| 目前 Milestone | **M7 修正版待实机验收**：三秒倒数、DSP 暂停／继续、重新开始、返回选曲已补齐；Easy 已降为无 Chord 且每秒最多一颗音符 |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | M7 候选版已有三难度、单曲选曲流程、音频／输入双偏移保存与 Windows 构建。**结案缺口**：使用者实机验收、正式 CJK TMP 字体资产；自动节拍采样校准与第二首曲目属于后续增强项。正式分层透光皮影 Sprite、角色侧脸轮廓、动作短语与 Combo 舞台光影仍待后续美术迭代。 |
+| 重大缺口 | M7 修正版已有三难度、三秒倒数、暂停菜单、单曲选曲流程、音频／输入双偏移保存与 Windows 构建。**结案缺口**：使用者实机验收、正式 CJK TMP 字体资产；自动节拍采样校准与第二首曲目属于后续增强项。正式分层透光皮影 Sprite、角色侧脸轮廓、动作短语与 Combo 舞台光影仍待后续美术迭代。 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
@@ -476,4 +476,5 @@ git --no-pager log --oneline -10
 | 1.11 | 2026-09-21 | M6.5 結案：六軌改為六種操演意圖，頂部控制繩改為側向／下方剛性竹桿；補上幕布背光、戲台框、分片衣飾與鉚釘，EditMode 91/91、Windows build 通過 |
 | 1.12 | 2026-09-21 | M6.5 Hold 修正：按住提示延續至結束，竹桿與皮影片全程持續推拉；音符顏色統一為 Tap／Hold／Chord 三類，EditMode 93/93、Windows build 通過 |
 | 1.13 | 2026-09-21 | M7 候选版：单曲选曲、Easy／Normal／Hard、双偏移校准保存与完整返回流程；EditMode 96/96、Windows build 通过，等待实机验收与正式 CJK TMP 字体 |
+| 1.14 | 2026-09-21 | M7 修正：新增 DSP 暂停菜单、返回选曲与三秒倒数；Easy 改为无 Chord 且每秒一颗音符，EditMode 100/100、Windows build 通过 |
 

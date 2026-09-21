@@ -24,6 +24,49 @@
 
 ---
 
+## [2026-09-21] M7 修正 - 暂停流程、三秒倒数与入门谱面降难
+
+### 新增
+
+* 游戏内暂停菜单，提供「继续演出／重新开始／返回选曲」三个操作；P 与 Esc 均可暂停或继续。
+* 由校正后 `SongTime` 驱动的「3、2、1、开演」倒数；音乐仍由 `PlayScheduled` 在 DSP 时间轴上起播。
+* Easy 谱面硬性约束测试：无 Chord、每颗音符只要求一个按键、相邻音符起始时间至少间隔 1 秒。
+
+### 修改
+
+* 起播 lead-in 固定为 3 秒，选择难度与重新开始都会完整执行倒数。
+* Easy 改为每秒一颗音符，六方向循环出现；仅间隔加入少量 0.75 秒 Hold，取消全部组合键。
+* Normal 维持完整 Tap／Hold／Chord 教学组合；Hard 才加入半拍音符与额外双脚合奏。
+* 暂停使用既有 `DspSongClock.Pause/Resume`，不使用 `Time.timeScale`；暂停期间停止处理输入与判定。
+* 返回选曲时停止音乐、清空输入队列、回收音符并重置皮影姿态。
+
+### 测试
+
+* Unity EditMode 全量测试：**100/100 通过**，0 failed／0 skipped。
+* Play Mode：三秒倒数与暂停菜单可见；继续、再次暂停、返回选曲后状态为 `menu=True / pause=False / audio=False`。
+* Unity Console：0 compile error、0 console error。
+* 视觉验收图：`Logs/M7-countdown.png`、`Logs/M7-pause-menu.png`。
+* Connected Editor Windows build：`Builds/M7/YingYun.exe`，**Succeeded**，0 error，134,403,936 bytes，13.587 秒；187 项为既有 Inference／Shader 警告。
+
+### 驗收結果
+
+* 自动化、Play Mode 与 Windows 构建通过；等待使用者实机确认 Easy 的一秒一音符手感、暂停恢复连续性与返回选曲流程。
+
+### Git Commit
+
+* `feat(m7): add pause flow and rebalance difficulty`（本条目所在的修正提交）
+
+### 風險 / 已知問題
+
+* Easy 的 Hold 起点仍遵守一秒间隔，但 Hold 需要额外的释放动作；若实机仍觉得忙，可在下一轮将 Easy 改为纯 Tap。
+* 正式 CJK TMP 字体仍未加入，维持 M7 既有待批准项。
+
+### 下一步
+
+* 使用者实机验收新的 Windows 包；通过后再决定是否保留 Easy 的少量 Hold，并进入 M7 结案准备。
+
+---
+
 ## [2026-09-21] M7 候选版 - 选曲、三难度与延迟校准
 
 ### 新增

@@ -9,13 +9,18 @@ namespace YingYun.Rhythm.View
     {
         private GameObject _canvasObject;
         private GameObject _menuPanel;
+        private GameObject _pausePanel;
         private UnityEngine.UI.Text _calibrationText;
         private Font _runtimeFont;
 
         public event Action<PlayDifficulty> PlayRequested;
         public event Action<double, double> CalibrationAdjusted;
+        public event Action ResumeRequested;
+        public event Action RestartRequested;
+        public event Action ReturnRequested;
 
         public bool IsMenuVisible => _menuPanel != null && _menuPanel.activeSelf;
+        public bool IsPauseVisible => _pausePanel != null && _pausePanel.activeSelf;
 
         private void Awake()
         {
@@ -29,6 +34,10 @@ namespace YingYun.Rhythm.View
         }
 
         public void HideMenu() => _menuPanel.SetActive(false);
+
+        public void ShowPause() => _pausePanel.SetActive(true);
+
+        public void HidePause() => _pausePanel.SetActive(false);
 
         public void RefreshCalibration(double audioOffsetMs, double inputOffsetMs)
         {
@@ -76,6 +85,29 @@ namespace YingYun.Rhythm.View
             AddSmallButton(panel, "输入 -5", new Vector2(105f, -320f), () => CalibrationAdjusted?.Invoke(0d, -5d));
             AddSmallButton(panel, "输入 +5", new Vector2(315f, -320f), () => CalibrationAdjusted?.Invoke(0d, 5d));
             AddText(panel, "快捷键：1 / 2 / 3 选择难度　[ ] 调音频　- = 调输入", 23, new Vector2(0f, -410f), new Vector2(1100f, 55f), new Color(0.72f, 0.59f, 0.43f));
+            BuildPausePanel();
+        }
+
+        private void BuildPausePanel()
+        {
+            _pausePanel = new GameObject("暂停菜单", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            _pausePanel.transform.SetParent(_canvasObject.transform, false);
+            RectTransform panel = (RectTransform)_pausePanel.transform;
+            panel.anchorMin = Vector2.zero;
+            panel.anchorMax = Vector2.one;
+            panel.offsetMin = Vector2.zero;
+            panel.offsetMax = Vector2.zero;
+            _pausePanel.GetComponent<UnityEngine.UI.Image>().color = new Color(0.045f, 0.01f, 0.008f, 0.88f);
+
+            AddText(panel, "演出暂停", 78, new Vector2(0f, 235f), new Vector2(800f, 110f), new Color(1f, 0.76f, 0.23f));
+            UnityEngine.UI.Button resume = CreateButton(panel, "继续演出", 34, new Vector2(0f, 80f), new Vector2(560f, 92f));
+            UnityEngine.UI.Button restart = CreateButton(panel, "重新开始", 34, new Vector2(0f, -40f), new Vector2(560f, 92f));
+            UnityEngine.UI.Button back = CreateButton(panel, "返回选曲", 34, new Vector2(0f, -160f), new Vector2(560f, 92f));
+            resume.onClick.AddListener(() => ResumeRequested?.Invoke());
+            restart.onClick.AddListener(() => RestartRequested?.Invoke());
+            back.onClick.AddListener(() => ReturnRequested?.Invoke());
+            AddText(panel, "P / Esc 继续", 23, new Vector2(0f, -285f), new Vector2(600f, 50f), new Color(0.72f, 0.59f, 0.43f));
+            _pausePanel.SetActive(false);
         }
 
         private void AddDifficultyButton(RectTransform parent, PlayDifficulty difficulty, float y)

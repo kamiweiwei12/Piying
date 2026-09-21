@@ -49,6 +49,11 @@ namespace YingYun.Rhythm.Chart
                 throw new ArgumentOutOfRangeException(nameof(durationSeconds));
             }
 
+            if (difficulty == PlayDifficulty.Easy)
+            {
+                return CreateEasy(durationSeconds);
+            }
+
             double beatDuration = 60d / bpm;
             double phraseDuration = beatDuration * BeatsPerPhrase;
             int phraseCount = (int)Math.Floor(durationSeconds / phraseDuration);
@@ -67,15 +72,12 @@ namespace YingYun.Rhythm.Chart
 
                 notes.Add(Tap(noteId++, LeftHandLane, start, phrase));
                 notes.Add(Tap(noteId++, RightHandLane, start + beatDuration, phrase));
-                if (difficulty != PlayDifficulty.Easy || phrase % 2 == 0)
-                {
-                    notes.Add(Chord(
-                        noteId++,
-                        LeftHandLane,
-                        Mask(LeftHandLane, RightHandLane),
-                        start + (2d * beatDuration),
-                        phrase));
-                }
+                notes.Add(Chord(
+                    noteId++,
+                    LeftHandLane,
+                    Mask(LeftHandLane, RightHandLane),
+                    start + (2d * beatDuration),
+                    phrase));
 
                 if (footHold)
                 {
@@ -107,10 +109,7 @@ namespace YingYun.Rhythm.Chart
 
                 notes.Add(Tap(noteId++, LeftFootLane, start + (6d * beatDuration), phrase));
                 notes.Add(Tap(noteId++, RightFootLane, start + (7d * beatDuration), phrase));
-                if (difficulty != PlayDifficulty.Easy)
-                {
-                    notes.Add(Tap(noteId++, BodyLane, start + (7d * beatDuration), phrase));
-                }
+                notes.Add(Tap(noteId++, BodyLane, start + (7d * beatDuration), phrase));
 
                 if (difficulty == PlayDifficulty.Hard)
                 {
@@ -132,6 +131,25 @@ namespace YingYun.Rhythm.Chart
                 durationSeconds,
                 finaleSegment));
             notes.Sort((left, right) => left.TimeSec.CompareTo(right.TimeSec));
+            return notes.ToArray();
+        }
+
+        private static NoteData[] CreateEasy(double durationSeconds)
+        {
+            var notes = new List<NoteData>((int)Math.Ceiling(durationSeconds));
+            int noteId = 1;
+            int second = 0;
+            while (second < durationSeconds)
+            {
+                int lane = second % 6;
+                int segmentId = second / BeatsPerPhrase;
+                bool isTeachingHold = second >= 6 && second % 12 == 6;
+                notes.Add(isTeachingHold
+                    ? Hold(noteId++, lane, second, 0.75d, segmentId)
+                    : Tap(noteId++, lane, second, segmentId));
+                second++;
+            }
+
             return notes.ToArray();
         }
 
