@@ -112,6 +112,145 @@ namespace YingYun.Rhythm.Tests
             Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Miss));
         }
 
+        [TestCase(1.900d, JudgmentGrade.Good)]
+        [TestCase(2.100d, JudgmentGrade.Good)]
+        [TestCase(1.899d, JudgmentGrade.Miss)]
+        [TestCase(2.101d, JudgmentGrade.Miss)]
+        public void Hold_ReleaseWindow_IsInclusiveAndSymmetric(double releaseTime, JudgmentGrade expected)
+        {
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[] { new NoteData(1, "hold", 1, 1d, 1d) },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(1d, 1, InputKind.Press));
+            AdvanceTo(engine, clock, 1d);
+            engine.EnqueueInput(new HitInput(releaseTime, 1, InputKind.Release));
+
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, releaseTime)).Single();
+
+            Assert.That(result.Grade, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Hold_NoReleasePastTailWindowProducesMiss()
+        {
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[] { new NoteData(1, "hold", 1, 1d, 1d) },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(1d, 1, InputKind.Press));
+            AdvanceTo(engine, clock, 1d);
+
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 2.101d)).Single();
+
+            Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Miss));
+            Assert.That(engine.Combo, Is.Zero);
+        }
+
+        [Test]
+        public void Chord_ConsumesRequiredLanesAtomicallyAndAddsOneCombo()
+        {
+            int bothHands = (1 << 0) | (1 << 2);
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[] { new NoteData(1, "chord", 0, 1d, requiredLanesMask: bothHands) },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(0.980d, 0, InputKind.Press));
+            engine.EnqueueInput(new HitInput(1.030d, 2, InputKind.Press));
+
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 1.1d)).Single();
+
+            Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Perfect));
+            Assert.That(result.ErrorMs, Is.EqualTo(30d).Within(0.0001d));
+            Assert.That(result.RequiredLanesMask, Is.EqualTo(bothHands));
+            Assert.That(engine.Combo, Is.EqualTo(1));
+            Assert.That(engine.JudgedNoteCount, Is.EqualTo(1));
+            Assert.That(engine.PendingInputCount, Is.Zero);
+        }
+
+        [Test]
+        public void Chord_InputOrderDoesNotChangeResult()
+        {
+            int bothHands = (1 << 0) | (1 << 2);
+            var note = new NoteData(1, "chord", 0, 1d, requiredLanesMask: bothHands);
+
+            string leftFirst = RunReplay(
+                new[] { note },
+                new[]
+                {
+                    new HitInput(0.980d, 0, InputKind.Press),
+                    new HitInput(1.030d, 2, InputKind.Press)
+                });
+            string rightFirst = RunReplay(
+                new[] { note },
+                new[]
+                {
+                    new HitInput(1.030d, 2, InputKind.Press),
+                    new HitInput(0.980d, 0, InputKind.Press)
+                });
+
+            Assert.That(rightFirst, Is.EqualTo(leftFirst));
+        }
+
+        [TestCase(0.965d, 1.035d, JudgmentGrade.Perfect)]
+        [TestCase(0.964d, 1.036d, JudgmentGrade.Miss)]
+        public void Chord_SpreadWindow_IsInclusive(double firstTime, double secondTime, JudgmentGrade expected)
+        {
+            int bothHands = (1 << 0) | (1 << 2);
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[] { new NoteData(1, "chord", 0, 1d, requiredLanesMask: bothHands) },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(firstTime, 0, InputKind.Press));
+            engine.EnqueueInput(new HitInput(secondTime, 2, InputKind.Press));
+
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 1.101d)).Single();
+
+            Assert.That(result.Grade, Is.EqualTo(expected));
+            Assert.That(engine.PendingInputCount, Is.EqualTo(expected == JudgmentGrade.Miss ? 2 : 0));
+        }
+
+        [Test]
+        public void Chord_MissingLaneMissesWithoutConsumingPartialInput()
+        {
+            int bothHands = (1 << 0) | (1 << 2);
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[] { new NoteData(1, "chord", 0, 1d, requiredLanesMask: bothHands) },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
+
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 1.101d)).Single();
+
+            Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Miss));
+            Assert.That(engine.PendingInputCount, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Chord_ChoosesACompleteSetWhenPerLaneClosestInputsAreTooFarApart()
+        {
+            int bothHands = (1 << 0) | (1 << 2);
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[] { new NoteData(1, "chord", 0, 1d, requiredLanesMask: bothHands) },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(0.930d, 0, InputKind.Press));
+            engine.EnqueueInput(new HitInput(1.060d, 0, InputKind.Press));
+            engine.EnqueueInput(new HitInput(0.940d, 2, InputKind.Press));
+
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 1.1d)).Single();
+
+            Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Great));
+            Assert.That(result.ErrorMs, Is.EqualTo(-70d).Within(0.0001d));
+            Assert.That(engine.PendingInputCount, Is.EqualTo(1));
+        }
+
         [Test]
         public void ScoreComboAndAccuracy_HaveSingleDeterministicSource()
         {
@@ -153,6 +292,25 @@ namespace YingYun.Rhythm.Tests
 
             Assert.That(completed.Any(x => x.EventKind == JudgmentEventKind.SegmentCompleted && x.SegmentId == 10), Is.True);
             Assert.That(interrupted.Any(x => x.EventKind == JudgmentEventKind.SegmentInterrupted && x.SegmentId == 20), Is.True);
+        }
+
+        [Test]
+        public void Segment_FirstMissInterruptsImmediatelyAndOnlyOnce()
+        {
+            var notes = new[]
+            {
+                new NoteData(1, "tap", 0, 1d, segmentId: 10),
+                new NoteData(2, "tap", 1, 2d, segmentId: 10)
+            };
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(notes, Config, clock);
+
+            IReadOnlyList<JudgmentResult> firstMiss = AdvanceTo(engine, clock, 1.101d);
+            IReadOnlyList<JudgmentResult> secondMiss = AdvanceTo(engine, clock, 2.101d);
+
+            Assert.That(firstMiss.Count(x => x.EventKind == JudgmentEventKind.SegmentInterrupted), Is.EqualTo(1));
+            Assert.That(secondMiss.Any(x => x.EventKind == JudgmentEventKind.SegmentInterrupted), Is.False);
+            Assert.That(secondMiss.Any(x => x.EventKind == JudgmentEventKind.SegmentCompleted), Is.False);
         }
 
         [Test]

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using YingYun.Rhythm.Chart;
 using YingYun.Rhythm.Input;
 using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.Scoring;
@@ -99,6 +100,28 @@ namespace YingYun.Rhythm.Prototype
                 JudgmentResult result = _frameResults[i];
                 _presenter.OnJudged(result);
                 _hud.OnJudged(result);
+                if (result.EventKind == JudgmentEventKind.HoldStarted)
+                {
+                    Debug.Log(string.Format(
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        "[M5] hold-started | note={0} | mask={1} | errorMs={2:F3}",
+                        result.NoteId,
+                        result.RequiredLanesMask,
+                        result.ErrorMs));
+                    continue;
+                }
+
+                if (result.EventKind == JudgmentEventKind.SegmentCompleted ||
+                    result.EventKind == JudgmentEventKind.SegmentInterrupted)
+                {
+                    Debug.Log(string.Format(
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        "[M5] segment | id={0} | state={1}",
+                        result.SegmentId,
+                        result.EventKind));
+                    continue;
+                }
+
                 if (result.EventKind != JudgmentEventKind.NoteJudged)
                 {
                     continue;
@@ -111,13 +134,14 @@ namespace YingYun.Rhythm.Prototype
 
                 Debug.Log(string.Format(
                     System.Globalization.CultureInfo.InvariantCulture,
-                    "[M2] judgment | note={0} | grade={1} | errorMs={2:F3} | combo={3} | score={4} | accuracy={5:P2}",
+                    "[M2] judgment | note={0} | grade={1} | errorMs={2:F3} | combo={3} | score={4} | accuracy={5:P2} | mask={6}",
                     result.NoteId,
                     result.Grade,
                     result.ErrorMs,
                     result.ComboAfter,
                     result.ScoreAfter,
-                    result.AccuracyAfter));
+                    result.AccuracyAfter,
+                    result.RequiredLanesMask));
             }
 
             if (!_isComplete && _judgment.JudgedNoteCount >= _noteCount)
@@ -176,7 +200,7 @@ namespace YingYun.Rhythm.Prototype
             _hitErrorsMs.Clear();
             _lastBeat = int.MinValue;
             _isComplete = false;
-            NoteData[] notes = CreatePrototypeChart();
+            NoteData[] notes = PrototypeDanceChart.Create(bpm, PrototypeDurationSeconds);
             _noteCount = notes.Length;
             _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
             _presenter.Begin(notes);
@@ -215,19 +239,6 @@ namespace YingYun.Rhythm.Prototype
             {
                 TogglePause();
             }
-        }
-
-        private NoteData[] CreatePrototypeChart()
-        {
-            double beatDuration = 60d / bpm;
-            int noteCount = (int)Math.Floor(PrototypeDurationSeconds / beatDuration) + 1;
-            var notes = new NoteData[noteCount];
-            for (int i = 0; i < noteCount; i++)
-            {
-                notes[i] = new NoteData(i + 1, "tap", i % 6, i * beatDuration, segmentId: i / 16);
-            }
-
-            return notes;
         }
 
         private void LogMetronome()

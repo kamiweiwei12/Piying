@@ -24,6 +24,63 @@
 
 ---
 
+## [2026-09-21] M5 - Hold、組合音符與舞蹈連貫度
+
+### 新增
+
+* `PrototypeDanceChart`：以 120 BPM、8 拍樂句產生 180 秒核心玩法譜面，包含單鍵、雙手組合音符與身體 Hold；終點音符固定落在 180 秒，總計 316 顆邏輯音符。
+* `NoteData.RequiredLanesMask`：用位元集合描述單鍵或組合音符；雙手組合為 Q+E，仍只是一顆邏輯音符。
+* `HoldStarted` 判定事件，以及「合勢／斷勢」段落演出事件。
+* `PrototypeDanceChartTests`、`RadialNoteViewTests`，並擴充 `JudgmentEngineTests` 的 Hold、組合音符與段落邊界案例。
+
+### 修改
+
+* 六部位鍵位改為空間對應：Q 左手、W 頭部、E 右手、A 左腳、S 身體、D 右腳。
+* Hold 尾端採嚴格對稱 ±100 ms 釋放窗；提早、過晚或未釋放皆為 Miss，最終成績取頭尾較差者。
+* 組合音符要求完整按鍵集合在 70 ms spread window 內到齊，完成後原子消耗輸入、只計一次 Combo；缺鍵或超窗不消耗部分輸入。
+* 段落第一次 Miss 立即且只發出一次 `SegmentInterrupted`；全部音符成功才發出 `SegmentCompleted`。
+* `RadialNoteView` 以預建 marker、連線與 Hold 軌跡顯示進階音符；位置仍只由絕對 `songTime` 推導，遊戲熱路徑不新增 `Instantiate`。
+
+### 測試
+
+* EditMode 全回歸：`YingYun.Tests` → **total=51 / passed=51 / failed=0 / skipped=0**，duration=0.1500176 s。
+  * 指令：`unity test "D:\Unity\program\My project" --editor-path "D:\Unity\Editor\6000.6.2f1\Editor\Unity.exe" --mode EditMode --filter YingYun.Tests --timeout 300 --output "…\Logs\M5-final-results.xml" --format json`。
+  * Hold：±100 ms 邊界包含、±101 ms 排除、未釋放超時、頭尾取較差成績。
+  * 組合：按鍵順序無關、完整集合原子消耗、70 ms 邊界包含、超窗與缺鍵 Miss 且保留部分輸入；同軌多候選時仍能選到整體合法的完整集合。
+  * 段落：首次 Miss 立即中斷且只發一次事件；全成功才完成。
+  * 視圖：雙手組合同時啟用兩個 marker 與連線；Hold 顯示軌跡、進入按住狀態並正確結束。
+* Windows x64 建置：`Builds/M5/YingYun.exe`（Mono）成功，Unity `Build Finished, Result: Success`、退出碼 0。
+* Windows Player 隱藏煙測 12 秒：成功載入並播放；首樂句輸出 mask 1／4／5／2／16／8／32，其中雙手組合為 mask 5；首次 Miss 立即輸出一次 `[M5] segment | id=0 | state=SegmentInterrupted`；Player log 無腳本例外。
+
+### 驗收結果
+
+| M5 條件 | 結果 |
+|---|---|
+| Hold 按住、提早釋放、過晚／未釋放 | ✅ 純 C# 邊界與狀態測試完整通過 |
+| Q+E 組合以按鍵集合 + 時間窗判定 | ✅ 70 ms spread window、原子消耗、一次 Combo |
+| 舞蹈段完成／中斷事件與演出 | ✅ `SegmentCompleted` 顯示「合勢」；首次 Miss 立即顯示「斷勢」 |
+| 三分鐘核心玩法譜面 | ✅ 316 顆、8 拍循環、終點 180.0 秒 |
+| Editor 邏輯與 Windows build | ✅ 51/51 EditMode；Windows build 成功並實際啟動 |
+
+* **結論：M5 完成。** 三項專屬完成條件均有自動測試，Windows 玩家已驗證真實譜面與段落中斷路徑。
+
+### Git Commit
+
+* 待提交。
+
+### 風險 / 已知問題
+
+* 組合音符目前只支援 Tap；Hold 組合會明確拒絕，避免在 M5 引入未定義的多鍵尾判語義。
+* 自動化 Player 使用無圖形、無鍵盤裝置模式，因此 build 端只驗證啟動、時間軸、自動 Miss 與「斷勢」；實體鍵盤的 Hold／Q+E 手感仍適合在後續 Playtest 微調 70 ms spread window。
+* 正式皮影肢體動作與「合勢／斷勢」動畫屬 M6；M5 使用幾何 marker、連線、軌跡與舞台變色作可驗證佔位演出。
+* `ProjectSettings/ProjectSettings.asset` 的 Standalone define 變化來自先前安裝的 Unity AI 插件，非 M5 改動，未納入本次提交。
+
+### 下一步
+
+* 進入 M6：建立資料驅動 `PuppetRig`／`ActionBinding`，讓 Q、W、E、A、S、D 與組合／Hold 結果驅動肉眼可辨的皮影六部位連續舞蹈。
+
+---
+
 ## [2026-09-21] M4 - 国风判定 HUD 与结算
 
 ### 新增

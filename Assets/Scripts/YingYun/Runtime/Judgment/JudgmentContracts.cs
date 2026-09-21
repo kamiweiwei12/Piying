@@ -31,6 +31,7 @@ namespace YingYun.Rhythm.Judgment
     public enum JudgmentEventKind
     {
         NoteJudged,
+        HoldStarted,
         HoldTick,
         SegmentCompleted,
         SegmentInterrupted
@@ -39,7 +40,14 @@ namespace YingYun.Rhythm.Judgment
     /// <summary>純資料音符。所有時間欄位均為秒。</summary>
     public readonly struct NoteData
     {
-        public NoteData(int id, string typeId, int lane, double timeSec, double durationSec = 0d, int segmentId = 0)
+        public NoteData(
+            int id,
+            string typeId,
+            int lane,
+            double timeSec,
+            double durationSec = 0d,
+            int segmentId = 0,
+            int requiredLanesMask = 0)
         {
             if (string.IsNullOrWhiteSpace(typeId))
             {
@@ -51,12 +59,24 @@ namespace YingYun.Rhythm.Judgment
                 throw new ArgumentOutOfRangeException(nameof(durationSec));
             }
 
+            if (lane < 0 || lane >= 31)
+            {
+                throw new ArgumentOutOfRangeException(nameof(lane));
+            }
+
+            int resolvedMask = requiredLanesMask == 0 ? 1 << lane : requiredLanesMask;
+            if (resolvedMask < 0 || (resolvedMask & (1 << lane)) == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(requiredLanesMask));
+            }
+
             Id = id;
             TypeId = typeId;
             Lane = lane;
             TimeSec = timeSec;
             DurationSec = durationSec;
             SegmentId = segmentId;
+            RequiredLanesMask = resolvedMask;
         }
 
         public int Id { get; }
@@ -65,7 +85,9 @@ namespace YingYun.Rhythm.Judgment
         public double TimeSec { get; }
         public double DurationSec { get; }
         public int SegmentId { get; }
+        public int RequiredLanesMask { get; }
         public NoteKind Kind => DurationSec > 0d ? NoteKind.Hold : NoteKind.Tap;
+        public bool IsChord => (RequiredLanesMask & (RequiredLanesMask - 1)) != 0;
         public double EndTimeSec => TimeSec + DurationSec;
     }
 
@@ -95,7 +117,8 @@ namespace YingYun.Rhythm.Judgment
             double holdTickIntervalSec,
             int baseScorePerNote = 1000,
             int holdTickScore = 100,
-            int maxComboBonus = 100)
+            int maxComboBonus = 100,
+            double chordSpreadWindowSec = 0.070d)
         {
             if (perfectWindowSec < 0d)
             {
@@ -122,6 +145,11 @@ namespace YingYun.Rhythm.Judgment
                 throw new ArgumentOutOfRangeException(nameof(baseScorePerNote));
             }
 
+            if (chordSpreadWindowSec < 0d)
+            {
+                throw new ArgumentOutOfRangeException(nameof(chordSpreadWindowSec));
+            }
+
             PerfectWindowSec = perfectWindowSec;
             GreatWindowSec = greatWindowSec;
             GoodWindowSec = goodWindowSec;
@@ -129,6 +157,7 @@ namespace YingYun.Rhythm.Judgment
             BaseScorePerNote = baseScorePerNote;
             HoldTickScore = holdTickScore;
             MaxComboBonus = maxComboBonus;
+            ChordSpreadWindowSec = chordSpreadWindowSec;
         }
 
         public double PerfectWindowSec { get; }
@@ -138,6 +167,7 @@ namespace YingYun.Rhythm.Judgment
         public int BaseScorePerNote { get; }
         public int HoldTickScore { get; }
         public int MaxComboBonus { get; }
+        public double ChordSpreadWindowSec { get; }
 
         public static TimingConfig Prototype => new TimingConfig(0.040d, 0.070d, 0.100d, 0.250d);
     }
@@ -152,7 +182,8 @@ namespace YingYun.Rhythm.Judgment
             double errorMs,
             int comboAfter,
             int scoreAfter,
-            double accuracyAfter)
+            double accuracyAfter,
+            int requiredLanesMask = 0)
         {
             EventKind = eventKind;
             NoteId = noteId;
@@ -162,6 +193,7 @@ namespace YingYun.Rhythm.Judgment
             ComboAfter = comboAfter;
             ScoreAfter = scoreAfter;
             AccuracyAfter = accuracyAfter;
+            RequiredLanesMask = requiredLanesMask;
         }
 
         public JudgmentEventKind EventKind { get; }
@@ -172,5 +204,6 @@ namespace YingYun.Rhythm.Judgment
         public int ComboAfter { get; }
         public int ScoreAfter { get; }
         public double AccuracyAfter { get; }
+        public int RequiredLanesMask { get; }
     }
 }

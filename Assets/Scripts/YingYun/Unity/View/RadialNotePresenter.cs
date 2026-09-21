@@ -12,21 +12,21 @@ namespace YingYun.Rhythm.View
 
         private static readonly Vector2[] ReceptorPositions =
         {
-            new Vector2(-1.8f, 2.1f),
-            new Vector2(1.8f, 2.1f),
-            new Vector2(3.3f, 0.35f),
             new Vector2(-3.3f, 0.35f),
+            new Vector2(0f, 2.35f),
+            new Vector2(3.3f, 0.35f),
             new Vector2(-2.2f, -2.15f),
+            new Vector2(0f, 0.15f),
             new Vector2(2.2f, -2.15f)
         };
 
         private static readonly Vector2[] SpawnPositions =
         {
-            new Vector2(-5.8f, 4.4f),
-            new Vector2(5.8f, 4.4f),
-            new Vector2(7.5f, 0.65f),
             new Vector2(-7.5f, 0.65f),
+            new Vector2(0f, 5f),
+            new Vector2(7.5f, 0.65f),
             new Vector2(-5.6f, -4.25f),
+            new Vector2(0f, -4.5f),
             new Vector2(5.6f, -4.25f)
         };
 
@@ -42,7 +42,7 @@ namespace YingYun.Rhythm.View
 
         private static readonly string[] LaneLabels =
         {
-            "Q  头部", "W  身体", "E  右手", "A  左手", "S  左脚", "D  右脚"
+            "Q  左手", "W  头部", "E  右手", "A  左脚", "S  身体", "D  右脚"
         };
 
         [SerializeField, Min(0.1f)] private float visibleLeadSeconds = 1.75f;
@@ -56,6 +56,7 @@ namespace YingYun.Rhythm.View
         private NoteData[] _notes = Array.Empty<NoteData>();
         private Transform _visualRoot;
         private TextMesh _judgmentText;
+        private SpriteRenderer _stageRenderer;
         private Sprite _noteSprite;
         private Texture2D _noteTexture;
         private Material _lineMaterial;
@@ -63,6 +64,7 @@ namespace YingYun.Rhythm.View
         private int _nextNoteIndex;
         private double _currentSongTime;
         private double _judgmentTextClearSongTime = double.PositiveInfinity;
+        private double _stageFeedbackClearSongTime = double.PositiveInfinity;
 
         public int ActiveCount => _active.Count;
         public int PooledCount => _pool.Count;
@@ -90,6 +92,12 @@ namespace YingYun.Rhythm.View
             }
 
             _judgmentTextClearSongTime = double.PositiveInfinity;
+            _stageFeedbackClearSongTime = double.PositiveInfinity;
+            if (_stageRenderer != null)
+            {
+                _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.92f);
+                _stageRenderer.transform.localScale = new Vector3(2.35f, 3.55f, 1f);
+            }
         }
 
         public void Tick(double songTimeSec)
@@ -122,19 +130,36 @@ namespace YingYun.Rhythm.View
                     continue;
                 }
 
-                float progress = RadialNoteGeometry.Progress(songTimeSec, view.NoteTimeSec, visibleLeadSeconds);
-                Vector2 position = RadialNoteGeometry.Position(
-                    view.SpawnPosition,
-                    view.ReceptorPosition,
-                    songTimeSec,
-                    view.NoteTimeSec,
-                    visibleLeadSeconds);
-                view.SetProgress(progress, position);
+                view.UpdateVisual(songTimeSec, visibleLeadSeconds);
             }
+
+            UpdateStageFeedback(songTimeSec);
         }
 
         public void OnJudged(JudgmentResult result)
         {
+            if (result.EventKind == JudgmentEventKind.HoldStarted)
+            {
+                if (_byNoteId.TryGetValue(result.NoteId, out RadialNoteView holdView))
+                {
+                    holdView.BeginHold();
+                }
+
+                return;
+            }
+
+            if (result.EventKind == JudgmentEventKind.SegmentCompleted)
+            {
+                ShowSegmentFeedback("合势", new Color(1f, 0.82f, 0.25f));
+                return;
+            }
+
+            if (result.EventKind == JudgmentEventKind.SegmentInterrupted)
+            {
+                ShowSegmentFeedback("断势", new Color(1f, 0.22f, 0.18f));
+                return;
+            }
+
             if (result.EventKind != JudgmentEventKind.NoteJudged)
             {
                 return;
@@ -200,10 +225,10 @@ namespace YingYun.Rhythm.View
         {
             var center = new GameObject("Puppet Stage Placeholder");
             center.transform.SetParent(_visualRoot, false);
-            var renderer = center.AddComponent<SpriteRenderer>();
-            renderer.sprite = _noteSprite;
-            renderer.color = new Color(0.28f, 0.06f, 0.04f, 0.92f);
-            renderer.sortingOrder = 1;
+            _stageRenderer = center.AddComponent<SpriteRenderer>();
+            _stageRenderer.sprite = _noteSprite;
+            _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.92f);
+            _stageRenderer.sortingOrder = 1;
             center.transform.localScale = new Vector3(2.35f, 3.55f, 1f);
 
             var title = new GameObject("Puppet Label");
@@ -260,15 +285,8 @@ namespace YingYun.Rhythm.View
 
         private void Spawn(NoteData note)
         {
-            int lane = Mathf.Clamp(note.Lane, 0, LaneCount - 1);
             RadialNoteView view = _pool.Count > 0 ? _pool.Dequeue() : CreateView();
-            view.Bind(
-                note.Id,
-                lane,
-                note.TimeSec,
-                SpawnPositions[lane],
-                ReceptorPositions[lane],
-                LaneColors[lane]);
+            view.Bind(note, SpawnPositions, ReceptorPositions, LaneColors);
             _active.Add(view);
             _byNoteId.Add(note.Id, view);
         }
@@ -278,9 +296,34 @@ namespace YingYun.Rhythm.View
             var noteObject = new GameObject($"Pooled Note {CreatedViewCount + 1}");
             noteObject.transform.SetParent(_visualRoot, false);
             var view = noteObject.AddComponent<RadialNoteView>();
-            view.Initialize(_noteSprite, noteScale);
+            view.Initialize(_noteSprite, noteScale, _lineMaterial);
             CreatedViewCount++;
             return view;
+        }
+
+        private void ShowSegmentFeedback(string text, Color color)
+        {
+            _judgmentText.text = text;
+            _judgmentText.color = color;
+            _judgmentTextClearSongTime = _currentSongTime + 0.45d;
+            _stageFeedbackClearSongTime = _currentSongTime + 0.45d;
+            if (_stageRenderer != null)
+            {
+                _stageRenderer.color = color;
+                _stageRenderer.transform.localScale = new Vector3(2.7f, 3.9f, 1f);
+            }
+        }
+
+        private void UpdateStageFeedback(double songTimeSec)
+        {
+            if (_stageRenderer == null || songTimeSec < _stageFeedbackClearSongTime)
+            {
+                return;
+            }
+
+            _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.92f);
+            _stageRenderer.transform.localScale = new Vector3(2.35f, 3.55f, 1f);
+            _stageFeedbackClearSongTime = double.PositiveInfinity;
         }
 
         private void ReleaseAt(int index)

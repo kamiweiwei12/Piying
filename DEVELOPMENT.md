@@ -40,9 +40,9 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M4 已結案**；下一個工作單位為 **M5 進階音符**（Hold、組合音符、舞蹈連貫度） |
+| 目前 Milestone | **M5 已結案**；下一個工作單位為 **M6 皮影角色**（`PuppetRig`、`ActionBinding`、六部位舞蹈） |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | M3 已提供六部位放射式幾何佔位音符與判定環；M4 已提供中文計分 HUD、`DifficultyConfig` 評級門檻與結算面板。正式皮影美術／部位動畫仍屬 M6；Windows build 的鍵盤重開尚未以實體輸入補測 |
+| 重大缺口 | M5 已提供 Hold、原子組合音符、段落完成／中斷事件與 180 秒核心玩法譜面。正式皮影美術、`PuppetRig` 與部位動畫仍屬 M6；Windows build 的鍵盤重開尚未以實體輸入補測 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
@@ -100,9 +100,9 @@
 - [x] 評級（S~D）門檻放於 `DifficultyConfig`
 
 ### M5 — 進階音符
-- [ ] Hold 音符：按住期間、提早放開、超時未放開皆有正確判定
-- [ ] 組合音符（Q+E 同時）以「按鍵集合 + 時間窗」判定
-- [ ] 舞蹈連貫度：整段完成 / 中斷皆有事件與演出
+- [x] Hold 音符：按住期間、提早放開、超時未放開皆有正確判定
+- [x] 組合音符（Q+E 同時）以「按鍵集合 + 時間窗」判定
+- [x] 舞蹈連貫度：整段完成 / 中斷皆有事件與演出
 
 ### M6 — 皮影角色
 - [ ] 6 鍵各對應到正確部位動作（`ActionBinding` 資料驅動，可改鍵）
@@ -459,4 +459,5 @@ git --no-pager log --oneline -10
 | 1.2 | 2026-09-21 | 同步 M0–M2 完成後的專案事實、Cline Rule 數量與附錄 F 批准狀態 |
 | 1.3 | 2026-09-21 | M3 結案：六部位放射式音符視覺、物件池與判定回饋通過驗收；下一步回補 M2 真人數據 |
 | 1.4 | 2026-09-21 | M4 結案：四檔判定、`DifficultyConfig` 評級門檻、中文 HUD／結算面板、EditMode 32/32 與 Windows build 驗收 |
+| 1.5 | 2026-09-21 | M5 結案：嚴格 Hold 尾判、原子組合音符、段落合勢／斷勢回饋、180 秒舞蹈譜面、EditMode 51/51 與 Windows build 煙測 |
 

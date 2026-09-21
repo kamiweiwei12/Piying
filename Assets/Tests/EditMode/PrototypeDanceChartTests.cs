@@ -1,0 +1,54 @@
+using System;
+using System.Linq;
+using NUnit.Framework;
+using YingYun.Rhythm.Chart;
+using YingYun.Rhythm.Judgment;
+
+namespace YingYun.Rhythm.Tests
+{
+    public sealed class PrototypeDanceChartTests
+    {
+        [Test]
+        public void Create_ProducesSortedUniqueNotesAtThreeMinuteEndpoint()
+        {
+            NoteData[] notes = PrototypeDanceChart.Create(120d, 180d);
+
+            Assert.That(notes.Length, Is.EqualTo(316));
+            Assert.That(notes.Select(x => x.Id).Distinct().Count(), Is.EqualTo(notes.Length));
+            Assert.That(notes.Zip(notes.Skip(1), (left, right) => left.TimeSec <= right.TimeSec).All(x => x), Is.True);
+            Assert.That(notes[notes.Length - 1].TimeSec, Is.EqualTo(180d).Within(0.0000001d));
+        }
+
+        [Test]
+        public void Create_EachFullPhraseContainsTapHoldAndChord()
+        {
+            NoteData[] notes = PrototypeDanceChart.Create(120d, 8d);
+
+            foreach (IGrouping<int, NoteData> segment in notes.Where(x => x.SegmentId < 2).GroupBy(x => x.SegmentId))
+            {
+                Assert.That(segment.Any(x => x.Kind == NoteKind.Tap && !x.IsChord), Is.True);
+                Assert.That(segment.Any(x => x.Kind == NoteKind.Hold), Is.True);
+                Assert.That(segment.Any(x => x.IsChord), Is.True);
+            }
+        }
+
+        [Test]
+        public void Create_UsesApprovedSpatialBodyMapping()
+        {
+            NoteData[] notes = PrototypeDanceChart.Create(120d, 4d);
+            NoteData openingChord = notes.Single(x => x.IsChord && x.TimeSec < 4d);
+
+            int bothHands = (1 << PrototypeDanceChart.LeftHandLane) |
+                            (1 << PrototypeDanceChart.RightHandLane);
+            Assert.That(openingChord.RequiredLanesMask, Is.EqualTo(bothHands));
+            Assert.That(notes.Any(x => x.Lane == PrototypeDanceChart.BodyLane && x.Kind == NoteKind.Hold), Is.True);
+        }
+
+        [TestCase(0d)]
+        [TestCase(-120d)]
+        public void Create_InvalidBpmThrows(double bpm)
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => PrototypeDanceChart.Create(bpm, 10d));
+        }
+    }
+}

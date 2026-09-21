@@ -49,6 +49,9 @@ namespace YingYun.Rhythm.Judgment
         private readonly ISongClock _clock;
         private readonly List<NoteState> _notes;
         private readonly List<QueuedInput> _inputs = new List<QueuedInput>();
+        private readonly List<int> _candidateInputIndices = new List<int>(6);
+        private readonly List<int> _setInputIndices = new List<int>(6);
+        private readonly List<int> _bestInputIndices = new List<int>(6);
         private readonly Dictionary<int, SegmentState> _segments = new Dictionary<int, SegmentState>();
         private List<JudgmentResult> _results;
         private long _nextInputSequence;
@@ -71,6 +74,11 @@ namespace YingYun.Rhythm.Judgment
                 if (!ids.Add(note.Id))
                 {
                     throw new ArgumentException("Note ids must be unique.", nameof(notes));
+                }
+
+                if (note.Kind == NoteKind.Hold && note.IsChord)
+                {
+                    throw new NotSupportedException("Chord holds are not supported by the M5 prototype.");
                 }
 
                 _notes.Add(new NoteState(note));
@@ -121,9 +129,10 @@ namespace YingYun.Rhythm.Judgment
             while (true)
             {
                 int bestNoteIndex = -1;
-                int bestInputIndex = -1;
                 double bestError = double.MaxValue;
                 long bestSequence = long.MaxValue;
+                double bestSignedErrorSec = 0d;
+                _bestInputIndices.Clear();
 
                 for (int noteIndex = 0; noteIndex < _notes.Count; noteIndex++)
                 {
@@ -133,28 +142,25 @@ namespace YingYun.Rhythm.Judgment
                         continue;
                     }
 
-                    for (int inputIndex = 0; inputIndex < _inputs.Count; inputIndex++)
+                    if (!TryBuildInputSet(
+                            note,
+                            songTimeSec,
+                            _candidateInputIndices,
+                            out double signedErrorSec,
+                            out long firstSequence))
                     {
-                        QueuedInput queued = _inputs[inputIndex];
-                        HitInput input = queued.Value;
-                        if (input.Kind != InputKind.Press || input.InputTimeSec > songTimeSec || input.Lane != note.Data.Lane)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        double error = Math.Abs(input.InputTimeSec - note.Data.TimeSec);
-                        if (error > _config.GoodWindowSec + TimeEpsilon)
-                        {
-                            continue;
-                        }
-
-                        if (error < bestError || (error.Equals(bestError) && queued.Sequence < bestSequence))
-                        {
-                            bestNoteIndex = noteIndex;
-                            bestInputIndex = inputIndex;
-                            bestError = error;
-                            bestSequence = queued.Sequence;
-                        }
+                    double error = Math.Abs(signedErrorSec);
+                    if (error < bestError || (error.Equals(bestError) && firstSequence < bestSequence))
+                    {
+                        bestNoteIndex = noteIndex;
+                        bestError = error;
+                        bestSequence = firstSequence;
+                        bestSignedErrorSec = signedErrorSec;
+                        _bestInputIndices.Clear();
+                        _bestInputIndices.AddRange(_candidateInputIndices);
                     }
                 }
 
@@ -164,23 +170,131 @@ namespace YingYun.Rhythm.Judgment
                 }
 
                 NoteState matchedNote = _notes[bestNoteIndex];
-                HitInput matchedInput = _inputs[bestInputIndex].Value;
-                _inputs.RemoveAt(bestInputIndex);
-                double signedErrorSec = matchedInput.InputTimeSec - matchedNote.Data.TimeSec;
-                JudgmentGrade grade = GradeForError(signedErrorSec);
+                _bestInputIndices.Sort();
+                for (int i = _bestInputIndices.Count - 1; i >= 0; i--)
+                {
+                    _inputs.RemoveAt(_bestInputIndices[i]);
+                }
+
+                JudgmentGrade grade = GradeForError(bestSignedErrorSec);
 
                 if (matchedNote.Data.Kind == NoteKind.Hold)
                 {
                     matchedNote.IsHolding = true;
                     matchedNote.StartGrade = grade;
-                    matchedNote.StartErrorMs = signedErrorSec * 1000d;
+                    matchedNote.StartErrorMs = bestSignedErrorSec * 1000d;
                     matchedNote.NextTickTimeSec = matchedNote.Data.TimeSec + _config.HoldTickIntervalSec;
+                    AddResult(
+                        JudgmentEventKind.HoldStarted,
+                        matchedNote.Data,
+                        grade,
+                        bestSignedErrorSec * 1000d);
                 }
                 else
                 {
-                    CompleteNote(matchedNote, grade, signedErrorSec * 1000d);
+                    CompleteNote(matchedNote, grade, bestSignedErrorSec * 1000d);
                 }
             }
+        }
+
+        private bool TryBuildInputSet(
+            NoteState note,
+            double songTimeSec,
+            List<int> matchedIndices,
+            out double signedWorstErrorSec,
+            out long firstSequence)
+        {
+            matchedIndices.Clear();
+            signedWorstErrorSec = 0d;
+            firstSequence = long.MaxValue;
+            double bestAbsoluteError = double.MaxValue;
+
+            for (int anchorIndex = 0; anchorIndex < _inputs.Count; anchorIndex++)
+            {
+                HitInput anchor = _inputs[anchorIndex].Value;
+                if (anchor.Kind != InputKind.Press ||
+                    anchor.InputTimeSec > songTimeSec ||
+                    (note.Data.RequiredLanesMask & (1 << anchor.Lane)) == 0 ||
+                    Math.Abs(anchor.InputTimeSec - note.Data.TimeSec) > _config.GoodWindowSec + TimeEpsilon)
+                {
+                    continue;
+                }
+
+                _setInputIndices.Clear();
+                double candidateSignedWorstError = 0d;
+                long candidateFirstSequence = long.MaxValue;
+                bool complete = true;
+
+                for (int lane = 0; lane < 31; lane++)
+                {
+                    if ((note.Data.RequiredLanesMask & (1 << lane)) == 0)
+                    {
+                        continue;
+                    }
+
+                    int closestIndex = -1;
+                    double closestAbsoluteError = double.MaxValue;
+                    long closestSequence = long.MaxValue;
+                    for (int inputIndex = 0; inputIndex < _inputs.Count; inputIndex++)
+                    {
+                        QueuedInput queued = _inputs[inputIndex];
+                        HitInput input = queued.Value;
+                        if (input.Kind != InputKind.Press ||
+                            input.InputTimeSec > songTimeSec ||
+                            input.Lane != lane ||
+                            input.InputTimeSec < anchor.InputTimeSec - TimeEpsilon ||
+                            input.InputTimeSec > anchor.InputTimeSec + _config.ChordSpreadWindowSec + TimeEpsilon)
+                        {
+                            continue;
+                        }
+
+                        double absoluteError = Math.Abs(input.InputTimeSec - note.Data.TimeSec);
+                        if (absoluteError > _config.GoodWindowSec + TimeEpsilon)
+                        {
+                            continue;
+                        }
+
+                        if (absoluteError < closestAbsoluteError ||
+                            (absoluteError.Equals(closestAbsoluteError) && queued.Sequence < closestSequence))
+                        {
+                            closestIndex = inputIndex;
+                            closestAbsoluteError = absoluteError;
+                            closestSequence = queued.Sequence;
+                        }
+                    }
+
+                    if (closestIndex < 0)
+                    {
+                        complete = false;
+                        break;
+                    }
+
+                    QueuedInput closest = _inputs[closestIndex];
+                    _setInputIndices.Add(closestIndex);
+                    candidateFirstSequence = Math.Min(candidateFirstSequence, closest.Sequence);
+                    double signedError = closest.Value.InputTimeSec - note.Data.TimeSec;
+                    if (Math.Abs(signedError) > Math.Abs(candidateSignedWorstError))
+                    {
+                        candidateSignedWorstError = signedError;
+                    }
+                }
+
+                double candidateAbsoluteError = Math.Abs(candidateSignedWorstError);
+                if (!complete ||
+                    (candidateAbsoluteError > bestAbsoluteError && !candidateAbsoluteError.Equals(bestAbsoluteError)) ||
+                    (candidateAbsoluteError.Equals(bestAbsoluteError) && candidateFirstSequence >= firstSequence))
+                {
+                    continue;
+                }
+
+                matchedIndices.Clear();
+                matchedIndices.AddRange(_setInputIndices);
+                signedWorstErrorSec = candidateSignedWorstError;
+                firstSequence = candidateFirstSequence;
+                bestAbsoluteError = candidateAbsoluteError;
+            }
+
+            return matchedIndices.Count > 0;
         }
 
         private void ProcessHolds(double songTimeSec)
@@ -209,13 +323,18 @@ namespace YingYun.Rhythm.Judgment
                     HitInput release = _inputs[releaseIndex].Value;
                     _inputs.RemoveAt(releaseIndex);
                     double releaseErrorSec = release.InputTimeSec - note.Data.EndTimeSec;
-                    if (releaseErrorSec < -_config.GoodWindowSec - TimeEpsilon)
+                    if (Math.Abs(releaseErrorSec) > _config.GoodWindowSec + TimeEpsilon)
                     {
                         CompleteNote(note, JudgmentGrade.Miss, releaseErrorSec * 1000d);
                     }
                     else
                     {
-                        CompleteNote(note, note.StartGrade, note.StartErrorMs);
+                        JudgmentGrade releaseGrade = GradeForError(releaseErrorSec);
+                        bool startIsWorse = GradeWeight(note.StartGrade) <= GradeWeight(releaseGrade);
+                        CompleteNote(
+                            note,
+                            startIsWorse ? note.StartGrade : releaseGrade,
+                            startIsWorse ? note.StartErrorMs : releaseErrorSec * 1000d);
                     }
                 }
                 else if (songTimeSec > note.Data.EndTimeSec + _config.GoodWindowSec + TimeEpsilon)
@@ -305,14 +424,26 @@ namespace YingYun.Rhythm.Judgment
             SegmentState segment = _segments[note.Data.SegmentId];
             segment.Judged++;
             segment.HasMiss |= grade == JudgmentGrade.Miss;
-            if (!segment.Reported && segment.Judged == segment.Total)
+            if (!segment.Reported && segment.HasMiss)
             {
                 segment.Reported = true;
-                AddResult(
-                    segment.HasMiss ? JudgmentEventKind.SegmentInterrupted : JudgmentEventKind.SegmentCompleted,
-                    note.Data,
-                    segment.HasMiss ? JudgmentGrade.Miss : JudgmentGrade.None,
-                    0d);
+                AddResult(JudgmentEventKind.SegmentInterrupted, note.Data, JudgmentGrade.Miss, 0d);
+            }
+            else if (!segment.Reported && segment.Judged == segment.Total)
+            {
+                segment.Reported = true;
+                AddResult(JudgmentEventKind.SegmentCompleted, note.Data, JudgmentGrade.None, 0d);
+            }
+        }
+
+        private static double GradeWeight(JudgmentGrade grade)
+        {
+            switch (grade)
+            {
+                case JudgmentGrade.Perfect: return 1d;
+                case JudgmentGrade.Great: return 0.75d;
+                case JudgmentGrade.Good: return 0.5d;
+                default: return 0d;
             }
         }
 
@@ -326,7 +457,8 @@ namespace YingYun.Rhythm.Judgment
                 errorMs,
                 Combo,
                 Score,
-                Accuracy));
+                Accuracy,
+                note.RequiredLanesMask));
         }
     }
 }
