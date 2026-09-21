@@ -49,8 +49,7 @@ namespace YingYun.Rhythm.View
 
         private void Build()
         {
-            _runtimeFont = Font.CreateDynamicFontFromOSFont(
-                new[] { "Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Arial Unicode MS" }, 64);
+            _runtimeFont = ChineseFontProvider.Load();
 
             EnsureEventSystem();
             _canvasObject = new GameObject("M7 可玩Demo", typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
@@ -173,7 +172,7 @@ namespace YingYun.Rhythm.View
         {
             if (_runtimeFont != null)
             {
-                Destroy(_runtimeFont);
+                ChineseFontProvider.Release(_runtimeFont);
             }
         }
     }

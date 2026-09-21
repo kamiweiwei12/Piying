@@ -253,9 +253,7 @@ namespace YingYun.Rhythm.View
 
         private static Font CreateChineseFont()
         {
-            return Font.CreateDynamicFontFromOSFont(
-                new[] { "Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Arial Unicode MS" },
-                64);
+            return ChineseFontProvider.Load();
         }
 
         private static string RatingText(ResultRating rating)
@@ -274,7 +272,7 @@ namespace YingYun.Rhythm.View
         {
             if (_runtimeFont != null)
             {
-                Destroy(_runtimeFont);
+                ChineseFontProvider.Release(_runtimeFont);
             }
         }
     }

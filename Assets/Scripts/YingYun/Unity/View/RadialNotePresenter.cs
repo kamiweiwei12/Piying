@@ -203,9 +203,7 @@ namespace YingYun.Rhythm.View
                 new Vector2(0.5f, 0.5f),
                 64f);
             _lineMaterial = new Material(Shader.Find("Sprites/Default"));
-            _chineseFont = Font.CreateDynamicFontFromOSFont(
-                new[] { "Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Arial Unicode MS" },
-                64);
+            _chineseFont = ChineseFontProvider.Load();
 
             BuildCenterMarker();
             for (int lane = 0; lane < LaneCount; lane++)
@@ -425,7 +423,7 @@ namespace YingYun.Rhythm.View
 
             if (_chineseFont != null)
             {
-                Destroy(_chineseFont);
+                ChineseFontProvider.Release(_chineseFont);
             }
         }
     }

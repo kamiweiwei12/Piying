@@ -24,6 +24,48 @@
 
 ---
 
+## [2026-09-21] M7.3 - 内置中文字体并完成可玩 Demo 收尾
+
+### 新增
+
+* 随 Windows 包发布的 Noto Sans SC 可变 TrueType 字体与 SIL Open Font License 1.1 文本。
+* `ChineseFontProvider` 统一提供包内中文字型，并仅在资源缺失时回退至系统字体。
+* 字形覆盖回归测试，逐字验证当前选曲、HUD、判定、暂停与结算中文文案。
+
+### 修改
+
+* 选曲／校准、游戏 HUD／结算与六轨标签／判定文字不再依赖玩家电脑安装微软雅黑等系统字体。
+* 包内 `Resources` 字体由 Unity 管理生命周期；只有临时创建的系统回退字体会在 Presenter 销毁时释放。
+* `DEVELOPMENT.md` 将 M7 标记为结案，并同步 CJK 字体待批准项状态。
+
+### 測試
+
+* Unity EditMode 全量测试：**104/104 通过**，0 failed／0 skipped；报告为 `Logs/m7-cjk-font-results.xml`。
+* 字形覆盖测试确认当前原型所需简体中文字符均可由包内字体直接显示。
+* Windows Standalone 构建：`Builds/M7/YingYun.exe`，**Build Successful**。
+* `git diff --check` 与提交前状态检查：仅纳入本次字体、代码、测试与文档；保留既有未提交的 Unity 设置噪音。
+
+### 驗收結果
+
+* 中文 UI 已不依赖目标机器的系统字体，Windows 构建包含字体资源并通过完整编译。
+* 使用者已在上一轮实机确认放宽后的判定与 Hold 行为成功；M7 可玩 Demo 的三难度、完整流程、校准、Windows 出包与中文 UI 条件均已满足。
+
+### Git Commit
+
+* `feat(m7): bundle cjk font for demo ui`（本条目所在的结案提交）
+
+### 風險 / 已知問題
+
+* Noto Sans SC 字体约 17 MB，会相应增加构建体积；这是换取离线、跨机器中文显示一致性的成本。
+* 当前界面沿用既有 uGUI `Text`／`TextMesh`，没有为了字体收尾额外迁移到 TMP；后续若整体升级 TMP，应另立计划并生成受控字形集。
+* Windows 构建日志仍含既有 Unity Licensing 404 警告，但最终结果为 Success。
+
+### 下一步
+
+* 由使用者决定进入正式皮影美术替换、增加第二首曲目，或回补自动节拍采样校准；本次不自行展开下一阶段。
+
+---
+
 ## [2026-09-21] M7 修正 - 放宽判定窗口并修复长按必定失败
 
 ### 新增

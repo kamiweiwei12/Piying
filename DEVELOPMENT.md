@@ -40,9 +40,9 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M7.2 自动验收通过、待使用者实机复测**：判定窗放宽为 ±50／±90／±150 ms；Hold 已隔离旧 Release，持续按到尾端即可自动完成。EditMode 103/103 与 Windows build 通过。 |
+| 目前 Milestone | **M7 可玩 Demo 已结案**：使用者实机确认放宽判定与 Hold 成功；包内 Noto Sans SC 中文字体、EditMode 104/104 与 Windows build 均通过。 |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | M7.2 已完成背景、谱面、判定窗口与 Hold 稳定性调整。**结案缺口**：使用者实机复测长条与晚按手感、正式 CJK TMP 字体资产；自动节拍采样校准与第二首曲目属于后续增强项。正式分层透光皮影 Sprite、角色侧脸轮廓、动作短语与 Combo 舞台光影仍待后续美术迭代。 |
+| 重大缺口 | M7 核心 Demo 已结案。自动节拍采样校准、第二首曲目、正式分层透光皮影 Sprite、角色侧脸轮廓、动作短语与 Combo 舞台光影属于后续增强项。 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
@@ -119,11 +119,11 @@
 - [x] EditMode 全量測試與 Windows build 通過，視覺驗收圖留存於 `Logs/`
 
 ### M7 — 可玩 Demo
-- [ ] 三難度（Easy / Normal / Hard）結構與數值差異明確
-- [ ] 選曲 → 遊玩 → 結算 流程無需在 Editor 手動介入
-- [ ] 延遲校準值可調、可保存、可即時生效
-- [ ] 出包（至少 Windows）可正常執行，節奏不偏移
-- [ ] 有中文 UI 需求時，CJK TMP 字型已就位
+- [x] 三難度（Easy / Normal / Hard）結構與數值差異明確
+- [x] 選曲 → 遊玩 → 結算 流程無需在 Editor 手動介入
+- [x] 延遲校準值可調、可保存、可即時生效
+- [x] 出包（至少 Windows）可正常執行，節奏不偏移
+- [x] 中文 UI 使用包内 CJK 字型，不依賴目標機器的系統字型
 
 ## 5. Git 規則
 
@@ -432,7 +432,7 @@ git --no-pager log --oneline -10
 | F3 | 在 `InputSystem_Actions.inputactions` 新增 `Rhythm` action map（6 鍵） | 修改既有輸入資產；暫停／重開由原型控制器直接讀取 P／R | **已批准並完成（M2）** |
 | F4 | 新增 asmdef：`YingYun.Runtime` / `YingYun.Unity` / `YingYun.Tests` | 隔離純 C# 核心、Unity 執行期與 EditMode 測試 | **已批准並完成（M1／M2）** |
 | F5 | `.gitattributes`（`* text=auto`、LF 規範） | 避免跨平台換行造成 diff 噪音 | 建議採用，等待批准 |
-| F6 | CJK TMP 字型資產（中文 UI） | 目前 TMP 只有 `LiberationSans`（英文），無法顯示中文 | 等待批准（M7 需要） |
+| F6 | 包内 CJK 字型資產（中文 UI） | 讓既有 uGUI `Text`／`TextMesh` 不依賴系統字型 | **已批准並完成（M7.3）** |
 | F7 | `ProjectSettings` 調整（產品名《影韵》、解析度 1920×1080、`runInBackground`） | 影響 PC 節奏遊戲體驗 | 等待批准 |
 | F8 | 切換 URP Renderer → Renderer2D（啟用 Light2D） | 影響渲染設定 | **建議延後**，M6 先用 Sprite/材質/粒子替代 |
 | F9 | 清除無用的 Platformer 程式 / 資產 | 專案乾淨度 | 需先提出清單，等待批准 |
@@ -478,4 +478,5 @@ git --no-pager log --oneline -10
 | 1.13 | 2026-09-21 | M7 候选版：单曲选曲、Easy／Normal／Hard、双偏移校准保存与完整返回流程；EditMode 96/96、Windows build 通过，等待实机验收与正式 CJK TMP 字体 |
 | 1.14 | 2026-09-21 | M7 修正：新增 DSP 暂停菜单、返回选曲与三秒倒数；Easy 改为无 Chord 且每秒一颗音符，EditMode 100/100、Windows build 通过 |
 | 1.15 | 2026-09-21 | M7 判定修正：判定窗放宽为 ±50／±90／±150 ms；清理孤立 Release、Hold 只认本次按下后的松开并在持续按到尾端时自动完成；EditMode 103/103、Windows build 通过 |
+| 1.16 | 2026-09-21 | M7 结案：内置 Noto Sans SC 中文字体并统一三处运行时 UI 字体入口；字形覆盖测试与 EditMode 104/104、Windows build 通过 |
 
