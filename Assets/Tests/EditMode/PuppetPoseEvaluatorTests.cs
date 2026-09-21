@@ -11,6 +11,21 @@ namespace YingYun.Rhythm.Tests
     /// </summary>
     public sealed class PuppetPoseEvaluatorTests
     {
+        [Test]
+        public void Bindings_ExposeSixUniquePerformanceIntents()
+        {
+            var seen = new System.Collections.Generic.HashSet<PerformanceIntent>();
+
+            foreach (ActionBinding binding in PrototypeActionBindings.All)
+            {
+                seen.Add(binding.Intent);
+            }
+
+            Assert.That(seen.Count, Is.EqualTo(6));
+            Assert.That(PrototypeActionBindings.All[0].Intent, Is.EqualTo(PerformanceIntent.LeftLead));
+            Assert.That(PrototypeActionBindings.All[4].Intent, Is.EqualTo(PerformanceIntent.Sink));
+        }
+
         private const double FrameSeconds = 1d / 60d;
         private const double StepSeconds = PuppetPoseEvaluator.FixedStepSeconds;
 

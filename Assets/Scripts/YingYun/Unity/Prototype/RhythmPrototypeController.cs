@@ -73,9 +73,9 @@ namespace YingYun.Rhythm.Prototype
             }
 
             Debug.Log(string.Format(
-                "[M6] puppet-ready | joints={0} | strings={1} | motion=spring-joint",
+                "[M6.5] shadow-play-ready | joints={0} | bambooRods={1} | motion=rod-driven-spring-joint",
                 _puppet.JointCount,
-                _puppet.StringCount));
+                _puppet.RodCount));
 
             _hud = GetComponent<GameplayHudPresenter>();
             if (_hud == null)

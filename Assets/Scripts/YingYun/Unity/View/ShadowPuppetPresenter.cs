@@ -4,22 +4,22 @@ using YingYun.Rhythm.Puppet;
 
 namespace YingYun.Rhythm.View
 {
-    /// <summary>以關節旋轉與操偶線張力呈現判定回饋；不參與判定。</summary>
+    /// <summary>以分片皮影、鉚釘關節與剛性竹製操縱桿呈現操演；不參與判定。</summary>
     public sealed class ShadowPuppetPresenter : MonoBehaviour
     {
-        private static readonly Vector2[] ControlPoints =
+        private static readonly Vector2[] RodGripPoints =
         {
-            new Vector2(-1.85f, 3.25f),
-            new Vector2(-0.35f, 3.45f),
-            new Vector2(1.85f, 3.25f),
-            new Vector2(-1.25f, 3.15f),
-            new Vector2(0.35f, 3.35f),
-            new Vector2(1.25f, 3.15f)
+            new Vector2(-3.45f, 1.35f),
+            new Vector2(-2.75f, 2.75f),
+            new Vector2(3.45f, 1.35f),
+            new Vector2(-3.10f, -2.65f),
+            new Vector2(0.55f, -3.05f),
+            new Vector2(3.10f, -2.65f)
         };
 
-        private readonly LineRenderer[] _strings = new LineRenderer[6];
-        private readonly Transform[] _stringTargets = new Transform[6];
-        private readonly float[] _tensions = new float[6];
+        private readonly LineRenderer[] _rods = new LineRenderer[6];
+        private readonly Transform[] _rodTargets = new Transform[6];
+        private readonly float[] _rodDrive = new float[6];
         private PuppetPoseEvaluator _evaluator;
         private Transform _visualRoot;
         private Transform _torsoJoint;
@@ -40,7 +40,8 @@ namespace YingYun.Rhythm.View
         private double _songTime;
 
         public int JointCount => 10;
-        public int StringCount => _strings.Length;
+        public int RodCount => _rods.Length;
+        public int StringCount => RodCount;
         public float LeftUpperArmRotation => _leftUpperArmJoint == null ? 0f : _leftUpperArmJoint.localEulerAngles.z;
         public float LeftForearmRotation => _leftForearmJoint == null ? 0f : _leftForearmJoint.localEulerAngles.z;
         public float RightUpperArmRotation => _rightUpperArmJoint == null ? 0f : _rightUpperArmJoint.localEulerAngles.z;
@@ -52,7 +53,8 @@ namespace YingYun.Rhythm.View
         public float HeadRotation => _headJoint == null ? 0f : _headJoint.localEulerAngles.z;
         public float TorsoRotation => _torsoJoint == null ? 0f : _torsoJoint.localEulerAngles.z;
         public Vector3 PelvisPosition => _torsoJoint == null ? Vector3.zero : _torsoJoint.localPosition;
-        public float GetStringTension(int lane) => _tensions[lane];
+        public float GetRodDrive(int lane) => _rodDrive[lane];
+        public float GetStringTension(int lane) => GetRodDrive(lane);
 
         private void Awake()
         {
@@ -73,10 +75,10 @@ namespace YingYun.Rhythm.View
             _songTime = songTimeSec;
             PuppetPose pose = _evaluator.Evaluate(songTimeSec);
             ApplyPose(pose);
-            UpdateStrings();
+            UpdateRods();
         }
 
-        /// <summary>每次原始按鍵都立即拉動對應操偶線，與判定結果解耦。</summary>
+        /// <summary>每次原始按鍵都立即驅動對應竹桿與關節，與判定結果解耦。</summary>
         public void OnInput(HitInput input)
         {
             EnsureInitialized();
@@ -129,10 +131,11 @@ namespace YingYun.Rhythm.View
             root.transform.SetParent(transform, false);
             _visualRoot = root.transform;
 
-            CreateSprite("Warm Backlit Screen", _visualRoot, Vector3.zero, new Vector2(4.7f, 5.65f),
+            CreateSprite("Warm Backlight", _visualRoot, Vector3.zero, new Vector2(5.4f, 6.15f),
                 new Color(1f, 0.73f, 0.32f, 0.22f), -7, _circleSprite);
-            CreateSprite("Paper Screen", _visualRoot, Vector3.zero, new Vector2(4.05f, 5.15f),
+            CreateSprite("Translucent Paper Screen", _visualRoot, Vector3.zero, new Vector2(4.65f, 5.55f),
                 new Color(1f, 0.88f, 0.60f, 0.88f), -6, _circleSprite);
+            BuildStageFrame();
 
             var puppetRoot = new GameObject("Joint Pelvis");
             puppetRoot.transform.SetParent(_visualRoot, false);
@@ -143,20 +146,38 @@ namespace YingYun.Rhythm.View
                 ShadowColor(), 3, _circleSprite);
             CreateSprite("Waist Ornament", _torsoJoint, new Vector3(0f, 0.12f, -0.01f), new Vector2(1.02f, 0.20f),
                 AccentColor(), 4, _squareSprite);
+            CreateSprite("Robe Skirt", _torsoJoint, new Vector3(0f, -0.28f, 0f), new Vector2(1.28f, 0.72f),
+                ShadowColor(), 3, _circleSprite);
+            CreateSprite("Robe Hem", _torsoJoint, new Vector3(0f, -0.58f, -0.01f), new Vector2(1.36f, 0.14f),
+                AccentColor(), 4, _squareSprite);
+            CreateSprite("Chest Cutout", _torsoJoint, new Vector3(0f, 0.78f, -0.01f), new Vector2(0.48f, 0.18f),
+                new Color(0.78f, 0.28f, 0.055f, 0.72f), 4, _circleSprite);
 
             _headJoint = CreateJoint("Joint Neck", _torsoJoint, new Vector3(0f, 1.48f, 0f));
             Transform head = CreateSprite("Head", _headJoint, new Vector3(0f, 0.28f, 0f), new Vector2(0.62f, 0.72f),
                 ShadowColor(), 5, _circleSprite);
             CreateSprite("Head Crown", _headJoint, new Vector3(0f, 0.70f, 0f), new Vector2(0.78f, 0.18f),
                 AccentColor(), 6, _squareSprite);
+            Transform crownWingLeft = CreateSprite("Crown Wing Left", _headJoint, new Vector3(-0.43f, 0.78f, 0f), new Vector2(0.68f, 0.10f),
+                AccentColor(), 6, _squareSprite);
+            crownWingLeft.localRotation = Quaternion.Euler(0f, 0f, 12f);
+            Transform crownWingRight = CreateSprite("Crown Wing Right", _headJoint, new Vector3(0.43f, 0.78f, 0f), new Vector2(0.68f, 0.10f),
+                AccentColor(), 6, _squareSprite);
+            crownWingRight.localRotation = Quaternion.Euler(0f, 0f, -12f);
+            CreateSprite("Crown Jewel", _headJoint, new Vector3(0f, 0.86f, 0f), new Vector2(0.18f, 0.18f),
+                new Color(0.92f, 0.48f, 0.08f, 0.98f), 7, _circleSprite);
 
             _leftUpperArmJoint = CreateJoint("Joint Left Shoulder", _torsoJoint, new Vector3(-0.48f, 1.12f, 0f));
             CreateLimb("Left Upper Arm", _leftUpperArmJoint, 0.82f, 0.20f, 5);
+            CreateSprite("Left Flowing Sleeve", _leftUpperArmJoint, new Vector3(-0.12f, -0.48f, 0f), new Vector2(0.48f, 0.82f),
+                ShadowColor(), 4, _circleSprite);
             _leftForearmJoint = CreateJoint("Joint Left Elbow", _leftUpperArmJoint, new Vector3(0f, -0.82f, 0f));
             Transform leftHand = CreateLimb("Left Forearm", _leftForearmJoint, 0.72f, 0.17f, 6);
 
             _rightUpperArmJoint = CreateJoint("Joint Right Shoulder", _torsoJoint, new Vector3(0.48f, 1.12f, 0f));
             CreateLimb("Right Upper Arm", _rightUpperArmJoint, 0.82f, 0.20f, 5);
+            CreateSprite("Right Flowing Sleeve", _rightUpperArmJoint, new Vector3(0.12f, -0.48f, 0f), new Vector2(0.48f, 0.82f),
+                ShadowColor(), 4, _circleSprite);
             _rightForearmJoint = CreateJoint("Joint Right Elbow", _rightUpperArmJoint, new Vector3(0f, -0.82f, 0f));
             Transform rightHand = CreateLimb("Right Forearm", _rightForearmJoint, 0.72f, 0.17f, 6);
 
@@ -179,13 +200,13 @@ namespace YingYun.Rhythm.View
             CreateJointPin(_rightThighJoint, 7);
             CreateJointPin(_rightShinJoint, 7);
 
-            _stringTargets[0] = leftHand;
-            _stringTargets[1] = head;
-            _stringTargets[2] = rightHand;
-            _stringTargets[3] = leftFoot;
-            _stringTargets[4] = _torsoJoint;
-            _stringTargets[5] = rightFoot;
-            BuildStrings();
+            _rodTargets[0] = leftHand;
+            _rodTargets[1] = head;
+            _rodTargets[2] = rightHand;
+            _rodTargets[3] = leftFoot;
+            _rodTargets[4] = _torsoJoint;
+            _rodTargets[5] = rightFoot;
+            BuildRods();
         }
 
         private Transform CreateLimb(string name, Transform joint, float length, float width, int sortingOrder)
@@ -196,26 +217,39 @@ namespace YingYun.Rhythm.View
                 AccentColor(), sortingOrder + 1, _circleSprite);
         }
 
-        private void BuildStrings()
+        private void BuildStageFrame()
         {
-            for (int lane = 0; lane < _strings.Length; lane++)
+            Color wood = new Color(0.28f, 0.055f, 0.025f, 0.98f);
+            CreateSprite("Stage Header", _visualRoot, new Vector3(0f, 3.02f, 0f), new Vector2(5.65f, 0.22f), wood, -4, _squareSprite);
+            CreateSprite("Stage Left Post", _visualRoot, new Vector3(-2.72f, 0f, 0f), new Vector2(0.20f, 6.15f), wood, -4, _squareSprite);
+            CreateSprite("Stage Right Post", _visualRoot, new Vector3(2.72f, 0f, 0f), new Vector2(0.20f, 6.15f), wood, -4, _squareSprite);
+            CreateSprite("Stage Foot", _visualRoot, new Vector3(0f, -3.02f, 0f), new Vector2(5.65f, 0.24f), wood, -4, _squareSprite);
+
+            Color scenery = new Color(0.30f, 0.075f, 0.035f, 0.22f);
+            CreateSprite("Scenery Left Mountain", _visualRoot, new Vector3(-1.72f, -2.25f, 0f), new Vector2(1.75f, 0.52f), scenery, -3, _circleSprite);
+            CreateSprite("Scenery Right Mountain", _visualRoot, new Vector3(1.55f, -2.32f, 0f), new Vector2(2.25f, 0.44f), scenery, -3, _circleSprite);
+        }
+
+        private void BuildRods()
+        {
+            for (int lane = 0; lane < _rods.Length; lane++)
             {
-                var lineObject = new GameObject($"Control String {lane}");
+                var lineObject = new GameObject($"Bamboo Control Rod {lane}");
                 lineObject.transform.SetParent(_visualRoot, false);
                 var line = lineObject.AddComponent<LineRenderer>();
                 line.useWorldSpace = false;
-                line.positionCount = 3;
-                line.startWidth = 0.025f;
-                line.endWidth = 0.018f;
+                line.positionCount = 2;
+                line.startWidth = 0.075f;
+                line.endWidth = 0.055f;
                 line.material = _lineMaterial;
-                line.sortingOrder = 12;
-                _strings[lane] = line;
+                line.sortingOrder = 9;
+                _rods[lane] = line;
 
-                CreateSprite($"Control Handle {lane}", _visualRoot, ControlPoints[lane], new Vector2(0.40f, 0.07f),
-                    new Color(0.35f, 0.10f, 0.05f, 0.95f), 13, _squareSprite);
+                CreateSprite($"Bamboo Grip {lane}", _visualRoot, RodGripPoints[lane], new Vector2(0.46f, 0.12f),
+                    new Color(0.38f, 0.16f, 0.055f, 0.98f), 10, _circleSprite);
             }
 
-            UpdateStrings();
+            UpdateRods();
         }
 
         private void ApplyPose(PuppetPose pose)
@@ -230,34 +264,33 @@ namespace YingYun.Rhythm.View
             SetRotation(_leftShinJoint, pose.LeftShin);
             SetRotation(_rightThighJoint, pose.RightThigh);
             SetRotation(_rightShinJoint, pose.RightShin);
-            _tensions[0] = (float)pose.LeftHandTension;
-            _tensions[1] = (float)pose.HeadTension;
-            _tensions[2] = (float)pose.RightHandTension;
-            _tensions[3] = (float)pose.LeftFootTension;
-            _tensions[4] = (float)pose.TorsoTension;
-            _tensions[5] = (float)pose.RightFootTension;
+            _rodDrive[0] = (float)pose.LeftHandTension;
+            _rodDrive[1] = (float)pose.HeadTension;
+            _rodDrive[2] = (float)pose.RightHandTension;
+            _rodDrive[3] = (float)pose.LeftFootTension;
+            _rodDrive[4] = (float)pose.TorsoTension;
+            _rodDrive[5] = (float)pose.RightFootTension;
         }
 
-        private void UpdateStrings()
+        private void UpdateRods()
         {
             if (_visualRoot == null)
             {
                 return;
             }
 
-            for (int lane = 0; lane < _strings.Length; lane++)
+            for (int lane = 0; lane < _rods.Length; lane++)
             {
-                Vector3 start = ControlPoints[lane];
-                Vector3 end = _visualRoot.InverseTransformPoint(_stringTargets[lane].position);
-                float slack = (1f - _tensions[lane]) * 0.30f;
-                Vector3 middle = Vector3.Lerp(start, end, 0.5f) + (Vector3.down * slack);
-                _strings[lane].SetPosition(0, start);
-                _strings[lane].SetPosition(1, middle);
-                _strings[lane].SetPosition(2, end);
-                Color color = Color.Lerp(new Color(0.28f, 0.12f, 0.06f, 0.28f), new Color(0.55f, 0.08f, 0.03f, 0.95f), _tensions[lane]);
-                _strings[lane].startColor = color;
-                _strings[lane].endColor = color;
-                _strings[lane].startWidth = Mathf.Lerp(0.018f, 0.045f, _tensions[lane]);
+                Vector3 restGrip = RodGripPoints[lane];
+                Vector3 target = _visualRoot.InverseTransformPoint(_rodTargets[lane].position);
+                Vector3 direction = (target - restGrip).normalized;
+                Vector3 grip = restGrip + (direction * (_rodDrive[lane] * 0.18f));
+                _rods[lane].SetPosition(0, grip);
+                _rods[lane].SetPosition(1, target);
+                Color color = Color.Lerp(new Color(0.30f, 0.13f, 0.045f, 0.48f), new Color(0.78f, 0.34f, 0.07f, 1f), _rodDrive[lane]);
+                _rods[lane].startColor = color;
+                _rods[lane].endColor = color;
+                _rods[lane].startWidth = Mathf.Lerp(0.065f, 0.095f, _rodDrive[lane]);
             }
         }
 

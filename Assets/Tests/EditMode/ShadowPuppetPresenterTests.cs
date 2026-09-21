@@ -15,16 +15,21 @@ namespace YingYun.Rhythm.Tests
         private const double FrameSeconds = 1d / 60d;
 
         [Test]
-        public void Presenter_BuildsJointedPuppetAndSixControlStrings()
+        public void Presenter_BuildsJointedShadowFigureAndSixBambooRods()
         {
             var root = new GameObject("Puppet Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
 
             Assert.That(presenter.JointCount, Is.EqualTo(10));
-            Assert.That(presenter.StringCount, Is.EqualTo(6));
+            Assert.That(presenter.RodCount, Is.EqualTo(6));
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Joint Left Elbow"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Bamboo Control Rod 0"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Control String 0"), Is.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Header"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Robe Skirt"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Neck/Crown Wing Left"), Is.Not.Null);
 
             Object.DestroyImmediate(root);
         }
@@ -39,7 +44,7 @@ namespace YingYun.Rhythm.Tests
             presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
             presenter.Tick(1d);
 
-            Assert.That(presenter.GetStringTension(0), Is.EqualTo(1f));
+            Assert.That(presenter.GetRodDrive(0), Is.EqualTo(1f));
 
             presenter.Tick(1d + (3d * FrameSeconds));
             Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-3f));
@@ -59,8 +64,8 @@ namespace YingYun.Rhythm.Tests
             presenter.Tick(1d);
 
             // 繩索一按下就繃緊；關節帶慣性，約 0.3 秒後到達高點。
-            Assert.That(presenter.GetStringTension(0), Is.EqualTo(1f));
-            Assert.That(presenter.GetStringTension(2), Is.EqualTo(1f));
+            Assert.That(presenter.GetRodDrive(0), Is.EqualTo(1f));
+            Assert.That(presenter.GetRodDrive(2), Is.EqualTo(1f));
 
             presenter.Tick(1.35d);
             Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-45f));
@@ -336,7 +341,7 @@ namespace YingYun.Rhythm.Tests
             capture.Apply();
 
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-            string output = Path.Combine(projectRoot, "Logs", "M6-1-puppet-chord.png");
+            string output = Path.Combine(projectRoot, "Logs", "M6-5-shadow-play-chord.png");
             Directory.CreateDirectory(Path.GetDirectoryName(output));
             File.WriteAllBytes(output, capture.EncodeToPNG());
 
