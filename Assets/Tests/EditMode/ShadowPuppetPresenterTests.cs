@@ -1,13 +1,19 @@
+using System;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using NUnit.Framework;
 using UnityEngine;
 using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.View;
+using Object = UnityEngine.Object;
 
 namespace YingYun.Rhythm.Tests
 {
     public sealed class ShadowPuppetPresenterTests
     {
+        private const double FrameSeconds = 1d / 60d;
+
         [Test]
         public void Presenter_BuildsJointedPuppetAndSixControlStrings()
         {
@@ -24,6 +30,24 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void RawPress_TightensTheStringAndStartsMovingTheJointWithinThreeFrames()
+        {
+            var root = new GameObject("Puppet Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.Tick(1d);
+            presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
+            presenter.Tick(1d);
+
+            Assert.That(presenter.GetStringTension(0), Is.EqualTo(1f));
+
+            presenter.Tick(1d + (3d * FrameSeconds));
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-3f));
+
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void RawChordPress_TightensBothStringsAndRotatesBothShoulders()
         {
             var root = new GameObject("Puppet Test");
@@ -34,10 +58,15 @@ namespace YingYun.Rhythm.Tests
             presenter.OnInput(new HitInput(1d, 2, InputKind.Press));
             presenter.Tick(1d);
 
-            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-50f));
-            Assert.That(Mathf.DeltaAngle(0f, presenter.RightUpperArmRotation), Is.GreaterThan(50f));
+            // 繩索一按下就繃緊；關節帶慣性，約 0.3 秒後到達高點。
             Assert.That(presenter.GetStringTension(0), Is.EqualTo(1f));
             Assert.That(presenter.GetStringTension(2), Is.EqualTo(1f));
+
+            presenter.Tick(1.35d);
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-45f));
+            Assert.That(Mathf.DeltaAngle(0f, presenter.RightUpperArmRotation), Is.GreaterThan(45f));
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftForearmRotation), Is.LessThan(-12f));
+            Assert.That(Mathf.DeltaAngle(0f, presenter.RightForearmRotation), Is.GreaterThan(12f));
 
             Object.DestroyImmediate(root);
         }
@@ -62,8 +91,10 @@ namespace YingYun.Rhythm.Tests
                 1 << 0));
             presenter.Tick(1d);
 
-            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-50f));
             Assert.That(presenter.GetStringTension(0), Is.EqualTo(1f));
+
+            presenter.Tick(1.35d);
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-45f));
 
             Object.DestroyImmediate(root);
         }
@@ -115,6 +146,129 @@ namespace YingYun.Rhythm.Tests
             presenter.Tick(5d);
 
             Assert.That(presenter.GetStringTension(4), Is.GreaterThan(0.95f));
+            Assert.That(Mathf.DeltaAngle(0f, presenter.TorsoRotation), Is.GreaterThan(6f));
+
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void Sequence_KeepsThePuppetMovingWithoutSlidingThePelvis()
+        {
+            var root = new GameObject("Puppet Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.Tick(0d);
+
+            Vector3 pelvis = presenter.PelvisPosition;
+            double previous = 0d;
+            double maxDelta = 0d;
+            double earlySequence = 0d;
+            double midSequence = 0d;
+
+            // 120 BPM：Q（0.0）→ E（0.5）→ Q+E（1.0）→ D（1.5）
+            for (int frame = 0; frame <= 150; frame++)
+            {
+                double songTime = frame * FrameSeconds;
+                if (frame == 0)
+                {
+                    presenter.OnInput(new HitInput(songTime, 0, InputKind.Press));
+                }
+                else if (frame == 30)
+                {
+                    presenter.OnInput(new HitInput(songTime, 2, InputKind.Press));
+                }
+                else if (frame == 60)
+                {
+                    presenter.OnInput(new HitInput(songTime, 0, InputKind.Press));
+                    presenter.OnInput(new HitInput(songTime, 2, InputKind.Press));
+                }
+                else if (frame == 90)
+                {
+                    presenter.OnInput(new HitInput(songTime, 5, InputKind.Press));
+                }
+
+                presenter.Tick(songTime);
+
+                double current = Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation);
+                if (frame > 0)
+                {
+                    maxDelta = Math.Max(maxDelta, Math.Abs(current - previous));
+                }
+
+                previous = current;
+                if (frame == 27)
+                {
+                    earlySequence = current;
+                }
+                else if (frame == 75)
+                {
+                    midSequence = current;
+                }
+            }
+
+            Assert.That(maxDelta, Is.LessThan(10d));
+            Assert.That(earlySequence, Is.LessThan(-30d));
+            Assert.That(midSequence, Is.LessThan(-30d));
+            Assert.That(Vector3.Distance(pelvis, presenter.PelvisPosition), Is.LessThan(0.0001f));
+
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void SequencePlayback_WritesTrajectoryLog()
+        {
+            var root = new GameObject("Puppet Trajectory Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.Tick(0d);
+
+            var builder = new StringBuilder();
+            builder.AppendLine(
+                "songTime,leftShoulder,leftElbow,rightShoulder,rightElbow,leftThigh,leftShin,torso,head,leftTension,rightTension");
+
+            for (int frame = 0; frame <= 150; frame++)
+            {
+                double songTime = frame * FrameSeconds;
+                if (frame == 0)
+                {
+                    presenter.OnInput(new HitInput(songTime, 0, InputKind.Press));
+                }
+                else if (frame == 30)
+                {
+                    presenter.OnInput(new HitInput(songTime, 2, InputKind.Press));
+                }
+                else if (frame == 60)
+                {
+                    presenter.OnInput(new HitInput(songTime, 0, InputKind.Press));
+                    presenter.OnInput(new HitInput(songTime, 2, InputKind.Press));
+                }
+                else if (frame == 90)
+                {
+                    presenter.OnInput(new HitInput(songTime, 3, InputKind.Press));
+                }
+
+                presenter.Tick(songTime);
+                builder.AppendLine(string.Join(
+                    ",",
+                    songTime.ToString("F4", CultureInfo.InvariantCulture),
+                    Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation).ToString("F3", CultureInfo.InvariantCulture),
+                    Mathf.DeltaAngle(0f, presenter.LeftForearmRotation).ToString("F3", CultureInfo.InvariantCulture),
+                    Mathf.DeltaAngle(0f, presenter.RightUpperArmRotation).ToString("F3", CultureInfo.InvariantCulture),
+                    Mathf.DeltaAngle(0f, presenter.RightForearmRotation).ToString("F3", CultureInfo.InvariantCulture),
+                    Mathf.DeltaAngle(0f, presenter.LeftThighRotation).ToString("F3", CultureInfo.InvariantCulture),
+                    Mathf.DeltaAngle(0f, presenter.LeftShinRotation).ToString("F3", CultureInfo.InvariantCulture),
+                    Mathf.DeltaAngle(0f, presenter.TorsoRotation).ToString("F3", CultureInfo.InvariantCulture),
+                    Mathf.DeltaAngle(0f, presenter.HeadRotation).ToString("F3", CultureInfo.InvariantCulture),
+                    presenter.GetStringTension(0).ToString("F3", CultureInfo.InvariantCulture),
+                    presenter.GetStringTension(2).ToString("F3", CultureInfo.InvariantCulture)));
+            }
+
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            string output = Path.Combine(projectRoot, "Logs", "M6-1-puppet-trajectory.csv");
+            Directory.CreateDirectory(Path.GetDirectoryName(output));
+            File.WriteAllText(output, builder.ToString());
+
+            Assert.That(new FileInfo(output).Length, Is.GreaterThan(4000));
 
             Object.DestroyImmediate(root);
         }
@@ -129,6 +283,7 @@ namespace YingYun.Rhythm.Tests
             presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
             presenter.OnInput(new HitInput(1d, 2, InputKind.Press));
             presenter.Tick(1d);
+            presenter.Tick(1.35d);
 
             var cameraObject = new GameObject("Validation Camera");
             var camera = cameraObject.AddComponent<Camera>();
@@ -147,7 +302,7 @@ namespace YingYun.Rhythm.Tests
             capture.Apply();
 
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-            string output = Path.Combine(projectRoot, "Logs", "M6-puppet-chord.png");
+            string output = Path.Combine(projectRoot, "Logs", "M6-1-puppet-chord.png");
             Directory.CreateDirectory(Path.GetDirectoryName(output));
             File.WriteAllBytes(output, capture.EncodeToPNG());
 

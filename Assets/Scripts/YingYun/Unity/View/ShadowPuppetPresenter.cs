@@ -42,10 +42,16 @@ namespace YingYun.Rhythm.View
         public int JointCount => 10;
         public int StringCount => _strings.Length;
         public float LeftUpperArmRotation => _leftUpperArmJoint == null ? 0f : _leftUpperArmJoint.localEulerAngles.z;
+        public float LeftForearmRotation => _leftForearmJoint == null ? 0f : _leftForearmJoint.localEulerAngles.z;
         public float RightUpperArmRotation => _rightUpperArmJoint == null ? 0f : _rightUpperArmJoint.localEulerAngles.z;
+        public float RightForearmRotation => _rightForearmJoint == null ? 0f : _rightForearmJoint.localEulerAngles.z;
+        public float LeftThighRotation => _leftThighJoint == null ? 0f : _leftThighJoint.localEulerAngles.z;
+        public float LeftShinRotation => _leftShinJoint == null ? 0f : _leftShinJoint.localEulerAngles.z;
         public float RightThighRotation => _rightThighJoint == null ? 0f : _rightThighJoint.localEulerAngles.z;
+        public float RightShinRotation => _rightShinJoint == null ? 0f : _rightShinJoint.localEulerAngles.z;
         public float HeadRotation => _headJoint == null ? 0f : _headJoint.localEulerAngles.z;
         public float TorsoRotation => _torsoJoint == null ? 0f : _torsoJoint.localEulerAngles.z;
+        public Vector3 PelvisPosition => _torsoJoint == null ? Vector3.zero : _torsoJoint.localPosition;
         public float GetStringTension(int lane) => _tensions[lane];
 
         private void Awake()

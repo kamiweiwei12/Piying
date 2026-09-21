@@ -73,7 +73,7 @@ namespace YingYun.Rhythm.Prototype
             }
 
             Debug.Log(string.Format(
-                "[M6] puppet-ready | joints={0} | strings={1} | motion=joint-rotation",
+                "[M6] puppet-ready | joints={0} | strings={1} | motion=spring-joint",
                 _puppet.JointCount,
                 _puppet.StringCount));
 
