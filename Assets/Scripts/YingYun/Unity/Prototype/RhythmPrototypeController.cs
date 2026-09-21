@@ -102,6 +102,7 @@ namespace YingYun.Rhythm.Prototype
             _bridge.Capture(AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
             while (_input.TryDequeue(out HitInput input))
             {
+                _puppet.OnInput(input);
                 _judgment.EnqueueInput(input);
             }
 

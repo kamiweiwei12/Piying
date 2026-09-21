@@ -37,5 +37,17 @@ namespace YingYun.Rhythm.Tests
         {
             Assert.That(RadialNoteGeometry.Progress(songTime, 10d, 2d), Is.EqualTo(expected));
         }
+
+        [Test]
+        public void BodyReceptor_SharesBottomRowWithBothFeet()
+        {
+            Vector2 leftFoot = RadialNotePresenter.ReceptorPositionForLane(3);
+            Vector2 body = RadialNotePresenter.ReceptorPositionForLane(4);
+            Vector2 rightFoot = RadialNotePresenter.ReceptorPositionForLane(5);
+
+            Assert.That(body.x, Is.Zero.Within(0.0001f));
+            Assert.That(body.y, Is.EqualTo(leftFoot.y).Within(0.0001f));
+            Assert.That(body.y, Is.EqualTo(rightFoot.y).Within(0.0001f));
+        }
     }
 }

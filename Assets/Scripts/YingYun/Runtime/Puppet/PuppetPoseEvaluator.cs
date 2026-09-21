@@ -122,16 +122,7 @@ namespace YingYun.Rhythm.Puppet
 
         public void Resolve(int lanesMask, bool success, double songTimeSec)
         {
-            bool releasedHold = false;
-            ForEachLane(lanesMask, lane =>
-            {
-                if (_held[lane])
-                {
-                    _held[lane] = false;
-                    _releaseStartSec[lane] = songTimeSec;
-                    releasedHold = true;
-                }
-            });
+            bool releasedHold = ReleaseHold(lanesMask, songTimeSec);
 
             if (success && !releasedHold)
             {
@@ -139,8 +130,30 @@ namespace YingYun.Rhythm.Puppet
             }
             else if (!success)
             {
-                _failureStartSec = songTimeSec;
+                Fail(songTimeSec);
             }
+        }
+
+        public bool ReleaseHold(int lanesMask, double songTimeSec)
+        {
+            bool releasedHold = false;
+            ForEachLane(lanesMask, lane =>
+            {
+                if (!_held[lane])
+                {
+                    return;
+                }
+
+                _held[lane] = false;
+                _releaseStartSec[lane] = songTimeSec;
+                releasedHold = true;
+            });
+            return releasedHold;
+        }
+
+        public void Fail(double songTimeSec)
+        {
+            _failureStartSec = songTimeSec;
         }
 
         public PuppetPose Evaluate(double songTimeSec)

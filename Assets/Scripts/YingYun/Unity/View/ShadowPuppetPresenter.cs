@@ -68,6 +68,21 @@ namespace YingYun.Rhythm.View
             UpdateStrings();
         }
 
+        /// <summary>每次原始按鍵都立即拉動對應操偶線，與判定結果解耦。</summary>
+        public void OnInput(HitInput input)
+        {
+            EnsureInitialized();
+            int laneMask = 1 << input.Lane;
+            if (input.Kind == InputKind.Press)
+            {
+                _evaluator.Trigger(laneMask, input.InputTimeSec);
+            }
+            else
+            {
+                _evaluator.ReleaseHold(laneMask, input.InputTimeSec);
+            }
+        }
+
         public void OnJudged(JudgmentResult result)
         {
             EnsureInitialized();
@@ -79,7 +94,11 @@ namespace YingYun.Rhythm.View
 
             if (result.EventKind == JudgmentEventKind.NoteJudged)
             {
-                _evaluator.Resolve(result.RequiredLanesMask, result.Grade != JudgmentGrade.Miss, _songTime);
+                _evaluator.ReleaseHold(result.RequiredLanesMask, _songTime);
+                if (result.Grade == JudgmentGrade.Miss)
+                {
+                    _evaluator.Fail(_songTime);
+                }
             }
         }
 

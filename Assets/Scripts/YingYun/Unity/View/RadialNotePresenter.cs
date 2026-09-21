@@ -16,7 +16,7 @@ namespace YingYun.Rhythm.View
             new Vector2(0f, 2.35f),
             new Vector2(3.3f, 0.35f),
             new Vector2(-2.2f, -2.15f),
-            new Vector2(0f, 0.15f),
+            new Vector2(0f, -2.15f),
             new Vector2(2.2f, -2.15f)
         };
 
@@ -69,6 +69,16 @@ namespace YingYun.Rhythm.View
         public int ActiveCount => _active.Count;
         public int PooledCount => _pool.Count;
         public int CreatedViewCount { get; private set; }
+
+        public static Vector2 ReceptorPositionForLane(int lane)
+        {
+            if (lane < 0 || lane >= LaneCount)
+            {
+                throw new ArgumentOutOfRangeException(nameof(lane));
+            }
+
+            return ReceptorPositions[lane];
+        }
 
         private void Awake()
         {

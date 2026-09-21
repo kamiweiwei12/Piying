@@ -24,22 +24,14 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void ChordJudgment_TightensBothStringsAndRotatesBothShoulders()
+        public void RawChordPress_TightensBothStringsAndRotatesBothShoulders()
         {
             var root = new GameObject("Puppet Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
             presenter.Tick(1d);
-            presenter.OnJudged(new JudgmentResult(
-                JudgmentEventKind.NoteJudged,
-                1,
-                0,
-                JudgmentGrade.Perfect,
-                0d,
-                1,
-                1000,
-                1d,
-                (1 << 0) | (1 << 2)));
+            presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
+            presenter.OnInput(new HitInput(1d, 2, InputKind.Press));
             presenter.Tick(1d);
 
             Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-50f));
@@ -51,12 +43,39 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void MissedPress_StillPullsPuppetImmediately()
+        {
+            var root = new GameObject("Puppet Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.Tick(1d);
+            presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
+            presenter.OnJudged(new JudgmentResult(
+                JudgmentEventKind.NoteJudged,
+                1,
+                0,
+                JudgmentGrade.Miss,
+                120d,
+                0,
+                0,
+                0d,
+                1 << 0));
+            presenter.Tick(1d);
+
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-50f));
+            Assert.That(presenter.GetStringTension(0), Is.EqualTo(1f));
+
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void HoldStarted_KeepsControlStringTautAcrossTime()
         {
             var root = new GameObject("Puppet Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
             presenter.Tick(2d);
+            presenter.OnInput(new HitInput(2d, 4, InputKind.Press));
             presenter.OnJudged(new JudgmentResult(
                 JudgmentEventKind.HoldStarted,
                 5,
@@ -81,16 +100,8 @@ namespace YingYun.Rhythm.Tests
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
             presenter.Tick(1d);
-            presenter.OnJudged(new JudgmentResult(
-                JudgmentEventKind.NoteJudged,
-                1,
-                0,
-                JudgmentGrade.Perfect,
-                0d,
-                1,
-                1000,
-                1d,
-                (1 << 0) | (1 << 2)));
+            presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
+            presenter.OnInput(new HitInput(1d, 2, InputKind.Press));
             presenter.Tick(1d);
 
             var cameraObject = new GameObject("Validation Camera");
