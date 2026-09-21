@@ -24,6 +24,58 @@
 
 ---
 
+## [2026-09-21] M6.2 - 六鍵點按與長按：長條音符與持續操偶
+
+### 新增
+
+* 譜面改為六個部位都有點按與長按。每個 8 拍樂句固定為：`Q 點`、`E 點`、`Q+E 組合`、`W 點`、`S 長按（2 拍）`、`A 點`、`D 點`、`S 點`，再加一顆輪替長按（Q／E／W 落在第 5–7 拍，A／D 落在第 2–4 拍，每 5 個樂句輪完一輪）。180 秒共 **406 顆音符、其中 90 顆長按**。
+* `JudgmentLabels`（顯示層純函式）：長按失誤細分為「早放」（提早放開，誤差為負）、「未撐住」（按住了但沒撐到最後）與一般「空引」；按住期間顯示「按住」。判定、計分、連擊完全不受影響。
+* `RadialNoteView` 新增長按的頭端圓帽與長條本體：**點按是圓形、長按是沿軌道伸長的長橢圓**（圓形貼圖非等比縮放＋沿軌道旋轉），長度等於音符在軌道上的長度，尾巴必定在放開時間抵達判定點。
+* 新增測試：六軌都有點按與長按、同軌音符不重疊（新不變量）、長按長度為 1 秒、長條長軸必須沿軌道、長按期間手臂維持舉起、長按與點按的姿態差異、長按失誤文字標籤，以及圓形／長橢圓對照圖。
+
+### 修改
+
+* `PuppetPoseEvaluator`：長按期間的持續力道改為維持在 `ActionBinding` 宣告角度（乘上 `1 / DriveAmplitudeScale` 補償），因此手會**持續舉起**、繩索持續拉緊；並修正長按起始時「按下頓拉 + 平台」相加造成過度彎折的缺陷（修正前在按住 0.4 秒時實測為 -76.5°，修正後維持在 -52° 附近）。
+* 放開長按不再施加朝向拉力的頓拉：改為純慣性滑行後由彈簧拉回，回彈更自然。
+* `RadialNotePresenter` 改用 `JudgmentLabels` 並新增 `ShowJudgmentText`（移除私有 `GradeText`）。
+
+### 測試
+
+* Unity EditMode 全回歸：**total=90 / passed=90 / failed=0 / skipped=0**，duration=0.5437 s。
+  * 指令：`unity test "D:\Unity\program\My project" --editor-path "D:\Unity\Editor\6000.6.2f1\Editor\Unity.exe" --mode EditMode --filter YingYun.Tests --timeout 600 --output "…\Logs\M6-2-editmode-results.xml" --format json`。
+* 純 C# 譜面驗證（Unity 內建 .NET SDK 8.0.318，直接編譯 `PrototypeDanceChart.cs` 與 `JudgmentEngine.cs`）：**11 項檢查全數通過** —— 406 顆、六軌都同時有 tap 與 hold、時間遞增、Id 唯一、**同軌零重疊**、90 顆長按皆為 1.00 秒。
+* 以真實判定核心重播長按：輕點長按音符 → `NoteJudged Miss errorMs=-950`（畫面顯示「早放」）；完整按住 → 4 次 `HoldTick` 後 `Perfect`（combo=1）。
+* 視覺驗收圖（`Logs/`，不進版控）：`M6-2-note-shapes.png`（1280×720，左＝圓形點按、右＝長條橢圓長按含頭端圓帽）。首次渲染即發現長條橫躺 90° 的旋轉基準錯誤，修正後補上「長軸必須沿軌道」的方向回歸測試。
+* Windows x64 建置：`unity build … --target StandaloneWindows64 --output-path "Builds\M6\YingYun.exe"` → `Build Finished, Result: Success`、退出碼 0、provenance `outcome=success`；`Builds\M6\YingYun_Data\Managed\YingYun.Unity.dll` 已更新（14:45，39,936 bytes）。
+* 依照先前要求**沒有自動啟動遊戲**。
+
+### 驗收結果
+
+* S 鍵「永遠空引」的問題根源已消除：S 現在同時有點按與長按，點按會被判定為點按；長按若提早放開，畫面會顯示「早放」而不是「空引」。
+* 長按在畫面上是長條橢圓、在皮影上是持續舉起／持續拉緊（回歸測試：按住 1 秒期間肩膀維持在 -45° 以上、繩索張力 ≥ 0.95；放開後回到 -20° 以內、張力歸零）。
+* 既有 90 項測試（含 M0–M6.1 的判定、計分、音符、操偶）全數維持通過。
+* 測試與建置造成的 URP／Unity Connect 自動改動已還原，工作區只留下本次工作單位的變更。
+
+### Git Commit
+
+* `3ef1813` `feat(m6.2): add tap and hold notes on all six lanes`
+* `docs(m6.2): record tap and hold note work`（本條目所在的提交）
+
+### 風險 / 已知問題
+
+* 譜面密度由每樂句 7 顆提高到 9 顆（120 BPM 下約 2.25 顆/秒），尚未經實機手感確認；若覺得太密，可調整輪替長按的頻率或位置。
+* 長按固定為 1 秒（2 拍）；若想要更長的持續操偶，只需調整 `PrototypeDanceChart.HoldBeats`。
+* 顯示層以 `JudgmentResult.ErrorMs` 的正負區分「早放／未撐住」，未來若判定改版需同步此推論。
+* 建置造成的 URP 與 Unity Connect 自動改動已備份於 `Logs/M6-2-reverted-autochanges/` 後還原。
+* `ProjectSettings/ProjectSettings.asset` 仍顯示為 modified，但內容雜湊等於 `HEAD`，是 CRLF／stat cache 假訊號。
+
+### 下一步
+
+* 實機驗收：圓形點按與長橢圓長按是否一眼可辨、按住時手是否持續舉起、按住 1 秒的手感與密度是否合適。
+* 通過後再進 **M7**（三難度、選曲流程、延遲校準、最終 Windows Demo）。
+
+---
+
 ## [2026-09-21] M6.1 - 連續操偶（彈簧－阻尼關節）
 
 ### 新增
