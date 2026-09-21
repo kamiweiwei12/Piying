@@ -24,6 +24,64 @@
 
 ---
 
+## [2026-09-21] M6.1 - 連續操偶（彈簧－阻尼關節）
+
+### 新增
+
+* `PuppetPoseEvaluator` 改為連續操偶核心：10 個關節各自是帶慣性的彈簧－阻尼系統，以固定 1/240 秒步長積分，每個關節有自己的自然頻率、阻尼比與角度上限。
+* 每個輸入事件都保留成獨立的「拉繩」事件（每軌 4 個環形槽位），相鄰輸入的力量會自然疊加，不再互相覆蓋。
+* 同鍵連按會在「抬手／伸手／收肘」三種手勢間循環：幅度（1.00／0.86／1.12）、繩索張緊時間（0.20／0.14／0.26 秒）與前臂比例（1.00／0.78／1.22）都不同。
+* 手臂與腿的拉力以較小比例連動頭與軀幹（重心轉移），左右手的軀幹連動方向相反。
+* `ShadowPuppetPresenter` 新增肘、膝、髖旋轉讀值與骨盆位置讀值，讓驗收程式能直接量測姿態。
+* 10 個新 EditMode 測試：三幀內起動、峰值幅度、連鎖延遲、繩索回鬆後仍滑行、回彈、連按不斷線、幀率無關、同鍵手勢變化、無輸入靜止、失勢姿態、玩家層序列與軌跡輸出。
+
+### 修改
+
+* 移除舊的無狀態模型（按鍵 → 固定 0.68 秒曲線 → 歸零）；改為「拉繩 → 角速度 → 慣性滑行 → 回彈 → 與下一次拉繩疊加」。單次動作約 0.9–1.2 秒，120 BPM 的相鄰拍自然交疊。
+* 控制索張力仍在按下瞬間就變為 1（繩索先繃緊），關節則在約 3 幀（50 ms）內明顯被拉動、約 0.33 秒到達峰值；Q 的峰值為 **-52.45°**（`ActionBinding` 宣告值 -52°）。
+* 連鎖延遲：肩峰值 0.333 秒、肘峰值 0.383 秒（相差約 50 ms），軀幹與頭更慢，形成「肩膀先起、前臂跟上、身體再被帶動」的次序。
+* 姿態只取決於「事件清單 + 歌曲時間」：回溯或重複取樣會從最早事件重新模擬，不會遺失已累積的姿態（修正實作過程中發現的缺陷：舊寫法回溯時會連事件一起清除，導致木偶靜止）。
+* `RhythmPrototypeController` 的啟動診斷字串改為 `motion=spring-joint`。
+* 事件走訪移除每次呼叫配置委派的 `Action<int>`，改為固定迴圈；熱路徑仍不產生配置。
+
+### 測試
+
+* Unity EditMode 全回歸：`total=76 / passed=76 / failed=0 / skipped=0`，duration=0.6831737 s。
+  * 指令：`unity test "D:\Unity\program\My project" --editor-path "D:\Unity\Editor\6000.6.2f1\Editor\Unity.exe" --mode EditMode --filter YingYun.Tests --timeout 600 --output "…\Logs\M6-1-editmode-results.xml" --format json`。
+* 純 C# 獨立驗證（Unity 內建 .NET SDK 8.0.318，直接編譯本專案的 `PuppetPoseEvaluator.cs` 與 `ActionBinding.cs`）：**23 項檢查全數通過**，關鍵量測為峰值 `-52.45° @ +0.33 s`、肩／肘峰值 `0.333 s / 0.383 s`、繩索回鬆後仍位移 `-49.72°`、回彈 `+4.01°`、1.8 秒歸零 `-0.014°`、同鍵連按三次從不回到靜止（`-44.71 / -30.54 / -52.77`）、幀率無關（30 fps 與 240 fps 差異 `< 0.001°`）、序列最大每幀變化 `4.389°`、序列平均位移 `20.03°`。
+* 視覺與軌跡產物（`Logs/`，不進版控）：`M6-1-puppet-chord.png`（1280×720、Q+E 峰值定格，65,152 bytes）、`M6-1-puppet-trajectory.csv`（151 格 × 11 欄、60 fps、Q→E→Q+E→A 序列，11,067 bytes）。
+* Windows x64 建置：`unity build … --target StandaloneWindows64 --output-path "Builds\M6\YingYun.exe"` → `Build Finished, Result: Success`、退出碼 0、`YingYun.provenance.json` 的 `outcome=success`（耗時約 68 秒）。
+* 產物內容核對：新建的 `Builds\M6\YingYun_Data\Managed\YingYun.Unity.dll`（14:12:10）以位元組比對確認含有新診斷字串 `motion=spring-joint`，證明玩家端確實帶有連續操偶版本。
+* 依照先前要求**沒有自動啟動遊戲**；Play 模式的手感驗收留給使用者執行。
+
+### 驗收結果
+
+* M6 的完成條件在體感層面補齊：連續按鍵不再「打一下動一下」，手臂在兩顆音符之間維持位移並持續變化。
+* 所有新舊判定、計分、輸入與音符測試維持全綠（76/76），判定仍只讀 `dspTime` 時間軸，動畫不驅動判定。
+* 幾何皮影仍只以旋轉關節運動，骨盆位置在整段序列中完全不移動（回歸測試斷言位移 `< 0.0001`）。
+* 無任何輸入時木偶的所有關節與張力皆為 0（既有回歸測試維持通過）。
+* 測試與建置造成的 URP／Unity Connect 自動改動已還原，工作區只留下本次工作單位的變更。
+
+### Git Commit
+
+* `97a4a33` `feat(m6.1): make shadow puppet motion continuous`
+* `docs(m6.1): record continuous puppetry acceptance`（本條目所在的提交）
+
+### 風險 / 已知問題
+
+* 手感（回彈軟硬、拉扯幅度是否過大、控制線是否夠明顯）尚未由使用者實機確認；數值已量化，但好不好看仍需人眼判斷。
+* 動作由 `dspTime` 衍生的 `songTime` 驅動，視覺取樣約 21 ms 一格（DSP buffer 1024 @ 48 kHz）；若要更平滑需改用插值顯示時鐘（`unity-rhythm-timing` 允許，但那會動到共用時鐘，未經同意不做）。
+* `PuppetPoseEvaluator.Fail()`（失勢姿態）仍未被 Presenter 接入，只有測試覆蓋，保留給未來的明確失敗演出。
+* `ProjectSettings/ProjectSettings.asset` 仍顯示為 modified，但內容雜湊與 `HEAD` 相同（`08c1b52c…`），是 CRLF／git stat cache 的假訊號，未納入提交。
+* 測試／建置造成的 URP 與 Unity Connect 自動改動已備份於 `Logs/M6-1-reverted-autochanges/` 後還原。
+
+### 下一步
+
+* 使用者在 Editor 或 `Builds\M6\YingYun.exe` 實機驗收：Q → E → Q+E → D 是否形成不斷線的表演、回彈幅度、控制線明顯度、Q+E 同時按的難度。
+* 驗收通過後再進 **M7**（三難度、選曲流程、延遲校準、最終 Windows Demo）。
+
+---
+
 ## [2026-09-21] M6 fix - 自動 Miss 不再誤驅動木偶
 
 ### 新增
