@@ -24,6 +24,47 @@
 
 ---
 
+## [2026-09-21] M6.5 修正 - Hold 持續操演與音符類型配色
+
+### 新增
+
+* Hold 持續操演回饋：按住期間竹桿以歌曲時間做小幅往復推拉，對應皮影片關節同步產生細微持續擺動。
+* 回歸測試：Hold 杆端與前臂在兩個取樣時刻必須持續變化；Tap／Hold／Chord 必須各自維持唯一顏色且不受 lane 影響。
+
+### 修改
+
+* `HoldStarted` 的「按住」提示不再套用普通判定的 0.18 秒清除計時；會一直保留到 Hold 完成、早放或失敗結果取代它。
+* 音符配色改為三類固定語義：Tap 紅色、Hold 金色、Chord 青綠色；六個判定點統一為深褐色，不再按方向使用六種彩色。
+* Hold 的音符本体与头端在按住前后维持同一金色，只以持续脉动和长条形状表示状态，避免再次变色造成混乱。
+
+### 測試
+
+* Unity EditMode 全量測試：**93/93 通過**，0 failed／0 skipped。
+* 類型配色視覺圖：`Logs/M6-2-note-shapes.png`，Tap 為紅色圓形、Hold 為金色長條。
+* Connected Editor Windows build：`Builds/M6.5/YingYun.exe`，**Succeeded**，0 error，134,391,624 bytes，12.984 秒；187 項為既有 Inference/Shader 變體警告。
+
+### 驗收結果
+
+* ✅ Hold 的畫面提示現在覆蓋完整按住期間，不再只閃現一次。
+* ✅ Hold 操偶在整段按住期間都有可觀察的杆端推拉和皮影片擺動，與 Tap 的單次衝量清楚區分。
+* ✅ 顏色僅表達 Tap／Hold／Chord 類型，不再表達六方向。
+
+### Git Commit
+
+* `27cec86 fix(m6.5): sustain hold puppetry and simplify note colors`
+* `docs(m6.5): record hold puppetry correction`（本條目所在的文件提交）
+
+### 風險 / 已知問題
+
+* 持續推拉幅度刻意保持小，避免遮蔽譜面或破壞既有姿態；最終強度仍需使用者實機確認。
+* 測試期間曾遇到 Unity Licensing Client 啟動異常，重新開啟 Editor 後由 Pipeline 完成 93/93 測試與 Windows build，非程式缺陷。
+
+### 下一步
+
+* 實機確認 Hold 的持續拉扯是否足夠明顯；若仍偏弱，下一輪只調整推拉幅度／頻率，不再更動判定。
+
+---
+
 ## [2026-09-21] M6.5 - 從吊線木偶重構為數位皮影操演
 
 ### 新增
