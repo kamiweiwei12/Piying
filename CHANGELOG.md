@@ -24,6 +24,43 @@
 
 ---
 
+## [2026-09-21] M6 fix - 底部身體判定與全按鍵操偶回饋
+
+### 新增
+
+* 新增身體判定點底排位置回歸測試，以及 Miss 按鍵仍立即拉動木偶的 Presenter 回歸測試。
+
+### 修改
+
+* S／身體音符的判定點由畫面中央下移到雙腳判定点同一底排中央；音符維持由下方向上接近，不再穿入木偶主体。
+* `RhythmPrototypeController` 将每一个原始 `HitInput` 先转发给木偶演出，再交给判定引擎；动作使用输入事件自身的校正后 `InputTimeSec`。
+* `ShadowPuppetPresenter` 的 Tap 拉线从判定结果解耦：命中、空按、早按、晚按或最终 Miss 都会即时拉动对应部位；判定结果只追加失败姿态，并负责 Hold 建立／释放。
+
+### 測試
+
+* Unity EditMode 全回归：**total=65 / passed=65 / failed=0 / skipped=0**。
+* Windows x64：`Builds/M6/YingYun.exe` 重新构建成功，**0 errors**，产物 134,380,168 bytes。
+
+### 驗收結果
+
+* 身体 receptor 的 Y 坐标与左右脚严格一致，X=0；S 音符路径固定在画面下方。
+* 原始 Q+E 输入可同时拉紧双线；即使同一输入随后得到 Miss，左臂拉动和线张力仍保持可见。
+
+### Git Commit
+
+* `d7a89a4` `fix(m6): align body lane and animate every input`
+
+### 風險 / 已知問題
+
+* 本轮按先前要求未自动启动 Player；构建及自动测试均通过，实际键盘手感留给人工验收。
+* `ProjectSettings/ProjectSettings.asset` 的既有用户改动继续保留，未纳入提交。
+
+### 下一步
+
+* 在 Unity Play Mode 中按 Q/W/E/A/S/D 做人工验收，重点确认空按也有拉扯、S 音符只在底部，以及 Hold 按下持续绷紧、松开回弹。
+
+---
+
 ## [2026-09-21] M6 - 關節操偶與幾何皮影舞台
 
 ### 新增

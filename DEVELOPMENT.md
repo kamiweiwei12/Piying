@@ -42,7 +42,7 @@
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
 | 目前 Milestone | **M6 已結案**；下一個工作單位為 **M7 可玩 Demo**（難度、流程、校準與 Windows 出包） |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | M6 已提供資料驅動六部位關節操偶、控制線張力與幾何皮影舞台；正式分層皮影 Sprite 仍待美術替換。M7 尚缺三難度、選曲流程、延遲校準與最終 Windows 出包體驗 |
+| 重大缺口 | M6 已提供資料驅動六部位關節操偶、控制線張力與幾何皮影舞台；身體判定已置於底排，所有原始按鍵（含 Miss／空按）均有即時拉線回饋。正式分層皮影 Sprite 仍待美術替換。M7 尚缺三難度、選曲流程、延遲校準與最終 Windows 出包體驗 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
@@ -461,4 +461,5 @@ git --no-pager log --oneline -10
 | 1.4 | 2026-09-21 | M4 結案：四檔判定、`DifficultyConfig` 評級門檻、中文 HUD／結算面板、EditMode 32/32 與 Windows build 驗收 |
 | 1.5 | 2026-09-21 | M5 結案：嚴格 Hold 尾判、原子組合音符、段落合勢／斷勢回饋、180 秒舞蹈譜面、EditMode 51/51 與 Windows build 煙測 |
 | 1.6 | 2026-09-21 | M6 結案：資料驅動六部位關節操偶、六根控制線張力、Hold 持續拉扯、幾何剪影光幕、EditMode 63/63 與 Windows build 煙測 |
+| 1.7 | 2026-09-21 | M6 驗收修正：S／身體判定移至底排中央；木偶改由每個原始按鍵即時拉動，判定結果不再限制動作；EditMode 65/65 與 Windows build 通過 |
 
