@@ -14,23 +14,21 @@ namespace YingYun.Rhythm.Tests
         {
             NoteData[] notes = PrototypeDanceChart.Create(120d, 180d);
 
-            Assert.That(notes.Length, Is.EqualTo(406));
+            Assert.That(notes.Length, Is.EqualTo(271));
             Assert.That(notes.Select(x => x.Id).Distinct().Count(), Is.EqualTo(notes.Length));
             Assert.That(notes.Zip(notes.Skip(1), (left, right) => left.TimeSec <= right.TimeSec).All(x => x), Is.True);
             Assert.That(notes[notes.Length - 1].TimeSec, Is.EqualTo(180d).Within(0.0000001d));
         }
 
         [Test]
-        public void Create_EachFullPhraseContainsTapHoldAndChord()
+        public void Create_EachTwoPhraseBlockContainsTapHoldAndChord()
         {
             NoteData[] notes = PrototypeDanceChart.Create(120d, 8d);
 
-            foreach (IGrouping<int, NoteData> segment in notes.Where(x => x.SegmentId < 2).GroupBy(x => x.SegmentId))
-            {
-                Assert.That(segment.Any(x => x.Kind == NoteKind.Tap && !x.IsChord), Is.True);
-                Assert.That(segment.Any(x => x.Kind == NoteKind.Hold), Is.True);
-                Assert.That(segment.Any(x => x.IsChord), Is.True);
-            }
+            NoteData[] phrases = notes.Where(x => x.SegmentId < 2).ToArray();
+            Assert.That(phrases.Any(x => x.Kind == NoteKind.Tap && !x.IsChord), Is.True);
+            Assert.That(phrases.Any(x => x.Kind == NoteKind.Hold), Is.True);
+            Assert.That(phrases.Any(x => x.IsChord), Is.True);
         }
 
         [Test]
@@ -90,7 +88,7 @@ namespace YingYun.Rhythm.Tests
             int bothHands = (1 << PrototypeDanceChart.LeftHandLane) |
                             (1 << PrototypeDanceChart.RightHandLane);
             Assert.That(openingChord.RequiredLanesMask, Is.EqualTo(bothHands));
-            Assert.That(notes.Any(x => x.Lane == PrototypeDanceChart.BodyLane && x.Kind == NoteKind.Hold), Is.True);
+            Assert.That(notes.Any(x => x.Kind == NoteKind.Hold), Is.True);
         }
 
         [Test]
@@ -98,7 +96,7 @@ namespace YingYun.Rhythm.Tests
         {
             NoteData[] easy = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Easy);
             NoteData[] normal = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Normal);
-            NoteData[] hard = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Hard);
+            NoteData[] hard = PrototypeDanceChart.Create(120d, 64d, PlayDifficulty.Hard);
 
             Assert.That(easy.Length, Is.LessThan(normal.Length));
             Assert.That(normal.Length, Is.LessThan(hard.Length));
@@ -112,6 +110,29 @@ namespace YingYun.Rhythm.Tests
             Assert.That(easy.Any(x => x.IsChord), Is.False);
             Assert.That(normal.Any(x => x.IsChord), Is.True);
             Assert.That(hard.Any(x => x.IsChord), Is.True);
+        }
+
+        [Test]
+        public void Create_NormalDensityFallsStrictlyBetweenEasyAndHard()
+        {
+            const double duration = 180d;
+            NoteData[] easy = PrototypeDanceChart.Create(120d, duration, PlayDifficulty.Easy);
+            NoteData[] normal = PrototypeDanceChart.Create(120d, duration, PlayDifficulty.Normal);
+            NoteData[] hard = PrototypeDanceChart.Create(120d, duration, PlayDifficulty.Hard);
+
+            Assert.That(easy.Length / duration, Is.EqualTo(1d).Within(0.0001d));
+            Assert.That(normal.Length / duration, Is.GreaterThan(easy.Length / duration));
+            Assert.That(normal.Length / duration, Is.LessThan(hard.Length / duration));
+        }
+
+        [Test]
+        public void Create_HardCoversAllFifteenTwoLaneChordCombinations()
+        {
+            NoteData[] hard = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Hard);
+            int[] chordMasks = hard.Where(x => x.IsChord).Select(x => x.RequiredLanesMask).Distinct().ToArray();
+
+            Assert.That(chordMasks.Length, Is.EqualTo(15));
+            Assert.That(chordMasks.All(mask => CountBits(mask) == 2), Is.True);
         }
 
         [Test]
@@ -148,6 +169,18 @@ namespace YingYun.Rhythm.Tests
         public void Create_InvalidBpmThrows(double bpm)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => PrototypeDanceChart.Create(bpm, 10d));
+        }
+
+        private static int CountBits(int mask)
+        {
+            int count = 0;
+            while (mask != 0)
+            {
+                count += mask & 1;
+                mask >>= 1;
+            }
+
+            return count;
         }
     }
 }

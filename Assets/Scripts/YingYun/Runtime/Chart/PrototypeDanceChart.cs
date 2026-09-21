@@ -23,13 +23,31 @@ namespace YingYun.Rhythm.Chart
         /// <summary>長按長度（拍）：120 BPM 下等於 1 秒。</summary>
         private const double HoldBeats = 2d;
 
-        /// <summary>
-        /// 輪替長按的部位順序。身體（S）不在其中：S 每個樂句都固定有「長按 + 點按」，
-        /// 其餘五個部位每 5 個樂句（20 秒）輪到一次。
-        /// </summary>
-        private static readonly int[] RotationLanes =
+        private static readonly int[] NormalChordMasks =
         {
-            LeftHandLane, RightHandLane, HeadLane, LeftFootLane, RightFootLane
+            Mask(LeftHandLane, RightHandLane),
+            Mask(LeftFootLane, RightFootLane),
+            Mask(HeadLane, BodyLane)
+        };
+
+        /// <summary>六軌任取兩軌的 15 種組合；Hard 依序輪替，避免只重複雙手／雙腳。</summary>
+        private static readonly int[] HardChordMasks =
+        {
+            Mask(LeftHandLane, HeadLane),
+            Mask(LeftHandLane, RightHandLane),
+            Mask(LeftHandLane, LeftFootLane),
+            Mask(LeftHandLane, BodyLane),
+            Mask(LeftHandLane, RightFootLane),
+            Mask(HeadLane, RightHandLane),
+            Mask(HeadLane, LeftFootLane),
+            Mask(HeadLane, BodyLane),
+            Mask(HeadLane, RightFootLane),
+            Mask(RightHandLane, LeftFootLane),
+            Mask(RightHandLane, BodyLane),
+            Mask(RightHandLane, RightFootLane),
+            Mask(LeftFootLane, BodyLane),
+            Mask(LeftFootLane, RightFootLane),
+            Mask(BodyLane, RightFootLane)
         };
 
         public static NoteData[] Create(double bpm, double durationSeconds)
@@ -54,82 +72,77 @@ namespace YingYun.Rhythm.Chart
                 return CreateEasy(durationSeconds);
             }
 
+            return difficulty == PlayDifficulty.Hard
+                ? CreateHard(bpm, durationSeconds)
+                : CreateNormal(bpm, durationSeconds);
+        }
+
+        private static NoteData[] CreateNormal(double bpm, double durationSeconds)
+        {
             double beatDuration = 60d / bpm;
             double phraseDuration = beatDuration * BeatsPerPhrase;
             int phraseCount = (int)Math.Floor(durationSeconds / phraseDuration);
-            var notes = new List<NoteData>((phraseCount * 7) + 1);
+            var notes = new List<NoteData>((phraseCount * 6) + 1);
             int noteId = 1;
 
             for (int phrase = 0; phrase < phraseCount; phrase++)
             {
                 double start = phrase * phraseDuration;
+                int laneBase = phrase % 6;
+                notes.Add(Tap(noteId++, laneBase, start, phrase));
+                notes.Add(Tap(noteId++, (laneBase + 1) % 6, start + (2d * beatDuration), phrase));
 
-                // 輪替長按：手／頭落在第 5–7 拍，腳落在第 2–4 拍，
-                // 都避開同軌的點按，避免出現「按住時還要再打同一顆」的無解音符。
-                int featuredLane = RotationLanes[phrase % RotationLanes.Length];
-                bool footHold = featuredLane == LeftFootLane || featuredLane == RightFootLane;
-                bool handOrHeadHold = !footHold;
-
-                notes.Add(Tap(noteId++, LeftHandLane, start, phrase));
-                notes.Add(Tap(noteId++, RightHandLane, start + beatDuration, phrase));
-                notes.Add(Chord(
-                    noteId++,
-                    LeftHandLane,
-                    Mask(LeftHandLane, RightHandLane),
-                    start + (2d * beatDuration),
-                    phrase));
-
-                if (footHold)
+                if (phrase % 2 == 0)
                 {
-                    notes.Add(Hold(
-                        noteId++,
-                        featuredLane,
-                        start + (2d * beatDuration),
-                        HoldBeats * beatDuration,
-                        phrase));
+                    int mask = NormalChordMasks[(phrase / 2) % NormalChordMasks.Length];
+                    notes.Add(Chord(noteId++, FirstLane(mask), mask, start + (3d * beatDuration), phrase));
+                }
+                else
+                {
+                    notes.Add(Tap(noteId++, (laneBase + 2) % 6, start + (3d * beatDuration), phrase));
                 }
 
-                notes.Add(Tap(noteId++, HeadLane, start + (3d * beatDuration), phrase));
-                notes.Add(Hold(
-                    noteId++,
-                    BodyLane,
-                    start + (4d * beatDuration),
-                    HoldBeats * beatDuration,
-                    phrase));
-
-                if (handOrHeadHold)
-                {
-                    notes.Add(Hold(
-                        noteId++,
-                        featuredLane,
-                        start + (5d * beatDuration),
-                        HoldBeats * beatDuration,
-                        phrase));
-                }
-
-                notes.Add(Tap(noteId++, LeftFootLane, start + (6d * beatDuration), phrase));
-                notes.Add(Tap(noteId++, RightFootLane, start + (7d * beatDuration), phrase));
-                notes.Add(Tap(noteId++, BodyLane, start + (7d * beatDuration), phrase));
-
-                if (difficulty == PlayDifficulty.Hard)
-                {
-                    notes.Add(Tap(noteId++, BodyLane, start + (0.5d * beatDuration), phrase));
-                    notes.Add(Chord(
-                        noteId++,
-                        LeftFootLane,
-                        Mask(LeftFootLane, RightFootLane),
-                        start + (6.5d * beatDuration),
-                        phrase));
-                }
+                notes.Add(Hold(noteId++, (laneBase + 3) % 6, start + (4d * beatDuration), HoldBeats * beatDuration, phrase));
+                notes.Add(Tap(noteId++, (laneBase + 4) % 6, start + (6d * beatDuration), phrase));
+                notes.Add(Tap(noteId++, (laneBase + 5) % 6, start + (7d * beatDuration), phrase));
             }
 
-            int finaleSegment = phraseCount;
-            notes.Add(Chord(
-                noteId,
-                LeftHandLane,
-                Mask(LeftHandLane, RightHandLane),
-                durationSeconds,
-                finaleSegment));
+            int finaleMask = NormalChordMasks[phraseCount % NormalChordMasks.Length];
+            notes.Add(Chord(noteId, FirstLane(finaleMask), finaleMask, durationSeconds, phraseCount));
+            return notes.ToArray();
+        }
+
+        private static NoteData[] CreateHard(double bpm, double durationSeconds)
+        {
+
+            double beatDuration = 60d / bpm;
+            double phraseDuration = beatDuration * BeatsPerPhrase;
+            int phraseCount = (int)Math.Floor(durationSeconds / phraseDuration);
+            var notes = new List<NoteData>((phraseCount * 11) + 1);
+            int noteId = 1;
+
+            for (int phrase = 0; phrase < phraseCount; phrase++)
+            {
+                double start = phrase * phraseDuration;
+                notes.Add(Tap(noteId++, LeftHandLane, start, phrase));
+                notes.Add(Tap(noteId++, BodyLane, start + (0.5d * beatDuration), phrase));
+                notes.Add(Tap(noteId++, RightHandLane, start + beatDuration, phrase));
+                int firstMask = HardChordMasks[(phrase * 2) % HardChordMasks.Length];
+                notes.Add(Chord(noteId++, FirstLane(firstMask), firstMask, start + (2d * beatDuration), phrase));
+                notes.Add(Tap(noteId++, HeadLane, start + (3d * beatDuration), phrase));
+                notes.Add(Hold(noteId++, BodyLane, start + (4d * beatDuration), HoldBeats * beatDuration, phrase));
+                notes.Add(Tap(noteId++, phrase % 2 == 0 ? LeftHandLane : RightHandLane,
+                    start + (5d * beatDuration), phrase));
+                notes.Add(Tap(noteId++, LeftFootLane, start + (6d * beatDuration), phrase));
+                int secondMask = HardChordMasks[((phrase * 2) + 1) % HardChordMasks.Length];
+                notes.Add(Chord(noteId++, FirstLane(secondMask), secondMask, start + (6.5d * beatDuration), phrase));
+                notes.Add(Tap(noteId++, RightFootLane, start + (7d * beatDuration), phrase));
+                notes.Add(Tap(noteId++, phrase % 2 == 0 ? RightHandLane : LeftHandLane,
+                    start + (7.5d * beatDuration), phrase));
+            }
+
+            int finaleMask = HardChordMasks[(phraseCount * 2) % HardChordMasks.Length];
+            notes.Add(Chord(noteId, FirstLane(finaleMask), finaleMask, durationSeconds, phraseCount));
             notes.Sort((left, right) => left.TimeSec.CompareTo(right.TimeSec));
             return notes.ToArray();
         }
@@ -177,6 +190,19 @@ namespace YingYun.Rhythm.Chart
         private static int Mask(int firstLane, int secondLane)
         {
             return (1 << firstLane) | (1 << secondLane);
+        }
+
+        private static int FirstLane(int mask)
+        {
+            for (int lane = 0; lane < 6; lane++)
+            {
+                if ((mask & (1 << lane)) != 0)
+                {
+                    return lane;
+                }
+            }
+
+            throw new ArgumentException("Chord mask must contain at least one lane.", nameof(mask));
         }
     }
 }

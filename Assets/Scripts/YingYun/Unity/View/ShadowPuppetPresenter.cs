@@ -35,6 +35,7 @@ namespace YingYun.Rhythm.View
         private Transform _rightShinJoint;
         private Sprite _squareSprite;
         private Sprite _circleSprite;
+        private Sprite _backgroundSprite;
         private Texture2D _squareTexture;
         private Texture2D _circleTexture;
         private Material _lineMaterial;
@@ -43,6 +44,7 @@ namespace YingYun.Rhythm.View
         public int JointCount => 10;
         public int RodCount => _rods.Length;
         public int StringCount => RodCount;
+        public bool HasBackgroundPicture => _backgroundSprite != null;
         public float LeftUpperArmRotation => _leftUpperArmJoint == null ? 0f : _leftUpperArmJoint.localEulerAngles.z;
         public float LeftForearmRotation => _leftForearmJoint == null ? 0f : _leftForearmJoint.localEulerAngles.z;
         public float RightUpperArmRotation => _rightUpperArmJoint == null ? 0f : _rightUpperArmJoint.localEulerAngles.z;
@@ -138,6 +140,19 @@ namespace YingYun.Rhythm.View
             var root = new GameObject("M6 Shadow Puppet Stage");
             root.transform.SetParent(transform, false);
             _visualRoot = root.transform;
+
+            Texture2D backgroundTexture = Resources.Load<Texture2D>("YingYun/backgroundpicture");
+            if (backgroundTexture != null)
+            {
+                float pixelsPerUnit = backgroundTexture.height / 10f;
+                _backgroundSprite = Sprite.Create(
+                    backgroundTexture,
+                    new Rect(0f, 0f, backgroundTexture.width, backgroundTexture.height),
+                    new Vector2(0.5f, 0.5f),
+                    pixelsPerUnit);
+                CreateSprite("Traditional Shadow Play Background", _visualRoot, Vector3.zero, Vector2.one,
+                    new Color(0.86f, 0.86f, 0.86f, 1f), -20, _backgroundSprite);
+            }
 
             CreateSprite("Warm Backlight", _visualRoot, Vector3.zero, new Vector2(5.4f, 6.15f),
                 new Color(1f, 0.73f, 0.32f, 0.22f), -7, _circleSprite);
@@ -411,6 +426,7 @@ namespace YingYun.Rhythm.View
             if (_lineMaterial != null) Destroy(_lineMaterial);
             if (_squareSprite != null) Destroy(_squareSprite);
             if (_circleSprite != null) Destroy(_circleSprite);
+            if (_backgroundSprite != null) Destroy(_backgroundSprite);
             if (_squareTexture != null) Destroy(_squareTexture);
             if (_circleTexture != null) Destroy(_circleTexture);
         }

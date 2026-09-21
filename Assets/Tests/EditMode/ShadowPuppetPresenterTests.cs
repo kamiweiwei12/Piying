@@ -23,6 +23,8 @@ namespace YingYun.Rhythm.Tests
 
             Assert.That(presenter.JointCount, Is.EqualTo(10));
             Assert.That(presenter.RodCount, Is.EqualTo(6));
+            Assert.That(presenter.HasBackgroundPicture, Is.True);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Traditional Shadow Play Background"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Joint Left Elbow"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Bamboo Control Rod 0"), Is.Not.Null);
