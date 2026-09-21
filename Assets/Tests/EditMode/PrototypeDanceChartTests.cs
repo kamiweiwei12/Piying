@@ -13,7 +13,7 @@ namespace YingYun.Rhythm.Tests
         {
             NoteData[] notes = PrototypeDanceChart.Create(120d, 180d);
 
-            Assert.That(notes.Length, Is.EqualTo(316));
+            Assert.That(notes.Length, Is.EqualTo(406));
             Assert.That(notes.Select(x => x.Id).Distinct().Count(), Is.EqualTo(notes.Length));
             Assert.That(notes.Zip(notes.Skip(1), (left, right) => left.TimeSec <= right.TimeSec).All(x => x), Is.True);
             Assert.That(notes[notes.Length - 1].TimeSec, Is.EqualTo(180d).Within(0.0000001d));
@@ -29,6 +29,54 @@ namespace YingYun.Rhythm.Tests
                 Assert.That(segment.Any(x => x.Kind == NoteKind.Tap && !x.IsChord), Is.True);
                 Assert.That(segment.Any(x => x.Kind == NoteKind.Hold), Is.True);
                 Assert.That(segment.Any(x => x.IsChord), Is.True);
+            }
+        }
+
+        [Test]
+        public void Create_AllSixLanesFeatureBothTapAndHold()
+        {
+            NoteData[] notes = PrototypeDanceChart.Create(120d, 24d);
+
+            for (int lane = 0; lane < 6; lane++)
+            {
+                int captured = lane;
+                Assert.That(
+                    notes.Any(x => x.Lane == captured && x.Kind == NoteKind.Tap),
+                    Is.True,
+                    $"lane {captured} needs a tap note");
+                Assert.That(
+                    notes.Any(x => x.Lane == captured && x.Kind == NoteKind.Hold),
+                    Is.True,
+                    $"lane {captured} needs a hold note");
+            }
+        }
+
+        [Test]
+        public void Create_HoldNotesAreTwoBeatsLong()
+        {
+            NoteData[] notes = PrototypeDanceChart.Create(120d, 36d);
+            NoteData[] holds = notes.Where(x => x.Kind == NoteKind.Hold).ToArray();
+
+            Assert.That(holds.Length, Is.GreaterThan(0));
+            Assert.That(holds.All(x => Math.Abs(x.DurationSec - 1d) < 0.001d), Is.True);
+        }
+
+        [Test]
+        public void Create_NoLaneHasOverlappingNotes()
+        {
+            NoteData[] notes = PrototypeDanceChart.Create(120d, 180d);
+
+            foreach (IGrouping<int, NoteData> lane in notes.GroupBy(x => x.Lane))
+            {
+                NoteData[] ordered = lane.OrderBy(x => x.TimeSec).ToArray();
+                for (int i = 1; i < ordered.Length; i++)
+                {
+                    double previousEnd = ordered[i - 1].TimeSec + ordered[i - 1].DurationSec;
+                    Assert.That(
+                        previousEnd <= ordered[i].TimeSec + 1e-9d,
+                        Is.True,
+                        $"lane {lane.Key} overlaps at {previousEnd:F3}s -> {ordered[i].TimeSec:F3}s");
+                }
             }
         }
 

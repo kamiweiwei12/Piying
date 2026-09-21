@@ -152,6 +152,40 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void HoldStarted_KeepsTheArmRaisedUntilRelease()
+        {
+            var root = new GameObject("Puppet Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.Tick(1d);
+            presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
+            presenter.OnJudged(new JudgmentResult(
+                JudgmentEventKind.HoldStarted,
+                2,
+                0,
+                JudgmentGrade.Perfect,
+                0d,
+                0,
+                0,
+                0d,
+                1 << 0));
+
+            presenter.Tick(1.6d);
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-45f));
+
+            presenter.Tick(2.4d);
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.LessThan(-45f));
+            Assert.That(presenter.GetStringTension(0), Is.GreaterThan(0.95f));
+
+            presenter.OnInput(new HitInput(2.5d, 0, InputKind.Release));
+            presenter.Tick(3.2d);
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.GreaterThan(-20f));
+            Assert.That(presenter.GetStringTension(0), Is.LessThan(0.05f));
+
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void Sequence_KeepsThePuppetMovingWithoutSlidingThePelvis()
         {
             var root = new GameObject("Puppet Test");

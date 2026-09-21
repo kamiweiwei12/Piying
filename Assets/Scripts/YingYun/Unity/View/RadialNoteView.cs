@@ -14,8 +14,12 @@ namespace YingYun.Rhythm.View
         private readonly Color[] _laneColors = new Color[LaneCount];
         private LineRenderer _chordLine;
         private LineRenderer _holdTrail;
+        private SpriteRenderer _holdHead;
         private float _baseScale;
+        private float _bodyWidth;
+        private float _bodyLength;
         private double _durationSec;
+        private bool _isHold;
         private bool _isHolding;
 
         public int NoteId { get; private set; }
@@ -27,6 +31,11 @@ namespace YingYun.Rhythm.View
         public bool IsChordVisualActive => _chordLine != null && _chordLine.gameObject.activeSelf;
         public bool IsHoldVisualActive => _holdTrail != null && _holdTrail.gameObject.activeSelf;
         public bool IsHolding => _isHolding;
+        public bool IsHoldNote => _isHold;
+        public bool IsHoldHeadActive => _holdHead != null && _holdHead.gameObject.activeSelf;
+        public Vector3 NoteMarkerScale => _markers[Lane] == null ? Vector3.zero : _markers[Lane].transform.localScale;
+        public Color NoteMarkerColor => _markers[Lane] == null ? Color.clear : _markers[Lane].color;
+        public Vector3 NoteMarkerUp => _markers[Lane] == null ? Vector3.up : _markers[Lane].transform.up;
         public int ActiveMarkerCount
         {
             get
@@ -66,6 +75,15 @@ namespace YingYun.Rhythm.View
 
             _chordLine = CreateLine("Chord Link", lineMaterial, 19, 0.08f);
             _holdTrail = CreateLine("Hold Trail", lineMaterial, 18, 0.16f);
+
+            // 長按音符的頭端圓帽：長條橢圓的起點，提示「從這裡按下去」。
+            var headObject = new GameObject("Hold Head Cap");
+            headObject.transform.SetParent(transform, false);
+            _holdHead = headObject.AddComponent<SpriteRenderer>();
+            _holdHead.sprite = sprite;
+            _holdHead.sortingOrder = 21;
+            headObject.SetActive(false);
+
             gameObject.SetActive(false);
         }
 
@@ -80,6 +98,9 @@ namespace YingYun.Rhythm.View
             NoteTimeSec = note.TimeSec;
             RequiredLanesMask = note.RequiredLanesMask;
             _durationSec = note.DurationSec;
+            _isHold = note.Kind == NoteKind.Hold;
+            _bodyWidth = _baseScale;
+            _bodyLength = _baseScale;
             _isHolding = false;
             IsResolved = false;
             ReleaseSongTimeSec = double.PositiveInfinity;
@@ -99,6 +120,7 @@ namespace YingYun.Rhythm.View
                 _markers[lane].color = laneColors[lane];
                 _markers[lane].transform.localScale = Vector3.one * _baseScale;
                 _markers[lane].transform.localPosition = spawnPositions[lane];
+                _markers[lane].transform.localRotation = Quaternion.identity;
             }
 
             _chordLine.gameObject.SetActive(note.IsChord);
@@ -109,6 +131,12 @@ namespace YingYun.Rhythm.View
             }
 
             _holdTrail.gameObject.SetActive(note.Kind == NoteKind.Hold);
+            _holdHead.gameObject.SetActive(_isHold);
+            if (_isHold)
+            {
+                _holdHead.color = laneColors[Lane];
+            }
+
             gameObject.SetActive(true);
         }
 
@@ -153,14 +181,37 @@ namespace YingYun.Rhythm.View
                     songTimeSec,
                     NoteTimeSec + _durationSec,
                     visibleLeadSec);
-                _holdTrail.SetPosition(0, head);
-                _holdTrail.SetPosition(1, tail);
+
                 Color color = _laneColors[Lane];
                 if (_isHolding)
                 {
                     color = Color.Lerp(color, new Color(1f, 0.88f, 0.28f), 0.55f);
                 }
 
+                // 點按是圓形；長按是沿軌道伸長的長條橢圓（類似太鼓達人的長音符）。
+                // 長度直接等於音符在軌道上的長度，所以尾巴一定在「放開時間」抵達判定點。
+                float holdProgress = RadialNoteGeometry.Progress(songTimeSec, NoteTimeSec, visibleLeadSec);
+                _bodyWidth = _baseScale * (1f + (0.12f * holdProgress) + (_isHolding ? 0.16f : 0f));
+                Vector2 direction = tail - head;
+                _bodyLength = Mathf.Max(direction.magnitude, _bodyWidth);
+
+                SpriteRenderer body = _markers[Lane];
+                body.color = color;
+                body.transform.localPosition = (head + tail) * 0.5f;
+                // 貼圖是圓形：拉的長軸在 local Y，因此旋轉量要把 local Y 對到軌道方向（方向角 − 90°）。
+                body.transform.localRotation = Quaternion.Euler(
+                    0f,
+                    0f,
+                    (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) - 90f);
+                body.transform.localScale = new Vector3(_bodyWidth, _bodyLength, 1f);
+
+                _holdHead.color = color;
+                _holdHead.transform.localPosition = head;
+                _holdHead.transform.localRotation = Quaternion.identity;
+                _holdHead.transform.localScale = Vector3.one * (_bodyWidth * 1.15f);
+
+                _holdTrail.SetPosition(0, head);
+                _holdTrail.SetPosition(1, tail);
                 _holdTrail.startColor = color;
                 _holdTrail.endColor = new Color(color.r, color.g, color.b, 0.35f);
             }
@@ -184,7 +235,14 @@ namespace YingYun.Rhythm.View
                 }
 
                 _markers[lane].color = resultColor;
-                _markers[lane].transform.localScale = Vector3.one * (_baseScale * 1.35f);
+                _markers[lane].transform.localScale = _isHold
+                    ? new Vector3(_bodyWidth * 1.35f, _bodyLength * 1.35f, 1f)
+                    : Vector3.one * (_baseScale * 1.35f);
+            }
+
+            if (_holdHead.gameObject.activeSelf)
+            {
+                _holdHead.color = resultColor;
             }
 
             SetLineColor(_chordLine, resultColor);
@@ -198,16 +256,21 @@ namespace YingYun.Rhythm.View
             NoteTimeSec = 0d;
             RequiredLanesMask = 0;
             _durationSec = 0d;
+            _isHold = false;
+            _bodyWidth = 0f;
+            _bodyLength = 0f;
             _isHolding = false;
             IsResolved = false;
             ReleaseSongTimeSec = double.PositiveInfinity;
             for (int lane = 0; lane < LaneCount; lane++)
             {
                 _markers[lane].gameObject.SetActive(false);
+                _markers[lane].transform.localRotation = Quaternion.identity;
             }
 
             _chordLine.gameObject.SetActive(false);
             _holdTrail.gameObject.SetActive(false);
+            _holdHead.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }
 

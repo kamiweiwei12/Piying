@@ -116,6 +116,9 @@ namespace YingYun.Rhythm.Puppet
         // 峰值對齊 ActionBinding 宣告的角度（彈簧回彈會略微過衝，因此驅動力先縮小）。
         private const double DriveAmplitudeScale = 0.88d;
 
+        // 長按期間要維持在「宣告角度」而不是過渡幅度：手持續舉起、繩索持續拉緊。
+        private const double HoldSustainScale = 1d / DriveAmplitudeScale;
+
         // 按下瞬間繩索先頓拉一下：這是「拉扯感」的來源，之後才由彈簧與慣性接手。
         private const double DriveKickRate = 2.0d;
 
@@ -142,6 +145,7 @@ namespace YingYun.Rhythm.Puppet
         private readonly double[] _driveAmplitude = new double[LaneCount * DrivesPerLane];
         private readonly double[] _driveTaut = new double[LaneCount * DrivesPerLane];
         private readonly double[] _driveSecondary = new double[LaneCount * DrivesPerLane];
+        private readonly double[] _driveKickAmplitude = new double[LaneCount * DrivesPerLane];
         private readonly bool[] _driveKickPending = new bool[LaneCount * DrivesPerLane];
         private readonly int[] _nextDriveSlot = new int[LaneCount];
         private readonly double[] _lastPressSeconds = new double[LaneCount];
@@ -196,7 +200,8 @@ namespace YingYun.Rhythm.Puppet
                     songTimeSec,
                     VariationAmplitude[variation],
                     VariationTaut[variation],
-                    VariationSecondary[variation]);
+                    VariationSecondary[variation],
+                    VariationAmplitude[variation]);
             }
         }
 
@@ -213,7 +218,9 @@ namespace YingYun.Rhythm.Puppet
                 _holdStartSeconds[lane] = songTimeSec;
                 _lastPressSeconds[lane] = songTimeSec;
                 _variationIndex[lane] = 0;
-                AddDrive(lane, songTimeSec, VariationAmplitude[0], 0d, VariationSecondary[0]);
+
+                // 長按的持續力道由平台負責，這裡只留下按下瞬間的頓拉與繩索張力，避免兩者相加而過度彎折。
+                AddDrive(lane, songTimeSec, 0d, 0d, VariationSecondary[0], VariationAmplitude[0]);
             }
         }
 
@@ -245,7 +252,7 @@ namespace YingYun.Rhythm.Puppet
                 releasedHold = true;
 
                 // 放開後繩索回鬆：關節帶著剛才的慣性滑行，再由彈簧拉回並產生一次反向回彈。
-                AddDrive(lane, songTimeSec, 1d, 0d, VariationSecondary[0]);
+                AddDrive(lane, songTimeSec, 1d, 0d, VariationSecondary[0], 0d);
             }
 
             return releasedHold;
@@ -364,6 +371,7 @@ namespace YingYun.Rhythm.Puppet
                 _driveAmplitude[slot] = 0d;
                 _driveTaut[slot] = 0d;
                 _driveSecondary[slot] = 1d;
+                _driveKickAmplitude[slot] = 0d;
                 _driveKickPending[slot] = false;
             }
 
@@ -397,7 +405,13 @@ namespace YingYun.Rhythm.Puppet
             return _variationIndex[lane];
         }
 
-        private void AddDrive(int lane, double songTimeSec, double amplitude, double tautSeconds, double secondary)
+        private void AddDrive(
+            int lane,
+            double songTimeSec,
+            double amplitude,
+            double tautSeconds,
+            double secondary,
+            double kickAmplitude)
         {
             int slot = (lane * DrivesPerLane) + _nextDriveSlot[lane];
             _nextDriveSlot[lane] = (_nextDriveSlot[lane] + 1) % DrivesPerLane;
@@ -405,6 +419,7 @@ namespace YingYun.Rhythm.Puppet
             _driveAmplitude[slot] = amplitude;
             _driveTaut[slot] = tautSeconds;
             _driveSecondary[slot] = secondary;
+            _driveKickAmplitude[slot] = kickAmplitude;
             _driveKickPending[slot] = true;
         }
 
@@ -423,7 +438,7 @@ namespace YingYun.Rhythm.Puppet
                     }
 
                     _driveKickPending[slot] = false;
-                    ApplyKick(lane, _driveAmplitude[slot], _driveSecondary[slot]);
+                    ApplyKick(lane, _driveKickAmplitude[slot], _driveSecondary[slot]);
                 }
             }
         }
@@ -526,7 +541,7 @@ namespace YingYun.Rhythm.Puppet
 
                 if (_holding[lane])
                 {
-                    double held = HoldWeight(songTimeSec - _holdStartSeconds[lane]);
+                    double held = HoldWeight(songTimeSec - _holdStartSeconds[lane]) * HoldSustainScale;
                     primary += held;
                     secondary += held * VariationSecondary[0];
                     tension += held;

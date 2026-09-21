@@ -290,6 +290,35 @@ namespace YingYun.Rhythm.Tests
             Assert.That(total / samples, Is.GreaterThan(12d));
         }
 
+        [Test]
+        public void Hold_KeepsTheArmRaisedForTheWholeHold()
+        {
+            var evaluator = new PuppetPoseEvaluator(PrototypeActionBindings.All);
+            evaluator.BeginHold(1 << 0, 1d);
+
+            foreach (double songTime in new[] { 1.4d, 1.6d, 1.8d, 2d, 2.2d, 2.6d })
+            {
+                PuppetPose pose = evaluator.Evaluate(songTime);
+                Assert.That(pose.LeftUpperArm, Is.EqualTo(-52d).Within(8d), $"songTime={songTime}");
+                Assert.That(pose.LeftHandTension, Is.EqualTo(1d).Within(0.01d), $"songTime={songTime}");
+            }
+        }
+
+        [Test]
+        public void Hold_SustainsWhileATapDecays()
+        {
+            var hold = new PuppetPoseEvaluator(PrototypeActionBindings.All);
+            var tap = new PuppetPoseEvaluator(PrototypeActionBindings.All);
+            hold.BeginHold(1 << 0, 0d);
+            tap.Trigger(1 << 0, 0d);
+
+            double raised = Math.Abs(hold.Evaluate(1.2d).LeftUpperArm);
+            double decayed = Math.Abs(tap.Evaluate(1.2d).LeftUpperArm);
+
+            Assert.That(raised, Is.GreaterThan(45d));
+            Assert.That(decayed, Is.LessThan(12d));
+        }
+
         private static double Extreme(
             PuppetPoseEvaluator evaluator,
             Func<PuppetPose, double> selector,

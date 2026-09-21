@@ -155,6 +155,7 @@ namespace YingYun.Rhythm.View
                     holdView.BeginHold();
                 }
 
+                ShowJudgmentText(JudgmentLabels.HoldHolding, new Color(1f, 0.88f, 0.28f));
                 return;
             }
 
@@ -176,17 +177,16 @@ namespace YingYun.Rhythm.View
             }
 
             Color resultColor = GradeColor(result.Grade);
+            bool isHoldNote = false;
+            bool wasHolding = false;
             if (_byNoteId.TryGetValue(result.NoteId, out RadialNoteView view))
             {
+                isHoldNote = view.IsHoldNote;
+                wasHolding = view.IsHolding;
                 view.Resolve(resultColor, _currentSongTime + releaseDelaySeconds);
             }
 
-            if (_judgmentText != null)
-            {
-                _judgmentText.text = GradeText(result.Grade);
-                _judgmentText.color = resultColor;
-                _judgmentTextClearSongTime = _currentSongTime + releaseDelaySeconds;
-            }
+            ShowJudgmentText(JudgmentLabels.For(result, isHoldNote, wasHolding), resultColor);
         }
 
         private void BuildPlayfield()
@@ -310,6 +310,18 @@ namespace YingYun.Rhythm.View
             }
         }
 
+        private void ShowJudgmentText(string text, Color color)
+        {
+            if (_judgmentText == null)
+            {
+                return;
+            }
+
+            _judgmentText.text = text;
+            _judgmentText.color = color;
+            _judgmentTextClearSongTime = _currentSongTime + releaseDelaySeconds;
+        }
+
         private void UpdateStageFeedback(double songTimeSec)
         {
             if (_stageRenderer == null || songTimeSec < _stageFeedbackClearSongTime)
@@ -353,18 +365,6 @@ namespace YingYun.Rhythm.View
                     return new Color(1f, 0.25f, 0.25f);
                 default:
                     return Color.white;
-            }
-        }
-
-        private static string GradeText(JudgmentGrade grade)
-        {
-            switch (grade)
-            {
-                case JudgmentGrade.Perfect: return "契合";
-                case JudgmentGrade.Great: return "协律";
-                case JudgmentGrade.Good: return "应拍";
-                case JudgmentGrade.Miss: return "空引";
-                default: return string.Empty;
             }
         }
 
