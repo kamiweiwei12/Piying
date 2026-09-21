@@ -24,6 +24,52 @@
 
 ---
 
+## [2026-09-21] M6.5 - 從吊線木偶重構為數位皮影操演
+
+### 新增
+
+* `PerformanceIntent`：六軌改以 `LeftLead / Lift / RightLead / LeftStep / Sink / RightStep` 表達操演意圖，部位映射仍由 `ActionBinding` 資料驅動。
+* 灰盒皮影戲台：半透明紙幕、背光、木框、遠景剪影、冠飾、寬袖、衣擺與可見鉚釘關節。
+* 六根側向／下方剛性竹製操縱桿；按鍵後杆端立即位移，再由既有彈簧－阻尼關節系統產生連續動作。
+
+### 修改
+
+* `ShadowPuppetPresenter` 不再建立由頂部垂下、會下墜彎曲的 `Control String`；改為直線竹桿、竹柄與關節連接點。
+* `RhythmPrototypeController` 啟動紀錄改為 M6.5 `rod-driven-spring-joint`，判定、計分、時鐘、譜面與輸入契約均未修改。
+* 保留 `StringCount` / `GetStringTension` 相容入口供舊測試與呼叫端過渡，正式語義改為 `RodCount` / `GetRodDrive`。
+
+### 測試
+
+* Unity EditMode 全量測試：**91/91 通過**，含新增「六種操演意圖唯一」與「六竹桿存在、舊 Control String 不存在」回歸檢查。
+* 視覺驗收圖：`Logs/M6-5-shadow-play-chord.png`（1280×720；不進版控），可見紙幕背光、戲台框、分片衣袖／衣擺、冠飾、鉚釘與側向竹桿。
+* Connected Editor Windows build：`Builds/M6.5/YingYun.exe`，**Succeeded**，0 error，134,390,600 bytes，19.132 秒。187 項為既有 Inference/Shader 變體警告。
+* Unity Console 編譯狀態：`compilationFailed=false`。
+
+### 驗收結果
+
+* ✅ 核心畫面不再使用頂部吊線木偶語言；控制裝置為硬直竹桿，杆端與關節的因果連接清楚。
+* ✅ 六軌已從裸露的身體部位提升為六種操演意圖，未把輸入、判定或計分耦合進 View。
+* ✅ Tap／Hold／Chord 與連續彈簧運動全部維持原有行為，全量測試無回歸。
+* ✅ 不依賴 Renderer2D、Light2D、新套件或 ProjectSettings 修改即可成立灰盒皮影舞台。
+
+### Git Commit
+
+* `ba24746` `feat(m6.5): replace puppet strings with shadow play rods`
+* `docs(m6.5): record digital shadow play redesign`（本條目所在的文件提交）
+
+### 風險 / 已知問題
+
+* 目前仍是程式生成的幾何灰盒；已具皮影構圖語言，但正式分層皮革／透光 Sprite、角色側臉輪廓與竹節細節仍待美術替換。
+* 舊測試方法名稱與 `PuppetPose` 的 `Tension` 欄位仍帶有繩索歷史命名，為避免本輪擴大重構而保留；後續應以獨立提交清理。
+* 獨立 batch build 因第二個 Unity 程序無法寫授權資料庫而失敗；改由已連接 Editor 建置成功，非程式錯誤。
+
+### 下一步
+
+* 使用者在 `Builds/M6.5/YingYun.exe` 實機驗收：第一眼是否像皮影戲、六杆與六方向是否容易理解、Hold 是否呈現持續操演。
+* 驗收後再決定是否進一步加入動作短語／Combo 舞台光影，或進入 M7。
+
+---
+
 ## [2026-09-21] M6.2 - 六鍵點按與長按：長條音符與持續操偶
 
 ### 新增
