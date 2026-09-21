@@ -63,7 +63,7 @@
 
 ### Git Commit
 
-* 待提交。
+* `95109d2` `feat(m6): add joint-driven shadow puppet performance`
 
 ### 風險 / 已知問題
 
