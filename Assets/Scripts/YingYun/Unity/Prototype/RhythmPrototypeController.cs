@@ -30,6 +30,7 @@ namespace YingYun.Rhythm.Prototype
         private InputSystemNoteInputSource _input;
         private JudgmentEngine _judgment;
         private RadialNotePresenter _presenter;
+        private ShadowPuppetPresenter _puppet;
         private GameplayHudPresenter _hud;
         private int _lastBeat = int.MinValue;
         private int _noteCount;
@@ -65,6 +66,17 @@ namespace YingYun.Rhythm.Prototype
                 _presenter = gameObject.AddComponent<RadialNotePresenter>();
             }
 
+            _puppet = GetComponent<ShadowPuppetPresenter>();
+            if (_puppet == null)
+            {
+                _puppet = gameObject.AddComponent<ShadowPuppetPresenter>();
+            }
+
+            Debug.Log(string.Format(
+                "[M6] puppet-ready | joints={0} | strings={1} | motion=joint-rotation",
+                _puppet.JointCount,
+                _puppet.StringCount));
+
             _hud = GetComponent<GameplayHudPresenter>();
             if (_hud == null)
             {
@@ -94,11 +106,13 @@ namespace YingYun.Rhythm.Prototype
             }
 
             _presenter.Tick(_clock.SongTime);
+            _puppet.Tick(_clock.SongTime);
             _judgment.Advance(_frameResults);
             for (int i = 0; i < _frameResults.Count; i++)
             {
                 JudgmentResult result = _frameResults[i];
                 _presenter.OnJudged(result);
+                _puppet.OnJudged(result);
                 _hud.OnJudged(result);
                 if (result.EventKind == JudgmentEventKind.HoldStarted)
                 {
@@ -204,6 +218,7 @@ namespace YingYun.Rhythm.Prototype
             _noteCount = notes.Length;
             _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
             _presenter.Begin(notes);
+            _puppet.Begin();
             _hud.Begin(notes.Length, DifficultyConfig.Prototype);
             _clock.Schedule(music, leadInSeconds, audioOffsetSeconds);
 

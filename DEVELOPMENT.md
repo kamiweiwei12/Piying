@@ -40,9 +40,9 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M5 已結案**；下一個工作單位為 **M6 皮影角色**（`PuppetRig`、`ActionBinding`、六部位舞蹈） |
+| 目前 Milestone | **M6 已結案**；下一個工作單位為 **M7 可玩 Demo**（難度、流程、校準與 Windows 出包） |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | M5 已提供 Hold、原子組合音符、段落完成／中斷事件與 180 秒核心玩法譜面。正式皮影美術、`PuppetRig` 與部位動畫仍屬 M6；Windows build 的鍵盤重開尚未以實體輸入補測 |
+| 重大缺口 | M6 已提供資料驅動六部位關節操偶、控制線張力與幾何皮影舞台；正式分層皮影 Sprite 仍待美術替換。M7 尚缺三難度、選曲流程、延遲校準與最終 Windows 出包體驗 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
@@ -105,10 +105,10 @@
 - [x] 舞蹈連貫度：整段完成 / 中斷皆有事件與演出
 
 ### M6 — 皮影角色
-- [ ] 6 鍵各對應到正確部位動作（`ActionBinding` 資料驅動，可改鍵）
-- [ ] 一段 `Q → E → Q+E → D` 能形成肉眼可辨的連續舞蹈
-- [ ] 剪影 + 光幕視覺成立，且**不依賴 Renderer2D / 2D Light**
-- [ ] 動畫不驅動判定（判定仍只依 dsp 時間軸）
+- [x] 6 鍵各對應到正確部位動作（`ActionBinding` 資料驅動，可改鍵）
+- [x] 一段 `Q → E → Q+E → D` 能形成肉眼可辨的連續舞蹈
+- [x] 剪影 + 光幕視覺成立，且**不依賴 Renderer2D / 2D Light**
+- [x] 動畫不驅動判定（判定仍只依 dsp 時間軸）
 
 ### M7 — 可玩 Demo
 - [ ] 三難度（Easy / Normal / Hard）結構與數值差異明確
@@ -460,4 +460,5 @@ git --no-pager log --oneline -10
 | 1.3 | 2026-09-21 | M3 結案：六部位放射式音符視覺、物件池與判定回饋通過驗收；下一步回補 M2 真人數據 |
 | 1.4 | 2026-09-21 | M4 結案：四檔判定、`DifficultyConfig` 評級門檻、中文 HUD／結算面板、EditMode 32/32 與 Windows build 驗收 |
 | 1.5 | 2026-09-21 | M5 結案：嚴格 Hold 尾判、原子組合音符、段落合勢／斷勢回饋、180 秒舞蹈譜面、EditMode 51/51 與 Windows build 煙測 |
+| 1.6 | 2026-09-21 | M6 結案：資料驅動六部位關節操偶、六根控制線張力、Hold 持續拉扯、幾何剪影光幕、EditMode 63/63 與 Windows build 煙測 |
 

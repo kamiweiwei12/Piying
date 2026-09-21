@@ -24,6 +24,60 @@
 
 ---
 
+## [2026-09-21] M6 - 關節操偶與幾何皮影舞台
+
+### 新增
+
+* `ActionBinding`／`PrototypeActionBindings`：將六個 lane 資料化映射為 Q 左手、W 頭部、E 右手、A 左腳、S 軀幹、D 右腳，並分別配置主／次關節拉動角度；實體按鍵仍由 Input System 與 lane 解耦，可日後重綁。
+* `PuppetPoseEvaluator`：純 C# 絕對歌曲時間姿態計算器；Tap 產生拉起、反向回彈、回中曲線，Hold 維持張力直到尾判釋放，Miss 產生失勢姿態。
+* `ShadowPuppetPresenter`：執行期建立骨盆、頸、肩、肘、髖、膝父子關節鏈，六根操偶線與木製控制柄，以及暖色紙幕／深色剪影／紅色關節銷。
+* `PuppetPoseEvaluatorTests`、`ShadowPuppetPresenterTests`：驗證六部位映射、關節旋轉、組合拉線、Hold 張力、回彈、確定性與離屏視覺輸出。
+
+### 修改
+
+* `RhythmPrototypeController` 將同一份 `JudgmentResult` 與絕對 `songTime` 單向轉發給皮影 Presenter；角色动画不读取输入、不计算判定，也不回写 Combo／Score。
+* `RadialNotePresenter` 移除中央“皮影偶”文字占位，保留低层级段落反馈光晕，让真实几何关节偶位于画面中心。
+* 肢体动作全部绕肩、肘、髋、膝枢轴旋转；不以整体 Transform 横移模拟动作。控制线会从松弛弧线变为绷直高亮，释放后产生一次小幅反向回弹。
+
+### 测試
+
+* EditMode 全回归：`YingYun.Tests` → **total=63 / passed=63 / failed=0 / skipped=0**，duration=0.5696555 s。
+  * 六个 lane 与六个部位均唯一；键位顺序为 Q/W/E/A/S/D；绑定数组重排后仍按 lane 正确解析。
+  * Q 只旋转左肩／左肘，E 只旋转右肩／右肘，Q+E 同时拉动双臂，D 只旋转右髋／右膝且躯干不滑动。
+  * Hold 跨 3 秒仍保持 >95% 控制线张力；尾端释放后 0.6 秒内回中。
+  * 同一事件序列与同一 `songTime` 产生完全相同姿态。
+* 离屏视觉验收：1280×720 输出 `Logs/M6-puppet-chord.png`；检查暖色幕布、深色剪影、十个旋转关节、六根控制线和 Q+E 双臂受拉姿态均清晰可辨。
+* Windows x64：`Builds/M6/YingYun.exe` 构建成功，退出码 0；实际启动 10 秒输出 `[M6] puppet-ready | joints=10 | strings=6 | motion=joint-rotation`，Player log 无脚本异常。
+
+### 驗收結果
+
+| M6 条件 | 结果 |
+|---|---|
+| 六键对应正确部位、ActionBinding 数据驱动 | ✅ lane 与实体按键解耦，六映射唯一且测试覆盖 |
+| `Q → E → Q+E → D` 形成连续动作 | ✅ 左肩链、右肩链、双肩链、右腿链依序受拉并带回弹 |
+| 剪影 + 光幕，不依赖 Renderer2D／Light2D | ✅ 仅使用 SpriteRenderer、LineRenderer 与运行时纹理 |
+| 动画不驱动判定 | ✅ Presenter 只消费 `JudgmentResult` 与 `songTime` |
+| 操偶拉扯感而非整体跳舞 | ✅ 固定关节旋转、控制线张力／松弛、Hold 持续拉力 |
+
+* **结论：M6 完成。** 几何替身已验证操偶机制；未来替换正式分层 Sprite 时不需要修改判定或姿态事件接口。
+
+### Git Commit
+
+* 待提交。
+
+### 風險 / 已知問題
+
+* 当前是几何人体比例与剪影占位，不是最终角色美术；正式素材需要按头、躯干、上／前臂、大／小腿拆层并提供正确关节 pivot。
+* 自动视觉图验证布局和姿态，实际按键拉扯手感仍可在正式美术进入后微调角度、回弹周期与张力颜色。
+* `.clinerules/01-project-context.md` 的里程碑文字仍停在 M4，与 DEVELOPMENT／Git 实况不一致；Rule 修改属于需批准事项，本轮未改。
+* `ProjectSettings/ProjectSettings.asset` 的 Unity AI 插件 define 变化为既有用户改动，未纳入 M6。
+
+### 下一步
+
+* 进入 M7：设计 Easy／Normal／Hard 数据差异、选曲到结算流程、延迟校准保存，以及最终 Windows Demo 出包；正式皮影分层素材可在任意时间替换几何部件。
+
+---
+
 ## [2026-09-21] M5 - Hold、組合音符與舞蹈連貫度
 
 ### 新增

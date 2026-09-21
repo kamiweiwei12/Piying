@@ -95,8 +95,8 @@ namespace YingYun.Rhythm.View
             _stageFeedbackClearSongTime = double.PositiveInfinity;
             if (_stageRenderer != null)
             {
-                _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.92f);
-                _stageRenderer.transform.localScale = new Vector3(2.35f, 3.55f, 1f);
+                _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.16f);
+                _stageRenderer.transform.localScale = new Vector3(2.8f, 4.0f, 1f);
             }
         }
 
@@ -223,27 +223,13 @@ namespace YingYun.Rhythm.View
 
         private void BuildCenterMarker()
         {
-            var center = new GameObject("Puppet Stage Placeholder");
+            var center = new GameObject("Segment Feedback Glow");
             center.transform.SetParent(_visualRoot, false);
             _stageRenderer = center.AddComponent<SpriteRenderer>();
             _stageRenderer.sprite = _noteSprite;
-            _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.92f);
-            _stageRenderer.sortingOrder = 1;
-            center.transform.localScale = new Vector3(2.35f, 3.55f, 1f);
-
-            var title = new GameObject("Puppet Label");
-            title.transform.SetParent(_visualRoot, false);
-            title.transform.localPosition = new Vector3(0f, 0f, -0.1f);
-            var text = title.AddComponent<TextMesh>();
-            text.anchor = TextAnchor.MiddleCenter;
-            text.alignment = TextAlignment.Center;
-            text.characterSize = 0.09f;
-            text.fontSize = 52;
-            text.fontStyle = FontStyle.Bold;
-            text.color = new Color(1f, 0.82f, 0.35f);
-            text.text = "皮影偶";
-            ApplyChineseFont(text);
-            text.GetComponent<MeshRenderer>().sortingOrder = 5;
+            _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.16f);
+            _stageRenderer.sortingOrder = -5;
+            center.transform.localScale = new Vector3(2.8f, 4.0f, 1f);
         }
 
         private void BuildReceptor(int lane)
@@ -310,7 +296,7 @@ namespace YingYun.Rhythm.View
             if (_stageRenderer != null)
             {
                 _stageRenderer.color = color;
-                _stageRenderer.transform.localScale = new Vector3(2.7f, 3.9f, 1f);
+                _stageRenderer.transform.localScale = new Vector3(3.0f, 4.2f, 1f);
             }
         }
 
@@ -321,8 +307,8 @@ namespace YingYun.Rhythm.View
                 return;
             }
 
-            _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.92f);
-            _stageRenderer.transform.localScale = new Vector3(2.35f, 3.55f, 1f);
+            _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.16f);
+            _stageRenderer.transform.localScale = new Vector3(2.8f, 4.0f, 1f);
             _stageFeedbackClearSongTime = double.PositiveInfinity;
         }
 
