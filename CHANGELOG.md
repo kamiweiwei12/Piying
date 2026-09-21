@@ -24,6 +24,42 @@
 
 ---
 
+## [2026-09-21] M6 fix - 自動 Miss 不再誤驅動木偶
+
+### 新增
+
+* 新增 `AutomaticMissWithoutInput_DoesNotMovePuppet` 回歸測試，鎖定無輸入時頭部、軀幹與 S 操偶線均保持靜止。
+
+### 修改
+
+* `ShadowPuppetPresenter` 不再把普通 `NoteJudged/Miss` 轉成全身失勢動作；木偶姿態現在只由真實 Q/W/E/A/S/D 輸入與有效 Hold 狀態驅動。
+* Miss 仍由判定、分數、HUD 與舞台視覺正常呈現，不影響原有失誤規則。
+
+### 測試
+
+* Unity EditMode 全回歸：**total=66 / passed=66 / failed=0 / skipped=0**。
+* Windows x64：`Builds/M6/YingYun.exe` 重新構建成功，**0 errors**。
+
+### 驗收結果
+
+* 無任何按鍵時，譜面自動 Miss 不再令頭部或身體重複旋轉，S 控制線張力維持 0。
+* 真實按鍵即使最終判為 Miss，仍會按先前規格立即拉動相應部位。
+
+### Git Commit
+
+* `1a7d68b` `fix(m6): stop automatic misses moving puppet`
+
+### 風險 / 已知問題
+
+* `PuppetPoseEvaluator` 內仍保留未接入 Presenter 的失勢曲線，供未來明確設計獨立失敗演出時使用；目前不會被一般 Miss 觸發。
+* `ProjectSettings/ProjectSettings.asset` 的既有用戶改動未納入提交。
+
+### 下一步
+
+* Play Mode 靜置觀察一段譜面，確認木偶不自行動作；再逐一按 Q/W/E/A/S/D 驗收只有對應部位受拉。
+
+---
+
 ## [2026-09-21] M6 fix - 底部身體判定與全按鍵操偶回饋
 
 ### 新增

@@ -462,4 +462,5 @@ git --no-pager log --oneline -10
 | 1.5 | 2026-09-21 | M5 結案：嚴格 Hold 尾判、原子組合音符、段落合勢／斷勢回饋、180 秒舞蹈譜面、EditMode 51/51 與 Windows build 煙測 |
 | 1.6 | 2026-09-21 | M6 結案：資料驅動六部位關節操偶、六根控制線張力、Hold 持續拉扯、幾何剪影光幕、EditMode 63/63 與 Windows build 煙測 |
 | 1.7 | 2026-09-21 | M6 驗收修正：S／身體判定移至底排中央；木偶改由每個原始按鍵即時拉動，判定結果不再限制動作；EditMode 65/65 與 Windows build 通過 |
+| 1.8 | 2026-09-21 | M6 自動 Miss 修正：普通 Miss 不再觸發頭部／軀幹失勢旋轉，木偶只由真實輸入與有效 Hold 驅動；EditMode 66/66 與 Windows build 通過 |
 
