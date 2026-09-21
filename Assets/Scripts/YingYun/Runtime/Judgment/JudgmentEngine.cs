@@ -22,6 +22,7 @@ namespace YingYun.Rhythm.Judgment
             public bool IsJudged { get; set; }
             public JudgmentGrade StartGrade { get; set; }
             public double StartErrorMs { get; set; }
+            public double HoldPressTimeSec { get; set; }
             public double NextTickTimeSec { get; set; }
         }
 
@@ -120,6 +121,7 @@ namespace YingYun.Rhythm.Judgment
             _results.Clear();
             MatchPressInputs(songTimeSec);
             ProcessHolds(songTimeSec);
+            DiscardOrphanReleases(songTimeSec);
             ProcessMisses(songTimeSec);
             return output;
         }
@@ -183,6 +185,7 @@ namespace YingYun.Rhythm.Judgment
                     matchedNote.IsHolding = true;
                     matchedNote.StartGrade = grade;
                     matchedNote.StartErrorMs = bestSignedErrorSec * 1000d;
+                    matchedNote.HoldPressTimeSec = matchedNote.Data.TimeSec + bestSignedErrorSec;
                     matchedNote.NextTickTimeSec = matchedNote.Data.TimeSec + _config.HoldTickIntervalSec;
                     AddResult(
                         JudgmentEventKind.HoldStarted,
@@ -307,7 +310,7 @@ namespace YingYun.Rhythm.Judgment
                     continue;
                 }
 
-                int releaseIndex = FindFirstRelease(note.Data.Lane, songTimeSec);
+                int releaseIndex = FindFirstRelease(note, songTimeSec);
                 double heldUntil = releaseIndex >= 0 ? _inputs[releaseIndex].Value.InputTimeSec : songTimeSec;
                 double tickLimit = Math.Min(heldUntil, note.Data.EndTimeSec);
 
@@ -323,9 +326,14 @@ namespace YingYun.Rhythm.Judgment
                     HitInput release = _inputs[releaseIndex].Value;
                     _inputs.RemoveAt(releaseIndex);
                     double releaseErrorSec = release.InputTimeSec - note.Data.EndTimeSec;
-                    if (Math.Abs(releaseErrorSec) > _config.GoodWindowSec + TimeEpsilon)
+                    if (releaseErrorSec < -_config.GoodWindowSec - TimeEpsilon)
                     {
                         CompleteNote(note, JudgmentGrade.Miss, releaseErrorSec * 1000d);
+                    }
+                    else if (releaseErrorSec >= 0d)
+                    {
+                        // 玩家已撐過尾端；晚放不再要求卡在狹窄的尾判窗內。
+                        CompleteNote(note, note.StartGrade, note.StartErrorMs);
                     }
                     else
                     {
@@ -337,14 +345,15 @@ namespace YingYun.Rhythm.Judgment
                             startIsWorse ? note.StartErrorMs : releaseErrorSec * 1000d);
                     }
                 }
-                else if (songTimeSec > note.Data.EndTimeSec + _config.GoodWindowSec + TimeEpsilon)
+                else if (songTimeSec + TimeEpsilon >= note.Data.EndTimeSec)
                 {
-                    CompleteNote(note, JudgmentGrade.Miss, (songTimeSec - note.Data.EndTimeSec) * 1000d);
+                    // 持續按住到尾端即完成，不強迫玩家在尾端 ±N ms 精準鬆手。
+                    CompleteNote(note, note.StartGrade, note.StartErrorMs);
                 }
             }
         }
 
-        private int FindFirstRelease(int lane, double songTimeSec)
+        private int FindFirstRelease(NoteState note, double songTimeSec)
         {
             int bestIndex = -1;
             double bestTime = double.MaxValue;
@@ -354,7 +363,10 @@ namespace YingYun.Rhythm.Judgment
             {
                 QueuedInput queued = _inputs[i];
                 HitInput input = queued.Value;
-                if (input.Kind != InputKind.Release || input.Lane != lane || input.InputTimeSec > songTimeSec)
+                if (input.Kind != InputKind.Release ||
+                    input.Lane != note.Data.Lane ||
+                    input.InputTimeSec < note.HoldPressTimeSec - TimeEpsilon ||
+                    input.InputTimeSec > songTimeSec)
                 {
                     continue;
                 }
@@ -368,6 +380,22 @@ namespace YingYun.Rhythm.Judgment
             }
 
             return bestIndex;
+        }
+
+        /// <summary>
+        /// Release 只可能屬於呼叫當下已開始的 Hold；ProcessHolds 未消耗的舊 Release
+        /// 不得留到未來污染同軌長按。
+        /// </summary>
+        private void DiscardOrphanReleases(double songTimeSec)
+        {
+            for (int i = _inputs.Count - 1; i >= 0; i--)
+            {
+                HitInput input = _inputs[i].Value;
+                if (input.Kind == InputKind.Release && input.InputTimeSec <= songTimeSec + TimeEpsilon)
+                {
+                    _inputs.RemoveAt(i);
+                }
+            }
         }
 
         private void ProcessMisses(double songTimeSec)

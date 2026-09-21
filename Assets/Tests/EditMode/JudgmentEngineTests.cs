@@ -12,14 +12,14 @@ namespace YingYun.Rhythm.Tests
             public double SongTime { get; set; }
         }
 
-        private static readonly TimingConfig Config = new TimingConfig(0.040d, 0.070d, 0.100d, 0.250d);
+        private static readonly TimingConfig Config = TimingConfig.Prototype;
 
-        [TestCase(-0.040d, JudgmentGrade.Perfect)]
-        [TestCase(0.040d, JudgmentGrade.Perfect)]
-        [TestCase(-0.070d, JudgmentGrade.Great)]
-        [TestCase(0.070d, JudgmentGrade.Great)]
-        [TestCase(-0.100d, JudgmentGrade.Good)]
-        [TestCase(0.100d, JudgmentGrade.Good)]
+        [TestCase(-0.050d, JudgmentGrade.Perfect)]
+        [TestCase(0.050d, JudgmentGrade.Perfect)]
+        [TestCase(-0.090d, JudgmentGrade.Great)]
+        [TestCase(0.090d, JudgmentGrade.Great)]
+        [TestCase(-0.150d, JudgmentGrade.Good)]
+        [TestCase(0.150d, JudgmentGrade.Good)]
         public void TimingWindow_InclusiveAndSymmetric(double offset, JudgmentGrade expected)
         {
             JudgmentEngine engine = CreateTapEngine(out FakeSongClock clock);
@@ -35,9 +35,9 @@ namespace YingYun.Rhythm.Tests
         public void InputOutsideWindow_IsPreservedAndNoteEventuallyMisses()
         {
             JudgmentEngine engine = CreateTapEngine(out FakeSongClock clock);
-            engine.EnqueueInput(new HitInput(0.899d, 0, InputKind.Press));
+            engine.EnqueueInput(new HitInput(0.849d, 0, InputKind.Press));
 
-            IReadOnlyList<JudgmentResult> results = AdvanceTo(engine, clock, 1.101d);
+            IReadOnlyList<JudgmentResult> results = AdvanceTo(engine, clock, 1.151d);
 
             Assert.That(NoteResults(results).Single().Grade, Is.EqualTo(JudgmentGrade.Miss));
             Assert.That(engine.PendingInputCount, Is.EqualTo(1));
@@ -69,7 +69,7 @@ namespace YingYun.Rhythm.Tests
             engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
             AdvanceTo(engine, clock, 1d);
 
-            IReadOnlyList<JudgmentResult> results = AdvanceTo(engine, clock, 2.101d);
+            IReadOnlyList<JudgmentResult> results = AdvanceTo(engine, clock, 2.151d);
 
             Assert.That(NoteResults(results).Single().Grade, Is.EqualTo(JudgmentGrade.Miss));
             Assert.That(engine.Combo, Is.Zero);
@@ -112,11 +112,9 @@ namespace YingYun.Rhythm.Tests
             Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Miss));
         }
 
-        [TestCase(1.900d, JudgmentGrade.Good)]
-        [TestCase(2.100d, JudgmentGrade.Good)]
-        [TestCase(1.899d, JudgmentGrade.Miss)]
-        [TestCase(2.101d, JudgmentGrade.Miss)]
-        public void Hold_ReleaseWindow_IsInclusiveAndSymmetric(double releaseTime, JudgmentGrade expected)
+        [TestCase(1.850d, JudgmentGrade.Good)]
+        [TestCase(1.849d, JudgmentGrade.Miss)]
+        public void Hold_EarlyReleaseWindow_IsInclusive(double releaseTime, JudgmentGrade expected)
         {
             var clock = new FakeSongClock();
             var engine = new JudgmentEngine(
@@ -133,7 +131,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void Hold_NoReleasePastTailWindowProducesMiss()
+        public void Hold_HeldThroughTailCompletesWithoutTimedRelease()
         {
             var clock = new FakeSongClock();
             var engine = new JudgmentEngine(
@@ -143,10 +141,75 @@ namespace YingYun.Rhythm.Tests
             engine.EnqueueInput(new HitInput(1d, 1, InputKind.Press));
             AdvanceTo(engine, clock, 1d);
 
-            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 2.101d)).Single();
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 2d)).Single();
 
-            Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Miss));
-            Assert.That(engine.Combo, Is.Zero);
+            Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Perfect));
+            Assert.That(engine.Combo, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Hold_IgnoresReleaseThatPredatesItsPressInSameFrame()
+        {
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[] { new NoteData(1, "hold", 0, 1d, 1d) },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(0.9d, 0, InputKind.Release));
+            engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
+
+            IReadOnlyList<JudgmentResult> start = AdvanceTo(engine, clock, 1d);
+
+            Assert.That(start.Any(x => x.EventKind == JudgmentEventKind.HoldStarted), Is.True);
+            Assert.That(NoteResults(start), Is.Empty);
+            Assert.That(engine.PendingInputCount, Is.Zero);
+            Assert.That(NoteResults(AdvanceTo(engine, clock, 2d)).Single().Grade, Is.EqualTo(JudgmentGrade.Perfect));
+        }
+
+        [Test]
+        public void TapRelease_DoesNotPoisonLaterHoldOnSameLane()
+        {
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[]
+                {
+                    new NoteData(1, "tap", 0, 0d),
+                    new NoteData(2, "hold", 0, 1d, 1d)
+                },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(0d, 0, InputKind.Press));
+            engine.EnqueueInput(new HitInput(0.05d, 0, InputKind.Release));
+            AdvanceTo(engine, clock, 0.05d);
+            engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
+
+            IReadOnlyList<JudgmentResult> start = AdvanceTo(engine, clock, 1d);
+
+            Assert.That(start.Any(x => x.EventKind == JudgmentEventKind.HoldStarted), Is.True);
+            Assert.That(NoteResults(AdvanceTo(engine, clock, 2d)).Single().Grade, Is.EqualTo(JudgmentGrade.Perfect));
+        }
+
+        [Test]
+        public void Hold_ReleaseAfterTailDoesNotPoisonNextHold()
+        {
+            var clock = new FakeSongClock();
+            var engine = new JudgmentEngine(
+                new[]
+                {
+                    new NoteData(1, "hold", 0, 1d, 1d),
+                    new NoteData(2, "hold", 0, 3d, 1d)
+                },
+                Config,
+                clock);
+            engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
+            AdvanceTo(engine, clock, 1d);
+            Assert.That(NoteResults(AdvanceTo(engine, clock, 2d)).Single().Grade, Is.EqualTo(JudgmentGrade.Perfect));
+            engine.EnqueueInput(new HitInput(2.1d, 0, InputKind.Release));
+            AdvanceTo(engine, clock, 2.1d);
+            engine.EnqueueInput(new HitInput(3d, 0, InputKind.Press));
+            AdvanceTo(engine, clock, 3d);
+
+            Assert.That(NoteResults(AdvanceTo(engine, clock, 4d)).Single().Grade, Is.EqualTo(JudgmentGrade.Perfect));
         }
 
         [Test]
@@ -208,7 +271,7 @@ namespace YingYun.Rhythm.Tests
             engine.EnqueueInput(new HitInput(firstTime, 0, InputKind.Press));
             engine.EnqueueInput(new HitInput(secondTime, 2, InputKind.Press));
 
-            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 1.101d)).Single();
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 1.151d)).Single();
 
             Assert.That(result.Grade, Is.EqualTo(expected));
             Assert.That(engine.PendingInputCount, Is.EqualTo(expected == JudgmentGrade.Miss ? 2 : 0));
@@ -225,7 +288,7 @@ namespace YingYun.Rhythm.Tests
                 clock);
             engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
 
-            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 1.101d)).Single();
+            JudgmentResult result = NoteResults(AdvanceTo(engine, clock, 1.151d)).Single();
 
             Assert.That(result.Grade, Is.EqualTo(JudgmentGrade.Miss));
             Assert.That(engine.PendingInputCount, Is.EqualTo(1));
@@ -265,7 +328,7 @@ namespace YingYun.Rhythm.Tests
             engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
             engine.EnqueueInput(new HitInput(2.060d, 0, InputKind.Press));
             AdvanceTo(engine, clock, 2.1d);
-            AdvanceTo(engine, clock, 3.101d);
+            AdvanceTo(engine, clock, 3.151d);
 
             Assert.That(engine.Combo, Is.Zero);
             Assert.That(engine.MaxCombo, Is.EqualTo(2));
@@ -288,7 +351,7 @@ namespace YingYun.Rhythm.Tests
             engine.EnqueueInput(new HitInput(1d, 1, InputKind.Press));
 
             IReadOnlyList<JudgmentResult> completed = AdvanceTo(engine, clock, 1d);
-            IReadOnlyList<JudgmentResult> interrupted = AdvanceTo(engine, clock, 2.101d);
+            IReadOnlyList<JudgmentResult> interrupted = AdvanceTo(engine, clock, 2.151d);
 
             Assert.That(completed.Any(x => x.EventKind == JudgmentEventKind.SegmentCompleted && x.SegmentId == 10), Is.True);
             Assert.That(interrupted.Any(x => x.EventKind == JudgmentEventKind.SegmentInterrupted && x.SegmentId == 20), Is.True);
@@ -305,8 +368,8 @@ namespace YingYun.Rhythm.Tests
             var clock = new FakeSongClock();
             var engine = new JudgmentEngine(notes, Config, clock);
 
-            IReadOnlyList<JudgmentResult> firstMiss = AdvanceTo(engine, clock, 1.101d);
-            IReadOnlyList<JudgmentResult> secondMiss = AdvanceTo(engine, clock, 2.101d);
+            IReadOnlyList<JudgmentResult> firstMiss = AdvanceTo(engine, clock, 1.151d);
+            IReadOnlyList<JudgmentResult> secondMiss = AdvanceTo(engine, clock, 2.151d);
 
             Assert.That(firstMiss.Count(x => x.EventKind == JudgmentEventKind.SegmentInterrupted), Is.EqualTo(1));
             Assert.That(secondMiss.Any(x => x.EventKind == JudgmentEventKind.SegmentInterrupted), Is.False);

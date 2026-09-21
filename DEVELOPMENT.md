@@ -40,9 +40,9 @@
 | 項目 | 狀態 |
 |---|---|
 | 階段 | **Prototype 第一階段（核心循環垂直切片）** |
-| 目前 Milestone | **M7.1 实作完成、待 Unity 正式验收**：已接入 `backgroundpicture` 皮影舞台背景；Normal 密度调整至约 1.51 音符／秒；Hard 轮换六方向全部 15 种双键组合。Unity 命令行目前受 Licensing Client 通信异常阻塞，尚未登记结案。 |
+| 目前 Milestone | **M7.2 自动验收通过、待使用者实机复测**：判定窗放宽为 ±50／±90／±150 ms；Hold 已隔离旧 Release，持续按到尾端即可自动完成。EditMode 103/103 与 Windows build 通过。 |
 | 可用基礎 | Unity 6000.6.2f1 / URP 17.6.0（**Forward Renderer**，非 Renderer2D）/ Input System 1.19 / uGUI + TMP / Cinemachine 6.6 / Audio (DSP buffer 1024, 48 kHz) |
-| 重大缺口 | M7.1 已完成背景与谱面调整，程序集重新编译成功，独立反射验证通过 15 个谱面测试。**结案缺口**：Licensing Client 恢复后重跑完整 EditMode 测试与 Windows build、使用者实机验收、正式 CJK TMP 字体资产；自动节拍采样校准与第二首曲目属于后续增强项。正式分层透光皮影 Sprite、角色侧脸轮廓、动作短语与 Combo 舞台光影仍待后续美术迭代。 |
+| 重大缺口 | M7.2 已完成背景、谱面、判定窗口与 Hold 稳定性调整。**结案缺口**：使用者实机复测长条与晚按手感、正式 CJK TMP 字体资产；自动节拍采样校准与第二首曲目属于后续增强项。正式分层透光皮影 Sprite、角色侧脸轮廓、动作短语与 Combo 舞台光影仍待后续美术迭代。 |
 | 版控 | Git 已初始化，`main` 為目前主線 |
 | Cline 資產 | `.cline/skills/` 10 個 Skill、`.clinerules/` 4 份 Rule（`00`–`03`） |
 
@@ -477,4 +477,5 @@ git --no-pager log --oneline -10
 | 1.12 | 2026-09-21 | M6.5 Hold 修正：按住提示延續至結束，竹桿與皮影片全程持續推拉；音符顏色統一為 Tap／Hold／Chord 三類，EditMode 93/93、Windows build 通過 |
 | 1.13 | 2026-09-21 | M7 候选版：单曲选曲、Easy／Normal／Hard、双偏移校准保存与完整返回流程；EditMode 96/96、Windows build 通过，等待实机验收与正式 CJK TMP 字体 |
 | 1.14 | 2026-09-21 | M7 修正：新增 DSP 暂停菜单、返回选曲与三秒倒数；Easy 改为无 Chord 且每秒一颗音符，EditMode 100/100、Windows build 通过 |
+| 1.15 | 2026-09-21 | M7 判定修正：判定窗放宽为 ±50／±90／±150 ms；清理孤立 Release、Hold 只认本次按下后的松开并在持续按到尾端时自动完成；EditMode 103/103、Windows build 通过 |
 

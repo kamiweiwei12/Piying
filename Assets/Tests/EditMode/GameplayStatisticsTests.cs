@@ -87,11 +87,11 @@ namespace YingYun.Rhythm.Tests
             var engine = new JudgmentEngine(notes, TimingConfig.Prototype, clock);
             engine.EnqueueInput(new HitInput(1d, 0, InputKind.Press));
             engine.EnqueueInput(new HitInput(2.060d, 1, InputKind.Press));
-            engine.EnqueueInput(new HitInput(3.090d, 2, InputKind.Press));
+            engine.EnqueueInput(new HitInput(3.120d, 2, InputKind.Press));
             var statistics = new GameplayStatistics();
             var results = new List<JudgmentResult>();
 
-            foreach (double songTime in new[] { 1.05d, 2.1d, 3.1d, 4.2d })
+            foreach (double songTime in new[] { 1.05d, 2.1d, 3.2d, 4.2d })
             {
                 clock.SongTime = songTime;
                 engine.Advance(results);

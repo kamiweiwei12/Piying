@@ -24,6 +24,45 @@
 
 ---
 
+## [2026-09-21] M7 修正 - 放宽判定窗口并修复长按必定失败
+
+### 新增
+
+* Hold 回归测试：覆盖同帧旧 Release、普通 Tap 松开污染、持续按过尾端、尾端后松开与下一颗同轨 Hold。
+
+### 修改
+
+* 原型判定窗由 Perfect／Great／Good 的 ±40／±70／±100 ms 放宽为 ±50／±90／±150 ms。
+* Hold 只接受发生在本次按下之后的 Release；每帧清理无法属于有效 Hold 的孤立 Release。
+* Hold 持续按到尾端即自动完成，不再要求玩家必须在尾端附近精准松开；明显提前松开仍判为 Miss。
+
+### 测試
+
+* 判定核心独立反射测试：**27/27 通过**。
+* Unity EditMode 全量测试：**103/103 通过**，0 failed／0 skipped。
+* Windows Standalone 构建：`Builds/M7/YingYun.exe`，**Build Successful**；构建内 `YingYun.Runtime.dll` 时间戳为 2026-09-21 21:55:07。
+* `git diff --check`：代码与文件结构无错误；Unity 自动生成的 `.meta` 尾随空格维持既有序列化格式。
+
+### 驗收結果
+
+* 已复现并消除“早先普通按键的 Release 被后续 Hold 误认为提前松开”的根因。
+* 自动化与 Windows 构建通过；仍需使用者实机确认中心点后的 150 ms 容错与长条持续按压手感。
+
+### Git Commit
+
+* `fix(m7): relax hit windows and stabilize holds`（本条目所在的修正提交）
+
+### 風險 / 已知問題
+
+* 当前判定窗三种难度共用；若 Hard 实机显得过宽，后续可改为按难度分别配置。
+* Windows 构建日志仍包含既有 Unity Licensing 404 与 Pipeline 配置警告，但构建结果为 Success，未阻断产物。
+
+### 下一步
+
+* 使用者实机复测 Hold 与晚按；若仍有体感偏移，再依据判定日志中位数调整输入／音频校准，而不是继续盲目扩大窗口。
+
+---
+
 ## [2026-09-21] M7 修正 - 暂停流程、三秒倒数与入门谱面降难
 
 ### 新增

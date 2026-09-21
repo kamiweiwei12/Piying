@@ -169,7 +169,8 @@ namespace YingYun.Rhythm.Judgment
         public int MaxComboBonus { get; }
         public double ChordSpreadWindowSec { get; }
 
-        public static TimingConfig Prototype => new TimingConfig(0.040d, 0.070d, 0.100d, 0.250d);
+        /// <summary>原型手感：中心點前後保留 150 ms 可打範圍，降低視覺抵達後立即失敗的挫折。</summary>
+        public static TimingConfig Prototype => new TimingConfig(0.050d, 0.090d, 0.150d, 0.250d);
     }
 
     public readonly struct JudgmentResult
