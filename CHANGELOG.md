@@ -66,7 +66,7 @@
 
 ### Git Commit
 
-* 待提交。
+* `d23fcfb` `feat(m5): add advanced rhythm notes and continuity`
 
 ### 風險 / 已知問題
 
