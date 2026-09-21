@@ -123,7 +123,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void BeginHold_TurnsTheEllipseGoldAndStaysElongated()
+        public void BeginHold_KeepsTheDedicatedHoldColorAndStaysElongated()
         {
             Fixture fixture = CreateFixture();
             try
@@ -137,10 +137,32 @@ namespace YingYun.Rhythm.Tests
                 fixture.View.UpdateVisual(1d, 1.5d);
 
                 Color during = fixture.View.NoteMarkerColor;
-                Assert.That(during, Is.Not.EqualTo(before));
-                Assert.That(during.g, Is.GreaterThan(before.g));
+                Assert.That(before, Is.EqualTo(RadialNoteView.HoldColor));
+                Assert.That(during, Is.EqualTo(RadialNoteView.HoldColor));
                 Assert.That(fixture.View.NoteMarkerScale.x, Is.GreaterThan(widthBefore));
                 Assert.That(fixture.View.NoteMarkerScale.y, Is.GreaterThan(fixture.View.NoteMarkerScale.x * 2f));
+            }
+            finally
+            {
+                fixture.Dispose();
+            }
+        }
+
+        [Test]
+        public void NoteColors_AreAssignedByTapHoldAndChordRatherThanLane()
+        {
+            Fixture fixture = CreateFixture();
+            try
+            {
+                fixture.View.Bind(new NoteData(1, "tap", 0, 1d), Spawn, Receptor, Colors);
+                Assert.That(fixture.View.NoteMarkerColor, Is.EqualTo(RadialNoteView.TapColor));
+
+                fixture.View.Bind(new NoteData(2, "hold", 5, 2d, 1d), Spawn, Receptor, Colors);
+                Assert.That(fixture.View.NoteMarkerColor, Is.EqualTo(RadialNoteView.HoldColor));
+
+                int chordMask = (1 << 0) | (1 << 2);
+                fixture.View.Bind(new NoteData(3, "chord", 0, 3d, requiredLanesMask: chordMask), Spawn, Receptor, Colors);
+                Assert.That(fixture.View.NoteMarkerColor, Is.EqualTo(RadialNoteView.ChordColor));
             }
             finally
             {

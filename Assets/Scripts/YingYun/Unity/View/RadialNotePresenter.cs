@@ -32,12 +32,12 @@ namespace YingYun.Rhythm.View
 
         private static readonly Color[] LaneColors =
         {
-            new Color(0.20f, 0.75f, 1f),
-            new Color(1f, 0.72f, 0.20f),
-            new Color(1f, 0.35f, 0.28f),
-            new Color(0.35f, 0.90f, 0.45f),
-            new Color(0.75f, 0.38f, 1f),
-            new Color(1f, 0.40f, 0.72f)
+            new Color(0.50f, 0.18f, 0.10f),
+            new Color(0.50f, 0.18f, 0.10f),
+            new Color(0.50f, 0.18f, 0.10f),
+            new Color(0.50f, 0.18f, 0.10f),
+            new Color(0.50f, 0.18f, 0.10f),
+            new Color(0.50f, 0.18f, 0.10f)
         };
 
         private static readonly string[] LaneLabels =
@@ -156,6 +156,7 @@ namespace YingYun.Rhythm.View
                 }
 
                 ShowJudgmentText(JudgmentLabels.HoldHolding, new Color(1f, 0.88f, 0.28f));
+                _judgmentTextClearSongTime = double.PositiveInfinity;
                 return;
             }
 

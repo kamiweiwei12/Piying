@@ -191,6 +191,39 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void HoldStarted_ContinuouslyWorksTheRodInsteadOfFreezingLikeATap()
+        {
+            var root = new GameObject("Puppet Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.Tick(1d);
+            presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
+            presenter.OnJudged(new JudgmentResult(
+                JudgmentEventKind.HoldStarted,
+                2,
+                0,
+                JudgmentGrade.Perfect,
+                0d,
+                0,
+                0,
+                0d,
+                1 << 0));
+
+            presenter.Tick(1.40d);
+            Vector3 firstGrip = presenter.GetRodGripPosition(0);
+            float firstForearm = presenter.LeftForearmRotation;
+            presenter.Tick(1.55d);
+            Vector3 secondGrip = presenter.GetRodGripPosition(0);
+            float secondForearm = presenter.LeftForearmRotation;
+
+            Assert.That(Vector3.Distance(firstGrip, secondGrip), Is.GreaterThan(0.02f));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(firstForearm, secondForearm)), Is.GreaterThan(0.25f));
+            Assert.That(presenter.GetRodDrive(0), Is.GreaterThan(0.95f));
+
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void Sequence_KeepsThePuppetMovingWithoutSlidingThePelvis()
         {
             var root = new GameObject("Puppet Test");

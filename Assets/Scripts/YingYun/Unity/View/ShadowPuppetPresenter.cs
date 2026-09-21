@@ -20,6 +20,7 @@ namespace YingYun.Rhythm.View
         private readonly LineRenderer[] _rods = new LineRenderer[6];
         private readonly Transform[] _rodTargets = new Transform[6];
         private readonly float[] _rodDrive = new float[6];
+        private readonly bool[] _heldRods = new bool[6];
         private PuppetPoseEvaluator _evaluator;
         private Transform _visualRoot;
         private Transform _torsoJoint;
@@ -54,6 +55,7 @@ namespace YingYun.Rhythm.View
         public float TorsoRotation => _torsoJoint == null ? 0f : _torsoJoint.localEulerAngles.z;
         public Vector3 PelvisPosition => _torsoJoint == null ? Vector3.zero : _torsoJoint.localPosition;
         public float GetRodDrive(int lane) => _rodDrive[lane];
+        public Vector3 GetRodGripPosition(int lane) => _rods[lane] == null ? Vector3.zero : _rods[lane].GetPosition(0);
         public float GetStringTension(int lane) => GetRodDrive(lane);
 
         private void Awake()
@@ -66,6 +68,10 @@ namespace YingYun.Rhythm.View
             EnsureInitialized();
             _evaluator = new PuppetPoseEvaluator(PrototypeActionBindings.All);
             _songTime = double.NegativeInfinity;
+            for (int lane = 0; lane < _heldRods.Length; lane++)
+            {
+                _heldRods[lane] = false;
+            }
             ApplyPose(default);
         }
 
@@ -99,12 +105,14 @@ namespace YingYun.Rhythm.View
             if (result.EventKind == JudgmentEventKind.HoldStarted)
             {
                 _evaluator.BeginHold(result.RequiredLanesMask, _songTime);
+                SetHeldRods(result.RequiredLanesMask, true);
                 return;
             }
 
             if (result.EventKind == JudgmentEventKind.NoteJudged)
             {
                 _evaluator.ReleaseHold(result.RequiredLanesMask, _songTime);
+                SetHeldRods(result.RequiredLanesMask, false);
             }
         }
 
@@ -254,22 +262,35 @@ namespace YingYun.Rhythm.View
 
         private void ApplyPose(PuppetPose pose)
         {
-            SetRotation(_headJoint, pose.Head);
-            SetRotation(_torsoJoint, pose.Torso);
-            SetRotation(_leftUpperArmJoint, pose.LeftUpperArm);
-            SetRotation(_leftForearmJoint, pose.LeftForearm);
-            SetRotation(_rightUpperArmJoint, pose.RightUpperArm);
-            SetRotation(_rightForearmJoint, pose.RightForearm);
-            SetRotation(_leftThighJoint, pose.LeftThigh);
-            SetRotation(_leftShinJoint, pose.LeftShin);
-            SetRotation(_rightThighJoint, pose.RightThigh);
-            SetRotation(_rightShinJoint, pose.RightShin);
+            double leftLead = HoldOscillation(0);
+            double lift = HoldOscillation(1);
+            double rightLead = HoldOscillation(2);
+            double leftStep = HoldOscillation(3);
+            double sink = HoldOscillation(4);
+            double rightStep = HoldOscillation(5);
+            SetRotation(_headJoint, pose.Head + (lift * 1.6d));
+            SetRotation(_torsoJoint, pose.Torso + (sink * 1.4d));
+            SetRotation(_leftUpperArmJoint, pose.LeftUpperArm + (leftLead * 2.0d));
+            SetRotation(_leftForearmJoint, pose.LeftForearm + (leftLead * 3.2d));
+            SetRotation(_rightUpperArmJoint, pose.RightUpperArm - (rightLead * 2.0d));
+            SetRotation(_rightForearmJoint, pose.RightForearm - (rightLead * 3.2d));
+            SetRotation(_leftThighJoint, pose.LeftThigh + (leftStep * 1.8d));
+            SetRotation(_leftShinJoint, pose.LeftShin + (leftStep * 2.8d));
+            SetRotation(_rightThighJoint, pose.RightThigh - (rightStep * 1.8d));
+            SetRotation(_rightShinJoint, pose.RightShin - (rightStep * 2.8d));
             _rodDrive[0] = (float)pose.LeftHandTension;
             _rodDrive[1] = (float)pose.HeadTension;
             _rodDrive[2] = (float)pose.RightHandTension;
             _rodDrive[3] = (float)pose.LeftFootTension;
             _rodDrive[4] = (float)pose.TorsoTension;
             _rodDrive[5] = (float)pose.RightFootTension;
+        }
+
+        private double HoldOscillation(int lane)
+        {
+            return _heldRods[lane]
+                ? System.Math.Sin((_songTime * System.Math.PI * 4d) + (lane * 0.65d))
+                : 0d;
         }
 
         private void UpdateRods()
@@ -284,13 +305,29 @@ namespace YingYun.Rhythm.View
                 Vector3 restGrip = RodGripPoints[lane];
                 Vector3 target = _visualRoot.InverseTransformPoint(_rodTargets[lane].position);
                 Vector3 direction = (target - restGrip).normalized;
-                Vector3 grip = restGrip + (direction * (_rodDrive[lane] * 0.18f));
+                Vector3 normal = new Vector3(-direction.y, direction.x, 0f);
+                float holdPulse = _heldRods[lane]
+                    ? (0.10f * Mathf.Sin((float)(_songTime * Mathf.PI * 5.0d) + lane))
+                    : 0f;
+                Vector3 grip = restGrip + (direction * ((_rodDrive[lane] * 0.18f) + holdPulse));
+                grip += normal * (holdPulse * 0.35f);
                 _rods[lane].SetPosition(0, grip);
                 _rods[lane].SetPosition(1, target);
                 Color color = Color.Lerp(new Color(0.30f, 0.13f, 0.045f, 0.48f), new Color(0.78f, 0.34f, 0.07f, 1f), _rodDrive[lane]);
                 _rods[lane].startColor = color;
                 _rods[lane].endColor = color;
-                _rods[lane].startWidth = Mathf.Lerp(0.065f, 0.095f, _rodDrive[lane]);
+                _rods[lane].startWidth = Mathf.Lerp(0.065f, 0.095f, _rodDrive[lane]) + (_heldRods[lane] ? 0.012f : 0f);
+            }
+        }
+
+        private void SetHeldRods(int lanesMask, bool held)
+        {
+            for (int lane = 0; lane < _heldRods.Length; lane++)
+            {
+                if ((lanesMask & (1 << lane)) != 0)
+                {
+                    _heldRods[lane] = held;
+                }
             }
         }
 

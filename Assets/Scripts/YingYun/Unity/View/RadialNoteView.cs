@@ -8,6 +8,10 @@ namespace YingYun.Rhythm.View
     {
         private const int LaneCount = 6;
 
+        public static readonly Color TapColor = new Color(0.90f, 0.24f, 0.12f, 1f);
+        public static readonly Color HoldColor = new Color(0.96f, 0.68f, 0.12f, 1f);
+        public static readonly Color ChordColor = new Color(0.28f, 0.78f, 0.72f, 1f);
+
         private readonly SpriteRenderer[] _markers = new SpriteRenderer[LaneCount];
         private readonly Vector2[] _spawnPositions = new Vector2[LaneCount];
         private readonly Vector2[] _receptorPositions = new Vector2[LaneCount];
@@ -104,12 +108,13 @@ namespace YingYun.Rhythm.View
             _isHolding = false;
             IsResolved = false;
             ReleaseSongTimeSec = double.PositiveInfinity;
+            Color noteColor = note.IsChord ? ChordColor : (_isHold ? HoldColor : TapColor);
 
             for (int lane = 0; lane < LaneCount; lane++)
             {
                 _spawnPositions[lane] = spawnPositions[lane];
                 _receptorPositions[lane] = receptorPositions[lane];
-                _laneColors[lane] = laneColors[lane];
+                _laneColors[lane] = noteColor;
                 bool active = (RequiredLanesMask & (1 << lane)) != 0;
                 _markers[lane].gameObject.SetActive(active);
                 if (!active)
@@ -117,7 +122,7 @@ namespace YingYun.Rhythm.View
                     continue;
                 }
 
-                _markers[lane].color = laneColors[lane];
+                _markers[lane].color = noteColor;
                 _markers[lane].transform.localScale = Vector3.one * _baseScale;
                 _markers[lane].transform.localPosition = spawnPositions[lane];
                 _markers[lane].transform.localRotation = Quaternion.identity;
@@ -127,14 +132,14 @@ namespace YingYun.Rhythm.View
             if (note.IsChord)
             {
                 _chordLine.positionCount = CountRequiredLanes();
-                SetLineColor(_chordLine, new Color(1f, 0.82f, 0.28f));
+                SetLineColor(_chordLine, ChordColor);
             }
 
             _holdTrail.gameObject.SetActive(note.Kind == NoteKind.Hold);
             _holdHead.gameObject.SetActive(_isHold);
             if (_isHold)
             {
-                _holdHead.color = laneColors[Lane];
+                _holdHead.color = HoldColor;
             }
 
             gameObject.SetActive(true);
@@ -182,11 +187,7 @@ namespace YingYun.Rhythm.View
                     NoteTimeSec + _durationSec,
                     visibleLeadSec);
 
-                Color color = _laneColors[Lane];
-                if (_isHolding)
-                {
-                    color = Color.Lerp(color, new Color(1f, 0.88f, 0.28f), 0.55f);
-                }
+                Color color = HoldColor;
 
                 // 點按是圓形；長按是沿軌道伸長的長條橢圓（類似太鼓達人的長音符）。
                 // 長度直接等於音符在軌道上的長度，所以尾巴一定在「放開時間」抵達判定點。
