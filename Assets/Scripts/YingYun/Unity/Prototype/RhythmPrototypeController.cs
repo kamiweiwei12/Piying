@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using YingYun.Rhythm.Chart;
 using YingYun.Rhythm.Input;
 using YingYun.Rhythm.Judgment;
+using YingYun.Rhythm.Puppet;
 using YingYun.Rhythm.Scoring;
 using YingYun.Rhythm.Timing;
 using YingYun.Rhythm.View;
@@ -134,7 +135,6 @@ namespace YingYun.Rhythm.Prototype
             _hud.TickSongTime(_clock.SongTime);
             while (_input.TryDequeue(out HitInput input))
             {
-                _puppet.OnInput(input);
                 _judgment.EnqueueInput(input);
             }
 
@@ -254,12 +254,18 @@ namespace YingYun.Rhythm.Prototype
             _isPaused = false;
             _flow.HidePause();
             NoteData[] notes = PrototypeDanceChart.Create(bpm, PrototypeDurationSeconds, _difficulty);
+            DancePhrase[] dance = DanceChoreography.Create(notes, bpm, PrototypeDurationSeconds);
             _noteCount = notes.Length;
             _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
             _presenter.Begin(notes);
-            _puppet.Begin();
+            _puppet.Begin(dance);
             _hud.Begin(notes.Length, DifficultyConfig.Prototype);
             _clock.Schedule(music, CountdownLeadInSeconds, _calibration.AudioOffsetMs / 1000d);
+
+            for (int i = 0; i < dance.Length; i++)
+            {
+                Debug.Log($"[M8] {dance[i].Display}");
+            }
 
             Debug.Log(string.Format(
                 System.Globalization.CultureInfo.InvariantCulture,

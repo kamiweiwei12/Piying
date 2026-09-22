@@ -1,0 +1,298 @@
+using System;
+using System.Collections.Generic;
+using YingYun.Rhythm.Judgment;
+
+namespace YingYun.Rhythm.Puppet
+{
+    public enum DanceJoint
+    {
+        Head, Torso, LeftShoulder, LeftElbow, RightShoulder, RightElbow,
+        LeftHip, LeftKnee, RightHip, RightKnee
+    }
+
+    public enum DanceAction
+    {
+        SingleMountainArm, CloudHand, WindFlag, Turn, RaiseSleeve,
+        DoubleMountainArm, ReverseCloudHand, FinalPose
+    }
+
+    /// <summary>一段已在載入階段取樣完成的舞句；運行時不再生成動作軌跡。</summary>
+    public sealed class DancePhrase
+    {
+        public const int SampleCount = 129;
+
+        internal DancePhrase(int startBeat, int durationBeats, int anchorNoteId,
+            DanceAction action, string name, DanceJoint firstJoint, DanceJoint secondJoint,
+            double startSeconds, double durationSeconds, double[] first, double[] second,
+            double[] blend, double[] turnWidth)
+        {
+            StartBeat = startBeat;
+            DurationBeats = durationBeats;
+            AnchorNoteId = anchorNoteId;
+            Action = action;
+            Name = name;
+            FirstJoint = firstJoint;
+            SecondJoint = secondJoint;
+            StartSeconds = startSeconds;
+            DurationSeconds = durationSeconds;
+            FirstSamples = first;
+            SecondSamples = second;
+            BlendSamples = blend;
+            TurnWidthSamples = turnWidth;
+        }
+
+        public int StartBeat { get; }
+        public int DurationBeats { get; }
+        public int AnchorNoteId { get; }
+        public DanceAction Action { get; }
+        public string Name { get; }
+        public DanceJoint FirstJoint { get; }
+        public DanceJoint SecondJoint { get; }
+        public double StartSeconds { get; }
+        public double DurationSeconds { get; }
+        public int ActiveJointCount => FirstJoint == SecondJoint ? 1 : 2;
+        public string Display => $"【{StartBeat}，{Name}，{JointName(FirstJoint)}、{JointName(SecondJoint)}，{DurationBeats}】";
+
+        internal double[] FirstSamples { get; }
+        internal double[] SecondSamples { get; }
+        internal double[] BlendSamples { get; }
+        internal double[] TurnWidthSamples { get; }
+
+        private static string JointName(DanceJoint joint)
+        {
+            switch (joint)
+            {
+                case DanceJoint.Head: return "頭部";
+                case DanceJoint.Torso: return "軀幹";
+                case DanceJoint.LeftShoulder: return "左肩";
+                case DanceJoint.LeftElbow: return "左肘";
+                case DanceJoint.RightShoulder: return "右肩";
+                case DanceJoint.RightElbow: return "右肘";
+                case DanceJoint.LeftHip: return "左胯";
+                case DanceJoint.LeftKnee: return "左膝";
+                case DanceJoint.RightHip: return "右胯";
+                default: return "右膝";
+            }
+        }
+
+        internal static double Sample(double[] values, double progress)
+        {
+            double index = Math.Max(0d, Math.Min(1d, progress)) * (SampleCount - 1);
+            int low = (int)index;
+            int high = Math.Min(low + 1, SampleCount - 1);
+            return values[low] + ((values[high] - values[low]) * (index - low));
+        }
+    }
+
+    public static class DanceChoreography
+    {
+        private const int BeatsPerPhrase = 8;
+
+        public static DancePhrase[] Create(NoteData[] notes, double bpm, double durationSeconds)
+        {
+            if (notes == null) throw new ArgumentNullException(nameof(notes));
+            if (bpm <= 0d) throw new ArgumentOutOfRangeException(nameof(bpm));
+            if (durationSeconds < 0d) throw new ArgumentOutOfRangeException(nameof(durationSeconds));
+
+            double beatSeconds = 60d / bpm;
+            int phraseCount = (int)Math.Floor(durationSeconds / (BeatsPerPhrase * beatSeconds));
+            var result = new List<DancePhrase>(phraseCount);
+            for (int index = 0; index < phraseCount; index++)
+            {
+                int beat = index * BeatsPerPhrase;
+                double start = beat * beatSeconds;
+                int anchor = FindAnchor(notes, start);
+                if (anchor < 0) continue;
+
+                DanceAction action = (DanceAction)(index % 8);
+                result.Add(Build(beat, anchor, action, beatSeconds));
+            }
+
+            return result.ToArray();
+        }
+
+        private static int FindAnchor(NoteData[] notes, double startSeconds)
+        {
+            for (int i = 0; i < notes.Length; i++)
+            {
+                if (notes[i].TimeSec > startSeconds + 0.000001d) break;
+                if (Math.Abs(notes[i].TimeSec - startSeconds) <= 0.000001d &&
+                    notes[i].Kind == NoteKind.Tap)
+                {
+                    return notes[i].Id;
+                }
+            }
+
+            return -1;
+        }
+
+        private static DancePhrase Build(int beat, int anchor, DanceAction action, double beatSeconds)
+        {
+            DanceJoint first;
+            DanceJoint second;
+            string name;
+            double[] firstKeys;
+            double[] secondKeys;
+            switch (action)
+            {
+                case DanceAction.SingleMountainArm:
+                    name = "單山膀"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
+                    firstKeys = new[] { 0d, -55d, -66d, -66d, -60d };
+                    secondKeys = new[] { 0d, -12d, -22d, -22d, -18d }; break;
+                case DanceAction.CloudHand:
+                    name = "雲手"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
+                    firstKeys = new[] { -60d, -22d, 35d, 12d, -24d };
+                    secondKeys = new[] { -18d, -48d, -25d, -10d, -30d }; break;
+                case DanceAction.WindFlag:
+                    name = "順風旗"; first = DanceJoint.LeftShoulder; second = DanceJoint.RightShoulder;
+                    firstKeys = new[] { -24d, -45d, -62d, -62d, -60d };
+                    secondKeys = new[] { 0d, -65d, -145d, -145d, -138d }; break;
+                case DanceAction.Turn:
+                    name = "轉身"; first = DanceJoint.Torso; second = DanceJoint.Head;
+                    firstKeys = new[] { 0d, 8d, 0d, -8d, 0d };
+                    secondKeys = new[] { 0d, -10d, 0d, 10d, 0d }; break;
+                case DanceAction.RaiseSleeve:
+                    name = "揚袖"; first = DanceJoint.RightShoulder; second = DanceJoint.RightElbow;
+                    firstKeys = new[] { -138d, -75d, -135d, -150d, -115d };
+                    secondKeys = new[] { 0d, 18d, 38d, 22d, 12d }; break;
+                case DanceAction.DoubleMountainArm:
+                    name = "雙山膀"; first = DanceJoint.LeftShoulder; second = DanceJoint.RightShoulder;
+                    firstKeys = new[] { -60d, -68d, -76d, -76d, -68d };
+                    secondKeys = new[] { -115d, 20d, 76d, 76d, 68d }; break;
+                case DanceAction.ReverseCloudHand:
+                    name = "反雲手"; first = DanceJoint.RightShoulder; second = DanceJoint.RightElbow;
+                    firstKeys = new[] { 68d, 25d, -35d, -12d, 24d };
+                    secondKeys = new[] { 12d, 48d, 25d, 10d, 30d }; break;
+                default:
+                    name = "亮相"; first = DanceJoint.Torso; second = DanceJoint.Head;
+                    firstKeys = new[] { 0d, 6d, 8d, 8d, 8d };
+                    secondKeys = new[] { 0d, -4d, -8d, -8d, -8d }; break;
+            }
+
+            var firstSamples = new double[DancePhrase.SampleCount];
+            var secondSamples = new double[DancePhrase.SampleCount];
+            var blendSamples = new double[DancePhrase.SampleCount];
+            var widthSamples = new double[DancePhrase.SampleCount];
+            for (int i = 0; i < DancePhrase.SampleCount; i++)
+            {
+                double progress = (double)i / (DancePhrase.SampleCount - 1);
+                firstSamples[i] = KeyValue(firstKeys, progress);
+                secondSamples[i] = KeyValue(secondKeys, progress);
+                blendSamples[i] = Smooth(Math.Min(1d, progress * 4d));
+                widthSamples[i] = action == DanceAction.Turn
+                    ? (progress < 0.5d
+                        ? 1d - (0.92d * Smooth(progress * 2d))
+                        : 0.08d - (1.08d * Smooth((progress - 0.5d) * 2d)))
+                    : 1d;
+            }
+
+            return new DancePhrase(beat, BeatsPerPhrase, anchor, action, name, first, second,
+                beat * beatSeconds, BeatsPerPhrase * beatSeconds,
+                firstSamples, secondSamples, blendSamples, widthSamples);
+        }
+
+        private static double KeyValue(double[] keys, double progress)
+        {
+            double scaled = progress * (keys.Length - 1);
+            int low = Math.Min((int)scaled, keys.Length - 2);
+            double t = Smooth(scaled - low);
+            return keys[low] + ((keys[low + 1] - keys[low]) * t);
+        }
+
+        private static double Smooth(double t) => t * t * (3d - (2d * t));
+    }
+
+    /// <summary>判定只開啟預編舞句；每幀僅取樣已有軌跡，Miss 凍結當前姿態。</summary>
+    public sealed class DancePlayback
+    {
+        private readonly DancePhrase[] _phrases;
+        private readonly Dictionary<int, DancePhrase> _byAnchor = new Dictionary<int, DancePhrase>();
+        private readonly double[] _angles = new double[10];
+        private DancePhrase _active;
+        private DancePhrase _pending;
+        private double _activeStart;
+        private double _firstStart;
+        private double _secondStart;
+        private double _facing = 1d;
+        private double _turnFacing = 1d;
+
+        public DancePlayback(DancePhrase[] phrases)
+        {
+            _phrases = phrases ?? throw new ArgumentNullException(nameof(phrases));
+            foreach (DancePhrase phrase in phrases)
+            {
+                if (phrase.DurationBeats < 4 || phrase.ActiveJointCount > 2 ||
+                    phrase.AnchorNoteId <= 0 || _byAnchor.ContainsKey(phrase.AnchorNoteId))
+                    throw new ArgumentException("Invalid dance phrase.", nameof(phrases));
+                _byAnchor.Add(phrase.AnchorNoteId, phrase);
+            }
+        }
+
+        public int PhraseCount => _phrases.Length;
+        public DanceAction? ActiveAction => _active?.Action;
+        public double FacingScale { get; private set; } = 1d;
+        public double Angle(DanceJoint joint) => _angles[(int)joint];
+
+        public void OnJudged(JudgmentResult result, double songTimeSeconds)
+        {
+            if (result.EventKind != JudgmentEventKind.NoteJudged ||
+                !_byAnchor.TryGetValue(result.NoteId, out DancePhrase phrase)) return;
+
+            Evaluate(songTimeSeconds);
+            if (result.Grade == JudgmentGrade.Miss)
+            {
+                _active = null;
+                _pending = null;
+                return;
+            }
+
+            if (songTimeSeconds < phrase.StartSeconds)
+            {
+                _pending = phrase;
+                return;
+            }
+
+            Start(phrase, songTimeSeconds);
+        }
+
+        public void Evaluate(double songTimeSeconds)
+        {
+            if (_pending != null && songTimeSeconds >= _pending.StartSeconds)
+            {
+                DancePhrase ready = _pending;
+                _pending = null;
+                EvaluateActive(ready.StartSeconds);
+                Start(ready, ready.StartSeconds);
+            }
+
+            EvaluateActive(songTimeSeconds);
+        }
+
+        private void EvaluateActive(double songTimeSeconds)
+        {
+            if (_active == null) return;
+            double progress = Math.Max(0d, Math.Min(1d,
+                (songTimeSeconds - _activeStart) / _active.DurationSeconds));
+            double blend = DancePhrase.Sample(_active.BlendSamples, progress);
+            _angles[(int)_active.FirstJoint] = _firstStart * (1d - blend) +
+                DancePhrase.Sample(_active.FirstSamples, progress) * blend;
+            _angles[(int)_active.SecondJoint] = _secondStart * (1d - blend) +
+                DancePhrase.Sample(_active.SecondSamples, progress) * blend;
+            FacingScale = _turnFacing * DancePhrase.Sample(_active.TurnWidthSamples, progress);
+            if (progress >= 1d)
+            {
+                _facing = FacingScale;
+                _active = null;
+            }
+        }
+
+        private void Start(DancePhrase phrase, double songTimeSeconds)
+        {
+            _active = phrase;
+            _activeStart = songTimeSeconds;
+            _firstStart = _angles[(int)phrase.FirstJoint];
+            _secondStart = _angles[(int)phrase.SecondJoint];
+            _turnFacing = _facing;
+        }
+    }
+}

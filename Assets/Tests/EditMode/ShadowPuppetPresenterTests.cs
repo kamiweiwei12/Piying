@@ -5,6 +5,9 @@ using System.Text;
 using NUnit.Framework;
 using UnityEngine;
 using YingYun.Rhythm.Judgment;
+using YingYun.Rhythm.Chart;
+using YingYun.Rhythm.Puppet;
+using YingYun.Rhythm.Scoring;
 using YingYun.Rhythm.View;
 using Object = UnityEngine.Object;
 
@@ -13,6 +16,62 @@ namespace YingYun.Rhythm.Tests
     public sealed class ShadowPuppetPresenterTests
     {
         private const double FrameSeconds = 1d / 60d;
+
+        [Test]
+        public void DanceMode_OnlySuccessfulAnchorMovesAndTurnFlipsProfile()
+        {
+            var root = new GameObject("M8 Puppet Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            presenter.Begin(phrases);
+            presenter.Tick(0d);
+            presenter.OnInput(new HitInput(0d, 0, InputKind.Press));
+            presenter.Tick(1d);
+            Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.Zero.Within(0.01f));
+
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                phrases[0].AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(2d);
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation)), Is.GreaterThan(20f));
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Neck/Profile Nose"), Is.Not.Null);
+
+            DancePhrase turn = phrases[3];
+            presenter.Tick(turn.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                turn.AnchorNoteId, 0, JudgmentGrade.Great, 0d, 2, 2000, 1d));
+            presenter.Tick(turn.StartSeconds + turn.DurationSeconds);
+            Assert.That(presenter.FacingScale, Is.LessThan(-0.9f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void DanceMode_HoldMaintainsRodAndSleeveTensionUntilJudged()
+        {
+            var root = new GameObject("M8 Hold Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            presenter.Begin(phrases);
+            presenter.Tick(6d);
+            var sleeve = root.transform.Find(
+                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Left Flowing Sleeve");
+            Assert.That(sleeve, Is.Not.Null);
+
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.HoldStarted,
+                99999, 1, JudgmentGrade.Great, 0d, 1, 0, 0d, 1));
+            presenter.Tick(6.5d);
+            Assert.That(presenter.GetRodDrive(0), Is.GreaterThanOrEqualTo(0.75f));
+            Assert.That(sleeve.localScale.y, Is.GreaterThan(1f));
+            presenter.Tick(7d);
+            Assert.That(sleeve.localScale.y, Is.GreaterThan(1f));
+
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                99999, 1, JudgmentGrade.Perfect, 0d, 1, 0, 0d, 1));
+            presenter.Tick(7.5d);
+            Assert.That(sleeve.localScale.y, Is.LessThan(0.85f));
+            Object.DestroyImmediate(root);
+        }
 
         [Test]
         public void Presenter_BuildsJointedShadowFigureAndSixBambooRods()
@@ -381,6 +440,53 @@ namespace YingYun.Rhythm.Tests
             File.WriteAllBytes(output, capture.EncodeToPNG());
 
             Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
+
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraObject);
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void DanceTurn_RendersFacingBeforeAndAfterImages()
+        {
+            var root = new GameObject("M8 Turn Visual Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            presenter.Begin(phrases);
+
+            var cameraObject = new GameObject("M8 Validation Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 0f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 4.1f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.055f, 0.012f, 0.009f, 1f);
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+
+            DancePhrase turn = phrases[3];
+            presenter.Tick(turn.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                turn.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            for (int frame = 0; frame < 2; frame++)
+            {
+                presenter.Tick(turn.StartSeconds + (frame * turn.DurationSeconds));
+                camera.Render();
+                RenderTexture.active = target;
+                capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+                capture.Apply();
+                string output = Path.Combine(projectRoot, "Logs",
+                    frame == 0 ? "M8-turn-before.png" : "M8-turn-after.png");
+                Directory.CreateDirectory(Path.GetDirectoryName(output));
+                File.WriteAllBytes(output, capture.EncodeToPNG());
+                Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
+            }
 
             RenderTexture.active = null;
             camera.targetTexture = null;
