@@ -24,10 +24,46 @@ namespace YingYun.Rhythm.Tests
             Assert.That(phrases.Length, Is.EqualTo(45));
             Assert.That(phrases.Select(p => p.StartBeat), Is.EqualTo(Enumerable.Range(0, 45).Select(i => i * 8)));
             Assert.That(phrases.All(p => p.DurationBeats >= 4 && p.ActiveJointCount <= 2), Is.True);
+            Assert.That(phrases.All(p => p.ActiveRodCount <= 2), Is.True);
             Assert.That(phrases.All(p => notes.Any(n => n.Id == p.AnchorNoteId && n.Kind == NoteKind.Tap &&
                 Math.Abs(n.TimeSec - p.StartSeconds) < 0.000001d)), Is.True);
             Assert.That(phrases.Any(p => p.Action == DanceAction.Turn), Is.True);
+            Assert.That(phrases[0].StepFoot, Is.EqualTo(SwingFoot.Right));
+            Assert.That(phrases[2].StepFoot, Is.EqualTo(SwingFoot.None));
+            Assert.That(phrases[4].StepFoot, Is.EqualTo(SwingFoot.Left));
             Assert.That(phrases[0].Display, Is.EqualTo("【0，單山膀，左肩、左肘，8】"));
+        }
+
+        [Test]
+        public void SuccessfulPhrase_LiftsOneFootWhileOtherRemainsPlanted_ThenLands()
+        {
+            DancePhrase[] phrases = Phrases();
+            var player = new DancePlayback(phrases);
+            player.OnJudged(Result(phrases[0].AnchorNoteId, JudgmentGrade.Perfect), 0d);
+            player.Evaluate(2d);
+            Assert.That(player.LeftFootX, Is.EqualTo(-0.34d).Within(0.00001d));
+            Assert.That(player.LeftFootY, Is.EqualTo(-2.08d).Within(0.00001d));
+            Assert.That(player.RightFootX, Is.GreaterThan(0.60d));
+            Assert.That(player.RightFootY, Is.GreaterThan(-1.80d));
+            Assert.That(player.PelvisX, Is.LessThan(-0.10d));
+            player.Evaluate(4d);
+            Assert.That(player.RightFootX, Is.EqualTo(0.34d).Within(0.00001d));
+            Assert.That(player.RightFootY, Is.EqualTo(-2.08d).Within(0.00001d));
+        }
+
+        [Test]
+        public void MissedStep_DoesNotMoveLowerBody_AndNextHitStartsContinuously()
+        {
+            DancePhrase[] phrases = Phrases();
+            var player = new DancePlayback(phrases);
+            player.OnJudged(Result(phrases[0].AnchorNoteId, JudgmentGrade.Miss), 0d);
+            player.Evaluate(2d);
+            Assert.That(player.RightFootY, Is.EqualTo(-2.08d));
+            player.OnJudged(Result(phrases[1].AnchorNoteId, JudgmentGrade.Good), 4d);
+            player.Evaluate(4d);
+            Assert.That(player.RightFootY, Is.EqualTo(-2.08d));
+            player.Evaluate(6d);
+            Assert.That(player.RightFootY, Is.GreaterThan(-1.80d));
         }
 
         [Test]

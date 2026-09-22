@@ -452,13 +452,16 @@ namespace YingYun.Rhythm.View
             SetRotation(_rightUpperArmJoint, _dancePlayback.Angle(DanceJoint.RightShoulder));
             SetRotation(_rightForearmJoint, _dancePlayback.Angle(DanceJoint.RightElbow));
             _torsoJoint.localScale = new Vector3((float)_dancePlayback.FacingScale, 1f, 1f);
-            ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
+            _pelvisJoint.localPosition = new Vector3((float)_dancePlayback.PelvisX, -0.55f, 0f);
+            ApplyGroundedLegs(
+                new Vector2((float)_dancePlayback.LeftFootX, (float)_dancePlayback.LeftFootY),
+                new Vector2((float)_dancePlayback.RightFootX, (float)_dancePlayback.RightFootY));
             _rodDrive[0] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.LeftShoulder)) / 80f);
             _rodDrive[1] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.Head)) / 30f);
             _rodDrive[2] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.RightShoulder)) / 150f);
-            _rodDrive[3] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.LeftHip)) / 45f);
+            _rodDrive[3] = Mathf.Clamp01(((float)_dancePlayback.LeftFootY + 2.08f) / 0.34f);
             _rodDrive[4] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.Torso)) / 25f);
-            _rodDrive[5] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.RightHip)) / 45f);
+            _rodDrive[5] = Mathf.Clamp01(((float)_dancePlayback.RightFootY + 2.08f) / 0.34f);
             for (int lane = 0; lane < _heldRods.Length; lane++)
             {
                 if (_heldRods[lane]) _rodDrive[lane] = Mathf.Max(_rodDrive[lane], 0.75f);

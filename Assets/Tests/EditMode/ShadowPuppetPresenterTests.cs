@@ -46,6 +46,77 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void DanceMode_HitDrivesActualLowerBodyAndFootRod()
+        {
+            var root = new GameObject("M8 Play Foot Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            presenter.Begin(phrases);
+            presenter.Tick(0d);
+            Vector3 planted = presenter.LeftAnklePosition;
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                phrases[0].AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(2d);
+            Assert.That(Vector3.Distance(planted, presenter.LeftAnklePosition), Is.LessThan(0.025f));
+            Assert.That(presenter.RightAnklePosition.y, Is.GreaterThan(-1.80f));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.RightShinRotation)), Is.GreaterThan(10f));
+            Assert.That(presenter.GetRodDrive(5), Is.GreaterThan(0.8f));
+            presenter.Tick(4d);
+            Assert.That(presenter.RightAnklePosition.y, Is.EqualTo(-2.08f).Within(0.025f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void DanceMode_PlaybackStepIsContinuousAndRendersAcceptanceImage()
+        {
+            var root = new GameObject("M8 Song Step Visual Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            presenter.Begin(phrases);
+            presenter.Tick(0d);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                phrases[0].AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            Vector3 prior = presenter.RightAnklePosition;
+            float largestFrameMove = 0f;
+            for (int frame = 1; frame <= 120; frame++)
+            {
+                presenter.Tick(frame * FrameSeconds);
+                largestFrameMove = Mathf.Max(largestFrameMove,
+                    Vector3.Distance(prior, presenter.RightAnklePosition));
+                prior = presenter.RightAnklePosition;
+            }
+            Assert.That(largestFrameMove, Is.LessThan(0.025f));
+
+            var cameraObject = new GameObject("Song Step Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 0f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 4.1f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.055f, 0.012f, 0.009f, 1f);
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+            camera.Render();
+            RenderTexture.active = target;
+            capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+            capture.Apply();
+            string output = Path.Combine(Directory.GetParent(Application.dataPath).FullName,
+                "Logs", "M8-R-song-step-mid.png");
+            Directory.CreateDirectory(Path.GetDirectoryName(output));
+            File.WriteAllBytes(output, capture.EncodeToPNG());
+            Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraObject);
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void DanceMode_HoldMaintainsRodAndSleeveTensionUntilJudged()
         {
             var root = new GameObject("M8 Hold Test");
