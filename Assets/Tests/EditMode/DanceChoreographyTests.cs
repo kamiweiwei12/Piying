@@ -11,6 +11,22 @@ namespace YingYun.Rhythm.Tests
 {
     public sealed class DanceChoreographyTests
     {
+        [Test]
+        public void ExperimentalPalmGestures_ArePrecomputedAndUseOneHandRod()
+        {
+            HandGesturePhrase press = HandGestureChoreography.Get(HandGesture.PressPalm);
+            HandGesturePhrase support = HandGestureChoreography.Get(HandGesture.SupportPalm);
+
+            Assert.That(press.Name, Does.Contain("按掌"));
+            Assert.That(support.Name, Does.Contain("托掌"));
+            Assert.That(press.ActiveRodCount, Is.EqualTo(1));
+            Assert.That(support.ActiveRodCount, Is.EqualTo(1));
+            Assert.That(press.Shoulder(0d), Is.Zero.Within(0.000001d));
+            Assert.That(support.Shoulder(0d), Is.Zero.Within(0.000001d));
+            Assert.That(press.Wrist(1d), Is.GreaterThan(55d));
+            Assert.That(support.Wrist(1d), Is.LessThan(-65d));
+        }
+
         private static JudgmentResult Result(int noteId, JudgmentGrade grade) =>
             new JudgmentResult(JudgmentEventKind.NoteJudged, noteId, 0, grade, 0d, 0, 0, 0d);
 

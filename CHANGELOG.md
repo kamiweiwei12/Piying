@@ -24,6 +24,39 @@
 
 ---
 
+## [2026-09-23] M8.1 手勢候選 - 按掌與托掌實驗預覽
+
+### 新增
+
+* `HandGestureChoreography` 預編按掌、托掌的肩、肘、腕及指扇軌跡；每式 129 點取樣，同一支手簽驅動，腕與掌形不另算主動控制點。
+* `ShadowPuppetPresenter.PreviewHandGesture` 實驗入口及 `Logs/M8-1-press-palm.png`、`Logs/M8-1-support-palm.png` 剪影對照圖；不接入正式譜面或判定。
+
+### 修改
+
+* `DEVELOPMENT.md` 記錄現有腕／掌能力、按掌與托掌的資料來源、灰盒轉譯限制及「實驗候選」狀態。
+
+### 測試
+
+* Unity EditMode 全量 **136/136 通過**，報告 `Logs/M8-1-palm-results.xml`；新增用例驗證兩式預編、只使用一支手簽、腕面方向差異超過 120 度、托掌高於按掌且雙足不移位。
+* Windows Standalone `Builds/M8-1-Palm/YingYun.exe` 建置成功，日誌記錄 `Build Finished, Result: Success`。
+* 兩張 1280×720 對照圖均成功輸出；按掌與托掌的手位及腕面方向可區分。第一次以 `-nographics` 跑既有 Camera.Render 測試導致 Unity 崩潰，改用有圖形 batchmode 後全量通過。
+
+### 驗收結果
+
+* 技術候選通過；仍待使用者判斷兩式灰盒剪影是否足以辨認。通過前保持「實驗」，不加入正式歌曲。
+
+### Git Commit
+
+* `feat(m8): add experimental palm gesture previews`（本候選提交）。
+
+### 風險 / 已知問題
+
+* 現有橢圓掌片只能呈現掌位與腕面方向，無法表示蘭花指、拳等精細指型；按掌與托掌角度是依教學語義製作的數位灰盒，並非傳統教材量測值。
+
+### 下一步
+
+* 請使用者比較按掌／托掌剪影；若可辨，另提接入正式舞句的最小 Plan。若不可辨，先設計手掌／手指剪影分片，不繼續擴充其他手勢。
+
 ## [2026-09-23] M8 結案 - 八式整段舞蹈實機通過
 
 ### 新增

@@ -588,6 +588,70 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void ExperimentalPalmGestures_CreateDistinctWristSilhouettesWithoutMovingFeet()
+        {
+            var root = new GameObject("M8.1 Hand Gesture Preview Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            Vector3 leftFoot = presenter.LeftAnklePosition;
+            Vector3 rightFoot = presenter.RightAnklePosition;
+
+            presenter.PreviewHandGesture(HandGesture.PressPalm, 1f);
+            float pressWrist = presenter.LeftWristRotation;
+            Vector3 pressPosition = presenter.LeftWristPosition;
+            presenter.PreviewHandGesture(HandGesture.SupportPalm, 1f);
+            float supportWrist = presenter.LeftWristRotation;
+            Vector3 supportPosition = presenter.LeftWristPosition;
+
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(pressWrist, supportWrist)), Is.GreaterThan(120f));
+            Assert.That(supportPosition.y, Is.GreaterThan(pressPosition.y + 0.25f));
+            Assert.That(Vector3.Distance(leftFoot, presenter.LeftAnklePosition), Is.LessThan(0.025f));
+            Assert.That(Vector3.Distance(rightFoot, presenter.RightAnklePosition), Is.LessThan(0.025f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void ExperimentalPalmGestures_RenderComparisonImages()
+        {
+            var root = new GameObject("M8.1 Palm Gesture Visual Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            var cameraObject = new GameObject("M8.1 Validation Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 0f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 4.1f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.055f, 0.012f, 0.009f, 1f);
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+
+            HandGesture[] gestures = { HandGesture.PressPalm, HandGesture.SupportPalm };
+            string[] names = { "M8-1-press-palm.png", "M8-1-support-palm.png" };
+            for (int i = 0; i < gestures.Length; i++)
+            {
+                presenter.PreviewHandGesture(gestures[i], 1f);
+                camera.Render();
+                RenderTexture.active = target;
+                capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+                capture.Apply();
+                string output = Path.Combine(projectRoot, "Logs", names[i]);
+                Directory.CreateDirectory(Path.GetDirectoryName(output));
+                File.WriteAllBytes(output, capture.EncodeToPNG());
+                Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
+            }
+
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraObject);
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void DanceTurn_LowerBodyFollowsFacing_WhileBothFeetStayGrounded()
         {
             var root = new GameObject("Northern Waist Separation Test");

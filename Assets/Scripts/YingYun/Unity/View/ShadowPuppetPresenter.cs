@@ -81,6 +81,8 @@ namespace YingYun.Rhythm.View
         public float LowerBodyFacingScale => _robeSkirt == null ? 1f : _robeSkirt.localScale.x / 1.28f;
         public float LeftWristRotation => _leftWristJoint == null ? 0f : _leftWristJoint.localEulerAngles.z;
         public float LeftFingerRotation => _leftFingerJoint == null ? 0f : _leftFingerJoint.localEulerAngles.z;
+        public Vector3 LeftWristPosition => _leftWristJoint == null ? Vector3.zero :
+            _visualRoot.InverseTransformPoint(_leftWristJoint.position);
         public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
         public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
 
@@ -170,6 +172,29 @@ namespace YingYun.Rhythm.View
             SetRotation(_rightSleeveTail, 12f * step);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f),
                 new Vector2(0.34f + (0.55f * step), -2.08f + lift));
+            UpdateRods();
+        }
+
+        /// <summary>M8.1 實驗預覽；只驗證手勢剪影，不接入正式舞句或判定。</summary>
+        public void PreviewHandGesture(HandGesture gesture, float progress)
+        {
+            EnsureInitialized();
+            HandGesturePhrase phrase = HandGestureChoreography.Get(gesture);
+            float t = Mathf.Clamp01(progress);
+            SetRotation(_leftUpperArmJoint, phrase.Shoulder(t));
+            SetRotation(_leftForearmJoint, phrase.Elbow(t));
+            SetRotation(_leftWristJoint, phrase.Wrist(t));
+            SetRotation(_leftFingerJoint, phrase.Finger(t));
+            SetRotation(_rightUpperArmJoint, 0d);
+            SetRotation(_rightForearmJoint, 0d);
+            SetRotation(_rightWristJoint, 0d);
+            SetRotation(_rightFingerJoint, 0d);
+            SetRotation(_torsoJoint, 0d);
+            _torsoJoint.localScale = Vector3.one;
+            _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
+            ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
+            _rodDrive[0] = t;
+            for (int lane = 1; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
             UpdateRods();
         }
 
