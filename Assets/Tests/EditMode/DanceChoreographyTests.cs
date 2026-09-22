@@ -199,6 +199,90 @@ namespace YingYun.Rhythm.Tests
                 Is.EqualTo(second.Angle(DanceJoint.LeftElbow)).Within(0.000001d));
         }
 
+        [Test]
+        public void LinkedPhrases_KeepIntendedCarriesButReleaseArmsBeforeUnrelatedMoves()
+        {
+            DancePhrase[] phrases = Phrases();
+            var player = new DancePlayback(phrases);
+            for (int i = 0; i < 9; i++)
+            {
+                DancePhrase phrase = phrases[i];
+                player.OnJudged(Result(phrase.AnchorNoteId, JudgmentGrade.Perfect), phrase.StartSeconds);
+                player.Evaluate(phrase.StartSeconds + phrase.DurationSeconds);
+                switch (phrase.Action)
+                {
+                    case DanceAction.CloudHand:
+                        Assert.That(player.Angle(DanceJoint.LeftShoulder), Is.EqualTo(-24d).Within(0.001d));
+                        Assert.That(player.Angle(DanceJoint.LeftElbow), Is.Zero.Within(0.001d));
+                        break;
+                    case DanceAction.WindFlag:
+                        Assert.That(player.Angle(DanceJoint.RightShoulder), Is.EqualTo(-138d).Within(0.001d));
+                        break;
+                    case DanceAction.DoubleMountainArm:
+                        Assert.That(player.Angle(DanceJoint.LeftShoulder), Is.Zero.Within(0.001d));
+                        Assert.That(player.Angle(DanceJoint.RightShoulder), Is.EqualTo(68d).Within(0.001d));
+                        break;
+                    case DanceAction.ReverseCloudHand:
+                        Assert.That(player.Angle(DanceJoint.RightShoulder), Is.Zero.Within(0.001d));
+                        Assert.That(player.Angle(DanceJoint.RightElbow), Is.Zero.Within(0.001d));
+                        break;
+                    case DanceAction.FinalPose:
+                        Assert.That(player.Angle(DanceJoint.Torso), Is.Zero.Within(0.001d));
+                        Assert.That(player.Angle(DanceJoint.Head), Is.Zero.Within(0.001d));
+                        break;
+                }
+            }
+        }
+
+        [Test]
+        public void LinkedPhrase_UsesDirectPreparedEntry_WhileMissUsesRecoveryEntry()
+        {
+            DancePhrase[] phrases = Phrases();
+            var linked = new DancePlayback(phrases);
+            linked.OnJudged(Result(phrases[0].AnchorNoteId, JudgmentGrade.Perfect), 0d);
+            linked.Evaluate(4d);
+            linked.OnJudged(Result(phrases[1].AnchorNoteId, JudgmentGrade.Perfect), 4d);
+            linked.Evaluate(4.25d);
+            Assert.That(linked.Angle(DanceJoint.LeftShoulder), Is.GreaterThan(-58d));
+
+            var recovering = new DancePlayback(phrases);
+            recovering.OnJudged(Result(phrases[0].AnchorNoteId, JudgmentGrade.Miss), 0d);
+            recovering.OnJudged(Result(phrases[1].AnchorNoteId, JudgmentGrade.Good), 4d);
+            recovering.Evaluate(4d);
+            Assert.That(recovering.Angle(DanceJoint.LeftShoulder), Is.Zero.Within(0.001d));
+            recovering.Evaluate(4.25d);
+            Assert.That(Math.Abs(recovering.Angle(DanceJoint.LeftShoulder)),
+                Is.LessThan(Math.Abs(linked.Angle(DanceJoint.LeftShoulder))));
+        }
+
+        [Test]
+        public void SuccessiveHits_ArePositionContinuousAtAllPhraseBoundaries()
+        {
+            DancePhrase[] phrases = Phrases();
+            var player = new DancePlayback(phrases);
+            player.OnJudged(Result(phrases[0].AnchorNoteId, JudgmentGrade.Perfect), phrases[0].StartSeconds);
+            for (int i = 0; i < phrases.Length - 1; i++)
+            {
+                DancePhrase current = phrases[i];
+                DancePhrase next = phrases[i + 1];
+                player.Evaluate(next.StartSeconds);
+                double[] before = Enum.GetValues(typeof(DanceJoint)).Cast<DanceJoint>()
+                    .Select(player.Angle).ToArray();
+                double leftFoot = player.LeftFootY;
+                double rightFoot = player.RightFootY;
+                double facing = player.FacingScale;
+                player.OnJudged(Result(next.AnchorNoteId, JudgmentGrade.Great), next.StartSeconds);
+                player.Evaluate(next.StartSeconds);
+                int joint = 0;
+                foreach (DanceJoint part in Enum.GetValues(typeof(DanceJoint)))
+                    Assert.That(player.Angle(part), Is.EqualTo(before[joint++]).Within(0.001d),
+                        $"{current.Action} → {next.Action}: {part}");
+                Assert.That(player.LeftFootY, Is.EqualTo(leftFoot).Within(0.001d));
+                Assert.That(player.RightFootY, Is.EqualTo(rightFoot).Within(0.001d));
+                Assert.That(player.FacingScale, Is.EqualTo(facing).Within(0.001d));
+            }
+        }
+
         private static DancePhrase[] Phrases() => DanceChoreography.Create(
             PrototypeDanceChart.Create(120d, 64d, PlayDifficulty.Normal), 120d, 64d);
     }

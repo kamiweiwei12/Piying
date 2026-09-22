@@ -29,7 +29,7 @@ namespace YingYun.Rhythm.Puppet
         internal DancePhrase(int startBeat, int durationBeats, int anchorNoteId,
             DanceAction action, string name, DanceJoint firstJoint, DanceJoint secondJoint,
             double startSeconds, double durationSeconds, double[] first, double[] second,
-            double[] blend, double[] turnWidth, SwingFoot swingFoot,
+            double[] recoveryBlend, double[] linkedBlend, double[] turnWidth, SwingFoot swingFoot,
             double[] footReach, double[] footLift, double[] weightShift)
         {
             StartBeat = startBeat;
@@ -43,7 +43,8 @@ namespace YingYun.Rhythm.Puppet
             DurationSeconds = durationSeconds;
             FirstSamples = first;
             SecondSamples = second;
-            BlendSamples = blend;
+            RecoveryBlendSamples = recoveryBlend;
+            LinkedBlendSamples = linkedBlend;
             TurnWidthSamples = turnWidth;
             StepFoot = swingFoot;
             FootReachSamples = footReach;
@@ -77,7 +78,8 @@ namespace YingYun.Rhythm.Puppet
 
         internal double[] FirstSamples { get; }
         internal double[] SecondSamples { get; }
-        internal double[] BlendSamples { get; }
+        internal double[] RecoveryBlendSamples { get; }
+        internal double[] LinkedBlendSamples { get; }
         internal double[] TurnWidthSamples { get; }
         internal double[] FootReachSamples { get; }
         internal double[] FootLiftSamples { get; }
@@ -183,7 +185,8 @@ namespace YingYun.Rhythm.Puppet
                 case DanceAction.CloudHand:
                     name = "雲手"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
                     firstKeys = new[] { -60d, -22d, 35d, 12d, -24d };
-                    secondKeys = new[] { -18d, -48d, -25d, -10d, -30d }; break;
+                    // 接順風旗前收肘，肩仍保留入勢方向。
+                    secondKeys = new[] { -18d, -48d, -25d, -10d, 0d }; break;
                 case DanceAction.WindFlag:
                     name = "順風旗"; first = DanceJoint.LeftShoulder; second = DanceJoint.RightShoulder;
                     firstKeys = new[] { -24d, -45d, -62d, -62d, -60d };
@@ -198,21 +201,25 @@ namespace YingYun.Rhythm.Puppet
                     secondKeys = new[] { 0d, 18d, 38d, 22d, 12d }; break;
                 case DanceAction.DoubleMountainArm:
                     name = "雙山膀"; first = DanceJoint.LeftShoulder; second = DanceJoint.RightShoulder;
-                    firstKeys = new[] { -60d, -68d, -76d, -76d, -68d };
+                    // 先定住雙山膀，末兩拍左臂收勢；右臂留給反雲手。
+                    firstKeys = new[] { -60d, -68d, -76d, -76d, 0d };
                     secondKeys = new[] { -115d, 20d, 76d, 76d, 68d }; break;
                 case DanceAction.ReverseCloudHand:
                     name = "反雲手"; first = DanceJoint.RightShoulder; second = DanceJoint.RightElbow;
-                    firstKeys = new[] { 68d, 25d, -35d, -12d, 24d };
-                    secondKeys = new[] { 12d, 48d, 25d, 10d, 30d }; break;
+                    // 亮相前把右臂收回，不能讓前一招的手臂懸空殘留。
+                    firstKeys = new[] { 68d, 25d, -35d, -12d, 0d };
+                    secondKeys = new[] { 12d, 48d, 25d, 10d, 0d }; break;
                 default:
                     name = "亮相"; first = DanceJoint.Torso; second = DanceJoint.Head;
-                    firstKeys = new[] { 0d, 6d, 8d, 8d, 8d };
-                    secondKeys = new[] { 0d, -4d, -8d, -8d, -8d }; break;
+                    // 亮相定住至第六拍，再收身回到下一循環的起勢。
+                    firstKeys = new[] { 0d, 6d, 8d, 8d, 0d };
+                    secondKeys = new[] { 0d, -4d, -8d, -8d, 0d }; break;
             }
 
             var firstSamples = new double[DancePhrase.SampleCount];
             var secondSamples = new double[DancePhrase.SampleCount];
             var blendSamples = new double[DancePhrase.SampleCount];
+            var linkedBlendSamples = new double[DancePhrase.SampleCount];
             var widthSamples = new double[DancePhrase.SampleCount];
             var footReachSamples = new double[DancePhrase.SampleCount];
             var footLiftSamples = new double[DancePhrase.SampleCount];
@@ -228,6 +235,7 @@ namespace YingYun.Rhythm.Puppet
                 firstSamples[i] = KeyValue(firstKeys, progress);
                 secondSamples[i] = KeyValue(secondKeys, progress);
                 blendSamples[i] = Smooth(Math.Min(1d, progress * 4d));
+                linkedBlendSamples[i] = 1d;
                 widthSamples[i] = action == DanceAction.Turn
                     ? (progress < 0.5d
                         ? 1d - (0.92d * Smooth(progress * 2d))
@@ -245,7 +253,7 @@ namespace YingYun.Rhythm.Puppet
 
             return new DancePhrase(beat, BeatsPerPhrase, anchor, action, name, first, second,
                 beat * beatSeconds, BeatsPerPhrase * beatSeconds,
-                firstSamples, secondSamples, blendSamples, widthSamples,
+                firstSamples, secondSamples, blendSamples, linkedBlendSamples, widthSamples,
                 stepFoot, footReachSamples, footLiftSamples, weightShiftSamples);
         }
 
@@ -253,8 +261,22 @@ namespace YingYun.Rhythm.Puppet
         {
             double scaled = progress * (keys.Length - 1);
             int low = Math.Min((int)scaled, keys.Length - 2);
-            double t = Smooth(scaled - low);
-            return keys[low] + ((keys[low + 1] - keys[low]) * t);
+            double t = scaled - low;
+            double startSlope = KeySlope(keys, low);
+            double endSlope = KeySlope(keys, low + 1);
+            return (2d * t * t * t - 3d * t * t + 1d) * keys[low] +
+                (t * t * t - 2d * t * t + t) * startSlope +
+                (-2d * t * t * t + 3d * t * t) * keys[low + 1] +
+                (t * t * t - t * t) * endSlope;
+        }
+
+        private static double KeySlope(double[] keys, int index)
+        {
+            if (index == 0 || index == keys.Length - 1) return 0d;
+            double before = keys[index] - keys[index - 1];
+            double after = keys[index + 1] - keys[index];
+            // 只讓同向的段落穿過中間拍；反向與定勢仍要明確停住。
+            return before * after > 0d ? (before + after) * 0.5d : 0d;
         }
 
         private static double Smooth(double t) => t * t * (3d - (2d * t));
@@ -268,6 +290,8 @@ namespace YingYun.Rhythm.Puppet
         private readonly double[] _angles = new double[10];
         private DancePhrase _active;
         private DancePhrase _pending;
+        private DancePhrase _lastCompleted;
+        private double[] _activeBlendSamples;
         private double _activeStart;
         private double _firstStart;
         private double _secondStart;
@@ -312,6 +336,7 @@ namespace YingYun.Rhythm.Puppet
             {
                 _active = null;
                 _pending = null;
+                _lastCompleted = null;
                 return;
             }
 
@@ -342,7 +367,7 @@ namespace YingYun.Rhythm.Puppet
             if (_active == null) return;
             double progress = Math.Max(0d, Math.Min(1d,
                 (songTimeSeconds - _activeStart) / _active.DurationSeconds));
-            double blend = DancePhrase.Sample(_active.BlendSamples, progress);
+            double blend = DancePhrase.Sample(_activeBlendSamples, progress);
             _angles[(int)_active.FirstJoint] = _firstStart * (1d - blend) +
                 DancePhrase.Sample(_active.FirstSamples, progress) * blend;
             _angles[(int)_active.SecondJoint] = _secondStart * (1d - blend) +
@@ -365,13 +390,19 @@ namespace YingYun.Rhythm.Puppet
             if (progress >= 1d)
             {
                 _facing = FacingScale;
+                _lastCompleted = _active;
                 _active = null;
             }
         }
 
         private void Start(DancePhrase phrase, double songTimeSeconds)
         {
+            // 相鄰且成功完成的舞句用預編直連；漏擊／跳句則選預編恢復曲線。
+            bool linked = _lastCompleted != null &&
+                _lastCompleted.StartBeat + _lastCompleted.DurationBeats == phrase.StartBeat;
             _active = phrase;
+            _activeBlendSamples = linked ? phrase.LinkedBlendSamples : phrase.RecoveryBlendSamples;
+            _lastCompleted = null;
             _activeStart = songTimeSeconds;
             _firstStart = _angles[(int)phrase.FirstJoint];
             _secondStart = _angles[(int)phrase.SecondJoint];
