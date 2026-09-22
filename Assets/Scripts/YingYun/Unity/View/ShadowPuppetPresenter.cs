@@ -36,6 +36,14 @@ namespace YingYun.Rhythm.View
         private Transform _rightShinJoint;
         private Transform _leftSleeve;
         private Transform _rightSleeve;
+        private Transform _leftSleeveTail;
+        private Transform _rightSleeveTail;
+        private Transform _leftWristJoint;
+        private Transform _rightWristJoint;
+        private Transform _leftFingerJoint;
+        private Transform _rightFingerJoint;
+        private Transform _leftAnkleJoint;
+        private Transform _rightAnkleJoint;
         private Sprite _squareSprite;
         private Sprite _circleSprite;
         private Sprite _backgroundSprite;
@@ -44,7 +52,7 @@ namespace YingYun.Rhythm.View
         private Material _lineMaterial;
         private double _songTime;
 
-        public int JointCount => 10;
+        public int JointCount => 20;
         public int RodCount => _rods.Length;
         public int StringCount => RodCount;
         public bool HasBackgroundPicture => _backgroundSprite != null;
@@ -63,6 +71,10 @@ namespace YingYun.Rhythm.View
         public Vector3 GetRodGripPosition(int lane) => _rods[lane] == null ? Vector3.zero : _rods[lane].GetPosition(0);
         public float GetStringTension(int lane) => GetRodDrive(lane);
         public float FacingScale => _torsoJoint == null ? 1f : _torsoJoint.localScale.x;
+        public float LeftWristRotation => _leftWristJoint == null ? 0f : _leftWristJoint.localEulerAngles.z;
+        public float LeftFingerRotation => _leftFingerJoint == null ? 0f : _leftFingerJoint.localEulerAngles.z;
+        public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
+        public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
 
         private void Awake()
         {
@@ -83,6 +95,8 @@ namespace YingYun.Rhythm.View
             _torsoJoint.localScale = Vector3.one;
             _leftSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
             _rightSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
+            _torsoJoint.localPosition = new Vector3(0f, -0.55f, 0f);
+            ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
         }
 
         public void Begin(DancePhrase[] phrases)
@@ -101,6 +115,7 @@ namespace YingYun.Rhythm.View
             {
                 _dancePlayback.Evaluate(songTimeSec);
                 ApplyDancePose();
+                UpdateArticulatedDetails(elapsed);
                 UpdateHoldSleeves(elapsed);
                 UpdateRods();
                 return;
@@ -108,6 +123,33 @@ namespace YingYun.Rhythm.View
 
             PuppetPose pose = _evaluator.Evaluate(songTimeSec);
             ApplyPose(pose);
+            UpdateArticulatedDetails(elapsed);
+            UpdateRods();
+        }
+
+        /// <summary>僅供結構驗收：單步移重心、起腳及落腳，不代表戲曲套路。</summary>
+        public void PreviewStructure(float progress)
+        {
+            EnsureInitialized();
+            float t = Mathf.Clamp01(progress);
+            float weight = Smooth(Mathf.Clamp01(t * 2f));
+            float step = Smooth(Mathf.Clamp01((t - 0.15f) / 0.7f));
+            float lift = Mathf.Sin(Mathf.PI * step) * 0.27f;
+            _torsoJoint.localPosition = new Vector3(-0.18f * weight, -0.55f - (0.08f * lift), 0f);
+            _torsoJoint.localScale = Vector3.one;
+            SetRotation(_torsoJoint, 0d);
+            SetRotation(_leftUpperArmJoint, -25f - (25f * step));
+            SetRotation(_leftForearmJoint, -15f - (10f * step));
+            SetRotation(_rightUpperArmJoint, 20f + (15f * step));
+            SetRotation(_rightForearmJoint, 14f);
+            SetRotation(_leftWristJoint, -18f * step);
+            SetRotation(_rightWristJoint, 14f * step);
+            SetRotation(_leftFingerJoint, 12f * step);
+            SetRotation(_rightFingerJoint, -12f * step);
+            SetRotation(_leftSleeveTail, -16f * step);
+            SetRotation(_rightSleeveTail, 12f * step);
+            ApplyGroundedLegs(new Vector2(-0.34f, -2.08f),
+                new Vector2(0.34f + (0.55f * step), -2.08f + lift));
             UpdateRods();
         }
 
@@ -211,6 +253,8 @@ namespace YingYun.Rhythm.View
                 AccentColor(), 4, _squareSprite);
             CreateSprite("Chest Cutout", _torsoJoint, new Vector3(0f, 0.78f, -0.01f), new Vector2(0.48f, 0.18f),
                 new Color(0.78f, 0.28f, 0.055f, 0.72f), 4, _circleSprite);
+            Transform bodyRodSocket = CreateJoint("Chest Rod Socket", _torsoJoint, new Vector3(0f, 1.00f, 0f));
+            CreateJointPin(bodyRodSocket, 5);
 
             _headJoint = CreateJoint("Joint Neck", _torsoJoint, new Vector3(0f, 1.48f, 0f));
             Transform head = CreateSprite("Head", _headJoint, new Vector3(0f, 0.28f, 0f), new Vector2(0.62f, 0.72f),
@@ -236,6 +280,9 @@ namespace YingYun.Rhythm.View
                 ShadowColor(), 4, _circleSprite);
             _leftForearmJoint = CreateJoint("Joint Left Elbow", _leftUpperArmJoint, new Vector3(0f, -0.82f, 0f));
             Transform leftHand = CreateLimb("Left Forearm", _leftForearmJoint, 0.72f, 0.17f, 6);
+            _leftWristJoint = CreateJoint("Joint Left Wrist", _leftForearmJoint, new Vector3(0f, -0.72f, 0f));
+            BuildHand(_leftWristJoint, true);
+            _leftSleeveTail = BuildSleeveTail(_leftForearmJoint, true);
 
             _rightUpperArmJoint = CreateJoint("Joint Right Shoulder", _torsoJoint, new Vector3(0.48f, 1.12f, 0f));
             CreateLimb("Right Upper Arm", _rightUpperArmJoint, 0.82f, 0.20f, 5);
@@ -243,16 +290,23 @@ namespace YingYun.Rhythm.View
                 ShadowColor(), 4, _circleSprite);
             _rightForearmJoint = CreateJoint("Joint Right Elbow", _rightUpperArmJoint, new Vector3(0f, -0.82f, 0f));
             Transform rightHand = CreateLimb("Right Forearm", _rightForearmJoint, 0.72f, 0.17f, 6);
+            _rightWristJoint = CreateJoint("Joint Right Wrist", _rightForearmJoint, new Vector3(0f, -0.72f, 0f));
+            BuildHand(_rightWristJoint, false);
+            _rightSleeveTail = BuildSleeveTail(_rightForearmJoint, false);
 
             _leftThighJoint = CreateJoint("Joint Left Hip", _torsoJoint, new Vector3(-0.27f, 0.08f, 0f));
             CreateLimb("Left Thigh", _leftThighJoint, 0.88f, 0.24f, 3);
             _leftShinJoint = CreateJoint("Joint Left Knee", _leftThighJoint, new Vector3(0f, -0.88f, 0f));
             Transform leftFoot = CreateLimb("Left Shin", _leftShinJoint, 0.82f, 0.19f, 4);
+            _leftAnkleJoint = CreateJoint("Joint Left Ankle", _leftShinJoint, new Vector3(0f, -0.82f, 0f));
+            BuildFoot(_leftAnkleJoint, true);
 
             _rightThighJoint = CreateJoint("Joint Right Hip", _torsoJoint, new Vector3(0.27f, 0.08f, 0f));
             CreateLimb("Right Thigh", _rightThighJoint, 0.88f, 0.24f, 3);
             _rightShinJoint = CreateJoint("Joint Right Knee", _rightThighJoint, new Vector3(0f, -0.88f, 0f));
             Transform rightFoot = CreateLimb("Right Shin", _rightShinJoint, 0.82f, 0.19f, 4);
+            _rightAnkleJoint = CreateJoint("Joint Right Ankle", _rightShinJoint, new Vector3(0f, -0.82f, 0f));
+            BuildFoot(_rightAnkleJoint, false);
 
             CreateJointPin(_leftUpperArmJoint, 7);
             CreateJointPin(_leftForearmJoint, 7);
@@ -262,14 +316,55 @@ namespace YingYun.Rhythm.View
             CreateJointPin(_leftShinJoint, 7);
             CreateJointPin(_rightThighJoint, 7);
             CreateJointPin(_rightShinJoint, 7);
+            CreateJointPin(_leftWristJoint, 8);
+            CreateJointPin(_rightWristJoint, 8);
+            CreateJointPin(_leftAnkleJoint, 6);
+            CreateJointPin(_rightAnkleJoint, 6);
 
-            _rodTargets[0] = leftHand;
+            _rodTargets[0] = _leftWristJoint;
             _rodTargets[1] = head;
-            _rodTargets[2] = rightHand;
-            _rodTargets[3] = leftFoot;
-            _rodTargets[4] = _torsoJoint;
-            _rodTargets[5] = rightFoot;
+            _rodTargets[2] = _rightWristJoint;
+            _rodTargets[3] = _leftAnkleJoint;
+            _rodTargets[4] = bodyRodSocket;
+            _rodTargets[5] = _rightAnkleJoint;
             BuildRods();
+        }
+
+        private void BuildHand(Transform wrist, bool left)
+        {
+            float side = left ? -1f : 1f;
+            CreateSprite(left ? "Left Palm Plate" : "Right Palm Plate", wrist,
+                new Vector3(side * 0.08f, -0.12f, 0f), new Vector2(0.23f, 0.27f), ShadowColor(), 8, _circleSprite);
+            Transform finger = CreateJoint(left ? "Joint Left Finger Fan" : "Joint Right Finger Fan",
+                wrist, new Vector3(side * 0.12f, -0.22f, 0f));
+            CreateSprite("Finger Silhouette", finger, new Vector3(side * 0.08f, -0.12f, 0f),
+                new Vector2(0.12f, 0.30f), ShadowColor(), 8, _circleSprite);
+            if (left) _leftFingerJoint = finger;
+            else _rightFingerJoint = finger;
+        }
+
+        private Transform BuildSleeveTail(Transform elbow, bool left)
+        {
+            float side = left ? -1f : 1f;
+            Transform cuff = CreateJoint(left ? "Joint Left Sleeve Cuff" : "Joint Right Sleeve Cuff",
+                elbow, new Vector3(side * 0.12f, -0.30f, 0f));
+            CreateSprite("Sleeve Cuff Plate", cuff, new Vector3(0f, -0.16f, 0f),
+                new Vector2(0.52f, 0.38f), ShadowColor(), 7, _circleSprite);
+            Transform tail = CreateJoint(left ? "Joint Left Sleeve Tail" : "Joint Right Sleeve Tail",
+                cuff, new Vector3(0f, -0.29f, 0f));
+            CreateSprite("Trailing Water Sleeve", tail, new Vector3(side * 0.04f, -0.23f, 0f),
+                new Vector2(0.31f, 0.70f), new Color(0.32f, 0.045f, 0.025f, 0.82f), 8, _circleSprite);
+            CreateSprite("Sleeve Tail Cutwork", tail, new Vector3(side * 0.04f, -0.47f, 0f),
+                new Vector2(0.19f, 0.09f), AccentColor(), 9, _circleSprite);
+            CreateJointPin(cuff, 8);
+            return tail;
+        }
+
+        private void BuildFoot(Transform ankle, bool left)
+        {
+            float side = left ? -1f : 1f;
+            CreateSprite(left ? "Left Foot Plate" : "Right Foot Plate", ankle,
+                new Vector3(side * 0.19f, -0.04f, 0f), new Vector2(0.48f, 0.15f), ShadowColor(), 6, _circleSprite);
         }
 
         private Transform CreateLimb(string name, Transform joint, float length, float width, int sortingOrder)
@@ -291,6 +386,8 @@ namespace YingYun.Rhythm.View
             Color scenery = new Color(0.30f, 0.075f, 0.035f, 0.22f);
             CreateSprite("Scenery Left Mountain", _visualRoot, new Vector3(-1.72f, -2.25f, 0f), new Vector2(1.75f, 0.52f), scenery, -3, _circleSprite);
             CreateSprite("Scenery Right Mountain", _visualRoot, new Vector3(1.55f, -2.32f, 0f), new Vector2(2.25f, 0.44f), scenery, -3, _circleSprite);
+            CreateSprite("Foot Contact Line", _visualRoot, new Vector3(0f, -2.15f, 0f), new Vector2(2.75f, 0.055f),
+                new Color(0.25f, 0.075f, 0.025f, 0.58f), 2, _squareSprite);
         }
 
         private void BuildRods()
@@ -302,14 +399,15 @@ namespace YingYun.Rhythm.View
                 var line = lineObject.AddComponent<LineRenderer>();
                 line.useWorldSpace = false;
                 line.positionCount = 2;
-                line.startWidth = 0.075f;
-                line.endWidth = 0.055f;
+                bool principalRod = lane == 0 || lane == 2 || lane == 4;
+                line.startWidth = principalRod ? 0.075f : 0.043f;
+                line.endWidth = principalRod ? 0.055f : 0.032f;
                 line.material = _lineMaterial;
                 line.sortingOrder = 9;
                 _rods[lane] = line;
 
                 CreateSprite($"Bamboo Grip {lane}", _visualRoot, RodGripPoints[lane], new Vector2(0.46f, 0.12f),
-                    new Color(0.38f, 0.16f, 0.055f, 0.98f), 10, _circleSprite);
+                    new Color(0.38f, 0.16f, 0.055f, principalRod ? 0.98f : 0.58f), 10, _circleSprite);
             }
 
             UpdateRods();
@@ -344,16 +442,14 @@ namespace YingYun.Rhythm.View
         private void ApplyDancePose()
         {
             SetRotation(_headJoint, _dancePlayback.Angle(DanceJoint.Head));
-            SetRotation(_torsoJoint, _dancePlayback.Angle(DanceJoint.Torso));
+            // 結構階段先限住腰片：舊舞句的任意軀幹偏轉不應破壞腳下承重。
+            SetRotation(_torsoJoint, Mathf.Clamp((float)_dancePlayback.Angle(DanceJoint.Torso), -6f, 6f));
             SetRotation(_leftUpperArmJoint, _dancePlayback.Angle(DanceJoint.LeftShoulder));
             SetRotation(_leftForearmJoint, _dancePlayback.Angle(DanceJoint.LeftElbow));
             SetRotation(_rightUpperArmJoint, _dancePlayback.Angle(DanceJoint.RightShoulder));
             SetRotation(_rightForearmJoint, _dancePlayback.Angle(DanceJoint.RightElbow));
-            SetRotation(_leftThighJoint, _dancePlayback.Angle(DanceJoint.LeftHip));
-            SetRotation(_leftShinJoint, _dancePlayback.Angle(DanceJoint.LeftKnee));
-            SetRotation(_rightThighJoint, _dancePlayback.Angle(DanceJoint.RightHip));
-            SetRotation(_rightShinJoint, _dancePlayback.Angle(DanceJoint.RightKnee));
             _torsoJoint.localScale = new Vector3((float)_dancePlayback.FacingScale, 1f, 1f);
+            ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
             _rodDrive[0] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.LeftShoulder)) / 80f);
             _rodDrive[1] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.Head)) / 30f);
             _rodDrive[2] = Mathf.Clamp01(Mathf.Abs((float)_dancePlayback.Angle(DanceJoint.RightShoulder)) / 150f);
@@ -374,6 +470,44 @@ namespace YingYun.Rhythm.View
             _leftSleeve.localScale = new Vector3(0.48f, left, 1f);
             _rightSleeve.localScale = new Vector3(0.48f, right, 1f);
         }
+
+        private void UpdateArticulatedDetails(double elapsed)
+        {
+            float blend = 1f - Mathf.Exp(-5f * (float)System.Math.Min(elapsed, 0.5d));
+            float leftWrist = Mathf.Clamp(Mathf.DeltaAngle(0f, _leftForearmJoint.localEulerAngles.z) * 0.22f, -24f, 24f);
+            float rightWrist = Mathf.Clamp(Mathf.DeltaAngle(0f, _rightForearmJoint.localEulerAngles.z) * 0.22f, -24f, 24f);
+            EaseRotation(_leftWristJoint, -leftWrist, blend);
+            EaseRotation(_rightWristJoint, -rightWrist, blend);
+            EaseRotation(_leftFingerJoint, leftWrist * 0.45f, blend * 0.7f);
+            EaseRotation(_rightFingerJoint, rightWrist * 0.45f, blend * 0.7f);
+            EaseRotation(_leftSleeveTail, -leftWrist * 0.85f, blend * 0.45f);
+            EaseRotation(_rightSleeveTail, -rightWrist * 0.85f, blend * 0.45f);
+        }
+
+        private void ApplyGroundedLegs(Vector2 leftAnkle, Vector2 rightAnkle)
+        {
+            ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint, leftAnkle);
+            ApplyGroundedLeg(_rightThighJoint, _rightShinJoint, _rightAnkleJoint, rightAnkle);
+        }
+
+        private void ApplyGroundedLeg(Transform thigh, Transform shin, Transform ankle, Vector2 stageTarget)
+        {
+            Vector3 targetWorld = _visualRoot.TransformPoint(stageTarget);
+            Vector2 targetLocal = _torsoJoint.InverseTransformPoint(targetWorld);
+            NorthernShadowLegSolver.Solve(thigh.localPosition, targetLocal, 1f,
+                out float hipDegrees, out float kneeDegrees);
+            SetRotation(thigh, hipDegrees);
+            SetRotation(shin, kneeDegrees);
+            SetRotation(ankle, -(hipDegrees + kneeDegrees));
+        }
+
+        private static void EaseRotation(Transform joint, float target, float blend)
+        {
+            float current = Mathf.DeltaAngle(0f, joint.localEulerAngles.z);
+            SetRotation(joint, Mathf.LerpAngle(current, target, blend));
+        }
+
+        private static float Smooth(float t) => t * t * (3f - (2f * t));
 
         private double HoldOscillation(int lane)
         {
@@ -403,10 +537,13 @@ namespace YingYun.Rhythm.View
                 grip += normal * (holdPulse * 0.35f);
                 _rods[lane].SetPosition(0, grip);
                 _rods[lane].SetPosition(1, target);
-                Color color = Color.Lerp(new Color(0.30f, 0.13f, 0.045f, 0.48f), new Color(0.78f, 0.34f, 0.07f, 1f), _rodDrive[lane]);
+                bool principalRod = lane == 0 || lane == 2 || lane == 4;
+                Color color = Color.Lerp(new Color(0.30f, 0.13f, 0.045f, principalRod ? 0.48f : 0.27f),
+                    new Color(0.78f, 0.34f, 0.07f, principalRod ? 1f : 0.68f), _rodDrive[lane]);
                 _rods[lane].startColor = color;
                 _rods[lane].endColor = color;
-                _rods[lane].startWidth = Mathf.Lerp(0.065f, 0.095f, _rodDrive[lane]) + (_heldRods[lane] ? 0.012f : 0f);
+                _rods[lane].startWidth = Mathf.Lerp(principalRod ? 0.065f : 0.038f,
+                    principalRod ? 0.095f : 0.056f, _rodDrive[lane]) + (_heldRods[lane] ? 0.012f : 0f);
             }
         }
 

@@ -80,12 +80,15 @@ namespace YingYun.Rhythm.Tests
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
 
-            Assert.That(presenter.JointCount, Is.EqualTo(10));
+            Assert.That(presenter.JointCount, Is.EqualTo(20));
             Assert.That(presenter.RodCount, Is.EqualTo(6));
             Assert.That(presenter.HasBackgroundPicture, Is.True);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Traditional Shadow Play Background"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Joint Left Elbow"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Joint Left Finger Fan"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Joint Left Elbow/Joint Left Sleeve Cuff/Joint Left Sleeve Tail"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee/Joint Right Ankle/Right Foot Plate"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Bamboo Control Rod 0"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Control String 0"), Is.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Header"), Is.Not.Null);
@@ -488,6 +491,56 @@ namespace YingYun.Rhythm.Tests
                 Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
             }
 
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraObject);
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void StructurePreview_PlantedFootStaysPutWhileOtherKneeBends()
+        {
+            var root = new GameObject("Northern Rig Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            Vector3 planted = presenter.LeftAnklePosition;
+            presenter.PreviewStructure(0.55f);
+            Assert.That(Vector3.Distance(planted, presenter.LeftAnklePosition), Is.LessThan(0.025f));
+            Assert.That(presenter.RightAnklePosition.y, Is.GreaterThan(-1.98f));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.RightShinRotation)), Is.GreaterThan(8f));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.LeftWristRotation)), Is.GreaterThan(2f));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.LeftFingerRotation)), Is.GreaterThan(1f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void StructurePreview_RendersStepAndPlantedFoot()
+        {
+            var root = new GameObject("Northern Rig Visual Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.PreviewStructure(0.55f);
+            var cameraObject = new GameObject("Northern Rig Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 0f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 4.1f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.055f, 0.012f, 0.009f, 1f);
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+            camera.Render();
+            RenderTexture.active = target;
+            capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+            capture.Apply();
+            string output = Path.Combine(Directory.GetParent(Application.dataPath).FullName,
+                "Logs", "M8-R-northern-rig-step.png");
+            Directory.CreateDirectory(Path.GetDirectoryName(output));
+            File.WriteAllBytes(output, capture.EncodeToPNG());
+            Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
             RenderTexture.active = null;
             camera.targetTexture = null;
             Object.DestroyImmediate(capture);
