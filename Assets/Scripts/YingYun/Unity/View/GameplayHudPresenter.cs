@@ -1,5 +1,6 @@
 using UnityEngine;
 using YingYun.Rhythm.Judgment;
+using YingYun.Rhythm.Puppet;
 using YingYun.Rhythm.Scoring;
 
 namespace YingYun.Rhythm.View
@@ -12,6 +13,9 @@ namespace YingYun.Rhythm.View
         private UnityEngine.UI.Text _comboText;
         private UnityEngine.UI.Text _scoreText;
         private UnityEngine.UI.Text _accuracyText;
+        private UnityEngine.UI.Text _danceNameText;
+        private UnityEngine.UI.Text _danceStateText;
+        private UnityEngine.UI.Text _danceDetailText;
         private UnityEngine.UI.Text _resultTitle;
         private UnityEngine.UI.Text _resultDetails;
         private GameObject _resultPanel;
@@ -41,6 +45,7 @@ namespace YingYun.Rhythm.View
 
         public void Begin(int totalNotes, DifficultyConfig difficulty)
         {
+            if (_safeArea == null) BuildHud();
             _totalNotes = totalNotes;
             _difficulty = difficulty ?? throw new System.ArgumentNullException(nameof(difficulty));
             _statistics.Reset();
@@ -50,6 +55,7 @@ namespace YingYun.Rhythm.View
             }
 
             RefreshHud(0, 0, 0d);
+            ShowDanceStatus(new DancePerformanceStatus(DancePerformanceKind.Waiting, null));
             _wasCountingDown = true;
             if (_countdownPanel != null)
             {
@@ -95,6 +101,42 @@ namespace YingYun.Rhythm.View
             RefreshHud(result.ComboAfter, result.ScoreAfter, result.AccuracyAfter);
         }
 
+        public void ShowDanceStatus(DancePerformanceStatus status)
+        {
+            if (_danceNameText == null) return;
+            DancePhrase performed = status.Performed;
+            switch (status.Kind)
+            {
+                case DancePerformanceKind.Pending:
+                    _danceNameText.text = performed == null ? "尚未起势" : $"保持：{performed.Name}";
+                    _danceStateText.text = $"已命中 · 待拍：{status.Cue?.Name}";
+                    _danceDetailText.text = "到达拍点后才开始演出";
+                    break;
+                case DancePerformanceKind.Performing:
+                case DancePerformanceKind.Closing:
+                    _danceNameText.text = performed.Name;
+                    _danceStateText.text = status.Kind == DancePerformanceKind.Closing ? "正在收势" : "正在演出";
+                    _danceDetailText.text =
+                        $"第 {performed.StartBeat} 拍 · 持续 {performed.DurationBeats} 拍\n控制：{performed.JointDisplay}";
+                    break;
+                case DancePerformanceKind.Holding:
+                    _danceNameText.text = $"保持：{performed.Name}";
+                    _danceStateText.text = "本式结束";
+                    _danceDetailText.text = "等待下一式，不自动起舞";
+                    break;
+                case DancePerformanceKind.Interrupted:
+                    _danceNameText.text = performed == null ? "尚未起势" : $"保持：{performed.Name}";
+                    _danceStateText.text = $"漏击：{status.Cue?.Name} 未演";
+                    _danceDetailText.text = "皮影停势，等待下一次成功命中";
+                    break;
+                default:
+                    _danceNameText.text = "尚未起势";
+                    _danceStateText.text = "等待开演";
+                    _danceDetailText.text = "命中对应音符后才演出动作";
+                    break;
+            }
+        }
+
         public void ShowResult()
         {
             ResultRating rating = ResultGradeCalculator.Calculate(_statistics.Accuracy, _difficulty);
@@ -138,8 +180,36 @@ namespace YingYun.Rhythm.View
             _accuracyText = CreateText("准确", _safeArea, "准确　0.00%", 38, TextAnchor.UpperCenter);
             Anchor(_accuracyText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(460f, 80f), new Vector2(0.5f, 1f));
 
+            BuildDancePanel();
             BuildResultPanel();
             BuildCountdownPanel();
+        }
+
+        private void BuildDancePanel()
+        {
+            var panelObject = new GameObject("演出解说", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            panelObject.transform.SetParent(_safeArea, false);
+            var panel = (RectTransform)panelObject.transform;
+            Anchor(panel, new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(36f, -140f), new Vector2(420f, 250f), new Vector2(0f, 1f));
+            var background = panelObject.GetComponent<UnityEngine.UI.Image>();
+            background.color = new Color(0.10f, 0.025f, 0.018f, 0.80f);
+            background.raycastTarget = false;
+
+            var heading = CreateText("解说标题", panel, "影戏身段", 26, TextAnchor.UpperLeft);
+            Anchor(heading.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(20f, -16f), new Vector2(380f, 35f), new Vector2(0f, 1f));
+            heading.color = new Color(1f, 0.76f, 0.23f);
+
+            _danceNameText = CreateText("当前动作", panel, "尚未起势", 40, TextAnchor.UpperLeft);
+            Anchor(_danceNameText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(20f, -55f), new Vector2(380f, 55f), new Vector2(0f, 1f));
+            _danceStateText = CreateText("演出状态", panel, "等待开演", 27, TextAnchor.UpperLeft);
+            Anchor(_danceStateText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(20f, -120f), new Vector2(380f, 40f), new Vector2(0f, 1f));
+            _danceDetailText = CreateText("拍数与控制", panel, "命中对应音符后才演出动作", 24, TextAnchor.UpperLeft);
+            Anchor(_danceDetailText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
+                new Vector2(20f, -165f), new Vector2(380f, 75f), new Vector2(0f, 1f));
         }
 
         private void BuildCountdownPanel()

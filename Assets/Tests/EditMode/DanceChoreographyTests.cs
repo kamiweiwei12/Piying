@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using YingYun.Rhythm.Chart;
@@ -281,6 +282,40 @@ namespace YingYun.Rhythm.Tests
                 Assert.That(player.RightFootY, Is.EqualTo(rightFoot).Within(0.001d));
                 Assert.That(player.FacingScale, Is.EqualTo(facing).Within(0.001d));
             }
+        }
+
+        [Test]
+        public void PerformanceStatus_ReportsOnlyPerformedMoves_AndDistinguishesMissedCue()
+        {
+            DancePhrase[] phrases = Phrases();
+            var player = new DancePlayback(phrases);
+            var changes = new List<DancePerformanceStatus>();
+            player.StatusChanged += changes.Add;
+
+            player.OnJudged(Result(phrases[0].AnchorNoteId, JudgmentGrade.Perfect), 0d);
+            Assert.That(changes.Last().Kind, Is.EqualTo(DancePerformanceKind.Performing));
+            Assert.That(changes.Last().Performed, Is.SameAs(phrases[0]));
+            player.Evaluate(4d);
+            Assert.That(changes.Last().Kind, Is.EqualTo(DancePerformanceKind.Holding));
+
+            player.OnJudged(Result(phrases[1].AnchorNoteId, JudgmentGrade.Great), 4d);
+            player.Evaluate(7.1d);
+            Assert.That(changes.Last().Kind, Is.EqualTo(DancePerformanceKind.Closing));
+            Assert.That(changes.Last().Performed, Is.SameAs(phrases[1]));
+            player.Evaluate(8d);
+            player.OnJudged(Result(phrases[2].AnchorNoteId, JudgmentGrade.Miss), 8d);
+            Assert.That(changes.Last().Kind, Is.EqualTo(DancePerformanceKind.Interrupted));
+            Assert.That(changes.Last().Performed, Is.SameAs(phrases[1]));
+            Assert.That(changes.Last().Cue, Is.SameAs(phrases[2]));
+            Assert.That(changes.Any(s => s.Kind == DancePerformanceKind.Performing &&
+                s.Performed == phrases[2]), Is.False);
+
+            player.OnJudged(Result(phrases[3].AnchorNoteId, JudgmentGrade.Perfect), 11.9d);
+            Assert.That(changes.Last().Kind, Is.EqualTo(DancePerformanceKind.Pending));
+            Assert.That(changes.Last().Cue, Is.SameAs(phrases[3]));
+            player.Evaluate(12d);
+            Assert.That(changes.Last().Kind, Is.EqualTo(DancePerformanceKind.Performing));
+            Assert.That(changes.Last().Performed, Is.SameAs(phrases[3]));
         }
 
         private static DancePhrase[] Phrases() => DanceChoreography.Create(

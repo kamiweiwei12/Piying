@@ -93,6 +93,7 @@ namespace YingYun.Rhythm.Prototype
             {
                 _hud = gameObject.AddComponent<GameplayHudPresenter>();
             }
+            _puppet.DanceStatusChanged += _hud.ShowDanceStatus;
 
             _flow = GetComponent<DemoFlowPresenter>();
             if (_flow == null)
@@ -329,6 +330,8 @@ namespace YingYun.Rhythm.Prototype
 
         private void OnDestroy()
         {
+            if (_puppet != null && _hud != null)
+                _puppet.DanceStatusChanged -= _hud.ShowDanceStatus;
             if (_flow != null)
             {
                 _flow.PlayRequested -= StartPerformance;

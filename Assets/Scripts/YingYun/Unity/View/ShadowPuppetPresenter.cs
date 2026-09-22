@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.Puppet;
@@ -58,6 +59,7 @@ namespace YingYun.Rhythm.View
         private double _songTime;
 
         public int JointCount => 21;
+        public event Action<DancePerformanceStatus> DanceStatusChanged;
         public int RodCount => _rods.Length;
         public int StringCount => RodCount;
         public bool HasBackgroundPicture => _backgroundSprite != null;
@@ -90,7 +92,10 @@ namespace YingYun.Rhythm.View
         public void Begin()
         {
             EnsureInitialized();
+            if (_dancePlayback != null)
+                _dancePlayback.StatusChanged -= ForwardDanceStatus;
             _dancePlayback = null;
+            DanceStatusChanged?.Invoke(new DancePerformanceStatus(DancePerformanceKind.Waiting, null));
             _evaluator = new PuppetPoseEvaluator(PrototypeActionBindings.All);
             _songTime = double.NegativeInfinity;
             for (int lane = 0; lane < _heldRods.Length; lane++)
@@ -115,7 +120,10 @@ namespace YingYun.Rhythm.View
         {
             Begin();
             _dancePlayback = new DancePlayback(phrases);
+            _dancePlayback.StatusChanged += ForwardDanceStatus;
         }
+
+        private void ForwardDanceStatus(DancePerformanceStatus status) => DanceStatusChanged?.Invoke(status);
 
         public void Tick(double songTimeSec)
         {

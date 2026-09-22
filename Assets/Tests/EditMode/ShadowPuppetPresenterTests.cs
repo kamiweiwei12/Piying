@@ -653,4 +653,55 @@ namespace YingYun.Rhythm.Tests
             Object.DestroyImmediate(root);
         }
     }
+
+    public sealed class DanceExplanationHudTests
+    {
+        [Test]
+        public void Hud_UsesPerformedPhraseAndNeverLabelsMissAsCurrentMove()
+        {
+            var root = new GameObject("Dance HUD Test");
+            var hud = root.AddComponent<GameplayHudPresenter>();
+            hud.Begin(0, DifficultyConfig.Prototype);
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            Transform panel = root.transform.Find("M4 中文界面/安全区域/演出解说");
+            Assert.That(panel, Is.Not.Null);
+            Assert.That(panel.GetComponent<UnityEngine.UI.Image>().raycastTarget, Is.False);
+            var name = panel.Find("当前动作").GetComponent<UnityEngine.UI.Text>();
+            var state = panel.Find("演出状态").GetComponent<UnityEngine.UI.Text>();
+            var detail = panel.Find("拍数与控制").GetComponent<UnityEngine.UI.Text>();
+
+            hud.ShowDanceStatus(new DancePerformanceStatus(DancePerformanceKind.Performing, phrases[0]));
+            Assert.That(name.text, Is.EqualTo("單山膀"));
+            Assert.That(detail.text, Does.Contain("左肩、左肘"));
+            hud.ShowDanceStatus(new DancePerformanceStatus(
+                DancePerformanceKind.Interrupted, phrases[0], phrases[1]));
+            Assert.That(name.text, Does.Contain("單山膀"));
+            Assert.That(name.text, Does.Not.Contain("雲手"));
+            Assert.That(state.text, Does.Contain("雲手 未演"));
+            hud.ShowDanceStatus(new DancePerformanceStatus(DancePerformanceKind.Waiting, null));
+            Assert.That(name.text, Is.EqualTo("尚未起势"));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void PuppetPresenter_ForwardsPlaybackStatusAndResetsOnBegin()
+        {
+            var root = new GameObject("Dance Status Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            var kinds = new System.Collections.Generic.List<DancePerformanceKind>();
+            presenter.DanceStatusChanged += status => kinds.Add(status.Kind);
+            presenter.Begin(phrases);
+            Assert.That(kinds[kinds.Count - 1], Is.EqualTo(DancePerformanceKind.Waiting));
+            presenter.Tick(0d);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                phrases[0].AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            Assert.That(kinds[kinds.Count - 1], Is.EqualTo(DancePerformanceKind.Performing));
+            presenter.Begin();
+            Assert.That(kinds[kinds.Count - 1], Is.EqualTo(DancePerformanceKind.Waiting));
+            Object.DestroyImmediate(root);
+        }
+    }
 }

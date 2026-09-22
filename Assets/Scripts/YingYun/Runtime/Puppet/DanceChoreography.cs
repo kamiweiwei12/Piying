@@ -21,6 +21,26 @@ namespace YingYun.Rhythm.Puppet
         None, Left, Right
     }
 
+    public enum DancePerformanceKind
+    {
+        Waiting, Pending, Performing, Closing, Holding, Interrupted
+    }
+
+    /// <summary>只描述實際操演狀態；Cue 為待開始或漏擊的舞句，不冒充已執行動作。</summary>
+    public readonly struct DancePerformanceStatus
+    {
+        public DancePerformanceStatus(DancePerformanceKind kind, DancePhrase performed, DancePhrase cue = null)
+        {
+            Kind = kind;
+            Performed = performed;
+            Cue = cue;
+        }
+
+        public DancePerformanceKind Kind { get; }
+        public DancePhrase Performed { get; }
+        public DancePhrase Cue { get; }
+    }
+
     /// <summary>一段已在載入階段取樣完成的舞句；運行時不再生成動作軌跡。</summary>
     public sealed class DancePhrase
     {
@@ -30,6 +50,7 @@ namespace YingYun.Rhythm.Puppet
             DanceAction action, string name, DanceJoint firstJoint, DanceJoint secondJoint,
             double startSeconds, double durationSeconds, double[] first, double[] second,
             double[] recoveryBlend, double[] linkedBlend, double[] turnWidth, SwingFoot swingFoot,
+            bool hasClosing,
             double[] footReach, double[] footLift, double[] weightShift)
         {
             StartBeat = startBeat;
@@ -47,6 +68,7 @@ namespace YingYun.Rhythm.Puppet
             LinkedBlendSamples = linkedBlend;
             TurnWidthSamples = turnWidth;
             StepFoot = swingFoot;
+            HasClosing = hasClosing;
             FootReachSamples = footReach;
             FootLiftSamples = footLift;
             WeightShiftSamples = weightShift;
@@ -74,6 +96,8 @@ namespace YingYun.Rhythm.Puppet
             }
         }
         public SwingFoot StepFoot { get; }
+        public bool HasClosing { get; }
+        public string JointDisplay => $"{JointName(FirstJoint)}、{JointName(SecondJoint)}";
         public string Display => $"【{StartBeat}，{Name}，{JointName(FirstJoint)}、{JointName(SecondJoint)}，{DurationBeats}】";
 
         internal double[] FirstSamples { get; }
@@ -254,7 +278,10 @@ namespace YingYun.Rhythm.Puppet
             return new DancePhrase(beat, BeatsPerPhrase, anchor, action, name, first, second,
                 beat * beatSeconds, BeatsPerPhrase * beatSeconds,
                 firstSamples, secondSamples, blendSamples, linkedBlendSamples, widthSamples,
-                stepFoot, footReachSamples, footLiftSamples, weightShiftSamples);
+                stepFoot,
+                action == DanceAction.CloudHand || action == DanceAction.DoubleMountainArm ||
+                action == DanceAction.ReverseCloudHand || action == DanceAction.FinalPose,
+                footReachSamples, footLiftSamples, weightShiftSamples);
         }
 
         private static double KeyValue(double[] keys, double progress)
@@ -291,7 +318,9 @@ namespace YingYun.Rhythm.Puppet
         private DancePhrase _active;
         private DancePhrase _pending;
         private DancePhrase _lastCompleted;
+        private DancePhrase _lastPerformed;
         private double[] _activeBlendSamples;
+        private bool _closingNotified;
         private double _activeStart;
         private double _firstStart;
         private double _secondStart;
@@ -318,6 +347,7 @@ namespace YingYun.Rhythm.Puppet
 
         public int PhraseCount => _phrases.Length;
         public DanceAction? ActiveAction => _active?.Action;
+        public event Action<DancePerformanceStatus> StatusChanged;
         public double FacingScale { get; private set; } = 1d;
         public double LeftFootX { get; private set; } = -0.34d;
         public double LeftFootY { get; private set; } = -2.08d;
@@ -337,12 +367,16 @@ namespace YingYun.Rhythm.Puppet
                 _active = null;
                 _pending = null;
                 _lastCompleted = null;
+                StatusChanged?.Invoke(new DancePerformanceStatus(
+                    DancePerformanceKind.Interrupted, _lastPerformed, phrase));
                 return;
             }
 
             if (songTimeSeconds < phrase.StartSeconds)
             {
                 _pending = phrase;
+                StatusChanged?.Invoke(new DancePerformanceStatus(
+                    DancePerformanceKind.Pending, _lastPerformed, phrase));
                 return;
             }
 
@@ -387,10 +421,16 @@ namespace YingYun.Rhythm.Puppet
                 _active.StepFoot == SwingFoot.Left ? weight : 0d;
             PelvisX = (_pelvisStartX * (1d - blend)) + (targetPelvis * blend);
             FacingScale = _turnFacing * DancePhrase.Sample(_active.TurnWidthSamples, progress);
+            if (!_closingNotified && _active.HasClosing && progress >= 0.75d && progress < 1d)
+            {
+                _closingNotified = true;
+                StatusChanged?.Invoke(new DancePerformanceStatus(DancePerformanceKind.Closing, _active));
+            }
             if (progress >= 1d)
             {
                 _facing = FacingScale;
                 _lastCompleted = _active;
+                StatusChanged?.Invoke(new DancePerformanceStatus(DancePerformanceKind.Holding, _active));
                 _active = null;
             }
         }
@@ -401,6 +441,8 @@ namespace YingYun.Rhythm.Puppet
             bool linked = _lastCompleted != null &&
                 _lastCompleted.StartBeat + _lastCompleted.DurationBeats == phrase.StartBeat;
             _active = phrase;
+            _lastPerformed = phrase;
+            _closingNotified = false;
             _activeBlendSamples = linked ? phrase.LinkedBlendSamples : phrase.RecoveryBlendSamples;
             _lastCompleted = null;
             _activeStart = songTimeSeconds;
@@ -412,6 +454,7 @@ namespace YingYun.Rhythm.Puppet
             _rightFootStartX = RightFootX;
             _rightFootStartY = RightFootY;
             _pelvisStartX = PelvisX;
+            StatusChanged?.Invoke(new DancePerformanceStatus(DancePerformanceKind.Performing, phrase));
         }
     }
 }
