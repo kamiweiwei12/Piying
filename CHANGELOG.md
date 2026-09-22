@@ -28,7 +28,7 @@
 
 ### 新增
 
-* 胸部主簽接點、雙手主簽、分片鉚釘腕與手形、袖口及袖尾、踝與足片；三支主簽與遊戲六方向的頭／足輔助杆以粗細及透明度區分。
+* 胸部主簽接點、雙手主簽、胸腰獨立鉚接片、分片鉚釘腕與手形、袖口及袖尾、踝與足片；三支主簽與遊戲六方向的頭／足輔助杆以粗細及透明度區分。
 * 兩節腿足點約束器及獨立結構預覽：支撐腳固定、另一腳抬落、膝隨足點折彎。這是灰盒結構檢查，不命名為戲曲套路。
 
 ### 修改
@@ -38,7 +38,7 @@
 
 ### 測試
 
-* Unity EditMode 全量 **120/120 通過**，報告 `Logs/M8-R-editmode-results.xml`。
+* Unity EditMode 全量 **121/121 通過**（含腰胸翻面時雙足定點），報告 `Logs/M8-R-editmode-results.xml`。
 * 結構畫面 `Logs/M8-R-northern-rig-step.png` 已檢查；Windows Standalone `Builds/M8-R/YingYun.exe` 建置成功（退出碼 0）。
 
 ### 驗收結果
@@ -47,11 +47,11 @@
 
 ### Git Commit
 
-* `feat(m8): add northern shadow puppet articulated rig`（本候選版提交）。
+* `f151aa6 feat(m8): add northern shadow puppet articulated rig`；胸腰補正提交 `fix(m8): separate waist from planted legs`。
 
 ### 風險 / 已知問題
 
-* 手形／水袖仍為幾何灰盒，腰胸尚未完全分片；舊舞句的歸位停頓、套路辨識度和縮放翻面未解決。傳統資料的腿足一體；本遊戲膝踝屬數位改編。Unity 授權服務仍輸出非阻斷性警告。
+* 手形／水袖仍為幾何灰盒；舊舞句的歸位停頓、套路辨識度和縮放翻面未解決。傳統資料的腿足一體；本遊戲膝踝屬數位改編。Unity 授權服務仍輸出非阻斷性警告。
 
 ### 下一步
 

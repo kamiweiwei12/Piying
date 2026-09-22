@@ -34,7 +34,7 @@ namespace YingYun.Rhythm.Tests
                 phrases[0].AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
             presenter.Tick(2d);
             Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation)), Is.GreaterThan(20f));
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Neck/Profile Nose"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Neck/Profile Nose"), Is.Not.Null);
 
             DancePhrase turn = phrases[3];
             presenter.Tick(turn.StartSeconds);
@@ -55,7 +55,7 @@ namespace YingYun.Rhythm.Tests
             presenter.Begin(phrases);
             presenter.Tick(6d);
             var sleeve = root.transform.Find(
-                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Left Flowing Sleeve");
+                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Left Flowing Sleeve");
             Assert.That(sleeve, Is.Not.Null);
 
             presenter.OnJudged(new JudgmentResult(JudgmentEventKind.HoldStarted,
@@ -80,20 +80,21 @@ namespace YingYun.Rhythm.Tests
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
 
-            Assert.That(presenter.JointCount, Is.EqualTo(20));
+            Assert.That(presenter.JointCount, Is.EqualTo(21));
             Assert.That(presenter.RodCount, Is.EqualTo(6));
             Assert.That(presenter.HasBackgroundPicture, Is.True);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Traditional Shadow Play Background"), Is.Not.Null);
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Joint Left Elbow"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee"), Is.Not.Null);
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Joint Left Finger Fan"), Is.Not.Null);
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Shoulder/Joint Left Elbow/Joint Left Sleeve Cuff/Joint Left Sleeve Tail"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Joint Left Finger Fan"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Sleeve Cuff/Joint Left Sleeve Tail"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee/Joint Right Ankle/Right Foot Plate"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Bamboo Control Rod 0"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Control String 0"), Is.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Header"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Robe Skirt"), Is.Not.Null);
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Neck/Crown Wing Left"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Neck/Crown Wing Left"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Chest Rod Socket"), Is.Not.Null);
 
             Object.DestroyImmediate(root);
         }
@@ -512,6 +513,26 @@ namespace YingYun.Rhythm.Tests
             Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.RightShinRotation)), Is.GreaterThan(8f));
             Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.LeftWristRotation)), Is.GreaterThan(2f));
             Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.LeftFingerRotation)), Is.GreaterThan(1f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void DanceTurn_UpperBodyFlipDoesNotDragPlantedFeet()
+        {
+            var root = new GameObject("Northern Waist Separation Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            presenter.Begin(phrases);
+            DancePhrase turn = phrases[3];
+            presenter.Tick(turn.StartSeconds);
+            Vector3 left = presenter.LeftAnklePosition;
+            Vector3 right = presenter.RightAnklePosition;
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                turn.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(turn.StartSeconds + (turn.DurationSeconds * 0.5d));
+            Assert.That(Vector3.Distance(left, presenter.LeftAnklePosition), Is.LessThan(0.025f));
+            Assert.That(Vector3.Distance(right, presenter.RightAnklePosition), Is.LessThan(0.025f));
             Object.DestroyImmediate(root);
         }
 
