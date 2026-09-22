@@ -549,15 +549,15 @@ namespace YingYun.Rhythm.Tests
             presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
                 turn.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-            for (int frame = 0; frame < 2; frame++)
+            for (int frame = 0; frame < 3; frame++)
             {
-                presenter.Tick(turn.StartSeconds + (frame * turn.DurationSeconds));
+                presenter.Tick(turn.StartSeconds + (frame * turn.DurationSeconds * 0.5d));
                 camera.Render();
                 RenderTexture.active = target;
                 capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
                 capture.Apply();
                 string output = Path.Combine(projectRoot, "Logs",
-                    frame == 0 ? "M8-turn-before.png" : "M8-turn-after.png");
+                    frame == 0 ? "M8-turn-before.png" : frame == 1 ? "M8-turn-mid.png" : "M8-turn-after.png");
                 Directory.CreateDirectory(Path.GetDirectoryName(output));
                 File.WriteAllBytes(output, capture.EncodeToPNG());
                 Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
@@ -588,7 +588,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void DanceTurn_UpperBodyFlipDoesNotDragPlantedFeet()
+        public void DanceTurn_LowerBodyFollowsFacing_WhileBothFeetStayGrounded()
         {
             var root = new GameObject("Northern Waist Separation Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
@@ -601,9 +601,21 @@ namespace YingYun.Rhythm.Tests
             Vector3 right = presenter.RightAnklePosition;
             presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
                 turn.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
-            presenter.Tick(turn.StartSeconds + (turn.DurationSeconds * 0.5d));
-            Assert.That(Vector3.Distance(left, presenter.LeftAnklePosition), Is.LessThan(0.025f));
-            Assert.That(Vector3.Distance(right, presenter.RightAnklePosition), Is.LessThan(0.025f));
+            for (int i = 0; i <= 60; i++)
+            {
+                presenter.Tick(turn.StartSeconds + (turn.DurationSeconds * i / 60d));
+                Assert.That(Vector3.Distance(left, presenter.LeftAnklePosition), Is.LessThan(0.025f));
+                Assert.That(Vector3.Distance(right, presenter.RightAnklePosition), Is.LessThan(0.025f));
+                Assert.That(presenter.LowerBodyFacingScale,
+                    Is.EqualTo(presenter.FacingScale).Within(0.0001f));
+            }
+            presenter.Tick(turn.StartSeconds + turn.DurationSeconds);
+            Assert.That(presenter.FacingScale, Is.LessThan(-0.9f));
+            Assert.That(presenter.LowerBodyFacingScale, Is.LessThan(-0.9f));
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Hip")
+                .localPosition.x, Is.GreaterThan(0.1f));
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip")
+                .localPosition.x, Is.LessThan(-0.1f));
             Object.DestroyImmediate(root);
         }
 

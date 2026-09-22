@@ -189,9 +189,9 @@ namespace YingYun.Rhythm.Puppet
                     firstKeys = new[] { -24d, -45d, -62d, -62d, -60d };
                     secondKeys = new[] { 0d, -65d, -145d, -145d, -138d }; break;
                 case DanceAction.Turn:
-                    name = "轉身"; first = DanceJoint.Torso; second = DanceJoint.Head;
-                    firstKeys = new[] { 0d, 8d, 0d, -8d, 0d };
-                    secondKeys = new[] { 0d, -10d, 0d, 10d, 0d }; break;
+                    name = "轉身"; first = DanceJoint.Torso; second = DanceJoint.LeftShoulder;
+                    firstKeys = new[] { 0d, 4d, 0d, -4d, 0d };
+                    secondKeys = new[] { -60d, -48d, -40d, -48d, -60d }; break;
                 case DanceAction.RaiseSleeve:
                     name = "揚袖"; first = DanceJoint.RightShoulder; second = DanceJoint.RightElbow;
                     firstKeys = new[] { -138d, -75d, -135d, -150d, -115d };

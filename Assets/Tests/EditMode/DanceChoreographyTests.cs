@@ -122,6 +122,45 @@ namespace YingYun.Rhythm.Tests
 
             Assert.That(player.FacingScale, Is.EqualTo(-1d).Within(0.001d));
             Assert.That(phrases[3].Name, Is.EqualTo("轉身"));
+            Assert.That(phrases[3].ActiveJointCount, Is.EqualTo(2));
+            Assert.That(phrases[3].ActiveRodCount, Is.EqualTo(2));
+            Assert.That(phrases[3].StepFoot, Is.EqualTo(SwingFoot.None));
+            Assert.That(phrases[3].Display, Does.Contain("軀幹、左肩"));
+
+            DancePhrase secondTurn = phrases.Last(p => p.Action == DanceAction.Turn);
+            player.OnJudged(Result(secondTurn.AnchorNoteId, JudgmentGrade.Great), secondTurn.StartSeconds);
+            player.Evaluate(secondTurn.StartSeconds + secondTurn.DurationSeconds);
+            Assert.That(player.FacingScale, Is.EqualTo(1d).Within(0.001d));
+        }
+
+        [Test]
+        public void Turn_KeepsBothFeetOnTheStageHorizon()
+        {
+            DancePhrase[] phrases = Phrases();
+            var player = new DancePlayback(phrases);
+            DancePhrase turn = phrases[3];
+            player.OnJudged(Result(turn.AnchorNoteId, JudgmentGrade.Perfect), turn.StartSeconds);
+            for (int i = 0; i <= 60; i++)
+            {
+                player.Evaluate(turn.StartSeconds + (turn.DurationSeconds * i / 60d));
+                Assert.That(player.LeftFootX, Is.EqualTo(-0.34d).Within(0.00001d));
+                Assert.That(player.RightFootX, Is.EqualTo(0.34d).Within(0.00001d));
+                Assert.That(player.LeftFootY, Is.EqualTo(-2.08d).Within(0.00001d));
+                Assert.That(player.RightFootY, Is.EqualTo(-2.08d).Within(0.00001d));
+            }
+        }
+
+        [Test]
+        public void MissedTurn_DoesNotFlipFacingOrMoveFeet()
+        {
+            DancePhrase[] phrases = Phrases();
+            var player = new DancePlayback(phrases);
+            DancePhrase turn = phrases[3];
+            player.OnJudged(Result(turn.AnchorNoteId, JudgmentGrade.Miss), turn.StartSeconds);
+            player.Evaluate(turn.StartSeconds + turn.DurationSeconds);
+            Assert.That(player.FacingScale, Is.EqualTo(1d));
+            Assert.That(player.LeftFootX, Is.EqualTo(-0.34d));
+            Assert.That(player.RightFootX, Is.EqualTo(0.34d));
         }
 
         [Test]

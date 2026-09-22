@@ -45,6 +45,10 @@ namespace YingYun.Rhythm.View
         private Transform _rightFingerJoint;
         private Transform _leftAnkleJoint;
         private Transform _rightAnkleJoint;
+        private Transform _robeSkirt;
+        private Transform _robeHem;
+        private Transform _leftFootPlate;
+        private Transform _rightFootPlate;
         private Sprite _squareSprite;
         private Sprite _circleSprite;
         private Sprite _backgroundSprite;
@@ -72,6 +76,7 @@ namespace YingYun.Rhythm.View
         public Vector3 GetRodGripPosition(int lane) => _rods[lane] == null ? Vector3.zero : _rods[lane].GetPosition(0);
         public float GetStringTension(int lane) => GetRodDrive(lane);
         public float FacingScale => _torsoJoint == null ? 1f : _torsoJoint.localScale.x;
+        public float LowerBodyFacingScale => _robeSkirt == null ? 1f : _robeSkirt.localScale.x / 1.28f;
         public float LeftWristRotation => _leftWristJoint == null ? 0f : _leftWristJoint.localEulerAngles.z;
         public float LeftFingerRotation => _leftFingerJoint == null ? 0f : _leftFingerJoint.localEulerAngles.z;
         public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
@@ -94,6 +99,12 @@ namespace YingYun.Rhythm.View
             }
             ApplyPose(default);
             _torsoJoint.localScale = Vector3.one;
+            _robeSkirt.localScale = new Vector3(1.28f, 0.72f, 1f);
+            _robeHem.localScale = new Vector3(1.36f, 0.14f, 1f);
+            _leftThighJoint.localPosition = new Vector3(-0.27f, 0.08f, 0f);
+            _rightThighJoint.localPosition = new Vector3(0.27f, 0.08f, 0f);
+            _leftFootPlate.localPosition = new Vector3(-0.19f, -0.04f, 0f);
+            _rightFootPlate.localPosition = new Vector3(0.19f, -0.04f, 0f);
             _leftSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
             _rightSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
@@ -250,9 +261,11 @@ namespace YingYun.Rhythm.View
                 ShadowColor(), 3, _circleSprite);
             CreateSprite("Waist Ornament", _torsoJoint, new Vector3(0f, -0.03f, -0.01f), new Vector2(1.02f, 0.20f),
                 AccentColor(), 4, _squareSprite);
-            CreateSprite("Robe Skirt", _pelvisJoint, new Vector3(0f, -0.28f, 0f), new Vector2(1.28f, 0.72f),
+            _robeSkirt = CreateSprite("Robe Skirt", _pelvisJoint, new Vector3(0f, -0.28f, 0f), new Vector2(1.28f, 0.72f),
                 ShadowColor(), 3, _circleSprite);
-            CreateSprite("Robe Hem", _pelvisJoint, new Vector3(0f, -0.58f, -0.01f), new Vector2(1.36f, 0.14f),
+            CreateSprite("Robe Front Trim", _robeSkirt, new Vector3(0.28f, -0.03f, -0.01f),
+                new Vector2(0.12f, 0.52f), AccentColor(), 4, _squareSprite);
+            _robeHem = CreateSprite("Robe Hem", _pelvisJoint, new Vector3(0f, -0.58f, -0.01f), new Vector2(1.36f, 0.14f),
                 AccentColor(), 4, _squareSprite);
             CreateSprite("Chest Cutout", _torsoJoint, new Vector3(0f, 0.63f, -0.01f), new Vector2(0.48f, 0.18f),
                 new Color(0.78f, 0.28f, 0.055f, 0.72f), 4, _circleSprite);
@@ -302,14 +315,14 @@ namespace YingYun.Rhythm.View
             _leftShinJoint = CreateJoint("Joint Left Knee", _leftThighJoint, new Vector3(0f, -0.88f, 0f));
             Transform leftFoot = CreateLimb("Left Shin", _leftShinJoint, 0.82f, 0.19f, 4);
             _leftAnkleJoint = CreateJoint("Joint Left Ankle", _leftShinJoint, new Vector3(0f, -0.82f, 0f));
-            BuildFoot(_leftAnkleJoint, true);
+            _leftFootPlate = BuildFoot(_leftAnkleJoint, true);
 
             _rightThighJoint = CreateJoint("Joint Right Hip", _pelvisJoint, new Vector3(0.27f, 0.08f, 0f));
             CreateLimb("Right Thigh", _rightThighJoint, 0.88f, 0.24f, 3);
             _rightShinJoint = CreateJoint("Joint Right Knee", _rightThighJoint, new Vector3(0f, -0.88f, 0f));
             Transform rightFoot = CreateLimb("Right Shin", _rightShinJoint, 0.82f, 0.19f, 4);
             _rightAnkleJoint = CreateJoint("Joint Right Ankle", _rightShinJoint, new Vector3(0f, -0.82f, 0f));
-            BuildFoot(_rightAnkleJoint, false);
+            _rightFootPlate = BuildFoot(_rightAnkleJoint, false);
 
             CreateJointPin(_leftUpperArmJoint, 7);
             CreateJointPin(_leftForearmJoint, 7);
@@ -363,10 +376,10 @@ namespace YingYun.Rhythm.View
             return tail;
         }
 
-        private void BuildFoot(Transform ankle, bool left)
+        private Transform BuildFoot(Transform ankle, bool left)
         {
             float side = left ? -1f : 1f;
-            CreateSprite(left ? "Left Foot Plate" : "Right Foot Plate", ankle,
+            return CreateSprite(left ? "Left Foot Plate" : "Right Foot Plate", ankle,
                 new Vector3(side * 0.19f, -0.04f, 0f), new Vector2(0.48f, 0.15f), ShadowColor(), 6, _circleSprite);
         }
 
@@ -451,7 +464,17 @@ namespace YingYun.Rhythm.View
             SetRotation(_leftForearmJoint, _dancePlayback.Angle(DanceJoint.LeftElbow));
             SetRotation(_rightUpperArmJoint, _dancePlayback.Angle(DanceJoint.RightShoulder));
             SetRotation(_rightForearmJoint, _dancePlayback.Angle(DanceJoint.RightElbow));
-            _torsoJoint.localScale = new Vector3((float)_dancePlayback.FacingScale, 1f, 1f);
+            float facing = (float)_dancePlayback.FacingScale;
+            _torsoJoint.localScale = new Vector3(facing, 1f, 1f);
+            // 分片的下身各自改向，不縮放骨盆根節點，避免足點反解在側身時失穩。
+            _robeSkirt.localScale = new Vector3(1.28f * facing, 0.72f, 1f);
+            _robeHem.localScale = new Vector3(1.36f * facing, 0.14f, 1f);
+            // 側身時讓兩個鉚接髖位收攏並交換前後，但保持足點在地平線上。
+            float hipOffset = (0.21f + (0.06f * facing)) * facing;
+            _leftThighJoint.localPosition = new Vector3(-hipOffset, 0.08f, 0f);
+            _rightThighJoint.localPosition = new Vector3(hipOffset, 0.08f, 0f);
+            _leftFootPlate.localPosition = new Vector3(-0.19f * facing, -0.04f, 0f);
+            _rightFootPlate.localPosition = new Vector3(0.19f * facing, -0.04f, 0f);
             _pelvisJoint.localPosition = new Vector3((float)_dancePlayback.PelvisX, -0.55f, 0f);
             ApplyGroundedLegs(
                 new Vector2((float)_dancePlayback.LeftFootX, (float)_dancePlayback.LeftFootY),
