@@ -24,6 +24,41 @@
 
 ---
 
+## [2026-09-23] M8.1 手勢候選 - 雙手拳掌禮能力預覽
+
+### 新增
+
+* `FistPalmSalutePhrase` 以 129 點預編左右肩、肘、腕與指扇軌跡，使用兩支手簽在胸前完成左掌包右拳。
+* `ShadowPuppetPresenter.PreviewFistPalmSalute` 收縮右指扇形成較緊湊拳形，並輸出 `Logs/M8-1-fist-palm-salute.png`。
+
+### 修改
+
+* Presenter 新增右腕位置與右指扇縮放的唯讀檢查值；開始播放及其他單手預覽會恢復雙方指扇比例，避免實驗拳形殘留。
+* 依[上海戲曲學校戲曲韻律操](https://sh-xiquschool.sta.edu.cn/wmzx/77/cf/c4106a96207/page.htm)的拱手禮及[國家體育總局抱拳禮資料](https://www.sport.gov.cn/wszx/n14665/c978050/part/628084.pdf)記錄命名差異，正式定名前只稱「拳掌禮」。
+
+### 測試
+
+* Unity EditMode 全量 **146/146 通過**，報告 `Logs/M8-1-fist-palm-final-results.xml`；驗證兩支手簽、胸前會合、右拳剪影收攏、雙足固定及十二式既有回歸。
+* Windows Standalone `Builds/M8-1-Fist-Palm/YingYun.exe` 建置成功，`Logs/M8-1-fist-palm-build.log` 記錄 `Build Finished, Result: Success`。
+* 第一版雙手落在腹前，未達到資料的胸前位置；調整肘部收合角度後單項視覺測試與最終全量回歸均通過。
+
+### 驗收結果
+
+* 技術候選完成；胸前拳掌剪影待使用者確認。尚未定案應稱抱拳、拱手或依角色拆分，也未接入正式歌曲。
+
+### Git Commit
+
+* `feat(m8): preview two-hand fist palm salute`（本候選提交）。
+
+### 風險 / 已知問題
+
+* 右拳以縮放現有橢圓指扇表現，仍不是獨立拳形素材；兩支側向操縱簽在胸前交叉，可能降低手形可讀性。
+* 不同資料對抱拳／拱手名稱與手型關係並不一致；正式名稱必須結合後續採用的戲曲行當與演出參考，不由本灰盒自行定案。
+
+### 下一步
+
+* 先驗收胸前雙手會合與左右拳掌差異；若可辨，再決定補獨立拳片、研究角色化名稱或只保留為通用禮式。若不可辨，先調整掌片與操縱簽遮擋。
+
 ## [2026-09-23] M8.1 正式舞句 - 穿掌與翻腕接入整曲
 
 ### 新增

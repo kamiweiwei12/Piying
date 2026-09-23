@@ -83,6 +83,9 @@ namespace YingYun.Rhythm.View
         public float LeftFingerRotation => _leftFingerJoint == null ? 0f : _leftFingerJoint.localEulerAngles.z;
         public Vector3 LeftWristPosition => _leftWristJoint == null ? Vector3.zero :
             _visualRoot.InverseTransformPoint(_leftWristJoint.position);
+        public Vector3 RightWristPosition => _rightWristJoint == null ? Vector3.zero :
+            _visualRoot.InverseTransformPoint(_rightWristJoint.position);
+        public Vector3 RightFingerScale => _rightFingerJoint == null ? Vector3.one : _rightFingerJoint.localScale;
         public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
         public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
 
@@ -114,6 +117,8 @@ namespace YingYun.Rhythm.View
             _rightFootPlate.localPosition = new Vector3(0.19f, -0.04f, 0f);
             _leftSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
             _rightSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
+            _leftFingerJoint.localScale = Vector3.one;
+            _rightFingerJoint.localScale = Vector3.one;
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
         }
@@ -189,12 +194,42 @@ namespace YingYun.Rhythm.View
             SetRotation(_rightForearmJoint, 0d);
             SetRotation(_rightWristJoint, 0d);
             SetRotation(_rightFingerJoint, 0d);
+            _leftFingerJoint.localScale = Vector3.one;
+            _rightFingerJoint.localScale = Vector3.one;
             SetRotation(_torsoJoint, 0d);
             _torsoJoint.localScale = Vector3.one;
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
             _rodDrive[0] = t;
             for (int lane = 1; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
+            UpdateRods();
+        }
+
+        /// <summary>雙手拳掌禮能力預覽；只驗證兩支手簽會合與右拳剪影，不定案抱拳／拱手名稱。</summary>
+        public void PreviewFistPalmSalute(float progress)
+        {
+            EnsureInitialized();
+            FistPalmSalutePhrase phrase = FistPalmSaluteChoreography.Get();
+            float t = Mathf.Clamp01(progress);
+            SetRotation(_leftUpperArmJoint, phrase.LeftShoulder(t));
+            SetRotation(_leftForearmJoint, phrase.LeftElbow(t));
+            SetRotation(_leftWristJoint, phrase.LeftWrist(t));
+            SetRotation(_leftFingerJoint, phrase.LeftFinger(t));
+            SetRotation(_rightUpperArmJoint, phrase.RightShoulder(t));
+            SetRotation(_rightForearmJoint, phrase.RightElbow(t));
+            SetRotation(_rightWristJoint, phrase.RightWrist(t));
+            SetRotation(_rightFingerJoint, phrase.RightFinger(t));
+            _leftFingerJoint.localScale = Vector3.one;
+            float closure = (float)phrase.RightClosure(t);
+            _rightFingerJoint.localScale = new Vector3(1f - (0.48f * closure),
+                1f - (0.30f * closure), 1f);
+            SetRotation(_torsoJoint, 0d);
+            _torsoJoint.localScale = Vector3.one;
+            _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
+            ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
+            for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
+            _rodDrive[0] = t;
+            _rodDrive[2] = t;
             UpdateRods();
         }
 

@@ -46,6 +46,17 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void ExperimentalFistPalmSalute_IsPrecomputedAndUsesBothHandRods()
+        {
+            FistPalmSalutePhrase salute = FistPalmSaluteChoreography.Get();
+            Assert.That(salute.Name, Does.Contain("名稱待核"));
+            Assert.That(salute.ActiveRodCount, Is.EqualTo(2));
+            Assert.That(salute.LeftShoulder(0d), Is.Zero.Within(0.000001d));
+            Assert.That(salute.RightShoulder(0d), Is.Zero.Within(0.000001d));
+            Assert.That(salute.RightClosure(1d), Is.GreaterThan(0.75d));
+        }
+
+        [Test]
         public void AcceptedHandGestures_AreFormalAnchoredPhrasesAfterTheOriginalEight()
         {
             DancePhrase[] phrases = Phrases();

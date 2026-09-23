@@ -156,4 +156,93 @@ namespace YingYun.Rhythm.Puppet
             return keys[low] + ((keys[low + 1] - keys[low]) * smooth);
         }
     }
+
+    /// <summary>M8.1 雙手拳掌禮能力；名稱與戲曲行當用法在正式接線前另行核實。</summary>
+    public sealed class FistPalmSalutePhrase
+    {
+        public const int SampleCount = 129;
+
+        internal FistPalmSalutePhrase(double[] leftShoulder, double[] leftElbow,
+            double[] leftWrist, double[] leftFinger, double[] rightShoulder,
+            double[] rightElbow, double[] rightWrist, double[] rightFinger,
+            double[] rightClosure)
+        {
+            LeftShoulderSamples = leftShoulder;
+            LeftElbowSamples = leftElbow;
+            LeftWristSamples = leftWrist;
+            LeftFingerSamples = leftFinger;
+            RightShoulderSamples = rightShoulder;
+            RightElbowSamples = rightElbow;
+            RightWristSamples = rightWrist;
+            RightFingerSamples = rightFinger;
+            RightClosureSamples = rightClosure;
+        }
+
+        public string Name => "拳掌禮（抱拳／拱手名稱待核）";
+        public int ActiveRodCount => 2;
+        private double[] LeftShoulderSamples { get; }
+        private double[] LeftElbowSamples { get; }
+        private double[] LeftWristSamples { get; }
+        private double[] LeftFingerSamples { get; }
+        private double[] RightShoulderSamples { get; }
+        private double[] RightElbowSamples { get; }
+        private double[] RightWristSamples { get; }
+        private double[] RightFingerSamples { get; }
+        private double[] RightClosureSamples { get; }
+
+        public double LeftShoulder(double progress) => Sample(LeftShoulderSamples, progress);
+        public double LeftElbow(double progress) => Sample(LeftElbowSamples, progress);
+        public double LeftWrist(double progress) => Sample(LeftWristSamples, progress);
+        public double LeftFinger(double progress) => Sample(LeftFingerSamples, progress);
+        public double RightShoulder(double progress) => Sample(RightShoulderSamples, progress);
+        public double RightElbow(double progress) => Sample(RightElbowSamples, progress);
+        public double RightWrist(double progress) => Sample(RightWristSamples, progress);
+        public double RightFinger(double progress) => Sample(RightFingerSamples, progress);
+        public double RightClosure(double progress) => Sample(RightClosureSamples, progress);
+
+        private static double Sample(double[] values, double progress)
+        {
+            double index = System.Math.Max(0d, System.Math.Min(1d, progress)) * (SampleCount - 1);
+            int low = (int)index;
+            int high = System.Math.Min(low + 1, SampleCount - 1);
+            return values[low] + ((values[high] - values[low]) * (index - low));
+        }
+    }
+
+    public static class FistPalmSaluteChoreography
+    {
+        private static readonly FistPalmSalutePhrase Phrase = Build();
+
+        public static FistPalmSalutePhrase Get() => Phrase;
+
+        private static FistPalmSalutePhrase Build()
+        {
+            double[] leftShoulder = Samples(new[] { 0d, -18d, -36d });
+            double[] leftElbow = Samples(new[] { 0d, 88d, 150d });
+            double[] leftWrist = Samples(new[] { 0d, 10d, 22d });
+            double[] leftFinger = Samples(new[] { 0d, -8d, -12d });
+            double[] rightShoulder = Samples(new[] { 0d, 18d, 36d });
+            double[] rightElbow = Samples(new[] { 0d, -88d, -150d });
+            double[] rightWrist = Samples(new[] { 0d, -10d, -22d });
+            double[] rightFinger = Samples(new[] { 0d, 5d, 8d });
+            double[] rightClosure = Samples(new[] { 0d, 0.45d, 0.82d });
+            return new FistPalmSalutePhrase(leftShoulder, leftElbow, leftWrist, leftFinger,
+                rightShoulder, rightElbow, rightWrist, rightFinger, rightClosure);
+        }
+
+        private static double[] Samples(double[] keys)
+        {
+            var values = new double[FistPalmSalutePhrase.SampleCount];
+            for (int i = 0; i < values.Length; i++)
+            {
+                double progress = (double)i / (values.Length - 1);
+                double scaled = progress * (keys.Length - 1);
+                int low = System.Math.Min((int)scaled, keys.Length - 2);
+                double t = scaled - low;
+                double smooth = t * t * (3d - (2d * t));
+                values[i] = keys[low] + ((keys[low + 1] - keys[low]) * smooth);
+            }
+            return values;
+        }
+    }
 }
