@@ -152,14 +152,14 @@ namespace YingYun.Rhythm.Tests
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
 
-            Assert.That(presenter.JointCount, Is.EqualTo(21));
+            Assert.That(presenter.JointCount, Is.EqualTo(25));
             Assert.That(presenter.RodCount, Is.EqualTo(6));
             Assert.That(presenter.HasBackgroundPicture, Is.True);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Traditional Shadow Play Background"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Joint Left Finger Fan"), Is.Not.Null);
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Sleeve Cuff/Joint Left Sleeve Tail"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Joint Left Sleeve Cuff/Joint Left Sleeve Tail"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee/Joint Right Ankle/Right Foot Plate"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Bamboo Control Rod 0"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Control String 0"), Is.Null);
@@ -168,6 +168,74 @@ namespace YingYun.Rhythm.Tests
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Neck/Crown Wing Left"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Chest Rod Socket"), Is.Not.Null);
 
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void ExperimentalFlingSleeve_BuildsFourPinnedPlatesAndRendersDelayedArc()
+        {
+            var root = new GameObject("M8.2 Fling Sleeve Visual Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            Vector3 leftFoot = presenter.LeftAnklePosition;
+            Vector3 rightFoot = presenter.RightAnklePosition;
+
+            Assert.That(presenter.WaterSleevePlateCount, Is.EqualTo(4));
+            Assert.That(presenter.WaterSleevePivotCount, Is.EqualTo(4));
+            Assert.That(presenter.HasWaterSleevePlateSprite, Is.True);
+            Transform sleeveTip = root.transform.Find(
+                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/" +
+                "Joint Left Sleeve Cuff/Joint Left Sleeve Tail/Joint Left Water Sleeve Middle/" +
+                "Joint Left Water Sleeve Tip");
+            Assert.That(sleeveTip, Is.Not.Null);
+
+            presenter.PreviewWaterSleeve(WaterSleeveGesture.FlingSleeve, 0.84f);
+            Assert.That(Vector3.Distance(presenter.GetLeftWaterSleevePivotPosition(0),
+                presenter.GetLeftWaterSleevePivotPosition(3)), Is.GreaterThan(0.55f));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f,
+                presenter.GetLeftWaterSleeveRotation(2))), Is.GreaterThan(45f));
+            Assert.That(Vector3.Distance(leftFoot, presenter.LeftAnklePosition), Is.LessThan(0.025f));
+            Assert.That(Vector3.Distance(rightFoot, presenter.RightAnklePosition), Is.LessThan(0.025f));
+            Assert.That(presenter.GetRodDrive(0), Is.GreaterThan(0.8f));
+            for (int lane = 1; lane < presenter.RodCount; lane++)
+                Assert.That(presenter.GetRodDrive(lane), Is.Zero.Within(0.001f));
+
+            var cameraObject = new GameObject("M8.2 Fling Sleeve Validation Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 0f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 4.1f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.055f, 0.012f, 0.009f, 1f);
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+            float[] frames = { 0.14f, 0.84f, 1f };
+            string[] names =
+            {
+                "M8-2-fling-sleeve-start.png",
+                "M8-2-fling-sleeve-arc.png",
+                "M8-2-fling-sleeve-recover.png"
+            };
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            for (int i = 0; i < frames.Length; i++)
+            {
+                presenter.PreviewWaterSleeve(WaterSleeveGesture.FlingSleeve, frames[i]);
+                camera.Render();
+                RenderTexture.active = target;
+                capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+                capture.Apply();
+                string output = Path.Combine(projectRoot, "Logs", names[i]);
+                Directory.CreateDirectory(Path.GetDirectoryName(output));
+                File.WriteAllBytes(output, capture.EncodeToPNG());
+                Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
+            }
+
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraObject);
             Object.DestroyImmediate(root);
         }
 
