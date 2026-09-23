@@ -740,6 +740,35 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void FormalThreadPalmIntoTurnWrist_RendersContinuousBoundaryAndVisibleWristFlip()
+        {
+            var root = new GameObject("M8.1 Formal Thread And Wrist Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 64d, PlayDifficulty.Normal), 120d, 64d);
+            presenter.Begin(phrases);
+            DancePhrase thread = phrases.First(p => p.Action == DanceAction.ThreadPalm);
+            DancePhrase turn = phrases.First(p => p.Action == DanceAction.TurnWrist);
+
+            presenter.Tick(thread.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                thread.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(turn.StartSeconds);
+            float boundaryWrist = presenter.LeftWristRotation;
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                turn.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 2, 2000, 1d));
+            presenter.Tick(turn.StartSeconds + 0.0001d);
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(boundaryWrist, presenter.LeftWristRotation)),
+                Is.LessThan(0.1f));
+
+            presenter.Tick(turn.StartSeconds + (turn.DurationSeconds * 0.8d));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(boundaryWrist, presenter.LeftWristRotation)),
+                Is.GreaterThan(70f));
+            Assert.That(presenter.GetRodDrive(0), Is.GreaterThan(0.2f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void DanceTurn_LowerBodyFollowsFacing_WhileBothFeetStayGrounded()
         {
             var root = new GameObject("Northern Waist Separation Test");

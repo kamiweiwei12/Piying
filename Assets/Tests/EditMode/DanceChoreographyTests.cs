@@ -46,7 +46,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void AcceptedPalmGestures_AreFormalAnchoredPhrasesAfterTheOriginalEight()
+        public void AcceptedHandGestures_AreFormalAnchoredPhrasesAfterTheOriginalEight()
         {
             DancePhrase[] phrases = Phrases();
             Assert.That(phrases[8].Action, Is.EqualTo(DanceAction.PressPalm));
@@ -60,6 +60,45 @@ namespace YingYun.Rhythm.Tests
             Assert.That(phrases[9].HasClosing, Is.True);
             Assert.That(phrases[9].HandGesture.Wrist(0.75d), Is.LessThan(-65d));
             Assert.That(phrases[9].HandGesture.Wrist(1d), Is.Zero.Within(0.000001d));
+            Assert.That(phrases[10].Action, Is.EqualTo(DanceAction.ThreadPalm));
+            Assert.That(phrases[10].Name, Is.EqualTo("穿掌"));
+            Assert.That(phrases[10].HandGesture.Gesture, Is.EqualTo(HandGesture.ThreadPalm));
+            Assert.That(phrases[10].HasClosing, Is.False);
+            Assert.That(phrases[11].Action, Is.EqualTo(DanceAction.TurnWrist));
+            Assert.That(phrases[11].Name, Is.EqualTo("翻腕"));
+            Assert.That(phrases[11].HandGesture.Gesture, Is.EqualTo(HandGesture.TurnWrist));
+            Assert.That(phrases[11].HasClosing, Is.True);
+            Assert.That(phrases[11].HandGesture.Wrist(0d),
+                Is.EqualTo(phrases[10].HandGesture.Wrist(1d)).Within(0.000001d));
+            Assert.That(phrases[11].HandGesture.Wrist(1d), Is.Zero.Within(0.000001d));
+        }
+
+        [Test]
+        public void FormalThreadPalmIntoTurnWrist_HasContinuousHandBoundaryAndClosesForNextCycle()
+        {
+            DancePhrase[] phrases = Phrases();
+            DancePhrase thread = phrases.First(p => p.Action == DanceAction.ThreadPalm);
+            DancePhrase turn = phrases.First(p => p.Action == DanceAction.TurnWrist);
+            DancePhrase next = phrases.First(p => p.StartBeat == turn.StartBeat + turn.DurationBeats);
+            var player = new DancePlayback(phrases);
+
+            player.OnJudged(Result(thread.AnchorNoteId, JudgmentGrade.Perfect), thread.StartSeconds);
+            player.Evaluate(turn.StartSeconds);
+            double shoulder = player.Angle(DanceJoint.LeftShoulder);
+            double elbow = player.Angle(DanceJoint.LeftElbow);
+            double wrist = player.LeftWristAngle;
+            double finger = player.LeftFingerAngle;
+
+            player.OnJudged(Result(turn.AnchorNoteId, JudgmentGrade.Perfect), turn.StartSeconds);
+            player.Evaluate(turn.StartSeconds + 0.0001d);
+            Assert.That(player.Angle(DanceJoint.LeftShoulder), Is.EqualTo(shoulder).Within(0.01d));
+            Assert.That(player.Angle(DanceJoint.LeftElbow), Is.EqualTo(elbow).Within(0.01d));
+            Assert.That(player.LeftWristAngle, Is.EqualTo(wrist).Within(0.01d));
+            Assert.That(player.LeftFingerAngle, Is.EqualTo(finger).Within(0.01d));
+
+            player.Evaluate(next.StartSeconds);
+            Assert.That(player.LeftWristAngle, Is.Zero.Within(0.001d));
+            Assert.That(player.LeftFingerAngle, Is.Zero.Within(0.001d));
         }
 
         [Test]
@@ -254,7 +293,8 @@ namespace YingYun.Rhythm.Tests
         [Test]
         public void LateTurnHit_CompletesOnChartBoundaryWithoutFacingSnapIntoNextMove()
         {
-            DancePhrase[] phrases = Phrases();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 96d, PlayDifficulty.Normal), 120d, 96d);
             DancePhrase[] turns = phrases.Where(p => p.Action == DanceAction.Turn).ToArray();
             Assert.That(turns.Length, Is.GreaterThanOrEqualTo(2));
 

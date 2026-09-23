@@ -1,6 +1,6 @@
 namespace YingYun.Rhythm.Puppet
 {
-    /// <summary>M8.1 第一批實驗手勢；通過實機剪影驗收前不接入正式譜面。</summary>
+    /// <summary>M8.1 預編手勢；正式舞句只可透過 GetFormal 取得已通過剪影驗收的版本。</summary>
     public enum HandGesture
     {
         PressPalm,
@@ -54,6 +54,7 @@ namespace YingYun.Rhythm.Puppet
         private static readonly HandGesturePhrase SupportPalmWithClosing = Build(HandGesture.SupportPalm, true);
         private static readonly HandGesturePhrase ThreadPalm = Build(HandGesture.ThreadPalm, false);
         private static readonly HandGesturePhrase TurnWrist = Build(HandGesture.TurnWrist, false);
+        private static readonly HandGesturePhrase TurnWristWithClosing = Build(HandGesture.TurnWrist, true);
 
         public static HandGesturePhrase Get(HandGesture gesture)
         {
@@ -73,7 +74,9 @@ namespace YingYun.Rhythm.Puppet
             {
                 case HandGesture.PressPalm: return PressPalm;
                 case HandGesture.SupportPalm: return SupportPalmWithClosing;
-                default: throw new System.InvalidOperationException($"{gesture} 尚未通過正式舞句驗收。");
+                case HandGesture.ThreadPalm: return ThreadPalm;
+                case HandGesture.TurnWrist: return TurnWristWithClosing;
+                default: throw new System.ArgumentOutOfRangeException(nameof(gesture), gesture, null);
             }
         }
 
@@ -115,10 +118,14 @@ namespace YingYun.Rhythm.Puppet
                 case HandGesture.TurnWrist:
                     name = "翻腕（實驗）";
                     // 固定手位後翻換腕面；來源只支持翻托掌／腕部訓練語義，角度不是教材量測值。
-                    shoulderKeys = new[] { 0d, -34d, -52d, -52d, -52d };
-                    elbowKeys = new[] { 0d, 44d, 58d, 58d, 58d };
-                    wristKeys = new[] { 0d, 18d, 78d, -78d, -104d };
-                    fingerKeys = new[] { 0d, -6d, -14d, 12d, 18d };
+                    shoulderKeys = close ? new[] { -102d, -78d, -52d, -52d, -52d, 0d }
+                        : new[] { 0d, -34d, -52d, -52d, -52d };
+                    elbowKeys = close ? new[] { 18d, 38d, 58d, 58d, 58d, 0d }
+                        : new[] { 0d, 44d, 58d, 58d, 58d };
+                    wristKeys = close ? new[] { 8d, 30d, 78d, -78d, -104d, 0d }
+                        : new[] { 0d, 18d, 78d, -78d, -104d };
+                    fingerKeys = close ? new[] { 14d, 4d, -14d, 12d, 18d, 0d }
+                        : new[] { 0d, -6d, -14d, 12d, 18d };
                     break;
                 default:
                     throw new System.ArgumentOutOfRangeException(nameof(gesture), gesture, null);

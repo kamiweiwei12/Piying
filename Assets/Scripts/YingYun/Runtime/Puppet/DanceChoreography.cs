@@ -13,7 +13,8 @@ namespace YingYun.Rhythm.Puppet
     public enum DanceAction
     {
         SingleMountainArm, CloudHand, WindFlag, Turn, RaiseSleeve,
-        DoubleMountainArm, ReverseCloudHand, FinalPose, PressPalm, SupportPalm
+        DoubleMountainArm, ReverseCloudHand, FinalPose, PressPalm, SupportPalm,
+        ThreadPalm, TurnWrist
     }
 
     public enum SwingFoot
@@ -173,7 +174,7 @@ namespace YingYun.Rhythm.Puppet
                 int anchor = FindAnchor(notes, start);
                 if (anchor < 0) continue;
 
-                DanceAction action = (DanceAction)(index % 10);
+                DanceAction action = (DanceAction)(index % 12);
                 result.Add(Build(beat, anchor, action, beatSeconds));
             }
 
@@ -245,10 +246,20 @@ namespace YingYun.Rhythm.Puppet
                     handGesture = HandGestureChoreography.GetFormal(HandGesture.PressPalm);
                     name = "按掌"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
                     firstKeys = null; secondKeys = null; break;
-                default:
+                case DanceAction.SupportPalm:
                     handGesture = HandGestureChoreography.GetFormal(HandGesture.SupportPalm);
                     name = "托掌"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
                     firstKeys = null; secondKeys = null; break;
+                case DanceAction.ThreadPalm:
+                    handGesture = HandGestureChoreography.GetFormal(HandGesture.ThreadPalm);
+                    name = "穿掌"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
+                    firstKeys = null; secondKeys = null; break;
+                case DanceAction.TurnWrist:
+                    handGesture = HandGestureChoreography.GetFormal(HandGesture.TurnWrist);
+                    name = "翻腕"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
+                    firstKeys = null; secondKeys = null; break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(action), action, null);
             }
 
             var firstSamples = new double[DancePhrase.SampleCount];
@@ -294,7 +305,7 @@ namespace YingYun.Rhythm.Puppet
                 stepFoot,
                 action == DanceAction.CloudHand || action == DanceAction.DoubleMountainArm ||
                 action == DanceAction.ReverseCloudHand || action == DanceAction.FinalPose ||
-                action == DanceAction.SupportPalm,
+                action == DanceAction.SupportPalm || action == DanceAction.TurnWrist,
                 handGesture,
                 footReachSamples, footLiftSamples, weightShiftSamples);
         }
