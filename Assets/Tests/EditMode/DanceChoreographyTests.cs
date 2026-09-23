@@ -82,6 +82,36 @@ namespace YingYun.Rhythm.Tests
             Assert.That(phrases[11].HandGesture.Wrist(0d),
                 Is.EqualTo(phrases[10].HandGesture.Wrist(1d)).Within(0.000001d));
             Assert.That(phrases[11].HandGesture.Wrist(1d), Is.Zero.Within(0.000001d));
+            Assert.That(phrases[12].Action, Is.EqualTo(DanceAction.FistPalmSalute));
+            Assert.That(phrases[12].Name, Is.EqualTo("拳掌禮"));
+            Assert.That(phrases[12].FistPalmSalute, Is.Not.Null);
+            Assert.That(phrases[12].ActiveRodCount, Is.EqualTo(2));
+            Assert.That(phrases[12].HasClosing, Is.True);
+            Assert.That(phrases[12].FistPalmSalute.RightClosure(0.7d), Is.GreaterThan(0.75d));
+            Assert.That(phrases[12].FistPalmSalute.RightClosure(1d), Is.Zero.Within(0.000001d));
+        }
+
+        [Test]
+        public void FormalFistPalmSalute_UsesTwoHandsAndMissFreezesTheCompletedPose()
+        {
+            DancePhrase[] phrases = Phrases();
+            DancePhrase salute = phrases.First(p => p.Action == DanceAction.FistPalmSalute);
+            var player = new DancePlayback(phrases);
+            player.OnJudged(Result(salute.AnchorNoteId, JudgmentGrade.Perfect), salute.StartSeconds);
+            player.Evaluate(salute.StartSeconds + (salute.DurationSeconds * 0.7d));
+
+            Assert.That(player.HasExplicitLeftHandPose, Is.True);
+            Assert.That(player.HasExplicitRightHandPose, Is.True);
+            Assert.That(player.RightHandClosure, Is.GreaterThan(0.75d));
+            Assert.That(player.Angle(DanceJoint.LeftElbow), Is.GreaterThan(140d));
+            Assert.That(player.Angle(DanceJoint.RightElbow), Is.LessThan(-140d));
+
+            double heldClosure = player.RightHandClosure;
+            DancePhrase next = phrases.First(p => p.StartBeat == salute.StartBeat + salute.DurationBeats);
+            player.OnJudged(Result(next.AnchorNoteId, JudgmentGrade.Miss),
+                salute.StartSeconds + (salute.DurationSeconds * 0.7d));
+            player.Evaluate(next.StartSeconds);
+            Assert.That(player.RightHandClosure, Is.EqualTo(heldClosure).Within(0.000001d));
         }
 
         [Test]
@@ -464,6 +494,6 @@ namespace YingYun.Rhythm.Tests
         }
 
         private static DancePhrase[] Phrases() => DanceChoreography.Create(
-            PrototypeDanceChart.Create(120d, 64d, PlayDifficulty.Normal), 120d, 64d);
+            PrototypeDanceChart.Create(120d, 112d, PlayDifficulty.Normal), 120d, 112d);
     }
 }

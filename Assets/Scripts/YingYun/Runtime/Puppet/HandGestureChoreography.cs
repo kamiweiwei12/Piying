@@ -211,21 +211,32 @@ namespace YingYun.Rhythm.Puppet
 
     public static class FistPalmSaluteChoreography
     {
-        private static readonly FistPalmSalutePhrase Phrase = Build();
+        private static readonly FistPalmSalutePhrase Phrase = Build(false);
+        private static readonly FistPalmSalutePhrase FormalPhrase = Build(true);
 
         public static FistPalmSalutePhrase Get() => Phrase;
+        public static FistPalmSalutePhrase GetFormal() => FormalPhrase;
 
-        private static FistPalmSalutePhrase Build()
+        private static FistPalmSalutePhrase Build(bool close)
         {
-            double[] leftShoulder = Samples(new[] { 0d, -18d, -36d });
-            double[] leftElbow = Samples(new[] { 0d, 88d, 150d });
-            double[] leftWrist = Samples(new[] { 0d, 10d, 22d });
-            double[] leftFinger = Samples(new[] { 0d, -8d, -12d });
-            double[] rightShoulder = Samples(new[] { 0d, 18d, 36d });
-            double[] rightElbow = Samples(new[] { 0d, -88d, -150d });
-            double[] rightWrist = Samples(new[] { 0d, -10d, -22d });
-            double[] rightFinger = Samples(new[] { 0d, 5d, 8d });
-            double[] rightClosure = Samples(new[] { 0d, 0.45d, 0.82d });
+            double[] leftShoulder = Samples(close ? new[] { 0d, -18d, -36d, -36d, 0d }
+                : new[] { 0d, -18d, -36d });
+            double[] leftElbow = Samples(close ? new[] { 0d, 88d, 150d, 150d, 0d }
+                : new[] { 0d, 88d, 150d });
+            double[] leftWrist = Samples(close ? new[] { 0d, 10d, 22d, 22d, 0d }
+                : new[] { 0d, 10d, 22d });
+            double[] leftFinger = Samples(close ? new[] { 0d, -8d, -12d, -12d, 0d }
+                : new[] { 0d, -8d, -12d });
+            double[] rightShoulder = Samples(close ? new[] { 0d, 18d, 36d, 36d, 0d }
+                : new[] { 0d, 18d, 36d });
+            double[] rightElbow = Samples(close ? new[] { 0d, -88d, -150d, -150d, 0d }
+                : new[] { 0d, -88d, -150d });
+            double[] rightWrist = Samples(close ? new[] { 0d, -10d, -22d, -22d, 0d }
+                : new[] { 0d, -10d, -22d });
+            double[] rightFinger = Samples(close ? new[] { 0d, 5d, 8d, 8d, 0d }
+                : new[] { 0d, 5d, 8d });
+            double[] rightClosure = Samples(close ? new[] { 0d, 0.45d, 0.82d, 0.82d, 0d }
+                : new[] { 0d, 0.45d, 0.82d });
             return new FistPalmSalutePhrase(leftShoulder, leftElbow, leftWrist, leftFinger,
                 rightShoulder, rightElbow, rightWrist, rightFinger, rightClosure);
         }

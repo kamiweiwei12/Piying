@@ -813,6 +813,31 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void FormalFistPalmSalute_RendersFromSuccessfulJudgmentAndCloses()
+        {
+            var root = new GameObject("M8.1 Formal Fist Palm Salute Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 64d, PlayDifficulty.Normal), 120d, 64d);
+            presenter.Begin(phrases);
+            DancePhrase salute = phrases.First(p => p.Action == DanceAction.FistPalmSalute);
+            presenter.Tick(salute.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                salute.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(salute.StartSeconds + (salute.DurationSeconds * 0.7d));
+
+            Assert.That(Vector3.Distance(presenter.LeftWristPosition, presenter.RightWristPosition),
+                Is.LessThan(0.65f));
+            Assert.That(presenter.RightFingerScale.x, Is.LessThan(0.7f));
+            Assert.That(presenter.GetRodDrive(0), Is.GreaterThan(0.2f));
+            Assert.That(presenter.GetRodDrive(2), Is.GreaterThan(0.2f));
+
+            presenter.Tick(salute.StartSeconds + salute.DurationSeconds);
+            Assert.That(presenter.RightFingerScale.x, Is.EqualTo(1f).Within(0.01f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void DanceTurn_LowerBodyFollowsFacing_WhileBothFeetStayGrounded()
         {
             var root = new GameObject("Northern Waist Separation Test");

@@ -578,14 +578,29 @@ namespace YingYun.Rhythm.View
                 leftWrist = (float)_dancePlayback.LeftWristAngle;
                 SetRotation(_leftWristJoint, leftWrist);
                 SetRotation(_leftFingerJoint, _dancePlayback.LeftFingerAngle);
+                _leftFingerJoint.localScale = Vector3.one;
             }
             else
             {
                 EaseRotation(_leftWristJoint, -leftWrist, blend);
                 EaseRotation(_leftFingerJoint, leftWrist * 0.45f, blend * 0.7f);
             }
-            EaseRotation(_rightWristJoint, -rightWrist, blend);
-            EaseRotation(_rightFingerJoint, rightWrist * 0.45f, blend * 0.7f);
+            if (_dancePlayback != null && _dancePlayback.HasExplicitRightHandPose)
+            {
+                rightWrist = (float)_dancePlayback.RightWristAngle;
+                SetRotation(_rightWristJoint, rightWrist);
+                SetRotation(_rightFingerJoint, _dancePlayback.RightFingerAngle);
+                float closure = (float)_dancePlayback.RightHandClosure;
+                _rightFingerJoint.localScale = new Vector3(1f - (0.48f * closure),
+                    1f - (0.30f * closure), 1f);
+            }
+            else
+            {
+                EaseRotation(_rightWristJoint, -rightWrist, blend);
+                EaseRotation(_rightFingerJoint, rightWrist * 0.45f, blend * 0.7f);
+                _rightFingerJoint.localScale = Vector3.Lerp(_rightFingerJoint.localScale,
+                    Vector3.one, blend);
+            }
             EaseRotation(_leftSleeveTail, -leftWrist * 0.85f, blend * 0.45f);
             EaseRotation(_rightSleeveTail, -rightWrist * 0.85f, blend * 0.45f);
         }
