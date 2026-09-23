@@ -160,6 +160,43 @@ namespace YingYun.Rhythm.Puppet
     {
         private const int BeatsPerPhrase = 8;
 
+        // 《試燈》目前固定為四十五段。前八段先完成開場亮相，接著逐步展開手勢，
+        // 中段以多次轉身形成方向轉折，末十段收束至拳掌禮與亮相。
+        // 這份表在載入時使用；運行時仍只取樣已預編的 DancePhrase。
+        private static readonly DanceAction[] TrialLightRoutine =
+        {
+            // 起：0–7
+            DanceAction.SingleMountainArm, DanceAction.CloudHand,
+            DanceAction.WindFlag, DanceAction.Turn,
+            DanceAction.RaiseSleeve, DanceAction.DoubleMountainArm,
+            DanceAction.ReverseCloudHand, DanceAction.FinalPose,
+
+            // 承：8–21
+            DanceAction.PressPalm, DanceAction.SupportPalm,
+            DanceAction.ThreadPalm, DanceAction.TurnWrist,
+            DanceAction.FistPalmSalute, DanceAction.SingleFinger,
+            DanceAction.SingleMountainArm, DanceAction.CloudHand,
+            DanceAction.PressPalm, DanceAction.SupportPalm,
+            DanceAction.ThreadPalm, DanceAction.TurnWrist,
+            DanceAction.WindFlag, DanceAction.RaiseSleeve,
+
+            // 轉：22–34
+            DanceAction.Turn, DanceAction.ReverseCloudHand,
+            DanceAction.DoubleMountainArm, DanceAction.WindFlag,
+            DanceAction.Turn, DanceAction.RaiseSleeve,
+            DanceAction.ReverseCloudHand, DanceAction.CloudHand,
+            DanceAction.Turn, DanceAction.WindFlag,
+            DanceAction.DoubleMountainArm, DanceAction.ReverseCloudHand,
+            DanceAction.FinalPose,
+
+            // 合：35–44
+            DanceAction.PressPalm, DanceAction.SupportPalm,
+            DanceAction.ThreadPalm, DanceAction.TurnWrist,
+            DanceAction.SingleFinger, DanceAction.SingleMountainArm,
+            DanceAction.CloudHand, DanceAction.DoubleMountainArm,
+            DanceAction.FistPalmSalute, DanceAction.FinalPose
+        };
+
         public static DancePhrase[] Create(NoteData[] notes, double bpm, double durationSeconds)
         {
             if (notes == null) throw new ArgumentNullException(nameof(notes));
@@ -176,11 +213,25 @@ namespace YingYun.Rhythm.Puppet
                 int anchor = FindAnchor(notes, start);
                 if (anchor < 0) continue;
 
-                DanceAction action = (DanceAction)(index % 14);
+                DanceAction action = ActionForPhrase(index, phraseCount);
                 result.Add(Build(beat, anchor, action, beatSeconds));
             }
 
             return result.ToArray();
+        }
+
+        private static DanceAction ActionForPhrase(int index, int phraseCount)
+        {
+            // 不論測試曲長或正式三分鐘曲目，最後一句都以亮相收束。
+            if (index == phraseCount - 1)
+            {
+                return DanceAction.FinalPose;
+            }
+
+            // 正式《試燈》完整落在四十五段內；較長的臨時測試曲只重用前四十四段，
+            // 並由上面的末句規則確保不在半個動作群中結束。
+            int usableCount = TrialLightRoutine.Length - 1;
+            return TrialLightRoutine[index % usableCount];
         }
 
         private static int FindAnchor(NoteData[] notes, double startSeconds)
@@ -294,7 +345,9 @@ namespace YingYun.Rhythm.Puppet
                 secondSamples[i] = fistPalmSalute != null ? fistPalmSalute.RightShoulder(progress) :
                     handGesture == null ? KeyValue(secondKeys, progress) : handGesture.Elbow(progress);
                 blendSamples[i] = Smooth(Math.Min(1d, progress * 4d));
-                linkedBlendSamples[i] = 1d;
+                // 固定套路會產生原十四式循環以外的新相鄰組合。直連仍從前句實際末姿
+                // 起步，再於半拍內進入下一句預編軌跡，避免首幀硬切。
+                linkedBlendSamples[i] = Smooth(Math.Min(1d, progress * 16d));
                 widthSamples[i] = action == DanceAction.Turn
                     ? (progress < 0.5d
                         ? 1d - (0.92d * Smooth(progress * 2d))

@@ -262,6 +262,61 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void TrialLightRoutine_UsesFixedRiseDevelopTurnCloseOrderAndEndsInFinalPose()
+        {
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 180d, PlayDifficulty.Normal), 120d, 180d);
+            DanceAction[] expected =
+            {
+                DanceAction.SingleMountainArm, DanceAction.CloudHand,
+                DanceAction.WindFlag, DanceAction.Turn,
+                DanceAction.RaiseSleeve, DanceAction.DoubleMountainArm,
+                DanceAction.ReverseCloudHand, DanceAction.FinalPose,
+                DanceAction.PressPalm, DanceAction.SupportPalm,
+                DanceAction.ThreadPalm, DanceAction.TurnWrist,
+                DanceAction.FistPalmSalute, DanceAction.SingleFinger,
+                DanceAction.SingleMountainArm, DanceAction.CloudHand,
+                DanceAction.PressPalm, DanceAction.SupportPalm,
+                DanceAction.ThreadPalm, DanceAction.TurnWrist,
+                DanceAction.WindFlag, DanceAction.RaiseSleeve,
+                DanceAction.Turn, DanceAction.ReverseCloudHand,
+                DanceAction.DoubleMountainArm, DanceAction.WindFlag,
+                DanceAction.Turn, DanceAction.RaiseSleeve,
+                DanceAction.ReverseCloudHand, DanceAction.CloudHand,
+                DanceAction.Turn, DanceAction.WindFlag,
+                DanceAction.DoubleMountainArm, DanceAction.ReverseCloudHand,
+                DanceAction.FinalPose, DanceAction.PressPalm,
+                DanceAction.SupportPalm, DanceAction.ThreadPalm,
+                DanceAction.TurnWrist, DanceAction.SingleFinger,
+                DanceAction.SingleMountainArm, DanceAction.CloudHand,
+                DanceAction.DoubleMountainArm, DanceAction.FistPalmSalute,
+                DanceAction.FinalPose
+            };
+
+            Assert.That(phrases.Select(p => p.Action), Is.EqualTo(expected));
+            Assert.That(phrases[16].Action, Is.EqualTo(DanceAction.PressPalm));
+            Assert.That(phrases[16].Action, Is.Not.EqualTo((DanceAction)(16 % 14)));
+            Assert.That(phrases.Take(8).Last().Action, Is.EqualTo(DanceAction.FinalPose));
+            Assert.That(phrases.Skip(22).Take(13).Count(p => p.Action == DanceAction.Turn),
+                Is.EqualTo(3));
+            Assert.That(phrases.Last().Action, Is.EqualTo(DanceAction.FinalPose));
+            Assert.That(Enum.GetValues(typeof(DanceAction)).Cast<DanceAction>()
+                .All(action => phrases.Any(p => p.Action == action)), Is.True);
+        }
+
+        [Test]
+        public void RoutineGeneration_IsDeterministicAndShortChartsStillCloseWithFinalPose()
+        {
+            NoteData[] notes = PrototypeDanceChart.Create(120d, 112d, PlayDifficulty.Normal);
+            DancePhrase[] first = DanceChoreography.Create(notes, 120d, 112d);
+            DancePhrase[] second = DanceChoreography.Create(notes, 120d, 112d);
+
+            Assert.That(second.Select(p => p.Action), Is.EqualTo(first.Select(p => p.Action)));
+            Assert.That(second.Select(p => p.AnchorNoteId), Is.EqualTo(first.Select(p => p.AnchorNoteId)));
+            Assert.That(first.Last().Action, Is.EqualTo(DanceAction.FinalPose));
+        }
+
+        [Test]
         public void SuccessfulPhrase_LiftsOneFootWhileOtherRemainsPlanted_ThenLands()
         {
             DancePhrase[] phrases = Phrases();
@@ -509,7 +564,8 @@ namespace YingYun.Rhythm.Tests
         [Test]
         public void SuccessiveHits_ArePositionContinuousAtAllPhraseBoundaries()
         {
-            DancePhrase[] phrases = Phrases();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 180d, PlayDifficulty.Normal), 120d, 180d);
             var player = new DancePlayback(phrases);
             player.OnJudged(Result(phrases[0].AnchorNoteId, JudgmentGrade.Perfect), phrases[0].StartSeconds);
             for (int i = 0; i < phrases.Length - 1; i++)
