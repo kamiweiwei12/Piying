@@ -24,6 +24,33 @@
 
 ---
 
+## [2026-09-23] M8.1 手勢候選 - 單指剪影能力預覽
+
+### 新增
+
+* `HandGesture.SingleFinger` 提供 129 點預編實驗取樣；只用一支左手簽，雙足維持接地。
+* 左腕增加隨腕剛性運動的細長單指片，既有指扇在末姿縮短收攏，使完整角色比例仍可區分伸指與掌部。
+* `ShadowPuppetPresenter.PreviewHandGesture` 只在單指實驗末段顯示新指片；正式十三式、判定與 HUD 未接線。
+* 產出 `Logs/M8-1-single-finger.png` 與 `Logs/M8-1-single-finger-closeup.png` 供剪影驗收。
+
+### 研究邊界
+
+* [上海戲曲學校戲曲韻律操](https://sh-xiquschool.sta.edu.cn/wmzx/77/cf/c4106a96207/page.htm)明列單指（蘭花指）及劍指；[中國戲曲學院手眼身法步](https://bo.nacta.edu.cn/py/yf/byf/index.htm)指出不同行當的指法規格不同。
+* 本候選因此只稱「單指」，展示手位與數值是剪影能力實驗，不作為特定行當蘭花指的教材角度。
+
+### 測試
+
+* Unity 6000.6.2f1 EditMode：149/149 通過，0 failed；結果 `Logs/M8-1-single-finger-results.xml`。
+* 新測試確認單指片啟用、指扇收攏、雙足不移位，並輸出完整與近距離圖片。
+
+### Git Commit
+
+* `feat(m8): preview single finger silhouette`（本候選提交）。
+
+### 下一步
+
+* 由使用者先確認單指在完整角色及近距離圖中的辨識度；通過後另提正式舞句的起勢、收勢與前後承接。
+
 ## [2026-09-23] M8.1 正式舞句 - 拳掌禮接入整曲
 
 ### 新增

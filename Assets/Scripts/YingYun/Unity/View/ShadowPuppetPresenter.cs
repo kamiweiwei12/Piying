@@ -44,6 +44,8 @@ namespace YingYun.Rhythm.View
         private Transform _rightWristJoint;
         private Transform _leftFingerJoint;
         private Transform _rightFingerJoint;
+        private Transform _leftPointFinger;
+        private Transform _rightPointFinger;
         private Transform _leftAnkleJoint;
         private Transform _rightAnkleJoint;
         private Transform _robeSkirt;
@@ -86,6 +88,8 @@ namespace YingYun.Rhythm.View
         public Vector3 RightWristPosition => _rightWristJoint == null ? Vector3.zero :
             _visualRoot.InverseTransformPoint(_rightWristJoint.position);
         public Vector3 RightFingerScale => _rightFingerJoint == null ? Vector3.one : _rightFingerJoint.localScale;
+        public Vector3 LeftFingerScale => _leftFingerJoint == null ? Vector3.one : _leftFingerJoint.localScale;
+        public bool LeftPointFingerVisible => _leftPointFinger != null && _leftPointFinger.gameObject.activeSelf;
         public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
         public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
 
@@ -119,6 +123,8 @@ namespace YingYun.Rhythm.View
             _rightSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
             _leftFingerJoint.localScale = Vector3.one;
             _rightFingerJoint.localScale = Vector3.one;
+            _leftPointFinger.gameObject.SetActive(false);
+            _rightPointFinger.gameObject.SetActive(false);
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
         }
@@ -194,8 +200,11 @@ namespace YingYun.Rhythm.View
             SetRotation(_rightForearmJoint, 0d);
             SetRotation(_rightWristJoint, 0d);
             SetRotation(_rightFingerJoint, 0d);
-            _leftFingerJoint.localScale = Vector3.one;
+            _leftFingerJoint.localScale = new Vector3((float)phrase.FingerWidth(t),
+                (float)phrase.FingerLength(t), 1f);
             _rightFingerJoint.localScale = Vector3.one;
+            _leftPointFinger.gameObject.SetActive(gesture == HandGesture.SingleFinger && t > 0.5f);
+            _rightPointFinger.gameObject.SetActive(false);
             SetRotation(_torsoJoint, 0d);
             _torsoJoint.localScale = Vector3.one;
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
@@ -423,8 +432,20 @@ namespace YingYun.Rhythm.View
                 wrist, new Vector3(side * 0.12f, -0.22f, 0f));
             CreateSprite("Finger Silhouette", finger, new Vector3(side * 0.08f, -0.12f, 0f),
                 new Vector2(0.12f, 0.30f), ShadowColor(), 8, _circleSprite);
-            if (left) _leftFingerJoint = finger;
-            else _rightFingerJoint = finger;
+            Transform pointFinger = CreateSprite(left ? "Left Single Finger Silhouette" : "Right Single Finger Silhouette",
+                wrist, new Vector3(side * 0.22f, -0.30f, 0f), new Vector2(0.075f, 0.52f),
+                ShadowColor(), 9, _circleSprite);
+            pointFinger.gameObject.SetActive(false);
+            if (left)
+            {
+                _leftFingerJoint = finger;
+                _leftPointFinger = pointFinger;
+            }
+            else
+            {
+                _rightFingerJoint = finger;
+                _rightPointFinger = pointFinger;
+            }
         }
 
         private Transform BuildSleeveTail(Transform elbow, bool left)
