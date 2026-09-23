@@ -776,6 +776,61 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void ExperimentalSwordFinger_ShowsTwoStraightFingerPlatesAndRendersPreview()
+        {
+            var root = new GameObject("M8.1 Sword Finger Visual Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            Vector3 leftFoot = presenter.LeftAnklePosition;
+            Vector3 rightFoot = presenter.RightAnklePosition;
+            presenter.PreviewHandGesture(HandGesture.SwordFinger, 1f);
+
+            Assert.That(presenter.LeftPointFingerVisible, Is.True);
+            Assert.That(presenter.LeftSecondPointFingerVisible, Is.True);
+            Assert.That(presenter.LeftFingerScale.x, Is.LessThan(0.5f));
+            Assert.That(Vector3.Distance(leftFoot, presenter.LeftAnklePosition), Is.LessThan(0.025f));
+            Assert.That(Vector3.Distance(rightFoot, presenter.RightAnklePosition), Is.LessThan(0.025f));
+
+            var cameraObject = new GameObject("M8.1 Sword Finger Validation Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 0f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 4.1f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.055f, 0.012f, 0.009f, 1f);
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+
+            camera.Render();
+            RenderTexture.active = target;
+            capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+            capture.Apply();
+            string output = Path.Combine(projectRoot, "Logs", "M8-1-sword-finger.png");
+            File.WriteAllBytes(output, capture.EncodeToPNG());
+            Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
+
+            Vector3 wrist = presenter.LeftWristPosition;
+            camera.transform.position = new Vector3(wrist.x, wrist.y, -10f);
+            camera.orthographicSize = 0.72f;
+            camera.Render();
+            RenderTexture.active = target;
+            capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+            capture.Apply();
+            string closeup = Path.Combine(projectRoot, "Logs", "M8-1-sword-finger-closeup.png");
+            File.WriteAllBytes(closeup, capture.EncodeToPNG());
+            Assert.That(new FileInfo(closeup).Length, Is.GreaterThan(10000));
+
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraObject);
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void FormalPalmGesture_RendersFromSuccessfulJudgment()
         {
             var root = new GameObject("M8.1 Formal Palm Gesture Test");

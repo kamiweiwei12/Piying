@@ -24,6 +24,33 @@
 
 ---
 
+## [2026-09-23] M8.1 手勢候選 - 劍指剪影能力預覽
+
+### 新增
+
+* `HandGesture.SwordFinger` 提供 129 點預編實驗取樣；只使用一支左手簽，雙足維持接地。
+* 左腕新增第二片細長指片，與既有單指片平行伸出；原指扇縮短收攏，以剪影表現兩指挺直、其餘收攏。
+* 產出 `Logs/M8-1-sword-finger.png` 與 `Logs/M8-1-sword-finger-closeup.png` 供完整比例及近距離驗收。
+* `GetFormal(HandGesture.SwordFinger)` 在驗收前明確拒絕；正式十四式、HUD 與判定未接線。
+
+### 研究邊界
+
+* [上海戲曲學校戲曲韻律操](https://sh-xiquschool.sta.edu.cn/wmzx/77/cf/c4106a96207/page.htm)確認劍指屬戲曲指法；[教材手型分解](https://www.badsa.org.cn/a/newindex/24187.html)描述食、中二指併攏挺直及其餘三指收攏；[安徽城市管理職業學院](https://ggjxb.cua.edu.cn/2025/1215/c143a52446/page.htm)強調挺直有力。
+* 本候選只驗證手型剪影，展示手位與數值不作為特定行當的教材角度。
+
+### 測試
+
+* Unity 6000.6.2f1 EditMode：154/154 通過，0 failed；結果 `Logs/M8-1-sword-finger-results.xml`。
+* 新測試確認雙指片同時啟用、指扇收攏、單手簽限制、雙足不移位，並輸出兩張驗收圖。
+
+### Git Commit
+
+* `feat(m8): preview sword finger silhouette`（本候選提交）。
+
+### 下一步
+
+* 由使用者確認完整比例及近距離圖能否辨認為兩指併直、其餘收攏；通過後另提正式舞句的起勢、收勢與前後承接。
+
 ## [2026-09-23] M8.1 正式舞句 - 單指接入整曲
 
 ### 新增

@@ -57,6 +57,21 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void ExperimentalSwordFinger_IsPrecomputedTwoFingerOneRodCapability()
+        {
+            HandGesturePhrase sword = HandGestureChoreography.Get(HandGesture.SwordFinger);
+            Assert.That(sword.Name, Does.Contain("劍指"));
+            Assert.That(sword.ActiveRodCount, Is.EqualTo(1));
+            Assert.That(sword.PointFinger(0d), Is.Zero.Within(0.000001d));
+            Assert.That(sword.SecondPointFinger(0d), Is.Zero.Within(0.000001d));
+            Assert.That(sword.PointFinger(1d), Is.EqualTo(1d).Within(0.000001d));
+            Assert.That(sword.SecondPointFinger(1d), Is.EqualTo(1d).Within(0.000001d));
+            Assert.That(sword.FingerWidth(1d), Is.LessThan(0.5d));
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                HandGestureChoreography.GetFormal(HandGesture.SwordFinger));
+        }
+
+        [Test]
         public void AcceptedHandGestures_AreFormalAnchoredPhrasesAfterTheOriginalEight()
         {
             DancePhrase[] phrases = Phrases();

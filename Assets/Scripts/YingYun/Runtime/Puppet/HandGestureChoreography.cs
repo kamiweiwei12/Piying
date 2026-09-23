@@ -7,7 +7,8 @@ namespace YingYun.Rhythm.Puppet
         SupportPalm,
         ThreadPalm,
         TurnWrist,
-        SingleFinger
+        SingleFinger,
+        SwordFinger
     }
 
     /// <summary>由同一支手簽帶動肩、肘、腕及掌形的預編取樣。</summary>
@@ -17,7 +18,7 @@ namespace YingYun.Rhythm.Puppet
 
         internal HandGesturePhrase(HandGesture gesture, string name, double[] shoulder,
             double[] elbow, double[] wrist, double[] finger, double[] fingerWidth,
-            double[] fingerLength, double[] pointFinger)
+            double[] fingerLength, double[] pointFinger, double[] secondPointFinger)
         {
             Gesture = gesture;
             Name = name;
@@ -28,6 +29,7 @@ namespace YingYun.Rhythm.Puppet
             FingerWidthSamples = fingerWidth;
             FingerLengthSamples = fingerLength;
             PointFingerSamples = pointFinger;
+            SecondPointFingerSamples = secondPointFinger;
         }
 
         public HandGesture Gesture { get; }
@@ -40,6 +42,7 @@ namespace YingYun.Rhythm.Puppet
         internal double[] FingerWidthSamples { get; }
         internal double[] FingerLengthSamples { get; }
         internal double[] PointFingerSamples { get; }
+        internal double[] SecondPointFingerSamples { get; }
 
         public double Shoulder(double progress) => Sample(ShoulderSamples, progress);
         public double Elbow(double progress) => Sample(ElbowSamples, progress);
@@ -48,6 +51,7 @@ namespace YingYun.Rhythm.Puppet
         public double FingerWidth(double progress) => Sample(FingerWidthSamples, progress);
         public double FingerLength(double progress) => Sample(FingerLengthSamples, progress);
         public double PointFinger(double progress) => Sample(PointFingerSamples, progress);
+        public double SecondPointFinger(double progress) => Sample(SecondPointFingerSamples, progress);
 
         private static double Sample(double[] values, double progress)
         {
@@ -68,6 +72,7 @@ namespace YingYun.Rhythm.Puppet
         private static readonly HandGesturePhrase TurnWristWithClosing = Build(HandGesture.TurnWrist, true);
         private static readonly HandGesturePhrase SingleFinger = Build(HandGesture.SingleFinger, false);
         private static readonly HandGesturePhrase SingleFingerWithClosing = Build(HandGesture.SingleFinger, true);
+        private static readonly HandGesturePhrase SwordFinger = Build(HandGesture.SwordFinger, false);
 
         public static HandGesturePhrase Get(HandGesture gesture)
         {
@@ -78,6 +83,7 @@ namespace YingYun.Rhythm.Puppet
                 case HandGesture.ThreadPalm: return ThreadPalm;
                 case HandGesture.TurnWrist: return TurnWrist;
                 case HandGesture.SingleFinger: return SingleFinger;
+                case HandGesture.SwordFinger: return SwordFinger;
                 default: throw new System.ArgumentOutOfRangeException(nameof(gesture), gesture, null);
             }
         }
@@ -105,6 +111,7 @@ namespace YingYun.Rhythm.Puppet
             double[] fingerWidthKeys = { 1d, 1d };
             double[] fingerLengthKeys = { 1d, 1d };
             double[] pointFingerKeys = { 0d, 0d };
+            double[] secondPointFingerKeys = { 0d, 0d };
             switch (gesture)
             {
                 case HandGesture.PressPalm:
@@ -163,6 +170,18 @@ namespace YingYun.Rhythm.Puppet
                     pointFingerKeys = close ? new[] { 0d, 0.35d, 1d, 1d, 0d }
                         : new[] { 0d, 0.35d, 1d };
                     break;
+                case HandGesture.SwordFinger:
+                    name = "劍指（實驗）";
+                    // 只驗證食、中二指並直與其餘指片收攏的剪影；展示手位不是行當教材角度。
+                    shoulderKeys = new[] { 0d, -52d, -102d };
+                    elbowKeys = new[] { 0d, 54d, 18d };
+                    wristKeys = new[] { 0d, -4d, 14d };
+                    fingerKeys = new[] { 0d, 8d, 14d };
+                    fingerWidthKeys = new[] { 1d, 0.68d, 0.42d };
+                    fingerLengthKeys = new[] { 1d, 0.78d, 0.56d };
+                    pointFingerKeys = new[] { 0d, 0.35d, 1d };
+                    secondPointFingerKeys = new[] { 0d, 0.35d, 1d };
+                    break;
                 default:
                     throw new System.ArgumentOutOfRangeException(nameof(gesture), gesture, null);
             }
@@ -174,6 +193,7 @@ namespace YingYun.Rhythm.Puppet
             var fingerWidth = new double[HandGesturePhrase.SampleCount];
             var fingerLength = new double[HandGesturePhrase.SampleCount];
             var pointFinger = new double[HandGesturePhrase.SampleCount];
+            var secondPointFinger = new double[HandGesturePhrase.SampleCount];
             for (int i = 0; i < HandGesturePhrase.SampleCount; i++)
             {
                 double progress = (double)i / (HandGesturePhrase.SampleCount - 1);
@@ -184,10 +204,11 @@ namespace YingYun.Rhythm.Puppet
                 fingerWidth[i] = KeyValue(fingerWidthKeys, progress);
                 fingerLength[i] = KeyValue(fingerLengthKeys, progress);
                 pointFinger[i] = KeyValue(pointFingerKeys, progress);
+                secondPointFinger[i] = KeyValue(secondPointFingerKeys, progress);
             }
 
             return new HandGesturePhrase(gesture, name, shoulder, elbow, wrist, finger,
-                fingerWidth, fingerLength, pointFinger);
+                fingerWidth, fingerLength, pointFinger, secondPointFinger);
         }
 
         private static double KeyValue(double[] keys, double progress)
