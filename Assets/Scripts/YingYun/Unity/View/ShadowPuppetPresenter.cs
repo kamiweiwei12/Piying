@@ -40,8 +40,6 @@ namespace YingYun.Rhythm.View
         private Transform _rightSleeve;
         private Transform _leftSleeveTail;
         private Transform _rightSleeveTail;
-        private readonly Transform[] _leftWaterSleeveJoints = new Transform[WaterSleeveRigDesign.PivotCount];
-        private readonly Transform[] _rightWaterSleeveJoints = new Transform[WaterSleeveRigDesign.PivotCount];
         private Transform _leftWristJoint;
         private Transform _rightWristJoint;
         private Transform _leftFingerJoint;
@@ -56,14 +54,13 @@ namespace YingYun.Rhythm.View
         private Transform _rightFootPlate;
         private Sprite _squareSprite;
         private Sprite _circleSprite;
-        private Sprite _waterSleevePlateSprite;
         private Sprite _backgroundSprite;
         private Texture2D _squareTexture;
         private Texture2D _circleTexture;
         private Material _lineMaterial;
         private double _songTime;
 
-        public int JointCount => 25;
+        public int JointCount => 21;
         public event Action<DancePerformanceStatus> DanceStatusChanged;
         public int RodCount => _rods.Length;
         public int StringCount => RodCount;
@@ -93,9 +90,6 @@ namespace YingYun.Rhythm.View
         public Vector3 RightFingerScale => _rightFingerJoint == null ? Vector3.one : _rightFingerJoint.localScale;
         public Vector3 LeftFingerScale => _leftFingerJoint == null ? Vector3.one : _leftFingerJoint.localScale;
         public bool LeftPointFingerVisible => _leftPointFinger != null && _leftPointFinger.gameObject.activeSelf;
-        public int WaterSleevePlateCount => WaterSleeveRigDesign.PlateCount;
-        public int WaterSleevePivotCount => WaterSleeveRigDesign.PivotCount;
-        public bool HasWaterSleevePlateSprite => _waterSleevePlateSprite != null;
         public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
         public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
 
@@ -131,7 +125,6 @@ namespace YingYun.Rhythm.View
             _rightFingerJoint.localScale = Vector3.one;
             _leftPointFinger.gameObject.SetActive(false);
             _rightPointFinger.gameObject.SetActive(false);
-            SetExtendedWaterSleeves(false, false);
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
         }
@@ -219,48 +212,6 @@ namespace YingYun.Rhythm.View
             _rodDrive[0] = t;
             for (int lane = 1; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
             UpdateRods();
-        }
-
-        /// <summary>M8.2 皮影水袖預覽；四片硬質皮片由一支手簽帶動，不接入正式舞句。</summary>
-        public void PreviewWaterSleeve(WaterSleeveGesture gesture, float progress)
-        {
-            EnsureInitialized();
-            WaterSleevePhrase phrase = WaterSleeveChoreography.Get(gesture);
-            float t = Mathf.Clamp01(progress);
-            SetExtendedWaterSleeves(true, false);
-            SetRotation(_leftUpperArmJoint, phrase.Shoulder(t));
-            SetRotation(_leftForearmJoint, phrase.Elbow(t));
-            SetRotation(_leftWristJoint, phrase.Wrist(t));
-            SetRotation(_leftFingerJoint, 0d);
-            SetRotation(_rightUpperArmJoint, 0d);
-            SetRotation(_rightForearmJoint, 0d);
-            SetRotation(_rightWristJoint, 0d);
-            SetRotation(_rightFingerJoint, 0d);
-            for (int i = 0; i < _leftWaterSleeveJoints.Length; i++)
-                SetRotation(_leftWaterSleeveJoints[i], phrase.Pivot(i, t));
-            for (int i = 0; i < _rightWaterSleeveJoints.Length; i++)
-                SetRotation(_rightWaterSleeveJoints[i], 0d);
-            SetRotation(_torsoJoint, 0d);
-            _torsoJoint.localScale = Vector3.one;
-            _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
-            ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
-            for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
-            _rodDrive[0] = t;
-            UpdateRods();
-        }
-
-        public float GetLeftWaterSleeveRotation(int index)
-        {
-            if (index < 0 || index >= _leftWaterSleeveJoints.Length)
-                throw new System.ArgumentOutOfRangeException(nameof(index), index, null);
-            return _leftWaterSleeveJoints[index].localEulerAngles.z;
-        }
-
-        public Vector3 GetLeftWaterSleevePivotPosition(int index)
-        {
-            if (index < 0 || index >= _leftWaterSleeveJoints.Length)
-                throw new System.ArgumentOutOfRangeException(nameof(index), index, null);
-            return _visualRoot.InverseTransformPoint(_leftWaterSleeveJoints[index].position);
         }
 
         /// <summary>雙手拳掌禮能力預覽；只驗證兩支手簽會合與右拳剪影，不定案抱拳／拱手名稱。</summary>
@@ -351,7 +302,6 @@ namespace YingYun.Rhythm.View
             _circleTexture = BuildCircleTexture(64);
             _squareSprite = Sprite.Create(_squareTexture, new Rect(0f, 0f, 2f, 2f), new Vector2(0.5f, 0.5f), 2f);
             _circleSprite = Sprite.Create(_circleTexture, new Rect(0f, 0f, 64f, 64f), new Vector2(0.5f, 0.5f), 64f);
-            _waterSleevePlateSprite = Resources.Load<Sprite>("YingYun/WaterSleevePlate");
             _lineMaterial = new Material(Shader.Find("Sprites/Default"));
 
             var root = new GameObject("M6 Shadow Puppet Stage");
@@ -425,8 +375,7 @@ namespace YingYun.Rhythm.View
             Transform leftHand = CreateLimb("Left Forearm", _leftForearmJoint, 0.72f, 0.17f, 6);
             _leftWristJoint = CreateJoint("Joint Left Wrist", _leftForearmJoint, new Vector3(0f, -0.72f, 0f));
             BuildHand(_leftWristJoint, true);
-            BuildWaterSleeve(_leftWristJoint, true, _leftWaterSleeveJoints);
-            _leftSleeveTail = _leftWaterSleeveJoints[1];
+            _leftSleeveTail = BuildSleeveTail(_leftForearmJoint, true);
 
             _rightUpperArmJoint = CreateJoint("Joint Right Shoulder", _torsoJoint, new Vector3(0.48f, 0.97f, 0f));
             CreateLimb("Right Upper Arm", _rightUpperArmJoint, 0.82f, 0.20f, 5);
@@ -436,8 +385,7 @@ namespace YingYun.Rhythm.View
             Transform rightHand = CreateLimb("Right Forearm", _rightForearmJoint, 0.72f, 0.17f, 6);
             _rightWristJoint = CreateJoint("Joint Right Wrist", _rightForearmJoint, new Vector3(0f, -0.72f, 0f));
             BuildHand(_rightWristJoint, false);
-            BuildWaterSleeve(_rightWristJoint, false, _rightWaterSleeveJoints);
-            _rightSleeveTail = _rightWaterSleeveJoints[1];
+            _rightSleeveTail = BuildSleeveTail(_rightForearmJoint, false);
 
             _leftThighJoint = CreateJoint("Joint Left Hip", _pelvisJoint, new Vector3(-0.27f, 0.08f, 0f));
             CreateLimb("Left Thigh", _leftThighJoint, 0.88f, 0.24f, 3);
@@ -500,45 +448,21 @@ namespace YingYun.Rhythm.View
             }
         }
 
-        private void BuildWaterSleeve(Transform wrist, bool left, Transform[] joints)
+        private Transform BuildSleeveTail(Transform elbow, bool left)
         {
             float side = left ? -1f : 1f;
-            Transform parent = wrist;
-            string hand = left ? "Left" : "Right";
-            string[] names = { "Sleeve Cuff", "Sleeve Tail", "Sleeve Middle", "Sleeve Tip" };
-            for (int i = 0; i < joints.Length; i++)
-            {
-                // 皮片相互覆壓三成，轉動時保持服裝紋樣與輪廓連續，不露出鏈狀空隙。
-                float previousLength = i == 0 ? 0f : (float)WaterSleeveRigDesign.PlateLength(i - 1) * 0.70f;
-                Vector3 pivot = i == 0
-                    ? new Vector3(side * 0.04f, -0.08f, 0f)
-                    : new Vector3(0f, -previousLength, 0f);
-                string jointName = i < 2
-                    ? $"Joint {hand} {names[i]}"
-                    : $"Joint {hand} Water {names[i]}";
-                Transform joint = CreateJoint(jointName, parent, pivot);
-                joints[i] = joint;
-                float length = (float)WaterSleeveRigDesign.PlateLength(i);
-                float width = (float)WaterSleeveRigDesign.PlateWidth(i);
-                Color plateColor = ShadowColor();
-                CreateSprite($"{hand} Water {names[i]} Plate", joint,
-                    new Vector3(side * width * 0.08f, -length * 0.5f, 0f),
-                    new Vector2(width, length), plateColor, 7 + i,
-                    _waterSleevePlateSprite == null ? _squareSprite : _waterSleevePlateSprite);
-                CreateSprite($"{hand} Water {names[i]} Cutwork", joint,
-                    new Vector3(side * width * 0.08f, -length * 0.52f, -0.01f),
-                    new Vector2(width * 0.26f, length * 0.08f),
-                    new Color(0.70f, 0.12f, 0.045f, 0.72f), 8 + i, _circleSprite);
-                CreateSprite("Water Sleeve Joint Pin", joint, Vector3.zero,
-                    new Vector2(0.065f, 0.065f), AccentColor(), 9 + i, _circleSprite);
-                parent = joint;
-            }
-        }
-
-        private void SetExtendedWaterSleeves(bool left, bool right)
-        {
-            if (_leftWaterSleeveJoints[2] != null) _leftWaterSleeveJoints[2].gameObject.SetActive(left);
-            if (_rightWaterSleeveJoints[2] != null) _rightWaterSleeveJoints[2].gameObject.SetActive(right);
+            Transform cuff = CreateJoint(left ? "Joint Left Sleeve Cuff" : "Joint Right Sleeve Cuff",
+                elbow, new Vector3(side * 0.12f, -0.30f, 0f));
+            CreateSprite("Sleeve Cuff Plate", cuff, new Vector3(0f, -0.16f, 0f),
+                new Vector2(0.52f, 0.38f), ShadowColor(), 7, _circleSprite);
+            Transform tail = CreateJoint(left ? "Joint Left Sleeve Tail" : "Joint Right Sleeve Tail",
+                cuff, new Vector3(0f, -0.29f, 0f));
+            CreateSprite("Trailing Water Sleeve", tail, new Vector3(side * 0.04f, -0.23f, 0f),
+                new Vector2(0.31f, 0.70f), new Color(0.32f, 0.045f, 0.025f, 0.82f), 8, _circleSprite);
+            CreateSprite("Sleeve Tail Cutwork", tail, new Vector3(side * 0.04f, -0.47f, 0f),
+                new Vector2(0.19f, 0.09f), AccentColor(), 9, _circleSprite);
+            CreateJointPin(cuff, 8);
+            return tail;
         }
 
         private Transform BuildFoot(Transform ankle, bool left)

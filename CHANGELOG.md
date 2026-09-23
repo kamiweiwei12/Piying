@@ -24,45 +24,40 @@
 
 ---
 
-## [2026-09-23] M8.2 水袖候選 - 四片皮袖與甩袖預覽
+## [2026-09-23] M8.2 收尾 - 移除水袖候選並跳過水袖
 
 ### 新增
 
-* 新增 `WaterSleeveRigDesign`：每側固定四片梯形皮袖、四個被動旋轉鉸點；片長總和 `1.62`，約為既有手臂長的 `105.2%`，寬度由 `0.58` 收至 `0.32`。
-* 新增預製靜態 Sprite `Assets/Resources/YingYun/WaterSleevePlate.png`，以根寬梢窄、相鄰覆壓與小型圓鉚釘表現皮影分片，不在運行時生成袖片網格或紋理。
-* 新增 `WaterSleeveChoreography` 的129點甩袖候選；肩、肘、腕先帶動，四個袖節由根至梢延遲達峰並在句尾回落。
-* 新增起勢、外拋峰值與收袖三張驗收圖：`Logs/M8-2-fling-sleeve-start.png`、`Logs/M8-2-fling-sleeve-arc.png`、`Logs/M8-2-fling-sleeve-recover.png`。
+* 新增 M8.2 範圍決定紀錄：水袖依使用者實機觀感判定跳過，下一階段改為 M8.3 身段與步法。
 
 ### 修改
 
-* `ShadowPuppetPresenter` 將既有袖口／袖尾擴為可預覽的四片結構；延伸的中段與袖梢只在 M8.2 實驗預覽啟用，正式十四式循環未新增動作。
-* 袖片由腕部起接、相鄰覆壓前片長度的30%；完整動作仍只使用原有左手簽，雙足保持接地。
-* 運行時計算限制為固定陣列查表、線性插值及四個 `Transform` 旋轉；未加入布料、剛體、IK、Spline 或每幀網格重建。
+* 完整反向套用水袖候選提交 `66d5e1e`，移除 `WaterSleevePlate.png`、`WaterSleeveChoreography`、四個被動袖節的 Presenter 預覽及其專用測試。
+* 正式程式回到 M8.1 收尾的十四式版本；不保留水袖 Sprite、額外旋轉關節、甩袖軌跡或實驗入口。
+* 將 M8.2 記為依使用者決定跳過；此範圍決定不代表水袖動作已完成或驗收。
 
 ### 測試
 
-* Unity 6000.6.2f1 EditMode 全量回歸：`total=154 / passed=154 / failed=0 / skipped=0`；涵蓋片數、尺寸比例、由寬至窄、峰值延遲順序、每格 `< 5°`、足點固定、單手簽及靜態 Sprite 載入。
-* Windows x64 建置：`Builds/M8-2-Water-Sleeve-Preview/YingYun.exe`；`Logs/M8-2-water-sleeve-build.log` 記錄 `Build Finished, Result: Success.`。
-* 測試啟動時曾兩次遇到 Package Manager IPC 無法連線；恢復標準外部執行權限後正常解析56個套件並完成回歸。`-noUpm` 會缺少 uGUI／Input System，已停用且未修改任何套件。
+* Unity 6000.6.2f1 EditMode 全量回歸：`total=152 / passed=152 / failed=0 / skipped=0`；結果 `Logs/M8-2-no-water-sleeve-results.xml`。
+* Windows x64 建置：`Builds/M8-2-No-Water-Sleeve/YingYun.exe`；`Logs/M8-2-no-water-sleeve-build.log` 記錄 `Build Finished, Result: Success.`。
 
 ### 驗收結果
 
-* 自動驗收確認四片結構、預編延遲、收勢、單控制點與足底固定符合設計；三張完整角色比例圖已產出，袖片比例與皮影表演觀感仍待使用者確認。
-* 本候選未加入正式 `DanceAction`、HUD 或十四式循環，不宣稱甩袖已正式驗收，也不代表其他水袖技法已完成。
+* 使用者明確判定水袖效果不佳，要求直接回檔且後續不要水袖；目前程式、測試及建置已回到無水袖版本。
 
 ### Git Commit
 
-* `feat(m8): preview segmented water sleeve`（本候選提交）。
+* `revert(m8): remove water sleeve and advance to body movement`（本條目與反向變更同一提交）。
 
 ### 風險 / 已知問題
 
-* 四片皮袖是將真人白綢水袖轉譯到硬質皮影分片的數位設計；片數和尺寸不是傳統影人的通用實物規格，需以完整角色剪影驗收決定是否微調。
-* 正式遊玩目前只顯示既有袖口與近端片；中段、袖梢及甩袖軌跡尚未接入歌曲。
-* `.clinerules/01-project-context.md` 仍停在 M4；URP、ProjectSettings 與 Unity Connect 的既有未提交變動均未納入。
+* M8.2 是跳過而非完成；完整戲曲動作庫仍缺身段、步法與組合套路。
+* `.clinerules/01-project-context.md` 仍停在 M4；本輪未獲修改批准，因此未更動。
+* URP、ProjectSettings 與 Unity Connect 的既有未提交變動未納入本次成果。
 
 ### 下一步
 
-* 由使用者先確認起勢、外拋弧線與收袖三張圖；通過後另提正式甩袖舞句的起拍、收勢、前後承接與 HUD Plan。若比例不通過，只調整四片尺寸、覆壓或鉸點，不先增加更多袖功。
+* 另提 M8.3-A「站相、重心與丁字步」最小 Plan；先驗證足底接地、膝胯一致與重心轉移，再決定是否接入正式舞句。
 
 ## [2026-09-23] M8.1 收尾 - 移除劍指並凍結手勢範圍
 

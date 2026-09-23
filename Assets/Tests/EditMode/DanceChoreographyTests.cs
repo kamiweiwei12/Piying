@@ -12,45 +12,6 @@ namespace YingYun.Rhythm.Tests
     public sealed class DanceChoreographyTests
     {
         [Test]
-        public void ExperimentalFlingSleeve_UsesTaperedFourPlateRigAndDelayedSamples()
-        {
-            WaterSleevePhrase phrase = WaterSleeveChoreography.Get(WaterSleeveGesture.FlingSleeve);
-
-            Assert.That(phrase.Name, Does.Contain("甩袖"));
-            Assert.That(phrase.ActiveRodCount, Is.EqualTo(1));
-            Assert.That(WaterSleeveRigDesign.PlateCount, Is.EqualTo(4));
-            Assert.That(WaterSleeveRigDesign.PivotCount, Is.EqualTo(4));
-            Assert.That(WaterSleeveRigDesign.TotalLength / WaterSleeveRigDesign.ArmLength,
-                Is.InRange(1.03d, 1.08d));
-            for (int i = 1; i < WaterSleeveRigDesign.PlateCount; i++)
-                Assert.That(WaterSleeveRigDesign.PlateWidth(i),
-                    Is.LessThan(WaterSleeveRigDesign.PlateWidth(i - 1)));
-
-            int[] peaks = new int[WaterSleeveRigDesign.PivotCount];
-            for (int pivot = 0; pivot < peaks.Length; pivot++)
-            {
-                int selected = pivot;
-                peaks[pivot] = Enumerable.Range(0, WaterSleevePhrase.SampleCount)
-                    .OrderByDescending(i => System.Math.Abs(phrase.Pivot(selected,
-                        (double)i / (WaterSleevePhrase.SampleCount - 1))))
-                    .First();
-                Assert.That(phrase.Pivot(pivot, 0d), Is.Zero.Within(0.000001d));
-                Assert.That(phrase.Pivot(pivot, 1d), Is.Zero.Within(0.000001d));
-                for (int i = 1; i < WaterSleevePhrase.SampleCount; i++)
-                {
-                    double previous = phrase.Pivot(pivot,
-                        (double)(i - 1) / (WaterSleevePhrase.SampleCount - 1));
-                    double current = phrase.Pivot(pivot,
-                        (double)i / (WaterSleevePhrase.SampleCount - 1));
-                    Assert.That(System.Math.Abs(current - previous), Is.LessThan(5d));
-                }
-            }
-            Assert.That(peaks[0], Is.LessThan(peaks[1]));
-            Assert.That(peaks[1], Is.LessThan(peaks[2]));
-            Assert.That(peaks[2], Is.LessThan(peaks[3]));
-        }
-
-        [Test]
         public void ExperimentalPalmGestures_ArePrecomputedAndUseOneHandRod()
         {
             HandGesturePhrase press = HandGestureChoreography.Get(HandGesture.PressPalm);
