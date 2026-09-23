@@ -236,6 +236,29 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void LateTurnHit_CompletesOnChartBoundaryWithoutFacingSnapIntoNextMove()
+        {
+            DancePhrase[] phrases = Phrases();
+            DancePhrase[] turns = phrases.Where(p => p.Action == DanceAction.Turn).ToArray();
+            Assert.That(turns.Length, Is.GreaterThanOrEqualTo(2));
+
+            var player = new DancePlayback(phrases);
+            foreach (DancePhrase turn in turns.Take(2))
+            {
+                DancePhrase next = phrases.First(p => p.StartBeat == turn.StartBeat + turn.DurationBeats);
+                player.OnJudged(Result(turn.AnchorNoteId, JudgmentGrade.Good), turn.StartSeconds + 0.08d);
+                player.Evaluate(next.StartSeconds);
+                double completedFacing = player.FacingScale;
+                Assert.That(Math.Abs(completedFacing), Is.EqualTo(1d).Within(0.001d));
+
+                player.OnJudged(Result(next.AnchorNoteId, JudgmentGrade.Perfect), next.StartSeconds);
+                player.Evaluate(next.StartSeconds + 0.0001d);
+                Assert.That(player.FacingScale, Is.EqualTo(completedFacing).Within(0.001d),
+                    $"{turn.StartBeat} 拍轉身接 {next.Name} 不得翻回舊方向");
+            }
+        }
+
+        [Test]
         public void RestartingWithSameChart_ReplaysTheSamePose()
         {
             DancePhrase[] phrases = Phrases();

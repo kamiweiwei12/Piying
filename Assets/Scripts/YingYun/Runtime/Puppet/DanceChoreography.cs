@@ -472,7 +472,9 @@ namespace YingYun.Rhythm.Puppet
             _closingNotified = false;
             _activeBlendSamples = linked ? phrase.LinkedBlendSamples : phrase.RecoveryBlendSamples;
             _lastCompleted = null;
-            _activeStart = songTimeSeconds;
+            // 舞句取樣固定對齊譜面起拍。若以實際命中時間平移整段，晚擊的轉身會在下一句
+            // 到來時尚未提交新朝向，造成整個影人瞬間翻回舊方向。
+            _activeStart = phrase.StartSeconds;
             _firstStart = _angles[(int)phrase.FirstJoint];
             _secondStart = _angles[(int)phrase.SecondJoint];
             _turnFacing = _facing;
