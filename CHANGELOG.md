@@ -24,59 +24,40 @@
 
 ---
 
-## [2026-09-23] M8.1 正式舞句候選 - 劍指接入整曲
+## [2026-09-23] M8.1 收尾 - 移除劍指並凍結手勢範圍
 
 ### 新增
 
-* `DanceAction.SwordFinger` 加入第十五式，HUD 正式名稱為「劍指」；成功錨點才播放，Miss 不憑空伸指。
-* 劍指正式取樣最後兩拍同步收回手臂、腕、指扇及兩片伸指；第二指片伸出量進入 `DancePlayback` 狀態。
-* Miss 可凍結兩片伸指的當前剪影，下一次成功舞句再沿既有恢復曲線承接。
+* 新增 M8.1 收尾範圍紀錄：正式保留已實機驗收的按掌、托掌、穿掌、翻腕、拳掌禮與單指六式。
 
-### 修正與驗證
+### 修改
 
-* 正式循環由十四式擴為十五式；單指先完整收勢，再起劍指，劍指末段回中後接下一輪單山膀。
-* 新增兩個舞句邊界的肩、肘及雙指片伸出量連續性測試，避免起拍瞬移。
-* Unity 6000.6.2f1 EditMode：157/157 通過，0 failed；結果 `Logs/M8-1-sword-finger-formal-results.xml`。
-* Windows 建置成功：`Builds/M8-1-Sword-Finger-Formal/YingYun.exe`；日誌 `Logs/M8-1-sword-finger-formal-build.log`，`Build Finished, Result: Success.`。
-
-### 驗收結果
-
-* 劍指完整比例與近距離剪影已獲使用者確認；正式歌曲接線為技術候選，仍待整曲實機確認名稱、單指→劍指→單山膀承接、末段收指及 Miss 後恢復。
-
-### Git Commit
-
-* `feat(m8): integrate sword finger phrase`（本候選提交）。
-
-### 下一步
-
-* 使用 Windows 包完成上述四項觀感驗收；通過後重新盤點點雲手與提甲是否已有足夠動作分解，否則先結束 M8.1 可證明範圍。
-
-## [2026-09-23] M8.1 手勢候選 - 劍指剪影能力預覽
-
-### 新增
-
-* `HandGesture.SwordFinger` 提供 129 點預編實驗取樣；只使用一支左手簽，雙足維持接地。
-* 左腕新增第二片細長指片，與既有單指片平行伸出；原指扇縮短收攏，以剪影表現兩指挺直、其餘收攏。
-* 產出 `Logs/M8-1-sword-finger.png` 與 `Logs/M8-1-sword-finger-closeup.png` 供完整比例及近距離驗收。
-* `GetFormal(HandGesture.SwordFinger)` 在驗收前明確拒絕；正式十四式、HUD 與判定未接線。
-
-### 研究邊界
-
-* [上海戲曲學校戲曲韻律操](https://sh-xiquschool.sta.edu.cn/wmzx/77/cf/c4106a96207/page.htm)確認劍指屬戲曲指法；[教材手型分解](https://www.badsa.org.cn/a/newindex/24187.html)描述食、中二指併攏挺直及其餘三指收攏；[安徽城市管理職業學院](https://ggjxb.cua.edu.cn/2025/1215/c143a52446/page.htm)強調挺直有力。
-* 本候選只驗證手型剪影，展示手位與數值不作為特定行當的教材角度。
+* 反向套用 `0e43977` 與 `18f8bb6` 的劍指候選及正式舞句變更，移除 `HandGesture.SwordFinger`、第二指片、`DanceAction.SwordFinger`、劍指播放狀態、HUD 循環與專用測試。
+* 正式循環由十五式回到已驗收的十四式；拳掌禮→單指→單山膀的既有收勢與承接保持不變。
+* 依使用者決定跳過劍指、點雲手與提甲，M8.1 以六式已驗收手勢收尾；三個跳過項不記為已完成。
 
 ### 測試
 
-* Unity 6000.6.2f1 EditMode：154/154 通過，0 failed；結果 `Logs/M8-1-sword-finger-results.xml`。
-* 新測試確認雙指片同時啟用、指扇收攏、單手簽限制、雙足不移位，並輸出兩張驗收圖。
+* Unity 6000.6.2f1 EditMode 全量回歸：`total=152 / passed=152 / failed=0 / skipped=0`；結果 `Logs/M8-1-closure-results.xml`。
+* Windows x64 建置：`Builds/M8-1-Closure/YingYun.exe`；`Logs/M8-1-closure-build.log` 記錄 `Build Finished, Result: Success.`。
+
+### 驗收結果
+
+* 使用者明確要求刪除劍指、回到沒有劍指的版本，並跳過劍指、點雲手與提甲後結束 M8.1；目前程式與文件已依此範圍收尾。
 
 ### Git Commit
 
-* `feat(m8): preview sword finger silhouette`（本候選提交）。
+* `revert(m8): remove sword finger and close gesture scope`（本條目與反向變更同一提交）。
+
+### 風險 / 已知問題
+
+* M8.1 的「收尾」以使用者核准範圍為準；被跳過的三式仍未實作，不構成完整戲曲手勢庫。
+* `.clinerules/01-project-context.md` 的「目前 Milestone」仍停在 M4；依既有規則需另行批准，本次未修改。
+* URP、ProjectSettings 與 Unity Connect 的既有未提交變動未納入本次成果。
 
 ### 下一步
 
-* 由使用者確認完整比例及近距離圖能否辨認為兩指併直、其餘收攏；通過後另提正式舞句的起勢、收勢與前後承接。
+* 另提 M8.2 水袖能力的最小 Plan，先以少數代表動作驗證袖端軌跡、延遲、收袖與遮擋，再決定是否擴充完整清單。
 
 ## [2026-09-23] M8.1 正式舞句 - 單指接入整曲
 

@@ -46,8 +46,6 @@ namespace YingYun.Rhythm.View
         private Transform _rightFingerJoint;
         private Transform _leftPointFinger;
         private Transform _rightPointFinger;
-        private Transform _leftSecondPointFinger;
-        private Transform _rightSecondPointFinger;
         private Transform _leftAnkleJoint;
         private Transform _rightAnkleJoint;
         private Transform _robeSkirt;
@@ -92,7 +90,6 @@ namespace YingYun.Rhythm.View
         public Vector3 RightFingerScale => _rightFingerJoint == null ? Vector3.one : _rightFingerJoint.localScale;
         public Vector3 LeftFingerScale => _leftFingerJoint == null ? Vector3.one : _leftFingerJoint.localScale;
         public bool LeftPointFingerVisible => _leftPointFinger != null && _leftPointFinger.gameObject.activeSelf;
-        public bool LeftSecondPointFingerVisible => _leftSecondPointFinger != null && _leftSecondPointFinger.gameObject.activeSelf;
         public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
         public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
 
@@ -128,8 +125,6 @@ namespace YingYun.Rhythm.View
             _rightFingerJoint.localScale = Vector3.one;
             _leftPointFinger.gameObject.SetActive(false);
             _rightPointFinger.gameObject.SetActive(false);
-            _leftSecondPointFinger.gameObject.SetActive(false);
-            _rightSecondPointFinger.gameObject.SetActive(false);
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
         }
@@ -209,7 +204,6 @@ namespace YingYun.Rhythm.View
                 (float)phrase.FingerLength(t), 1f);
             _rightFingerJoint.localScale = Vector3.one;
             ApplyLeftPointFinger((float)phrase.PointFinger(t));
-            ApplyLeftSecondPointFinger((float)phrase.SecondPointFinger(t));
             _rightPointFinger.gameObject.SetActive(false);
             SetRotation(_torsoJoint, 0d);
             _torsoJoint.localScale = Vector3.one;
@@ -442,21 +436,15 @@ namespace YingYun.Rhythm.View
                 wrist, new Vector3(side * 0.22f, -0.30f, 0f), new Vector2(0.075f, 0.52f),
                 ShadowColor(), 9, _circleSprite);
             pointFinger.gameObject.SetActive(false);
-            Transform secondPointFinger = CreateSprite(left ? "Left Second Finger Silhouette" : "Right Second Finger Silhouette",
-                wrist, new Vector3(side * 0.13f, -0.30f, 0f), new Vector2(0.075f, 0.52f),
-                ShadowColor(), 9, _circleSprite);
-            secondPointFinger.gameObject.SetActive(false);
             if (left)
             {
                 _leftFingerJoint = finger;
                 _leftPointFinger = pointFinger;
-                _leftSecondPointFinger = secondPointFinger;
             }
             else
             {
                 _rightFingerJoint = finger;
                 _rightPointFinger = pointFinger;
-                _rightSecondPointFinger = secondPointFinger;
             }
         }
 
@@ -614,7 +602,6 @@ namespace YingYun.Rhythm.View
                 _leftFingerJoint.localScale = new Vector3((float)_dancePlayback.LeftFingerWidth,
                     (float)_dancePlayback.LeftFingerLength, 1f);
                 ApplyLeftPointFinger((float)_dancePlayback.LeftPointFingerAmount);
-                ApplyLeftSecondPointFinger((float)_dancePlayback.LeftSecondPointFingerAmount);
             }
             else
             {
@@ -623,7 +610,6 @@ namespace YingYun.Rhythm.View
                 _leftFingerJoint.localScale = Vector3.Lerp(_leftFingerJoint.localScale,
                     Vector3.one, blend);
                 ApplyLeftPointFinger(0f);
-                ApplyLeftSecondPointFinger(0f);
             }
             if (_dancePlayback != null && _dancePlayback.HasExplicitRightHandPose)
             {
@@ -765,13 +751,6 @@ namespace YingYun.Rhythm.View
             amount = Mathf.Clamp01(amount);
             _leftPointFinger.gameObject.SetActive(amount > 0.01f);
             _leftPointFinger.localScale = new Vector3(0.075f * amount, 0.52f * amount, 1f);
-        }
-
-        private void ApplyLeftSecondPointFinger(float amount)
-        {
-            amount = Mathf.Clamp01(amount);
-            _leftSecondPointFinger.gameObject.SetActive(amount > 0.01f);
-            _leftSecondPointFinger.localScale = new Vector3(0.075f * amount, 0.52f * amount, 1f);
         }
 
         private static Color ShadowColor() => new Color(0.12f, 0.025f, 0.018f, 0.96f);
