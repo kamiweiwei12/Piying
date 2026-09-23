@@ -24,6 +24,49 @@
 
 ---
 
+## [2026-09-24] M9-A0／A1 - 導入歌曲並建立可追溯時間資料
+
+### 新增
+
+* 將 `象王行（特别版）.mp3` 與本地版 `青玉案·兰芥.mp3` 導入 `Assets/Audio/Music/`，保留 Unity `.meta`。
+* 新增純 C# `SongTimingMap`、`SongChartValidation` 與可序列化 `SongDefinitionAsset`、`SongCatalogAsset`；支援分段速度、複合小節、三難度音符、舞句 Cue、可玩區間及候選／已驗證狀態。
+* 新增三首歌曲資料資產；《試燈》保留已驗證 120 BPM，新曲均標為 `AnalysisCandidate`。
+* 新增 `Tools/BeatAnalysis/`：保存 Beat This 1.1.0 `final0` 的标准 `.beats` 输出、完整依赖锁定、重建步骤及输入／模型 SHA-256。
+* 新增 Editor 导入器，只把外部逐拍时间戳和小节标签转换为 Unity Timing Point，不在游戏运行时分析音乐。
+
+### 修改
+
+* 依使用者指示移除本轮曾建立的自制节拍分析器，改用 GitHub [CPJKU/Beat This!](https://github.com/CPJKU/beat_this) 官方工具；Python、PyTorch、FFmpeg 和模型只存在隔离工具环境，不进入 Unity 仓库或 Player。
+* 《象王行》保存 399 个逐拍点，首强拍 0.86 秒；《青玉案·兰芥》保存 382 个逐拍点，首强拍 0.52 秒。两曲均保留模型输出的速度变化和最长 6／8 拍小节标签，不压成单一 BPM。
+* 两首长音乐的 Unity 导入方式固定为 `Streaming` 且不预载完整音频，避免曲目目录载入时一次解压整首歌曲。
+* 更新目前 Milestone 为 M9-A0／A1 技术基础完成；M8.4 整曲观感仍待验收，新曲尚未接入正式游玩。
+
+### 测试
+
+* Unity 6000.6.2f1 EditMode 最终全量回归：`total=163 / passed=163 / failed=0 / skipped=0`；结果 `Logs/M9-A-final-results.xml`。
+* 测试涵盖固定／分段 Timing Map 双向换算、连续性、无判定区间、音符越界、歌曲 ID／资源完整性，以及外部结果的 399／382 拍、0.86／0.52 秒首拍和 6／8 拍小节资料。
+* Windows x64 建置：`Builds/M9-A-Song-Data/YingYun.exe`；`Logs/M9-A-build.log` 记录 `Build Finished, Result: Success.`。
+
+### 验收结果
+
+* 两首音频、外部分析来源、可重建环境、原始逐拍证据、Unity 时间资料和载入验证均已建立，Editor 与 Windows 构建通过。
+* 本工作单元只完成歌曲与时间轴基础。两首新曲尚无三难度音符谱、舞句谱、选曲 UI 或 Windows 实机游玩，节拍资料仍须在后续制谱时逐段实听，未标记为关卡完成。
+
+### Git Commit
+
+* `feat(m9): add traceable song timing data`（本条目与实现同一提交）。
+
+### 风险 / 已知问题
+
+* Beat This 是自动分析来源，最长 6／8 拍小节及速度加倍／减半区段仍须人工听辨；`AnalysisCandidate` 状态会阻止后续把它误当成已验收谱面。
+* 两首 MP3 的使用授权尚未写入项目交付资料；竞赛出包前必须确认授权。
+* MP3 属二进制文件且目前未批准 `.gitattributes`／Git LFS，本次按普通 Git 文件提交。
+* `.clinerules/01-project-context.md` 仍停在 M4；URP、ProjectSettings 与 Unity Connect 的既有未提交变动未纳入本次成果。
+
+### 下一步
+
+* 另提 M9-A2 Plan：先以《象王行》逐段实听校正候选拍格，编写 Easy／Normal／Hard 音符与现有十四式舞句；完成实机验收后再处理节奏变化更复杂的《青玉案·兰芥》，随后才接选曲 UI。
+
 ## [2026-09-23] M8.4 候選 - 《試燈》固定起承轉合套路
 
 ### 新增

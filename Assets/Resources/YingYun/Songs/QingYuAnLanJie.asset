@@ -1,0 +1,1553 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dd4551de6bac844b9ddc48ce51f2ddd, type: 3}
+  m_Name: QingYuAnLanJie
+  m_EditorClassIdentifier: YingYun.Unity::YingYun.Rhythm.Unity.Config.SongDefinitionAsset
+  dataVersion: 1
+  songId: qing-yu-an-lan-jie
+  title: "\u9752\u7389\u6848\xB7\u5170\u82A5"
+  artist: "\u672C\u5730\u97F3\u9891\u6807\u7B7E\uFF1AAndree Son"
+  music: {fileID: 8300000, guid: 9ebefae4726cd7347a35032b728f2e2d, type: 3}
+  timingStatus: 0
+  firstPlayableSec: 0.52
+  playableEndSec: 229.2506103515625
+  timingPoints:
+  - timeSec: 0.52
+    beat: 0
+    bpm: 73.17073170731707
+    beatsPerBar: 4
+  - timeSec: 1.34
+    beat: 1
+    bpm: 73.17073170731707
+    beatsPerBar: 4
+  - timeSec: 2.16
+    beat: 2
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 3
+    beat: 3
+    bpm: 73.17073170731709
+    beatsPerBar: 4
+  - timeSec: 3.82
+    beat: 4
+    bpm: 73.17073170731709
+    beatsPerBar: 4
+  - timeSec: 4.64
+    beat: 5
+    bpm: 71.42857142857136
+    beatsPerBar: 4
+  - timeSec: 5.48
+    beat: 6
+    bpm: 73.17073170731713
+    beatsPerBar: 4
+  - timeSec: 6.3
+    beat: 7
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 7.12
+    beat: 8
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 7.96
+    beat: 9
+    bpm: 73.17073170731713
+    beatsPerBar: 4
+  - timeSec: 8.78
+    beat: 10
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 9.62
+    beat: 11
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 10.44
+    beat: 12
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 11.26
+    beat: 13
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 12.08
+    beat: 14
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 12.92
+    beat: 15
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 13.74
+    beat: 16
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 14.58
+    beat: 17
+    bpm: 69.76744186046517
+    beatsPerBar: 4
+  - timeSec: 15.44
+    beat: 18
+    bpm: 75.0000000000001
+    beatsPerBar: 4
+  - timeSec: 16.24
+    beat: 19
+    bpm: 74.99999999999993
+    beatsPerBar: 4
+  - timeSec: 17.04
+    beat: 20
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 17.88
+    beat: 21
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 18.7
+    beat: 22
+    bpm: 74.99999999999993
+    beatsPerBar: 4
+  - timeSec: 19.5
+    beat: 23
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 20.34
+    beat: 24
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 21.18
+    beat: 25
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 22.02
+    beat: 26
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 22.86
+    beat: 27
+    bpm: 74.99999999999993
+    beatsPerBar: 4
+  - timeSec: 23.66
+    beat: 28
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 24.48
+    beat: 29
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 25.32
+    beat: 30
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 26.14
+    beat: 31
+    bpm: 71.42857142857144
+    beatsPerBar: 4
+  - timeSec: 26.98
+    beat: 32
+    bpm: 74.99999999999993
+    beatsPerBar: 3
+  - timeSec: 27.78
+    beat: 33
+    bpm: 69.76744186046517
+    beatsPerBar: 3
+  - timeSec: 28.64
+    beat: 34
+    bpm: 36.58536585365852
+    beatsPerBar: 3
+  - timeSec: 30.28
+    beat: 35
+    bpm: 73.17073170731705
+    beatsPerBar: 2
+  - timeSec: 31.1
+    beat: 36
+    bpm: 73.17073170731705
+    beatsPerBar: 2
+  - timeSec: 31.92
+    beat: 37
+    bpm: 71.42857142857174
+    beatsPerBar: 2
+  - timeSec: 32.76
+    beat: 38
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 33.6
+    beat: 39
+    bpm: 73.17073170731705
+    beatsPerBar: 2
+  - timeSec: 34.42
+    beat: 40
+    bpm: 71.42857142857174
+    beatsPerBar: 2
+  - timeSec: 35.26
+    beat: 41
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 36.1
+    beat: 42
+    bpm: 73.17073170731705
+    beatsPerBar: 2
+  - timeSec: 36.92
+    beat: 43
+    bpm: 75.00000000000027
+    beatsPerBar: 4
+  - timeSec: 37.72
+    beat: 44
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 38.54
+    beat: 45
+    bpm: 74.9999999999996
+    beatsPerBar: 4
+  - timeSec: 39.34
+    beat: 46
+    bpm: 71.42857142857174
+    beatsPerBar: 4
+  - timeSec: 40.18
+    beat: 47
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 41.02
+    beat: 48
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 41.84
+    beat: 49
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 42.66
+    beat: 50
+    bpm: 69.76744186046459
+    beatsPerBar: 4
+  - timeSec: 43.52
+    beat: 51
+    bpm: 75.00000000000027
+    beatsPerBar: 4
+  - timeSec: 44.32
+    beat: 52
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 45.14
+    beat: 53
+    bpm: 71.42857142857174
+    beatsPerBar: 4
+  - timeSec: 45.98
+    beat: 54
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 46.82
+    beat: 55
+    bpm: 75.00000000000027
+    beatsPerBar: 4
+  - timeSec: 47.62
+    beat: 56
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 48.44
+    beat: 57
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 49.28
+    beat: 58
+    bpm: 73.17073170731705
+    beatsPerBar: 4
+  - timeSec: 50.1
+    beat: 59
+    bpm: 73.17073170731705
+    beatsPerBar: 6
+  - timeSec: 50.92
+    beat: 60
+    bpm: 71.42857142857174
+    beatsPerBar: 6
+  - timeSec: 51.76
+    beat: 61
+    bpm: 150.00000000000054
+    beatsPerBar: 6
+  - timeSec: 52.16
+    beat: 62
+    bpm: 142.85714285714226
+    beatsPerBar: 6
+  - timeSec: 52.58
+    beat: 63
+    bpm: 142.85714285714226
+    beatsPerBar: 6
+  - timeSec: 53
+    beat: 64
+    bpm: 157.8947368421042
+    beatsPerBar: 6
+  - timeSec: 53.38
+    beat: 65
+    bpm: 136.36363636363706
+    beatsPerBar: 5
+  - timeSec: 53.82
+    beat: 66
+    bpm: 150.00000000000054
+    beatsPerBar: 5
+  - timeSec: 54.22
+    beat: 67
+    bpm: 71.42857142857113
+    beatsPerBar: 5
+  - timeSec: 55.06
+    beat: 68
+    bpm: 71.42857142857174
+    beatsPerBar: 5
+  - timeSec: 55.9
+    beat: 69
+    bpm: 73.17073170731705
+    beatsPerBar: 5
+  - timeSec: 56.72
+    beat: 70
+    bpm: 73.17073170731705
+    beatsPerBar: 2
+  - timeSec: 57.54
+    beat: 71
+    bpm: 73.17073170731705
+    beatsPerBar: 2
+  - timeSec: 58.36
+    beat: 72
+    bpm: 71.42857142857113
+    beatsPerBar: 3
+  - timeSec: 59.2
+    beat: 73
+    bpm: 150.00000000000054
+    beatsPerBar: 3
+  - timeSec: 59.6
+    beat: 74
+    bpm: 142.85714285714226
+    beatsPerBar: 3
+  - timeSec: 60.02
+    beat: 75
+    bpm: 142.85714285714468
+    beatsPerBar: 4
+  - timeSec: 60.44
+    beat: 76
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 60.86
+    beat: 77
+    bpm: 150.00000000000054
+    beatsPerBar: 4
+  - timeSec: 61.26
+    beat: 78
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 61.68
+    beat: 79
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 62.1
+    beat: 80
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 62.52
+    beat: 81
+    bpm: 150.00000000000054
+    beatsPerBar: 4
+  - timeSec: 62.92
+    beat: 82
+    bpm: 150.00000000000054
+    beatsPerBar: 4
+  - timeSec: 63.32
+    beat: 83
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 63.76
+    beat: 84
+    bpm: 150.00000000000054
+    beatsPerBar: 4
+  - timeSec: 64.16
+    beat: 85
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 64.58
+    beat: 86
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 64.98
+    beat: 87
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 65.4
+    beat: 88
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 65.84
+    beat: 89
+    bpm: 157.89473684210716
+    beatsPerBar: 4
+  - timeSec: 66.22
+    beat: 90
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 66.62
+    beat: 91
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 67.04
+    beat: 92
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 67.46
+    beat: 93
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 67.88
+    beat: 94
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 68.28
+    beat: 95
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 68.7
+    beat: 96
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 69.12
+    beat: 97
+    bpm: 150.0000000000032
+    beatsPerBar: 4
+  - timeSec: 69.52
+    beat: 98
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 69.94
+    beat: 99
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 70.36
+    beat: 100
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 70.78
+    beat: 101
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 71.18
+    beat: 102
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 71.6
+    beat: 103
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 72
+    beat: 104
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 72.42
+    beat: 105
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 72.84
+    beat: 106
+    bpm: 150.0000000000032
+    beatsPerBar: 4
+  - timeSec: 73.24
+    beat: 107
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 73.66
+    beat: 108
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 74.08
+    beat: 109
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 74.48
+    beat: 110
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 74.9
+    beat: 111
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 75.32
+    beat: 112
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 75.74
+    beat: 113
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 76.14
+    beat: 114
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 76.54
+    beat: 115
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 76.98
+    beat: 116
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 77.4
+    beat: 117
+    bpm: 150.0000000000032
+    beatsPerBar: 4
+  - timeSec: 77.8
+    beat: 118
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 78.2
+    beat: 119
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 78.62
+    beat: 120
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 79.04
+    beat: 121
+    bpm: 150.0000000000032
+    beatsPerBar: 4
+  - timeSec: 79.44
+    beat: 122
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 79.84
+    beat: 123
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 80.28
+    beat: 124
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 80.68
+    beat: 125
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 81.1
+    beat: 126
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 81.52
+    beat: 127
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 81.92
+    beat: 128
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 82.34
+    beat: 129
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 82.76
+    beat: 130
+    bpm: 150.0000000000032
+    beatsPerBar: 4
+  - timeSec: 83.16
+    beat: 131
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 83.58
+    beat: 132
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 84
+    beat: 133
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 84.4
+    beat: 134
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 84.82
+    beat: 135
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 85.22
+    beat: 136
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 85.64
+    beat: 137
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 86.04
+    beat: 138
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 86.46
+    beat: 139
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 86.88
+    beat: 140
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 87.3
+    beat: 141
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 87.72
+    beat: 142
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 88.12
+    beat: 143
+    bpm: 142.85714285714226
+    beatsPerBar: 3
+  - timeSec: 88.54
+    beat: 144
+    bpm: 150.0000000000032
+    beatsPerBar: 3
+  - timeSec: 88.94
+    beat: 145
+    bpm: 71.42857142857113
+    beatsPerBar: 3
+  - timeSec: 89.78
+    beat: 146
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 90.62
+    beat: 147
+    bpm: 75.00000000000027
+    beatsPerBar: 2
+  - timeSec: 91.42
+    beat: 148
+    bpm: 142.85714285714226
+    beatsPerBar: 3
+  - timeSec: 91.84
+    beat: 149
+    bpm: 142.85714285714226
+    beatsPerBar: 3
+  - timeSec: 92.26
+    beat: 150
+    bpm: 73.17073170731769
+    beatsPerBar: 3
+  - timeSec: 93.08
+    beat: 151
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 93.92
+    beat: 152
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 94.74
+    beat: 153
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 95.58
+    beat: 154
+    bpm: 73.17073170731642
+    beatsPerBar: 2
+  - timeSec: 96.4
+    beat: 155
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 97.22
+    beat: 156
+    bpm: 73.17073170731642
+    beatsPerBar: 4
+  - timeSec: 98.04
+    beat: 157
+    bpm: 71.42857142857234
+    beatsPerBar: 4
+  - timeSec: 98.88
+    beat: 158
+    bpm: 73.17073170731642
+    beatsPerBar: 4
+  - timeSec: 99.7
+    beat: 159
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 100.54
+    beat: 160
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 101.36
+    beat: 161
+    bpm: 73.17073170731642
+    beatsPerBar: 4
+  - timeSec: 102.18
+    beat: 162
+    bpm: 71.42857142857234
+    beatsPerBar: 4
+  - timeSec: 103.02
+    beat: 163
+    bpm: 73.17073170731642
+    beatsPerBar: 4
+  - timeSec: 103.84
+    beat: 164
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 104.66
+    beat: 165
+    bpm: 73.17073170731642
+    beatsPerBar: 4
+  - timeSec: 105.48
+    beat: 166
+    bpm: 71.42857142857234
+    beatsPerBar: 4
+  - timeSec: 106.32
+    beat: 167
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 107.16
+    beat: 168
+    bpm: 73.17073170731642
+    beatsPerBar: 4
+  - timeSec: 107.98
+    beat: 169
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 108.8
+    beat: 170
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 109.64
+    beat: 171
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 110.46
+    beat: 172
+    bpm: 73.17073170731642
+    beatsPerBar: 2
+  - timeSec: 111.28
+    beat: 173
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 112.1
+    beat: 174
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 112.94
+    beat: 175
+    bpm: 73.17073170731642
+    beatsPerBar: 2
+  - timeSec: 113.76
+    beat: 176
+    bpm: 71.42857142857234
+    beatsPerBar: 2
+  - timeSec: 114.6
+    beat: 177
+    bpm: 73.17073170731642
+    beatsPerBar: 2
+  - timeSec: 115.42
+    beat: 178
+    bpm: 75.00000000000027
+    beatsPerBar: 2
+  - timeSec: 116.22
+    beat: 179
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 117.06
+    beat: 180
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 117.9
+    beat: 181
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 118.72
+    beat: 182
+    bpm: 73.17073170731642
+    beatsPerBar: 2
+  - timeSec: 119.54
+    beat: 183
+    bpm: 71.42857142857234
+    beatsPerBar: 2
+  - timeSec: 120.38
+    beat: 184
+    bpm: 74.99999999999893
+    beatsPerBar: 2
+  - timeSec: 121.18
+    beat: 185
+    bpm: 142.85714285714712
+    beatsPerBar: 3
+  - timeSec: 121.6
+    beat: 186
+    bpm: 142.85714285714226
+    beatsPerBar: 3
+  - timeSec: 122.02
+    beat: 187
+    bpm: 73.17073170731642
+    beatsPerBar: 3
+  - timeSec: 122.84
+    beat: 188
+    bpm: 142.85714285714226
+    beatsPerBar: 7
+  - timeSec: 123.26
+    beat: 189
+    bpm: 142.85714285714226
+    beatsPerBar: 7
+  - timeSec: 123.68
+    beat: 190
+    bpm: 73.17073170731769
+    beatsPerBar: 7
+  - timeSec: 124.5
+    beat: 191
+    bpm: 149.99999999999787
+    beatsPerBar: 7
+  - timeSec: 124.9
+    beat: 192
+    bpm: 142.85714285714712
+    beatsPerBar: 7
+  - timeSec: 125.32
+    beat: 193
+    bpm: 142.85714285714226
+    beatsPerBar: 7
+  - timeSec: 125.74
+    beat: 194
+    bpm: 149.99999999999787
+    beatsPerBar: 7
+  - timeSec: 126.14
+    beat: 195
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 126.56
+    beat: 196
+    bpm: 136.36363636363706
+    beatsPerBar: 8
+  - timeSec: 127
+    beat: 197
+    bpm: 149.99999999999787
+    beatsPerBar: 8
+  - timeSec: 127.4
+    beat: 198
+    bpm: 150.0000000000032
+    beatsPerBar: 8
+  - timeSec: 127.8
+    beat: 199
+    bpm: 150.0000000000032
+    beatsPerBar: 8
+  - timeSec: 128.2
+    beat: 200
+    bpm: 142.85714285713743
+    beatsPerBar: 8
+  - timeSec: 128.62
+    beat: 201
+    bpm: 142.85714285714712
+    beatsPerBar: 8
+  - timeSec: 129.04
+    beat: 202
+    bpm: 142.85714285713743
+    beatsPerBar: 8
+  - timeSec: 129.46
+    beat: 203
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 130.3
+    beat: 204
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 131.12
+    beat: 205
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 131.54
+    beat: 206
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 131.94
+    beat: 207
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 132.36
+    beat: 208
+    bpm: 150.00000000000853
+    beatsPerBar: 4
+  - timeSec: 132.76
+    beat: 209
+    bpm: 142.85714285713743
+    beatsPerBar: 6
+  - timeSec: 133.18
+    beat: 210
+    bpm: 149.99999999999787
+    beatsPerBar: 6
+  - timeSec: 133.58
+    beat: 211
+    bpm: 71.42857142857356
+    beatsPerBar: 6
+  - timeSec: 134.42
+    beat: 212
+    bpm: 142.85714285713743
+    beatsPerBar: 6
+  - timeSec: 134.84
+    beat: 213
+    bpm: 149.99999999999787
+    beatsPerBar: 6
+  - timeSec: 135.24
+    beat: 214
+    bpm: 71.42857142857113
+    beatsPerBar: 6
+  - timeSec: 136.08
+    beat: 215
+    bpm: 142.85714285714712
+    beatsPerBar: 7
+  - timeSec: 136.5
+    beat: 216
+    bpm: 149.99999999999787
+    beatsPerBar: 7
+  - timeSec: 136.9
+    beat: 217
+    bpm: 142.85714285714712
+    beatsPerBar: 7
+  - timeSec: 137.32
+    beat: 218
+    bpm: 149.99999999999787
+    beatsPerBar: 7
+  - timeSec: 137.72
+    beat: 219
+    bpm: 142.85714285714712
+    beatsPerBar: 7
+  - timeSec: 138.14
+    beat: 220
+    bpm: 142.85714285713743
+    beatsPerBar: 7
+  - timeSec: 138.56
+    beat: 221
+    bpm: 73.17073170731769
+    beatsPerBar: 7
+  - timeSec: 139.38
+    beat: 222
+    bpm: 142.85714285713743
+    beatsPerBar: 3
+  - timeSec: 139.8
+    beat: 223
+    bpm: 142.85714285714712
+    beatsPerBar: 3
+  - timeSec: 140.22
+    beat: 224
+    bpm: 73.17073170731769
+    beatsPerBar: 3
+  - timeSec: 141.04
+    beat: 225
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 141.44
+    beat: 226
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 141.86
+    beat: 227
+    bpm: 150.00000000000853
+    beatsPerBar: 4
+  - timeSec: 142.26
+    beat: 228
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 142.68
+    beat: 229
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 143.1
+    beat: 230
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 143.52
+    beat: 231
+    bpm: 150.00000000000853
+    beatsPerBar: 4
+  - timeSec: 143.92
+    beat: 232
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 144.32
+    beat: 233
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 144.74
+    beat: 234
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 145.16
+    beat: 235
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 145.56
+    beat: 236
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 145.96
+    beat: 237
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 146.38
+    beat: 238
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 146.8
+    beat: 239
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 147.22
+    beat: 240
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 147.62
+    beat: 241
+    bpm: 71.42857142857113
+    beatsPerBar: 3
+  - timeSec: 148.46
+    beat: 242
+    bpm: 142.85714285714712
+    beatsPerBar: 3
+  - timeSec: 148.88
+    beat: 243
+    bpm: 149.99999999999787
+    beatsPerBar: 3
+  - timeSec: 149.28
+    beat: 244
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 149.7
+    beat: 245
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 150.12
+    beat: 246
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 150.52
+    beat: 247
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 150.94
+    beat: 248
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 151.36
+    beat: 249
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 151.78
+    beat: 250
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 152.18
+    beat: 251
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 152.58
+    beat: 252
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 153
+    beat: 253
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 153.42
+    beat: 254
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 153.82
+    beat: 255
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 154.24
+    beat: 256
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 154.66
+    beat: 257
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 155.08
+    beat: 258
+    bpm: 150.00000000000853
+    beatsPerBar: 4
+  - timeSec: 155.48
+    beat: 259
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 155.9
+    beat: 260
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 156.32
+    beat: 261
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 156.74
+    beat: 262
+    bpm: 150.00000000000853
+    beatsPerBar: 4
+  - timeSec: 157.14
+    beat: 263
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 157.54
+    beat: 264
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 157.98
+    beat: 265
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 158.4
+    beat: 266
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 158.82
+    beat: 267
+    bpm: 157.89473684210716
+    beatsPerBar: 4
+  - timeSec: 159.2
+    beat: 268
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 159.64
+    beat: 269
+    bpm: 157.89473684209534
+    beatsPerBar: 4
+  - timeSec: 160.02
+    beat: 270
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 160.44
+    beat: 271
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 160.84
+    beat: 272
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 161.28
+    beat: 273
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 161.7
+    beat: 274
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 162.1
+    beat: 275
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 162.5
+    beat: 276
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 162.94
+    beat: 277
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 163.34
+    beat: 278
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 163.76
+    beat: 279
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 164.16
+    beat: 280
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 164.58
+    beat: 281
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 165
+    beat: 282
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 165.4
+    beat: 283
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 165.82
+    beat: 284
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 166.24
+    beat: 285
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 166.66
+    beat: 286
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 167.06
+    beat: 287
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 167.48
+    beat: 288
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 167.88
+    beat: 289
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 168.3
+    beat: 290
+    bpm: 150.00000000000853
+    beatsPerBar: 4
+  - timeSec: 168.7
+    beat: 291
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 169.12
+    beat: 292
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 169.54
+    beat: 293
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 169.96
+    beat: 294
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 170.38
+    beat: 295
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 170.8
+    beat: 296
+    bpm: 150.00000000000853
+    beatsPerBar: 4
+  - timeSec: 171.2
+    beat: 297
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 171.62
+    beat: 298
+    bpm: 130.43478260869338
+    beatsPerBar: 4
+  - timeSec: 172.08
+    beat: 299
+    bpm: 115.38461538461942
+    beatsPerBar: 4
+  - timeSec: 172.6
+    beat: 300
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 173.04
+    beat: 301
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 173.46
+    beat: 302
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 173.88
+    beat: 303
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 174.28
+    beat: 304
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 174.7
+    beat: 305
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 175.14
+    beat: 306
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 175.54
+    beat: 307
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 175.94
+    beat: 308
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 176.36
+    beat: 309
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 176.78
+    beat: 310
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 177.18
+    beat: 311
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 177.6
+    beat: 312
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 178.02
+    beat: 313
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 178.44
+    beat: 314
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 178.84
+    beat: 315
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 179.24
+    beat: 316
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 180.08
+    beat: 317
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 180.9
+    beat: 318
+    bpm: 142.85714285714712
+    beatsPerBar: 3
+  - timeSec: 181.32
+    beat: 319
+    bpm: 142.85714285713743
+    beatsPerBar: 3
+  - timeSec: 181.74
+    beat: 320
+    bpm: 73.17073170731769
+    beatsPerBar: 3
+  - timeSec: 182.56
+    beat: 321
+    bpm: 142.85714285714712
+    beatsPerBar: 3
+  - timeSec: 182.98
+    beat: 322
+    bpm: 142.85714285713743
+    beatsPerBar: 3
+  - timeSec: 183.4
+    beat: 323
+    bpm: 73.17073170731769
+    beatsPerBar: 3
+  - timeSec: 184.22
+    beat: 324
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 184.64
+    beat: 325
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 185.06
+    beat: 326
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 185.48
+    beat: 327
+    bpm: 157.89473684209534
+    beatsPerBar: 4
+  - timeSec: 185.86
+    beat: 328
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 186.3
+    beat: 329
+    bpm: 157.89473684210716
+    beatsPerBar: 4
+  - timeSec: 186.68
+    beat: 330
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 187.12
+    beat: 331
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 187.52
+    beat: 332
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 187.94
+    beat: 333
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 188.36
+    beat: 334
+    bpm: 150.00000000000853
+    beatsPerBar: 4
+  - timeSec: 188.76
+    beat: 335
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 189.18
+    beat: 336
+    bpm: 142.85714285714712
+    beatsPerBar: 3
+  - timeSec: 189.6
+    beat: 337
+    bpm: 149.99999999999787
+    beatsPerBar: 3
+  - timeSec: 190
+    beat: 338
+    bpm: 73.17073170731769
+    beatsPerBar: 3
+  - timeSec: 190.82
+    beat: 339
+    bpm: 142.85714285713743
+    beatsPerBar: 3
+  - timeSec: 191.24
+    beat: 340
+    bpm: 142.85714285714712
+    beatsPerBar: 3
+  - timeSec: 191.66
+    beat: 341
+    bpm: 71.42857142857113
+    beatsPerBar: 3
+  - timeSec: 192.5
+    beat: 342
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 193.32
+    beat: 343
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 194.14
+    beat: 344
+    bpm: 73.17073170731514
+    beatsPerBar: 2
+  - timeSec: 194.96
+    beat: 345
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 195.78
+    beat: 346
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 196.62
+    beat: 347
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 197.44
+    beat: 348
+    bpm: 71.42857142857113
+    beatsPerBar: 3
+  - timeSec: 198.28
+    beat: 349
+    bpm: 142.85714285714712
+    beatsPerBar: 3
+  - timeSec: 198.7
+    beat: 350
+    bpm: 149.99999999999787
+    beatsPerBar: 3
+  - timeSec: 199.1
+    beat: 351
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 199.92
+    beat: 352
+    bpm: 73.17073170731514
+    beatsPerBar: 2
+  - timeSec: 200.74
+    beat: 353
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 201.58
+    beat: 354
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 202.4
+    beat: 355
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 203.24
+    beat: 356
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 204.06
+    beat: 357
+    bpm: 73.17073170731769
+    beatsPerBar: 2
+  - timeSec: 204.88
+    beat: 358
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 205.72
+    beat: 359
+    bpm: 74.99999999999893
+    beatsPerBar: 2
+  - timeSec: 206.52
+    beat: 360
+    bpm: 71.42857142857113
+    beatsPerBar: 2
+  - timeSec: 207.36
+    beat: 361
+    bpm: 71.42857142857356
+    beatsPerBar: 4
+  - timeSec: 208.2
+    beat: 362
+    bpm: 73.17073170731514
+    beatsPerBar: 4
+  - timeSec: 209.02
+    beat: 363
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 209.84
+    beat: 364
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 210.66
+    beat: 365
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 211.5
+    beat: 366
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 212.32
+    beat: 367
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 213.16
+    beat: 368
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 213.98
+    beat: 369
+    bpm: 73.17073170731514
+    beatsPerBar: 4
+  - timeSec: 214.8
+    beat: 370
+    bpm: 71.42857142857356
+    beatsPerBar: 4
+  - timeSec: 215.64
+    beat: 371
+    bpm: 73.17073170731514
+    beatsPerBar: 4
+  - timeSec: 216.46
+    beat: 372
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 217.28
+    beat: 373
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 218.12
+    beat: 374
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 218.94
+    beat: 375
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 219.76
+    beat: 376
+    bpm: 73.17073170731514
+    beatsPerBar: 4
+  - timeSec: 220.58
+    beat: 377
+    bpm: 73.17073170731769
+    beatsPerBar: 4
+  - timeSec: 221.4
+    beat: 378
+    bpm: 76.9230769230768
+    beatsPerBar: 4
+  - timeSec: 222.18
+    beat: 379
+    bpm: 71.42857142857113
+    beatsPerBar: 4
+  - timeSec: 223.02
+    beat: 380
+    bpm: 75.0000000000016
+    beatsPerBar: 4
+  - timeSec: 223.82
+    beat: 381
+    bpm: 75.0000000000016
+    beatsPerBar: 4
+  charts: []
+  danceCues: []

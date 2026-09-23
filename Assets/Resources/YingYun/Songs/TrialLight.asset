@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dd4551de6bac844b9ddc48ce51f2ddd, type: 3}
+  m_Name: TrialLight
+  m_EditorClassIdentifier: YingYun.Unity::YingYun.Rhythm.Unity.Config.SongDefinitionAsset
+  dataVersion: 1
+  songId: trial-light
+  title: "\u8BD5\u706F"
+  artist: YingYun Prototype
+  music: {fileID: 8300000, guid: 5833894e2899f1840ac04193ca462e39, type: 3}
+  timingStatus: 1
+  firstPlayableSec: 0
+  playableEndSec: 59.07693862915039
+  timingPoints:
+  - timeSec: 0
+    beat: 0
+    bpm: 120
+    beatsPerBar: 4
+  charts: []
+  danceCues: []
