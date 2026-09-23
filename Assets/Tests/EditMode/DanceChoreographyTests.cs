@@ -22,9 +22,48 @@ namespace YingYun.Rhythm.Tests
             Assert.That(press.ActiveRodCount, Is.EqualTo(1));
             Assert.That(support.ActiveRodCount, Is.EqualTo(1));
             Assert.That(press.Shoulder(0d), Is.Zero.Within(0.000001d));
-            Assert.That(support.Shoulder(0d), Is.Zero.Within(0.000001d));
+            Assert.That(support.Shoulder(0d), Is.EqualTo(press.Shoulder(1d)).Within(0.000001d));
+            Assert.That(support.Elbow(0d), Is.EqualTo(press.Elbow(1d)).Within(0.000001d));
+            Assert.That(support.Wrist(0d), Is.EqualTo(press.Wrist(1d)).Within(0.000001d));
             Assert.That(press.Wrist(1d), Is.GreaterThan(55d));
             Assert.That(support.Wrist(1d), Is.LessThan(-65d));
+        }
+
+        [Test]
+        public void AcceptedPalmGestures_AreFormalAnchoredPhrasesAfterTheOriginalEight()
+        {
+            DancePhrase[] phrases = Phrases();
+            Assert.That(phrases[8].Action, Is.EqualTo(DanceAction.PressPalm));
+            Assert.That(phrases[8].Name, Is.EqualTo("按掌"));
+            Assert.That(phrases[8].HandGesture.Gesture, Is.EqualTo(HandGesture.PressPalm));
+            Assert.That(phrases[8].ActiveRodCount, Is.EqualTo(1));
+            Assert.That(phrases[9].Action, Is.EqualTo(DanceAction.SupportPalm));
+            Assert.That(phrases[9].Name, Is.EqualTo("托掌"));
+            Assert.That(phrases[9].HandGesture.Gesture, Is.EqualTo(HandGesture.SupportPalm));
+            Assert.That(phrases[9].DurationBeats, Is.EqualTo(8));
+            Assert.That(phrases[9].HasClosing, Is.True);
+            Assert.That(phrases[9].HandGesture.Wrist(0.75d), Is.LessThan(-65d));
+            Assert.That(phrases[9].HandGesture.Wrist(1d), Is.Zero.Within(0.000001d));
+        }
+
+        [Test]
+        public void FormalPalmGesture_RequiresSuccessfulAnchorAndMissFreezesHandPose()
+        {
+            DancePhrase[] phrases = Phrases();
+            DancePhrase press = phrases.First(p => p.Action == DanceAction.PressPalm);
+            DancePhrase support = phrases.First(p => p.Action == DanceAction.SupportPalm);
+            var player = new DancePlayback(phrases);
+
+            player.OnJudged(Result(press.AnchorNoteId, JudgmentGrade.Perfect), press.StartSeconds);
+            player.Evaluate(press.StartSeconds + press.DurationSeconds);
+            Assert.That(player.HasExplicitLeftHandPose, Is.True);
+            Assert.That(player.LeftWristAngle, Is.GreaterThan(55d));
+            double heldWrist = player.LeftWristAngle;
+
+            player.OnJudged(Result(support.AnchorNoteId, JudgmentGrade.Miss), support.StartSeconds);
+            player.Evaluate(support.StartSeconds + support.DurationSeconds);
+            Assert.That(player.ActiveAction, Is.Null);
+            Assert.That(player.LeftWristAngle, Is.EqualTo(heldWrist).Within(0.000001d));
         }
 
         private static JudgmentResult Result(int noteId, JudgmentGrade grade) =>

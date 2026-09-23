@@ -538,9 +538,18 @@ namespace YingYun.Rhythm.View
             float blend = 1f - Mathf.Exp(-5f * (float)System.Math.Min(elapsed, 0.5d));
             float leftWrist = Mathf.Clamp(Mathf.DeltaAngle(0f, _leftForearmJoint.localEulerAngles.z) * 0.22f, -24f, 24f);
             float rightWrist = Mathf.Clamp(Mathf.DeltaAngle(0f, _rightForearmJoint.localEulerAngles.z) * 0.22f, -24f, 24f);
-            EaseRotation(_leftWristJoint, -leftWrist, blend);
+            if (_dancePlayback != null && _dancePlayback.HasExplicitLeftHandPose)
+            {
+                leftWrist = (float)_dancePlayback.LeftWristAngle;
+                SetRotation(_leftWristJoint, leftWrist);
+                SetRotation(_leftFingerJoint, _dancePlayback.LeftFingerAngle);
+            }
+            else
+            {
+                EaseRotation(_leftWristJoint, -leftWrist, blend);
+                EaseRotation(_leftFingerJoint, leftWrist * 0.45f, blend * 0.7f);
+            }
             EaseRotation(_rightWristJoint, -rightWrist, blend);
-            EaseRotation(_leftFingerJoint, leftWrist * 0.45f, blend * 0.7f);
             EaseRotation(_rightFingerJoint, rightWrist * 0.45f, blend * 0.7f);
             EaseRotation(_leftSleeveTail, -leftWrist * 0.85f, blend * 0.45f);
             EaseRotation(_rightSleeveTail, -rightWrist * 0.85f, blend * 0.45f);

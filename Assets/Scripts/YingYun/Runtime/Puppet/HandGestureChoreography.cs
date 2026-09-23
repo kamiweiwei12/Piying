@@ -47,31 +47,41 @@ namespace YingYun.Rhythm.Puppet
 
     public static class HandGestureChoreography
     {
-        private static readonly HandGesturePhrase PressPalm = Build(HandGesture.PressPalm);
-        private static readonly HandGesturePhrase SupportPalm = Build(HandGesture.SupportPalm);
+        private static readonly HandGesturePhrase PressPalm = Build(HandGesture.PressPalm, false);
+        private static readonly HandGesturePhrase SupportPalm = Build(HandGesture.SupportPalm, false);
+        private static readonly HandGesturePhrase SupportPalmWithClosing = Build(HandGesture.SupportPalm, true);
 
         public static HandGesturePhrase Get(HandGesture gesture)
         {
             return gesture == HandGesture.PressPalm ? PressPalm : SupportPalm;
         }
 
-        private static HandGesturePhrase Build(HandGesture gesture)
+        public static HandGesturePhrase GetFormal(HandGesture gesture)
+        {
+            return gesture == HandGesture.SupportPalm ? SupportPalmWithClosing : PressPalm;
+        }
+
+        private static HandGesturePhrase Build(HandGesture gesture, bool close)
         {
             bool press = gesture == HandGesture.PressPalm;
             string name = press ? "按掌（實驗）" : "托掌（實驗）";
             // 按掌位於身前、沉肩圓肘；托掌抬高手位並翻出掌面。角度是本作灰盒轉譯，非教材量測值。
             double[] shoulderKeys = press
                 ? new[] { 0d, -22d, -38d, -42d }
-                : new[] { 0d, -48d, -82d, -96d };
+                : close ? new[] { -42d, -56d, -82d, -96d, 0d }
+                    : new[] { -42d, -56d, -82d, -96d };
             double[] elbowKeys = press
                 ? new[] { 0d, 32d, 58d, 64d }
-                : new[] { 0d, 18d, 36d, 42d };
+                : close ? new[] { 64d, 54d, 46d, 42d, 0d }
+                    : new[] { 64d, 54d, 46d, 42d };
             double[] wristKeys = press
                 ? new[] { 0d, 24d, 58d, 72d }
-                : new[] { 0d, -28d, -64d, -82d };
+                : close ? new[] { 72d, 28d, -46d, -82d, 0d }
+                    : new[] { 72d, 28d, -46d, -82d };
             double[] fingerKeys = press
                 ? new[] { 0d, -6d, -14d, -18d }
-                : new[] { 0d, 8d, 18d, 24d };
+                : close ? new[] { -18d, -6d, 12d, 24d, 0d }
+                    : new[] { -18d, -6d, 12d, 24d };
 
             var shoulder = new double[HandGesturePhrase.SampleCount];
             var elbow = new double[HandGesturePhrase.SampleCount];

@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using UnityEngine;
@@ -648,6 +649,25 @@ namespace YingYun.Rhythm.Tests
             Object.DestroyImmediate(capture);
             Object.DestroyImmediate(target);
             Object.DestroyImmediate(cameraObject);
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void FormalPalmGesture_RendersFromSuccessfulJudgment()
+        {
+            var root = new GameObject("M8.1 Formal Palm Gesture Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 48d, PlayDifficulty.Normal), 120d, 48d);
+            presenter.Begin(phrases);
+            DancePhrase press = phrases.First(p => p.Action == DanceAction.PressPalm);
+            presenter.Tick(press.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                press.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(press.StartSeconds + press.DurationSeconds);
+
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, presenter.LeftWristRotation)), Is.GreaterThan(55f));
+            Assert.That(presenter.GetRodDrive(0), Is.GreaterThan(0.2f));
             Object.DestroyImmediate(root);
         }
 
