@@ -4,7 +4,9 @@ namespace YingYun.Rhythm.Puppet
     public enum HandGesture
     {
         PressPalm,
-        SupportPalm
+        SupportPalm,
+        ThreadPalm,
+        TurnWrist
     }
 
     /// <summary>由同一支手簽帶動肩、肘、腕及掌形的預編取樣。</summary>
@@ -50,38 +52,77 @@ namespace YingYun.Rhythm.Puppet
         private static readonly HandGesturePhrase PressPalm = Build(HandGesture.PressPalm, false);
         private static readonly HandGesturePhrase SupportPalm = Build(HandGesture.SupportPalm, false);
         private static readonly HandGesturePhrase SupportPalmWithClosing = Build(HandGesture.SupportPalm, true);
+        private static readonly HandGesturePhrase ThreadPalm = Build(HandGesture.ThreadPalm, false);
+        private static readonly HandGesturePhrase TurnWrist = Build(HandGesture.TurnWrist, false);
 
         public static HandGesturePhrase Get(HandGesture gesture)
         {
-            return gesture == HandGesture.PressPalm ? PressPalm : SupportPalm;
+            switch (gesture)
+            {
+                case HandGesture.PressPalm: return PressPalm;
+                case HandGesture.SupportPalm: return SupportPalm;
+                case HandGesture.ThreadPalm: return ThreadPalm;
+                case HandGesture.TurnWrist: return TurnWrist;
+                default: throw new System.ArgumentOutOfRangeException(nameof(gesture), gesture, null);
+            }
         }
 
         public static HandGesturePhrase GetFormal(HandGesture gesture)
         {
-            return gesture == HandGesture.SupportPalm ? SupportPalmWithClosing : PressPalm;
+            switch (gesture)
+            {
+                case HandGesture.PressPalm: return PressPalm;
+                case HandGesture.SupportPalm: return SupportPalmWithClosing;
+                default: throw new System.InvalidOperationException($"{gesture} 尚未通過正式舞句驗收。");
+            }
         }
 
         private static HandGesturePhrase Build(HandGesture gesture, bool close)
         {
-            bool press = gesture == HandGesture.PressPalm;
-            string name = press ? "按掌（實驗）" : "托掌（實驗）";
-            // 按掌位於身前、沉肩圓肘；托掌抬高手位並翻出掌面。角度是本作灰盒轉譯，非教材量測值。
-            double[] shoulderKeys = press
-                ? new[] { 0d, -22d, -38d, -42d }
-                : close ? new[] { -42d, -56d, -82d, -96d, 0d }
-                    : new[] { -42d, -56d, -82d, -96d };
-            double[] elbowKeys = press
-                ? new[] { 0d, 32d, 58d, 64d }
-                : close ? new[] { 64d, 54d, 46d, 42d, 0d }
-                    : new[] { 64d, 54d, 46d, 42d };
-            double[] wristKeys = press
-                ? new[] { 0d, 24d, 58d, 72d }
-                : close ? new[] { 72d, 28d, -46d, -82d, 0d }
-                    : new[] { 72d, 28d, -46d, -82d };
-            double[] fingerKeys = press
-                ? new[] { 0d, -6d, -14d, -18d }
-                : close ? new[] { -18d, -6d, 12d, 24d, 0d }
-                    : new[] { -18d, -6d, 12d, 24d };
+            string name;
+            double[] shoulderKeys;
+            double[] elbowKeys;
+            double[] wristKeys;
+            double[] fingerKeys;
+            switch (gesture)
+            {
+                case HandGesture.PressPalm:
+                    name = "按掌（實驗）";
+                    shoulderKeys = new[] { 0d, -22d, -38d, -42d };
+                    elbowKeys = new[] { 0d, 32d, 58d, 64d };
+                    wristKeys = new[] { 0d, 24d, 58d, 72d };
+                    fingerKeys = new[] { 0d, -6d, -14d, -18d };
+                    break;
+                case HandGesture.SupportPalm:
+                    name = "托掌（實驗）";
+                    shoulderKeys = close ? new[] { -42d, -56d, -82d, -96d, 0d }
+                        : new[] { -42d, -56d, -82d, -96d };
+                    elbowKeys = close ? new[] { 64d, 54d, 46d, 42d, 0d }
+                        : new[] { 64d, 54d, 46d, 42d };
+                    wristKeys = close ? new[] { 72d, 28d, -46d, -82d, 0d }
+                        : new[] { 72d, 28d, -46d, -82d };
+                    fingerKeys = close ? new[] { -18d, -6d, 12d, 24d, 0d }
+                        : new[] { -18d, -6d, 12d, 24d };
+                    break;
+                case HandGesture.ThreadPalm:
+                    name = "穿掌（實驗）";
+                    // 由身前屈肘聚手後向斜前方穿出；僅驗證現有單手簽能否形成可辨路徑。
+                    shoulderKeys = new[] { 0d, -16d, -52d, -102d };
+                    elbowKeys = new[] { 0d, 76d, 54d, 18d };
+                    wristKeys = new[] { 0d, -24d, -12d, 8d };
+                    fingerKeys = new[] { 0d, 6d, 10d, 14d };
+                    break;
+                case HandGesture.TurnWrist:
+                    name = "翻腕（實驗）";
+                    // 固定手位後翻換腕面；來源只支持翻托掌／腕部訓練語義，角度不是教材量測值。
+                    shoulderKeys = new[] { 0d, -34d, -52d, -52d, -52d };
+                    elbowKeys = new[] { 0d, 44d, 58d, 58d, 58d };
+                    wristKeys = new[] { 0d, 18d, 78d, -78d, -104d };
+                    fingerKeys = new[] { 0d, -6d, -14d, 12d, 18d };
+                    break;
+                default:
+                    throw new System.ArgumentOutOfRangeException(nameof(gesture), gesture, null);
+            }
 
             var shoulder = new double[HandGesturePhrase.SampleCount];
             var elbow = new double[HandGesturePhrase.SampleCount];

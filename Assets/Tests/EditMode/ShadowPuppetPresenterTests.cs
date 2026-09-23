@@ -653,6 +653,74 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void ExperimentalThreadPalmAndTurnWrist_RenderCapabilityImagesWithoutMovingFeet()
+        {
+            var root = new GameObject("M8.1 Thread Palm And Turn Wrist Visual Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            Vector3 leftFoot = presenter.LeftAnklePosition;
+            Vector3 rightFoot = presenter.RightAnklePosition;
+            var cameraObject = new GameObject("M8.1 Gesture Validation Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 0f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 4.1f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.055f, 0.012f, 0.009f, 1f);
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+
+            HandGesture[] gestures =
+            {
+                HandGesture.ThreadPalm, HandGesture.ThreadPalm,
+                HandGesture.TurnWrist, HandGesture.TurnWrist
+            };
+            float[] progress = { 0.34f, 1f, 0.5f, 1f };
+            string[] names =
+            {
+                "M8-1-thread-palm-gather.png", "M8-1-thread-palm.png",
+                "M8-1-turn-wrist-before.png", "M8-1-turn-wrist-after.png"
+            };
+            float beforeWrist = 0f;
+            Vector3 beforeWristPosition = Vector3.zero;
+            for (int i = 0; i < gestures.Length; i++)
+            {
+                presenter.PreviewHandGesture(gestures[i], progress[i]);
+                if (i == 2)
+                {
+                    beforeWrist = presenter.LeftWristRotation;
+                    beforeWristPosition = presenter.LeftWristPosition;
+                }
+                if (i == 3)
+                {
+                    Assert.That(Mathf.Abs(Mathf.DeltaAngle(beforeWrist, presenter.LeftWristRotation)),
+                        Is.GreaterThan(150f));
+                    Assert.That(Vector3.Distance(beforeWristPosition, presenter.LeftWristPosition),
+                        Is.LessThan(0.001f));
+                }
+                camera.Render();
+                RenderTexture.active = target;
+                capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+                capture.Apply();
+                string output = Path.Combine(projectRoot, "Logs", names[i]);
+                Directory.CreateDirectory(Path.GetDirectoryName(output));
+                File.WriteAllBytes(output, capture.EncodeToPNG());
+                Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
+            }
+
+            Assert.That(Vector3.Distance(leftFoot, presenter.LeftAnklePosition), Is.LessThan(0.025f));
+            Assert.That(Vector3.Distance(rightFoot, presenter.RightAnklePosition), Is.LessThan(0.025f));
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraObject);
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void FormalPalmGesture_RendersFromSuccessfulJudgment()
         {
             var root = new GameObject("M8.1 Formal Palm Gesture Test");

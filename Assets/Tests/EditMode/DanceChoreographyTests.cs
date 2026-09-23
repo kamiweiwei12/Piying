@@ -30,6 +30,22 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void ExperimentalThreadPalmAndTurnWrist_ArePrecomputedOneRodCapabilities()
+        {
+            HandGesturePhrase thread = HandGestureChoreography.Get(HandGesture.ThreadPalm);
+            HandGesturePhrase turn = HandGestureChoreography.Get(HandGesture.TurnWrist);
+
+            Assert.That(thread.Name, Does.Contain("穿掌"));
+            Assert.That(turn.Name, Does.Contain("翻腕"));
+            Assert.That(thread.ActiveRodCount, Is.EqualTo(1));
+            Assert.That(turn.ActiveRodCount, Is.EqualTo(1));
+            Assert.That(thread.Shoulder(0d), Is.Zero.Within(0.000001d));
+            Assert.That(thread.Elbow(0.34d), Is.GreaterThan(65d));
+            Assert.That(thread.Elbow(1d), Is.LessThan(25d));
+            Assert.That(System.Math.Abs(turn.Wrist(0.5d) - turn.Wrist(1d)), Is.GreaterThan(170d));
+        }
+
+        [Test]
         public void AcceptedPalmGestures_AreFormalAnchoredPhrasesAfterTheOriginalEight()
         {
             DancePhrase[] phrases = Phrases();

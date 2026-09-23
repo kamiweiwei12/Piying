@@ -24,6 +24,40 @@
 
 ---
 
+## [2026-09-23] M8.1 手勢候選 - 穿掌與翻腕能力預覽
+
+### 新增
+
+* `HandGesture.ThreadPalm` 以身前聚手後向外穿出的 129 點軌跡驗證單手穿掌路徑；`HandGesture.TurnWrist` 在肩肘定點後翻換腕面。
+* 四張剪影對照圖：`Logs/M8-1-thread-palm-gather.png`、`Logs/M8-1-thread-palm.png`、`Logs/M8-1-turn-wrist-before.png`、`Logs/M8-1-turn-wrist-after.png`。
+
+### 修改
+
+* `HandGestureChoreography.Get` 改為明確分派四種手勢；`GetFormal` 只接受已驗收的按掌／托掌，穿掌／翻腕在通過剪影與正式接線驗收前會拋出明確錯誤。
+* 依[上海戲曲學校戲曲韻律操](https://sh-xiquschool.sta.edu.cn/wmzx/77/cf/c4106a96207/page.htm)記錄穿掌、雙穿掌接翻托掌及眼隨手動的教學語義；本候選僅做單手簽與腕面能力轉譯。
+
+### 測試
+
+* Unity EditMode 全量 **142/142 通過**，報告 `Logs/M8-1-thread-wrist-final-results.xml`；驗證兩式各用一支手簽、穿掌先聚後伸、翻腕前後手位不移及腕面差異超過 150 度，雙足保持原位。
+* Windows Standalone `Builds/M8-1-Thread-Wrist/YingYun.exe` 建置成功，`Logs/M8-1-thread-wrist-build.log` 記錄 `Build Finished, Result: Success`。
+
+### 驗收結果
+
+* 技術候選完成；四張剪影圖待使用者確認「聚手→穿出」方向感及定點翻腕是否清楚。本輪尚未接入正式歌曲。
+
+### Git Commit
+
+* `feat(m8): preview thread palm and wrist turn`（本候選提交）。
+
+### 風險 / 已知問題
+
+* 現有灰盒沒有眼神控制，也只演示單手；不能把本候選稱為教材中的雙穿掌、翻托掌完整組合。
+* 穿掌終姿單看近似平伸臂，必須連同聚手中段或動態路徑驗收；翻腕的橢圓掌片只能表現腕面方向，不能呈現精細指型。
+
+### 下一步
+
+* 先由使用者比較兩組對照圖；若路徑可辨，再另做正式舞句的起勢、收勢與相鄰承接。若不可辨，先調整手位或掌片剪影，不擴充其他手勢。
+
 ## [2026-09-23] M8-R 接續修正 - 晚擊轉身保持朝向
 
 ### 新增
