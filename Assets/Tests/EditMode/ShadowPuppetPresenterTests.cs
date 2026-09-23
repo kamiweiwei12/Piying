@@ -972,6 +972,32 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void FormalSwordFinger_RendersBothFingerPlatesAndClosesForNextCycle()
+        {
+            var root = new GameObject("M8.1 Formal Sword Finger Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 80d, PlayDifficulty.Normal), 120d, 80d);
+            presenter.Begin(phrases);
+            DancePhrase sword = phrases.First(p => p.Action == DanceAction.SwordFinger);
+            presenter.Tick(sword.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                sword.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(sword.StartSeconds + (sword.DurationSeconds * 0.7d));
+
+            Assert.That(presenter.LeftPointFingerVisible, Is.True);
+            Assert.That(presenter.LeftSecondPointFingerVisible, Is.True);
+            Assert.That(presenter.LeftFingerScale.x, Is.LessThan(0.5f));
+            Assert.That(presenter.GetRodDrive(0), Is.GreaterThan(0.2f));
+
+            presenter.Tick(sword.StartSeconds + sword.DurationSeconds);
+            Assert.That(presenter.LeftPointFingerVisible, Is.False);
+            Assert.That(presenter.LeftSecondPointFingerVisible, Is.False);
+            Assert.That(Vector3.Distance(presenter.LeftFingerScale, Vector3.one), Is.LessThan(0.01f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void DanceTurn_LowerBodyFollowsFacing_WhileBothFeetStayGrounded()
         {
             var root = new GameObject("Northern Waist Separation Test");

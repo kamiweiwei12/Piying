@@ -614,7 +614,7 @@ namespace YingYun.Rhythm.View
                 _leftFingerJoint.localScale = new Vector3((float)_dancePlayback.LeftFingerWidth,
                     (float)_dancePlayback.LeftFingerLength, 1f);
                 ApplyLeftPointFinger((float)_dancePlayback.LeftPointFingerAmount);
-                ApplyLeftSecondPointFinger(0f);
+                ApplyLeftSecondPointFinger((float)_dancePlayback.LeftSecondPointFingerAmount);
             }
             else
             {

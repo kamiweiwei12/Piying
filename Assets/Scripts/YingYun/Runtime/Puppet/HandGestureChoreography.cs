@@ -73,6 +73,7 @@ namespace YingYun.Rhythm.Puppet
         private static readonly HandGesturePhrase SingleFinger = Build(HandGesture.SingleFinger, false);
         private static readonly HandGesturePhrase SingleFingerWithClosing = Build(HandGesture.SingleFinger, true);
         private static readonly HandGesturePhrase SwordFinger = Build(HandGesture.SwordFinger, false);
+        private static readonly HandGesturePhrase SwordFingerWithClosing = Build(HandGesture.SwordFinger, true);
 
         public static HandGesturePhrase Get(HandGesture gesture)
         {
@@ -97,6 +98,7 @@ namespace YingYun.Rhythm.Puppet
                 case HandGesture.ThreadPalm: return ThreadPalm;
                 case HandGesture.TurnWrist: return TurnWristWithClosing;
                 case HandGesture.SingleFinger: return SingleFingerWithClosing;
+                case HandGesture.SwordFinger: return SwordFingerWithClosing;
                 default: throw new System.ArgumentOutOfRangeException(nameof(gesture), gesture, null);
             }
         }
@@ -173,14 +175,22 @@ namespace YingYun.Rhythm.Puppet
                 case HandGesture.SwordFinger:
                     name = "劍指（實驗）";
                     // 只驗證食、中二指並直與其餘指片收攏的剪影；展示手位不是行當教材角度。
-                    shoulderKeys = new[] { 0d, -52d, -102d };
-                    elbowKeys = new[] { 0d, 54d, 18d };
-                    wristKeys = new[] { 0d, -4d, 14d };
-                    fingerKeys = new[] { 0d, 8d, 14d };
-                    fingerWidthKeys = new[] { 1d, 0.68d, 0.42d };
-                    fingerLengthKeys = new[] { 1d, 0.78d, 0.56d };
-                    pointFingerKeys = new[] { 0d, 0.35d, 1d };
-                    secondPointFingerKeys = new[] { 0d, 0.35d, 1d };
+                    shoulderKeys = close ? new[] { 0d, -52d, -102d, -102d, 0d }
+                        : new[] { 0d, -52d, -102d };
+                    elbowKeys = close ? new[] { 0d, 54d, 18d, 18d, 0d }
+                        : new[] { 0d, 54d, 18d };
+                    wristKeys = close ? new[] { 0d, -4d, 14d, 14d, 0d }
+                        : new[] { 0d, -4d, 14d };
+                    fingerKeys = close ? new[] { 0d, 8d, 14d, 14d, 0d }
+                        : new[] { 0d, 8d, 14d };
+                    fingerWidthKeys = close ? new[] { 1d, 0.68d, 0.42d, 0.42d, 1d }
+                        : new[] { 1d, 0.68d, 0.42d };
+                    fingerLengthKeys = close ? new[] { 1d, 0.78d, 0.56d, 0.56d, 1d }
+                        : new[] { 1d, 0.78d, 0.56d };
+                    pointFingerKeys = close ? new[] { 0d, 0.35d, 1d, 1d, 0d }
+                        : new[] { 0d, 0.35d, 1d };
+                    secondPointFingerKeys = close ? new[] { 0d, 0.35d, 1d, 1d, 0d }
+                        : new[] { 0d, 0.35d, 1d };
                     break;
                 default:
                     throw new System.ArgumentOutOfRangeException(nameof(gesture), gesture, null);

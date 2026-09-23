@@ -24,6 +24,33 @@
 
 ---
 
+## [2026-09-23] M8.1 正式舞句候選 - 劍指接入整曲
+
+### 新增
+
+* `DanceAction.SwordFinger` 加入第十五式，HUD 正式名稱為「劍指」；成功錨點才播放，Miss 不憑空伸指。
+* 劍指正式取樣最後兩拍同步收回手臂、腕、指扇及兩片伸指；第二指片伸出量進入 `DancePlayback` 狀態。
+* Miss 可凍結兩片伸指的當前剪影，下一次成功舞句再沿既有恢復曲線承接。
+
+### 修正與驗證
+
+* 正式循環由十四式擴為十五式；單指先完整收勢，再起劍指，劍指末段回中後接下一輪單山膀。
+* 新增兩個舞句邊界的肩、肘及雙指片伸出量連續性測試，避免起拍瞬移。
+* Unity 6000.6.2f1 EditMode：157/157 通過，0 failed；結果 `Logs/M8-1-sword-finger-formal-results.xml`。
+* Windows 建置成功：`Builds/M8-1-Sword-Finger-Formal/YingYun.exe`；日誌 `Logs/M8-1-sword-finger-formal-build.log`，`Build Finished, Result: Success.`。
+
+### 驗收結果
+
+* 劍指完整比例與近距離剪影已獲使用者確認；正式歌曲接線為技術候選，仍待整曲實機確認名稱、單指→劍指→單山膀承接、末段收指及 Miss 後恢復。
+
+### Git Commit
+
+* `feat(m8): integrate sword finger phrase`（本候選提交）。
+
+### 下一步
+
+* 使用 Windows 包完成上述四項觀感驗收；通過後重新盤點點雲手與提甲是否已有足夠動作分解，否則先結束 M8.1 可證明範圍。
+
 ## [2026-09-23] M8.1 手勢候選 - 劍指剪影能力預覽
 
 ### 新增
