@@ -893,6 +893,30 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void FormalSingleFinger_RendersFromSuccessfulJudgmentAndClosesForNextCycle()
+        {
+            var root = new GameObject("M8.1 Formal Single Finger Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 72d, PlayDifficulty.Normal), 120d, 72d);
+            presenter.Begin(phrases);
+            DancePhrase singleFinger = phrases.First(p => p.Action == DanceAction.SingleFinger);
+            presenter.Tick(singleFinger.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                singleFinger.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(singleFinger.StartSeconds + (singleFinger.DurationSeconds * 0.7d));
+
+            Assert.That(presenter.LeftPointFingerVisible, Is.True);
+            Assert.That(presenter.LeftFingerScale.x, Is.LessThan(0.55f));
+            Assert.That(presenter.GetRodDrive(0), Is.GreaterThan(0.2f));
+
+            presenter.Tick(singleFinger.StartSeconds + singleFinger.DurationSeconds);
+            Assert.That(presenter.LeftPointFingerVisible, Is.False);
+            Assert.That(Vector3.Distance(presenter.LeftFingerScale, Vector3.one), Is.LessThan(0.01f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void DanceTurn_LowerBodyFollowsFacing_WhileBothFeetStayGrounded()
         {
             var root = new GameObject("Northern Waist Separation Test");

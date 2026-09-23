@@ -203,7 +203,7 @@ namespace YingYun.Rhythm.View
             _leftFingerJoint.localScale = new Vector3((float)phrase.FingerWidth(t),
                 (float)phrase.FingerLength(t), 1f);
             _rightFingerJoint.localScale = Vector3.one;
-            _leftPointFinger.gameObject.SetActive(gesture == HandGesture.SingleFinger && t > 0.5f);
+            ApplyLeftPointFinger((float)phrase.PointFinger(t));
             _rightPointFinger.gameObject.SetActive(false);
             SetRotation(_torsoJoint, 0d);
             _torsoJoint.localScale = Vector3.one;
@@ -599,12 +599,17 @@ namespace YingYun.Rhythm.View
                 leftWrist = (float)_dancePlayback.LeftWristAngle;
                 SetRotation(_leftWristJoint, leftWrist);
                 SetRotation(_leftFingerJoint, _dancePlayback.LeftFingerAngle);
-                _leftFingerJoint.localScale = Vector3.one;
+                _leftFingerJoint.localScale = new Vector3((float)_dancePlayback.LeftFingerWidth,
+                    (float)_dancePlayback.LeftFingerLength, 1f);
+                ApplyLeftPointFinger((float)_dancePlayback.LeftPointFingerAmount);
             }
             else
             {
                 EaseRotation(_leftWristJoint, -leftWrist, blend);
                 EaseRotation(_leftFingerJoint, leftWrist * 0.45f, blend * 0.7f);
+                _leftFingerJoint.localScale = Vector3.Lerp(_leftFingerJoint.localScale,
+                    Vector3.one, blend);
+                ApplyLeftPointFinger(0f);
             }
             if (_dancePlayback != null && _dancePlayback.HasExplicitRightHandPose)
             {
@@ -739,6 +744,13 @@ namespace YingYun.Rhythm.View
             {
                 target.localRotation = Quaternion.Euler(0f, 0f, (float)degrees);
             }
+        }
+
+        private void ApplyLeftPointFinger(float amount)
+        {
+            amount = Mathf.Clamp01(amount);
+            _leftPointFinger.gameObject.SetActive(amount > 0.01f);
+            _leftPointFinger.localScale = new Vector3(0.075f * amount, 0.52f * amount, 1f);
         }
 
         private static Color ShadowColor() => new Color(0.12f, 0.025f, 0.018f, 0.96f);

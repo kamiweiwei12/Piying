@@ -24,6 +24,34 @@
 
 ---
 
+## [2026-09-23] M8.1 正式舞句候選 - 單指接入整曲
+
+### 新增
+
+* `DanceAction.SingleFinger` 加入第十四式，HUD 正式名稱為「單指」；成功錨點才播放，Miss 不憑空伸指。
+* `HandGesturePhrase` 預編指扇寬度、長度與獨立指片伸出量；正式版本最後兩拍同步收回手臂、腕、指扇及指片。
+* `DancePlayback` 保存上述指型狀態，使 Miss 能凍結當前剪影，下一次成功舞句再沿既有恢復曲線承接。
+* `ShadowPuppetPresenter` 將正式播放狀態映射到指扇比例與獨立指片，不再只有實驗預覽可見。
+
+### 修正與驗證
+
+* 正式循環由十三式擴為十四式；拳掌禮先完整收勢，再起單指，單指末段回中後接下一輪單山膀。
+* 新增兩個舞句邊界的肩、肘、腕、指扇比例及伸指量連續性測試，避免起拍瞬移。
+* Unity 6000.6.2f1 EditMode：151/151 通過，0 failed；結果 `Logs/M8-1-single-finger-formal-results.xml`。
+* Windows 建置成功：`Builds/M8-1-Single-Finger-Formal/YingYun.exe`；日誌 `Logs/M8-1-single-finger-formal-build.log`，`Build Finished, Result: Success.`。
+
+### 驗收結果
+
+* 單指完整比例與近距離剪影已獲使用者確認；正式歌曲接線為技術候選，仍待整曲實機確認名稱、拳掌禮→單指→單山膀承接、末段收指及 Miss 後恢復。
+
+### Git Commit
+
+* `feat(m8): integrate single finger phrase`（本候選提交）。
+
+### 下一步
+
+* 使用 Windows 包完成上述四項觀感驗收；通過後再評估劍指，點雲手與提甲繼續等待可核對的動作分解。
+
 ## [2026-09-23] M8.1 手勢候選 - 單指剪影能力預覽
 
 ### 新增

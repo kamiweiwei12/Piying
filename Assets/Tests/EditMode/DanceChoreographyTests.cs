@@ -89,6 +89,81 @@ namespace YingYun.Rhythm.Tests
             Assert.That(phrases[12].HasClosing, Is.True);
             Assert.That(phrases[12].FistPalmSalute.RightClosure(0.7d), Is.GreaterThan(0.75d));
             Assert.That(phrases[12].FistPalmSalute.RightClosure(1d), Is.Zero.Within(0.000001d));
+            Assert.That(phrases[13].Action, Is.EqualTo(DanceAction.SingleFinger));
+            Assert.That(phrases[13].Name, Is.EqualTo("單指"));
+            Assert.That(phrases[13].HandGesture.Gesture, Is.EqualTo(HandGesture.SingleFinger));
+            Assert.That(phrases[13].ActiveRodCount, Is.EqualTo(1));
+            Assert.That(phrases[13].HasClosing, Is.True);
+            Assert.That(phrases[13].HandGesture.PointFinger(0.7d), Is.GreaterThan(0.9d));
+            Assert.That(phrases[13].HandGesture.PointFinger(1d), Is.Zero.Within(0.000001d));
+        }
+
+        [Test]
+        public void FormalSingleFinger_UsesSuccessfulAnchorClosesAndMissFreezesShape()
+        {
+            DancePhrase[] phrases = Phrases();
+            DancePhrase singleFinger = phrases.First(p => p.Action == DanceAction.SingleFinger);
+            var player = new DancePlayback(phrases);
+            player.OnJudged(Result(singleFinger.AnchorNoteId, JudgmentGrade.Perfect), singleFinger.StartSeconds);
+            player.Evaluate(singleFinger.StartSeconds + (singleFinger.DurationSeconds * 0.7d));
+
+            Assert.That(player.HasExplicitLeftHandPose, Is.True);
+            Assert.That(player.LeftFingerWidth, Is.LessThan(0.55d));
+            Assert.That(player.LeftFingerLength, Is.LessThan(0.7d));
+            Assert.That(player.LeftPointFingerAmount, Is.GreaterThan(0.9d));
+
+            double heldPointFinger = player.LeftPointFingerAmount;
+            DancePhrase next = phrases.First(p => p.StartBeat == singleFinger.StartBeat + singleFinger.DurationBeats);
+            player.OnJudged(Result(next.AnchorNoteId, JudgmentGrade.Miss),
+                singleFinger.StartSeconds + (singleFinger.DurationSeconds * 0.7d));
+            player.Evaluate(next.StartSeconds + next.DurationSeconds);
+            Assert.That(player.LeftPointFingerAmount, Is.EqualTo(heldPointFinger).Within(0.000001d));
+
+            var closingPlayer = new DancePlayback(phrases);
+            closingPlayer.OnJudged(Result(singleFinger.AnchorNoteId, JudgmentGrade.Perfect), singleFinger.StartSeconds);
+            closingPlayer.Evaluate(singleFinger.StartSeconds + singleFinger.DurationSeconds);
+            Assert.That(closingPlayer.LeftFingerWidth, Is.EqualTo(1d).Within(0.000001d));
+            Assert.That(closingPlayer.LeftFingerLength, Is.EqualTo(1d).Within(0.000001d));
+            Assert.That(closingPlayer.LeftPointFingerAmount, Is.Zero.Within(0.000001d));
+        }
+
+        [Test]
+        public void FormalFistPalmIntoSingleFingerIntoNextCycle_HasContinuousBoundaries()
+        {
+            DancePhrase[] phrases = Phrases();
+            DancePhrase salute = phrases.First(p => p.Action == DanceAction.FistPalmSalute);
+            DancePhrase singleFinger = phrases.First(p => p.Action == DanceAction.SingleFinger);
+            DancePhrase next = phrases.First(p => p.StartBeat == singleFinger.StartBeat + singleFinger.DurationBeats);
+            var player = new DancePlayback(phrases);
+
+            player.OnJudged(Result(salute.AnchorNoteId, JudgmentGrade.Perfect), salute.StartSeconds);
+            player.Evaluate(singleFinger.StartSeconds);
+            double shoulder = player.Angle(DanceJoint.LeftShoulder);
+            double elbow = player.Angle(DanceJoint.LeftElbow);
+            double wrist = player.LeftWristAngle;
+            double width = player.LeftFingerWidth;
+            double point = player.LeftPointFingerAmount;
+            player.OnJudged(Result(singleFinger.AnchorNoteId, JudgmentGrade.Perfect), singleFinger.StartSeconds);
+            player.Evaluate(singleFinger.StartSeconds + 0.0001d);
+            Assert.That(player.Angle(DanceJoint.LeftShoulder), Is.EqualTo(shoulder).Within(0.01d));
+            Assert.That(player.Angle(DanceJoint.LeftElbow), Is.EqualTo(elbow).Within(0.01d));
+            Assert.That(player.LeftWristAngle, Is.EqualTo(wrist).Within(0.01d));
+            Assert.That(player.LeftFingerWidth, Is.EqualTo(width).Within(0.01d));
+            Assert.That(player.LeftPointFingerAmount, Is.EqualTo(point).Within(0.01d));
+
+            player.Evaluate(next.StartSeconds);
+            shoulder = player.Angle(DanceJoint.LeftShoulder);
+            elbow = player.Angle(DanceJoint.LeftElbow);
+            wrist = player.LeftWristAngle;
+            width = player.LeftFingerWidth;
+            point = player.LeftPointFingerAmount;
+            player.OnJudged(Result(next.AnchorNoteId, JudgmentGrade.Perfect), next.StartSeconds);
+            player.Evaluate(next.StartSeconds + 0.0001d);
+            Assert.That(player.Angle(DanceJoint.LeftShoulder), Is.EqualTo(shoulder).Within(0.01d));
+            Assert.That(player.Angle(DanceJoint.LeftElbow), Is.EqualTo(elbow).Within(0.01d));
+            Assert.That(player.LeftWristAngle, Is.EqualTo(wrist).Within(0.01d));
+            Assert.That(player.LeftFingerWidth, Is.EqualTo(width).Within(0.01d));
+            Assert.That(player.LeftPointFingerAmount, Is.EqualTo(point).Within(0.01d));
         }
 
         [Test]
