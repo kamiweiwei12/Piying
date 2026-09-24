@@ -24,6 +24,49 @@
 
 ---
 
+## [2026-09-24] M10 候選 - Windows x64 獨立 Demo 與運行診斷
+
+### 新增
+
+* 選曲頁新增「運行日誌」入口，可查看最近記錄、刷新、複製完整日誌及開啟日誌資料夾；`YingYun-latest.log` 記錄遊戲／Unity 版本、Windows、CPU、GPU、記憶體、顯存、解析度、普通訊息與異常堆疊。
+* 新增 `Tools/BuildCompetitionDemo.ps1`：等待 Unity 真實退出碼、驗證必要 Player／Beat This／模型／授權檔、排除備份及開發日誌，再產出 ZIP 與 SHA-256。
+* 新增同伴版 `README.txt` 來源及 `DELIVERY.md`，記錄執行、自訂歌曲、問題回報、支援環境與校驗方式。
+
+### 修改
+
+* 正式內置選曲只顯示《象王行》與《青玉案》，預設為《象王行》；《試燈》資產與回歸測試保留，但不進入交付版選曲。玩家自訂 MP3／FLAC／WAV 功能保持可用。
+* 診斷日誌採固定 120 筆記憶體環形紀錄、畫面只顯示最近 24 筆、每秒批次刷新檔案；錯誤與異常立即刷新，避免每幀重建或即時重型計算。
+* 日誌檔允許寫入期間共享讀取；自動測試捕獲並修正「複製完整日誌」在 Windows 發生 sharing violation 的問題。
+* 原生依賴表顯示 Beat This／ONNX Runtime 需要四個 Visual C++ x64 DLL；改由 Visual Studio 2022 官方 Redistributable 目錄採 application-local 方式隨分析器提供，避免乾淨電腦缺少 VC++ Runtime。
+* 直接在中文解壓路徑分析時重現上游 `bad conversion`；固定 GitHub commit 的本地補丁改用 Windows 寬字元入口、miniaudio 寬路徑 API 與 UTF-8 ONNX 模型路徑，並固定 ONNX Runtime 官方下載 SHA-256。
+
+### 測試
+
+* Unity 6000.6.2f1 EditMode 全量回歸 `total=193 / passed=193 / failed=0 / skipped=0`；包含正式兩首選曲白名單與診斷環境頭／寫入中完整讀取測試，結果為 `Logs/M10-editmode-results.xml`。
+* Release Windows x64 建置成功；`Logs/M10-competition-demo-build.log` 記錄 `Build Finished, Result: Success.`，交付包包含 226 個檔案、Beat This 原生執行檔、ONNX 模型、Visual C++ x64 應用本地執行庫及第三方授權，且無 `BackUpThisFolder`、`Logs` 或 `.git`。
+* 最終 ZIP 解壓至含空格與中文的全新路徑後隱藏啟動 15 秒，程序持續運行並輸出 `[M10] diagnostics-ready`、`[M6.5] shadow-play-ready`；無 `NullReferenceException`、缺 DLL、缺方法或崩潰標記。
+* 同一中文解壓路徑中以成品分析器處理中文檔名《象王行》：退出碼 0、399 拍、105 個強拍、68,014,124-byte WAV；確認模型、音訊與輸出路徑均支援 Unicode。
+* 產物：`Builds/Competition-Demo/YingYunDemo-Windows-x64.zip`，155,261,319 bytes；SHA-256 `25BB52A52A9E17EA9834556B102A18C7432A63A2ABC2F40FA631697041F1EBED`。
+
+### 驗收結果
+
+* 兩首內置曲目、診斷能力、乾淨打包與同機異路徑啟動已形成可交付候選；真正不同電腦的硬體／驅動相容性須由同伴實機啟動並回傳日誌後才能判定 M10 結案。
+
+### Git Commit
+
+* `feat(m10): package portable windows demo`（本工作單位提交）。
+
+### 風險 / 已知問題
+
+* 支援範圍為 Windows 10／11 x64；未驗證 Windows 以外平台、32 位元系統或不支援 DirectX 11 的舊顯卡。
+* 測試版尚未程式碼簽章，Windows SmartScreen 可能顯示未知發行者；同伴應先核對 SHA-256。
+* 未修改既有髒改動中的 ProjectSettings，因此視窗產品資訊與持久資料路徑仍使用目前 `DefaultCompany/My project`。正式改名、解析度與簽章需另列批准。
+* 本工作單位不補 M2 三分鐘播放及暫停／續播／重開證據，也不替正式曲目完成授權判定。
+
+### 下一步
+
+* 將 ZIP 與 `.sha256` 一起交給同伴，在另一台 Windows 10／11 x64 電腦解壓運行；若有問題，回傳 `YingYun-latest.log`、曲目、難度與操作步驟。完成第二台實機及 M2 長時間回歸後再判定 M10 結案。
+
 ## [2026-09-24] M9-B 驗收 - 玩家自訂歌曲正式通過
 
 ### 新增

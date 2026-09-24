@@ -12,6 +12,12 @@ frames when a variable-bit-rate MP3 reports a slightly longer estimated length, 
 `--output-decoded` option. That option writes the already-decoded source as float WAV so Unity
 can build an `AudioClip` without another MP3 package or decoder.
 
+The same patch uses a Windows wide-character entry point and miniaudio wide-path APIs. Model,
+audio and output paths therefore support non-ASCII user names, song names and extraction
+folders. The Windows ONNX Runtime download is pinned by SHA-256. The shipped binary is built
+with w64devkit GCC 15.2.0; `beat_this_cpp.exe` and `beat_this_api.dll` only add Windows system
+runtime dependencies, while ONNX Runtime's four Visual C++ x64 DLLs are shipped application-local.
+
 ## Fixed dependencies
 
 | Component | Version / commit |

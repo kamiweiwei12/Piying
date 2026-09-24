@@ -5,6 +5,7 @@ using UnityEngine;
 using YingYun.Rhythm.Chart;
 using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.Puppet;
+using YingYun.Rhythm.Prototype;
 using YingYun.Rhythm.Scoring;
 using YingYun.Rhythm.Unity.Config;
 
@@ -12,6 +13,23 @@ namespace YingYun.Rhythm.Tests
 {
     public sealed class SongDefinitionAssetTests
     {
+        [Test]
+        public void CompetitionDemo_BuiltInSelectionContainsOnlyApprovedSongs()
+        {
+            SongCatalogAsset catalog = Resources.Load<SongCatalogAsset>("YingYun/SongCatalog");
+            string[] selectable = catalog.Songs
+                .Where(song => RhythmPrototypeController.IsBuiltInDemoSongId(song.SongId))
+                .Select(song => song.SongId)
+                .ToArray();
+
+            Assert.That(selectable, Is.EquivalentTo(new[]
+            {
+                RhythmPrototypeController.XiangWangXingSongId,
+                RhythmPrototypeController.QingYuAnLanJieSongId,
+            }));
+            Assert.That(selectable, Does.Not.Contain("trial-light"));
+        }
+
         [Test]
         public void Catalog_ContainsThreeValidUniqueSongs()
         {

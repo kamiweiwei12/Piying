@@ -25,10 +25,13 @@ namespace YingYun.Rhythm.View
         private GameObject _canvasObject;
         private GameObject _menuPanel;
         private GameObject _pausePanel;
+        private GameObject _diagnosticsPanel;
         private UnityEngine.UI.Text _calibrationText;
         private UnityEngine.UI.Text _selectedSongText;
         private UnityEngine.UI.Text _songImportStatusText;
         private UnityEngine.UI.Text _songPageText;
+        private UnityEngine.UI.Text _diagnosticsText;
+        private UnityEngine.UI.Text _diagnosticsStatusText;
         private Font _runtimeFont;
         private string _selectedSongId = string.Empty;
         private readonly List<SongButton> _songButtons = new List<SongButton>(3);
@@ -43,9 +46,13 @@ namespace YingYun.Rhythm.View
         public event Action ReturnRequested;
         public event Action CustomSongsRefreshRequested;
         public event Action CustomSongsFolderRequested;
+        public event Action DiagnosticsRequested;
+        public event Action DiagnosticsCopyRequested;
+        public event Action DiagnosticsFolderRequested;
 
         public bool IsMenuVisible => _menuPanel != null && _menuPanel.activeSelf;
         public bool IsPauseVisible => _pausePanel != null && _pausePanel.activeSelf;
+        public bool IsDiagnosticsVisible => _diagnosticsPanel != null && _diagnosticsPanel.activeSelf;
         public string SelectedSongId => _selectedSongId;
 
         private sealed class SongButton
@@ -71,6 +78,21 @@ namespace YingYun.Rhythm.View
         public void ShowPause() => _pausePanel.SetActive(true);
 
         public void HidePause() => _pausePanel.SetActive(false);
+
+        public void ShowDiagnostics(string content, string path)
+        {
+            _diagnosticsText.text = content ?? string.Empty;
+            _diagnosticsStatusText.text = $"日志文件：{path}";
+            _diagnosticsPanel.SetActive(true);
+        }
+
+        public void HideDiagnostics() => _diagnosticsPanel.SetActive(false);
+
+        public void SetDiagnosticsStatus(string status, string content)
+        {
+            _diagnosticsStatusText.text = status ?? string.Empty;
+            _diagnosticsText.text = content ?? string.Empty;
+        }
 
         public void RefreshCalibration(double audioOffsetMs, double inputOffsetMs)
         {
@@ -210,6 +232,7 @@ namespace YingYun.Rhythm.View
             AddText(panel, "数字皮影操演 · 选择曲目与难度", 30, new Vector2(0f, 330f), new Vector2(900f, 60f), new Color(1f, 0.90f, 0.68f));
             AddSmallButton(panel, "打开歌曲文件夹", new Vector2(-130f, 280f), () => CustomSongsFolderRequested?.Invoke());
             AddSmallButton(panel, "刷新歌曲", new Vector2(130f, 280f), () => CustomSongsRefreshRequested?.Invoke());
+            AddSmallButton(panel, "运行日志", new Vector2(390f, 280f), () => DiagnosticsRequested?.Invoke());
             UnityEngine.UI.Button previousPage = CreateButton(panel, "‹", 34, new Vector2(-780f, 220f), new Vector2(72f, 72f));
             UnityEngine.UI.Button nextPage = CreateButton(panel, "›", 34, new Vector2(780f, 220f), new Vector2(72f, 72f));
             previousPage.onClick.AddListener(() => ChangeSongPage(-1));
@@ -229,6 +252,31 @@ namespace YingYun.Rhythm.View
             AddSmallButton(panel, "输入 +5", new Vector2(315f, -340f), () => CalibrationAdjusted?.Invoke(0d, 5d));
             AddText(panel, "快捷键：1 / 2 / 3 选择难度", 21, new Vector2(0f, -430f), new Vector2(1100f, 50f), new Color(0.72f, 0.59f, 0.43f));
             BuildPausePanel();
+            BuildDiagnosticsPanel();
+        }
+
+        private void BuildDiagnosticsPanel()
+        {
+            _diagnosticsPanel = new GameObject("运行日志", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            _diagnosticsPanel.transform.SetParent(_canvasObject.transform, false);
+            RectTransform panel = (RectTransform)_diagnosticsPanel.transform;
+            panel.anchorMin = Vector2.zero;
+            panel.anchorMax = Vector2.one;
+            panel.offsetMin = Vector2.zero;
+            panel.offsetMax = Vector2.zero;
+            _diagnosticsPanel.GetComponent<UnityEngine.UI.Image>().color = new Color(0.035f, 0.01f, 0.008f, 0.98f);
+
+            AddText(panel, "运行诊断", 58, new Vector2(0f, 450f), new Vector2(700f, 80f), new Color(1f, 0.76f, 0.23f));
+            _diagnosticsText = AddText(panel, string.Empty, 18, new Vector2(0f, 30f), new Vector2(1640f, 720f), new Color(0.93f, 0.86f, 0.70f));
+            _diagnosticsText.alignment = TextAnchor.UpperLeft;
+            _diagnosticsText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _diagnosticsText.verticalOverflow = VerticalWrapMode.Truncate;
+            _diagnosticsStatusText = AddText(panel, string.Empty, 18, new Vector2(0f, -375f), new Vector2(1600f, 44f), new Color(0.72f, 0.59f, 0.43f));
+            AddSmallButton(panel, "刷新", new Vector2(-310f, -445f), () => DiagnosticsRequested?.Invoke());
+            AddSmallButton(panel, "复制完整日志", new Vector2(-95f, -445f), () => DiagnosticsCopyRequested?.Invoke());
+            AddSmallButton(panel, "打开日志文件夹", new Vector2(135f, -445f), () => DiagnosticsFolderRequested?.Invoke());
+            AddSmallButton(panel, "关闭", new Vector2(350f, -445f), HideDiagnostics);
+            _diagnosticsPanel.SetActive(false);
         }
 
         private void BuildPausePanel()

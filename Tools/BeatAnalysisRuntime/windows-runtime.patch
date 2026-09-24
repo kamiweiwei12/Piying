@@ -1,109 +1,199 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 062efc0..0f649e2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -79,0 +80 @@ if(WIN32)
++        PREFIX ""
+@@ -121,0 +123,4 @@ target_link_libraries(beat_this_cpp beat_this_api)
++if(MINGW)
++    target_link_options(beat_this_cpp PRIVATE -municode)
++endif()
++
 diff --git a/Source/DBNPostprocessor.h b/Source/DBNPostprocessor.h
 index fc98ccc..84ff8d4 100644
 --- a/Source/DBNPostprocessor.h
 +++ b/Source/DBNPostprocessor.h
-@@ -1,5 +1,6 @@
- #pragma once
-
+@@ -2,0 +3 @@
 +#include <array>
- #include <vector>
- #include <cstdint>
-
+diff --git a/Source/beat_this_api.cpp b/Source/beat_this_api.cpp
+index d8b869e..9a54935 100644
+--- a/Source/beat_this_api.cpp
++++ b/Source/beat_this_api.cpp
+@@ -16,0 +17 @@
++#include <filesystem>
+@@ -31 +32 @@ public:
+-        std::ifstream file_check(onnx_model_path);
++        std::ifstream file_check(std::filesystem::u8path(onnx_model_path));
 diff --git a/Source/beat_this_api.h b/Source/beat_this_api.h
 index 657645e..9e2fc2e 100644
 --- a/Source/beat_this_api.h
 +++ b/Source/beat_this_api.h
-@@ -15,7 +15,7 @@ struct BeatResult {
-
- class BeatThis {
- public:
+@@ -18 +18 @@ public:
 -    explicit BeatThis(const std::string& onnx_model_path);
 +    explicit BeatThis(const std::string& onnx_model_path, bool use_dbn = false);
-     ~BeatThis();
-
-     // Move semantics
-@@ -47,4 +47,4 @@ private:
-     std::unique_ptr<Impl> pImpl;
- };
-
--} // namespace BeatThis
-\ No newline at end of file
-+} // namespace BeatThis
 diff --git a/Source/main.cpp b/Source/main.cpp
-index c434056..185fe11 100644
+index c434056..a079fe5 100644
 --- a/Source/main.cpp
 +++ b/Source/main.cpp
-@@ -41,12 +41,16 @@ bool load_audio_for_example(const std::string& path, std::vector<float>& audio_b
-     audio_buffer.resize(total_frames * channels);
-     ma_uint64 frames_read = 0;
-     result = ma_decoder_read_pcm_frames(&decoder, audio_buffer.data(), total_frames, &frames_read);
+@@ -10,0 +11,14 @@
++#include <stdexcept>
++
++#ifdef _WIN32
++#include <windows.h>
++using NativeChar = wchar_t;
++using NativeString = std::wstring;
++#define YY_MAIN wmain
++#define YY_TEXT(value) L##value
++#else
++using NativeChar = char;
++using NativeString = std::string;
++#define YY_MAIN main
++#define YY_TEXT(value) value
++#endif
+@@ -16,0 +31,14 @@
++std::string path_to_utf8(const std::filesystem::path& path) {
++#ifdef _WIN32
++    const std::wstring value = path.wstring();
++    if (value.empty()) return std::string();
++    int size = WideCharToMultiByte(CP_UTF8, 0, value.c_str(), static_cast<int>(value.size()), nullptr, 0, nullptr, nullptr);
++    if (size <= 0) throw std::runtime_error("Could not convert Windows path to UTF-8.");
++    std::string result(static_cast<size_t>(size), '\0');
++    WideCharToMultiByte(CP_UTF8, 0, value.c_str(), static_cast<int>(value.size()), result.data(), size, nullptr, nullptr);
++    return result;
++#else
++    return path.string();
++#endif
++}
++
+@@ -18 +46 @@
+-bool load_audio_for_example(const std::string& path, std::vector<float>& audio_buffer, int& samplerate, int& channels) {
++bool load_audio_for_example(const std::filesystem::path& path, std::vector<float>& audio_buffer, int& samplerate, int& channels) {
+@@ -22,0 +51,3 @@ bool load_audio_for_example(const std::string& path, std::vector<float>& audio_b
++#ifdef _WIN32
++    result = ma_decoder_init_file_w(path.c_str(), &config, &decoder);
++#else
+@@ -23,0 +55 @@ bool load_audio_for_example(const std::string& path, std::vector<float>& audio_b
++#endif
+@@ -25 +57 @@ bool load_audio_for_example(const std::string& path, std::vector<float>& audio_b
+-        std::cerr << "Error: could not open audio file '" << path << "': " << ma_result_description(result) << std::endl;
++        std::cerr << "Error: could not open audio file '" << path_to_utf8(path) << "': " << ma_result_description(result) << std::endl;
+@@ -44 +76 @@ bool load_audio_for_example(const std::string& path, std::vector<float>& audio_b
 -    if (result != MA_SUCCESS || frames_read != total_frames) {
 +    if (result != MA_SUCCESS || frames_read == 0) {
-         std::cerr << "Error: could not read all audio frames: " << ma_result_description(result) << std::endl;
-         ma_decoder_uninit(&decoder);
-         return false;
-     }
-
-+    // Some variable-bit-rate MP3 files report an estimated length that is a few
-+    // frames longer than the decoder can actually return. Keep the decoded data.
+@@ -49,0 +82,2 @@ bool load_audio_for_example(const std::string& path, std::vector<float>& audio_b
 +    audio_buffer.resize(static_cast<size_t>(frames_read * channels));
 +
-     ma_decoder_uninit(&decoder);
-     return true;
- }
-@@ -291,6 +295,7 @@ void print_usage(const char* program_name) {
-     std::cerr << "  --output-beats <file>    Save beat information to .beats file" << std::endl;
-     std::cerr << "  --output-audio <file>    Generate audio file with beats as click track" << std::endl;
-     std::cerr << "  --output-mixed <file>    Generate audio file with original music + click track" << std::endl;
+@@ -55 +89 @@ bool load_audio_for_example(const std::string& path, std::vector<float>& audio_b
+-bool save_beats_to_file(const BeatThis::BeatResult& result, const std::string& output_filepath) {
++bool save_beats_to_file(const BeatThis::BeatResult& result, const std::filesystem::path& output_filepath) {
+@@ -58 +92 @@ bool save_beats_to_file(const BeatThis::BeatResult& result, const std::string& o
+-        std::cerr << "Error: Could not open output file: " << output_filepath << std::endl;
++        std::cerr << "Error: Could not open output file: " << path_to_utf8(output_filepath) << std::endl;
+@@ -109 +143 @@ std::vector<float> generate_sine_wave(
+-bool write_wav_file(const std::string& filepath, const std::vector<float>& audio_data, int sample_rate, int channels = 1) {
++bool write_wav_file(const std::filesystem::path& filepath, const std::vector<float>& audio_data, int sample_rate, int channels = 1) {
+@@ -113,0 +148,3 @@ bool write_wav_file(const std::string& filepath, const std::vector<float>& audio
++#ifdef _WIN32
++    result = ma_encoder_init_file_w(filepath.c_str(), &config, &encoder);
++#else
+@@ -114,0 +152 @@ bool write_wav_file(const std::string& filepath, const std::vector<float>& audio
++#endif
+@@ -133 +171 @@ bool write_wav_file(const std::string& filepath, const std::vector<float>& audio
+-bool generate_beats_audio(const BeatThis::BeatResult& result, const std::string& output_wav_file) {
++bool generate_beats_audio(const BeatThis::BeatResult& result, const std::filesystem::path& output_wav_file) {
+@@ -184 +222 @@ bool generate_mixed_audio(const BeatThis::BeatResult& result,
+-                         const std::string& output_wav_file) {
++                         const std::filesystem::path& output_wav_file) {
+@@ -287,2 +325,3 @@ double calculate_bpm(const BeatThis::BeatResult& result) {
+-void print_usage(const char* program_name) {
+-    std::cerr << "Usage: " << program_name << " <onnx_model_path> <audio_file_path> [options]" << std::endl;
++void print_usage(const std::filesystem::path& program_name) {
++    const std::string display_name = path_to_utf8(program_name);
++    std::cerr << "Usage: " << display_name << " <onnx_model_path> <audio_file_path> [options]" << std::endl;
+@@ -293,0 +333 @@ void print_usage(const char* program_name) {
 +    std::cerr << "  --output-decoded <file>  Decode the original audio to float WAV" << std::endl;
-     std::cerr << "  --calc-bpm               Calculate and display BPM from detected beats" << std::endl;
-     std::cerr << std::endl;
-     std::cerr << "Examples:" << std::endl;
-@@ -317,6 +322,7 @@ int main(int argc, char* argv[]) {
-     std::string output_beats_file;
-     std::string output_wav_file;
-     std::string output_mixed_file;
-+    std::string output_decoded_file;
-     bool calc_bpm = false;
-
-     // Parse command line arguments
-@@ -328,6 +334,8 @@ int main(int argc, char* argv[]) {
-             output_wav_file = argv[++i];
-         } else if (arg == "--output-mixed" && i + 1 < argc) {
-             output_mixed_file = argv[++i];
-+        } else if (arg == "--output-decoded" && i + 1 < argc) {
+@@ -297,5 +337,5 @@ void print_usage(const char* program_name) {
+-    std::cerr << "  " << program_name << " model.onnx input.wav --output-beats output.beats" << std::endl;
+-    std::cerr << "  " << program_name << " model.onnx input.wav --output-audio output.wav" << std::endl;
+-    std::cerr << "  " << program_name << " model.onnx input.wav --output-mixed mixed.wav" << std::endl;
+-    std::cerr << "  " << program_name << " model.onnx input.wav --calc-bpm" << std::endl;
+-    std::cerr << "  " << program_name << " model.onnx input.wav --output-beats output.beats --calc-bpm" << std::endl;
++    std::cerr << "  " << display_name << " model.onnx input.wav --output-beats output.beats" << std::endl;
++    std::cerr << "  " << display_name << " model.onnx input.wav --output-audio output.wav" << std::endl;
++    std::cerr << "  " << display_name << " model.onnx input.wav --output-mixed mixed.wav" << std::endl;
++    std::cerr << "  " << display_name << " model.onnx input.wav --calc-bpm" << std::endl;
++    std::cerr << "  " << display_name << " model.onnx input.wav --output-beats output.beats --calc-bpm" << std::endl;
+@@ -304 +344 @@ void print_usage(const char* program_name) {
+-int main(int argc, char* argv[]) {
++int YY_MAIN(int argc, NativeChar* argv[]) {
+@@ -310,6 +350,2 @@ int main(int argc, char* argv[]) {
+-    const std::string onnx_model_path = argv[1];
+-    const std::string audio_file_path = argv[2];
+-
+-    // Convert to absolute paths
+-    std::filesystem::path onnx_path = std::filesystem::absolute(onnx_model_path);
+-    std::filesystem::path audio_path = std::filesystem::absolute(audio_file_path);
++    const std::filesystem::path onnx_model_path = std::filesystem::absolute(argv[1]);
++    const std::filesystem::path audio_file_path = std::filesystem::absolute(argv[2]);
+@@ -317,3 +353,4 @@ int main(int argc, char* argv[]) {
+-    std::string output_beats_file;
+-    std::string output_wav_file;
+-    std::string output_mixed_file;
++    std::filesystem::path output_beats_file;
++    std::filesystem::path output_wav_file;
++    std::filesystem::path output_mixed_file;
++    std::filesystem::path output_decoded_file;
+@@ -324,2 +361,2 @@ int main(int argc, char* argv[]) {
+-        std::string arg = argv[i];
+-        if (arg == "--output-beats" && i + 1 < argc) {
++        NativeString arg = argv[i];
++        if (arg == YY_TEXT("--output-beats") && i + 1 < argc) {
+@@ -327 +364 @@ int main(int argc, char* argv[]) {
+-        } else if (arg == "--output-audio" && i + 1 < argc) {
++        } else if (arg == YY_TEXT("--output-audio") && i + 1 < argc) {
+@@ -329 +366 @@ int main(int argc, char* argv[]) {
+-        } else if (arg == "--output-mixed" && i + 1 < argc) {
++        } else if (arg == YY_TEXT("--output-mixed") && i + 1 < argc) {
+@@ -331 +368,3 @@ int main(int argc, char* argv[]) {
+-        } else if (arg == "--calc-bpm") {
++        } else if (arg == YY_TEXT("--output-decoded") && i + 1 < argc) {
 +            output_decoded_file = argv[++i];
-         } else if (arg == "--calc-bpm") {
-             calc_bpm = true;
-         } else {
-@@ -338,7 +346,7 @@ int main(int argc, char* argv[]) {
-     }
-
-     // Check if at least one output is specified
++        } else if (arg == YY_TEXT("--calc-bpm")) {
+@@ -334 +373 @@ int main(int argc, char* argv[]) {
+-            std::cerr << "Unknown argument: " << arg << std::endl;
++            std::cerr << "Unknown argument." << std::endl;
+@@ -341 +380 @@ int main(int argc, char* argv[]) {
 -    if (output_beats_file.empty() && output_wav_file.empty() && output_mixed_file.empty() && !calc_bpm) {
 +    if (output_beats_file.empty() && output_wav_file.empty() && output_mixed_file.empty() && output_decoded_file.empty() && !calc_bpm) {
-         std::cerr << "Error: At least one output option must be specified (--output-beats, --output-audio, --output-mixed, or --calc-bpm)" << std::endl;
-         print_usage(argv[0]);
-         return 1;
-@@ -358,6 +366,14 @@ int main(int argc, char* argv[]) {
-
-         std::cout << "Loaded audio: " << audio_buffer.size() << " samples, " << samplerate << " Hz, " << channels << " channels" << std::endl;
-
+@@ -349 +388 @@ int main(int argc, char* argv[]) {
+-        BeatThis::BeatThis beat_analyzer(onnx_path.string());
++        BeatThis::BeatThis beat_analyzer(path_to_utf8(onnx_model_path));
+@@ -355 +394 @@ int main(int argc, char* argv[]) {
+-        if (!load_audio_for_example(audio_path.string(), audio_buffer, samplerate, channels)) {
++        if (!load_audio_for_example(audio_file_path, audio_buffer, samplerate, channels)) {
+@@ -360,0 +400,8 @@ int main(int argc, char* argv[]) {
 +        if (!output_decoded_file.empty()) {
 +            if (!write_wav_file(output_decoded_file, audio_buffer, samplerate, channels)) {
 +                std::cerr << "Failed to decode original audio." << std::endl;
 +                return 1;
 +            }
-+            std::cout << "Decoded audio saved to: " << output_decoded_file << std::endl;
++            std::cout << "Decoded audio saved to: " << path_to_utf8(output_decoded_file) << std::endl;
 +        }
 +
-         // Process audio
-         auto result = beat_analyzer.process_audio(audio_buffer, samplerate, channels);
-
-@@ -409,4 +425,4 @@ int main(int argc, char* argv[]) {
-         std::cerr << "Error: " << e.what() << std::endl;
-         return 1;
-     }
--}
-\ No newline at end of file
-+}
+@@ -379 +426 @@ int main(int argc, char* argv[]) {
+-                std::cout << "Beats saved to: " << output_beats_file << std::endl;
++                std::cout << "Beats saved to: " << path_to_utf8(output_beats_file) << std::endl;
+@@ -389 +436 @@ int main(int argc, char* argv[]) {
+-                std::cout << "Beat audio generated: " << output_wav_file << std::endl;
++                std::cout << "Beat audio generated: " << path_to_utf8(output_wav_file) << std::endl;
+@@ -399 +446 @@ int main(int argc, char* argv[]) {
+-                std::cout << "Mixed audio generated: " << output_mixed_file << std::endl;
++                std::cout << "Mixed audio generated: " << path_to_utf8(output_mixed_file) << std::endl;
+diff --git a/cmake/FetchONNXRuntime.cmake b/cmake/FetchONNXRuntime.cmake
+index 3229c77..3c4692c 100644
+--- a/cmake/FetchONNXRuntime.cmake
++++ b/cmake/FetchONNXRuntime.cmake
+@@ -22,2 +22 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
+-    # TODO: Add SHA256 checksum for security
+-    # set(ONNXRUNTIME_SHA256 "...")
++    set(ONNXRUNTIME_SHA256 "A91AF21CA8F9BDFA5A1AAC3FDD0591384B4E2866D41612925F1758D5522829E7")
