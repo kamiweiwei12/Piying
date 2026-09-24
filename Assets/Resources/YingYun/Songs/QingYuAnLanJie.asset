@@ -17,7 +17,7 @@ MonoBehaviour:
   title: "\u9752\u7389\u6848\xB7\u5170\u82A5"
   artist: "\u672C\u5730\u97F3\u9891\u6807\u7B7E\uFF1AAndree Son"
   music: {fileID: 8300000, guid: 9ebefae4726cd7347a35032b728f2e2d, type: 3}
-  timingStatus: 0
+  timingStatus: 1
   firstPlayableSec: 0.52
   playableEndSec: 229.2506103515625
   timingPoints:

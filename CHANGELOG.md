@@ -24,6 +24,38 @@
 
 ---
 
+## [2026-09-24] M9-A3 驗收 - 《青玉案·蘭芥》正式通過
+
+### 新增
+
+* 新增使用者實機驗收證據，確認 M9-A3-R1 的方向變化、長短 Hold 與困難組合規則可接受。
+
+### 修改
+
+* 《青玉案·蘭芥》的 `TimingStatus` 由 `AnalysisCandidate` 更新為 `Verified`；離線作者譜重建時保留正式狀態。
+* `DEVELOPMENT.md` 將目前工作推進至 M9-B Unity Editor 作者工具規劃。
+
+### 測試
+
+* 狀態回歸驗證《象王行》《青玉案·蘭芥》《試燈》均為 `Verified`；Unity 6000.6.2f1 EditMode 全量回歸 `total=177 / passed=177 / failed=0 / skipped=0`，結果 `Logs/M9-A3-verify-editmode.xml`。
+
+### 驗收結果
+
+* 使用者在 M9-A3-R1 Windows 候選後明確回覆「可以」；M9-A3 不再保留為技術候選。
+
+### Git Commit
+
+* `chore(m9): verify qing yu an lan jie chart`（本工作單位提交）。
+
+### 風險 / 已知問題
+
+* M9-A3 通過不代表 Unity Editor 通用作者工具、遊戲內任意音檔匯入或新動作軌跡編輯已完成。
+* M8.4《試燈》整曲舞感與先前結算可讀性驗收仍保留原紀錄，未由本次回覆自動結案。
+
+### 下一步
+
+* 另提 M9-B Unity Editor 作者工具 Plan，第一版只編排既有音符類型、拍點與已驗收動作，保存為可版控歌曲資產。
+
 ## [2026-09-24] M9-A3-R1 候選 - 譜面方向、長按與組合鍵手感修正
 
 ### 新增

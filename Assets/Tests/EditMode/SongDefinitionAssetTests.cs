@@ -37,7 +37,7 @@ namespace YingYun.Rhythm.Tests
                 Is.EqualTo(SongDefinitionAsset.TimingStatus.Verified));
             Assert.That(
                 catalog.Find("qing-yu-an-lan-jie").CurrentTimingStatus,
-                Is.EqualTo(SongDefinitionAsset.TimingStatus.AnalysisCandidate));
+                Is.EqualTo(SongDefinitionAsset.TimingStatus.Verified));
             Assert.That(
                 catalog.Find("trial-light").CurrentTimingStatus,
                 Is.EqualTo(SongDefinitionAsset.TimingStatus.Verified));
