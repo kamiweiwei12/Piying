@@ -73,7 +73,7 @@ namespace YingYun.Rhythm.Editor
             song.ConfigureAuthoredContentEditor(
                 charts,
                 cues,
-                SongDefinitionAsset.TimingStatus.AnalysisCandidate);
+                SongDefinitionAsset.TimingStatus.Verified);
             song.ValidateOrThrow();
             EditorUtility.SetDirty(song);
         }

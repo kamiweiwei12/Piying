@@ -17,7 +17,7 @@ MonoBehaviour:
   title: "\u8C61\u738B\u884C\uFF08\u7279\u522B\u7248\uFF09"
   artist: "\u5173\u5927\u6D32"
   music: {fileID: 8300000, guid: 8ea855b3ca30ec54282c9371360d74d0, type: 3}
-  timingStatus: 0
+  timingStatus: 1
   firstPlayableSec: 0.86
   playableEndSec: 177.1439971923828
   timingPoints:

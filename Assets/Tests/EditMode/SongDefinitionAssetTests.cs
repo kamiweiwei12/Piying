@@ -28,13 +28,13 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void ImportedSongs_RemainAnalysisCandidatesUntilChartsAreAudited()
+        public void SongTimingStatus_TracksCompletedHumanAudit()
         {
             SongCatalogAsset catalog = Resources.Load<SongCatalogAsset>("YingYun/SongCatalog");
 
             Assert.That(
                 catalog.Find("xiang-wang-xing-special").CurrentTimingStatus,
-                Is.EqualTo(SongDefinitionAsset.TimingStatus.AnalysisCandidate));
+                Is.EqualTo(SongDefinitionAsset.TimingStatus.Verified));
             Assert.That(
                 catalog.Find("qing-yu-an-lan-jie").CurrentTimingStatus,
                 Is.EqualTo(SongDefinitionAsset.TimingStatus.AnalysisCandidate));
