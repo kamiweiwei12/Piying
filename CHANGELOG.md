@@ -24,6 +24,49 @@
 
 ---
 
+## [2026-09-24] M9-A2 候選 - 《象王行》資料驅動關卡
+
+### 新增
+
+* 新增《象王行》離線作者譜：沿用 Beat This 的 399 個拍點，序列化 Easy 100、Normal 200、Hard 598 顆音符；三難度均覆蓋六方向並共用每 8 拍舞句錨點。
+* 新增 50 段明確排列的起、承、轉、合套路；以現有十四式編排，四次轉身只放在段落方向變化處，最終亮相延長至尾奏前。
+* 開始介面新增《試燈》／《象王行》双曲选择與当前曲目显示；《青玉案·兰芥》标示待制谱。
+
+### 修改
+
+* `SongDefinitionAsset` 可输出作者舞句并在载入时验证整数拍位、共同 Tap 锚点、舞句重叠、可玩范围及最多两支主动操纵杆。
+* `DanceChoreography` 新增分段 Timing Map 作者舞句编译路径；运行时只采样 129 点预编轨迹，不做音频分析、实时建模或临时编舞。
+* 正式控制器从 Song Catalog 选择资料驱动曲目，节拍器统一使用 `SongTimingMap`；新曲在最后音符判定后继续播放尾奏，至曲目结束点才结算。
+* 音乐 `AudioSource.loop` 关闭；《试灯》继续使用旧程式谱相容路径，不在本轮迁移旧谱。
+
+### 测试
+
+* Unity 6000.6.2f1 EditMode 全量回归：`total=165 / passed=165 / failed=0`；结果 `Logs/M9-A2-editmode.xml`。
+* 新增测试覆盖三难度 100／200／598 数量、排序、六方向、Hold／Chord、50 个共同舞句锚点、最少 4 拍、最多 2 支主动杆及末句不越界。
+* Windows x64 建置：`Builds/M9-A2-XiangWangXing/YingYun.exe`；`Logs/M9-A2-build.log` 记录 `Build Finished, Result: Success.`。
+* Windows 候选完成 20 秒启动烟雾测试；场景进入 `shadow-play-ready`，没有本次程式异常。`Logs/M9-A2-player-smoke.log` 留存启动日志。
+
+### 验收结果
+
+* 音符、舞句、资料验证、选曲入口、DSP 播放接线、尾奏结算及 Windows 序列化已形成可运行技术候选。
+* 自动分析拍点仍保持 `AnalysisCandidate`。完整歌曲的卡点、三难度手感、连续命中／Miss、转身承接及整段舞感尚待使用者实机确认，因此本条目不将《象王行》标为正式关卡完成。
+
+### Git Commit
+
+* `feat(m9): add xiang wang xing playable chart`（本技术候选提交）。
+
+### 风险 / 已知问题
+
+* 目前谱面依据 Beat This 拍点和明确离线规则制作，尚未由真人逐段实听；自动测试只能证明资料一致性，不能证明音乐重音选择和舞感正确。
+* 启动烟雾日志仍出现既有 Unity Connect 证书验证讯息；本轮未修改 Unity Connect 或 ProjectSettings。
+* 《试灯》仍走旧程式生成谱；两种载入路径会在后续旧谱迁移时再统一。
+* 音乐授权资料尚未整理进比赛交付包；URP、ProjectSettings 与 Unity Connect 的既有未提交变动未纳入本候选。
+
+### 下一步
+
+* 请使用者运行 `Builds/M9-A2-XiangWangXing/YingYun.exe`，选择《象王行》逐项确认开头／中段／尾段卡点、三难度密度、转身后承接、Miss 恢复和最终亮相；记录具体秒数后做最小修正并决定是否转为 `Verified`。
+* 《象王行》验收后另提 M9-A3《青玉案·兰芥》制谱 Plan；通用 Unity Editor 编舞工具继续保持独立工作单位。
+
 ## [2026-09-24] M9-A0／A1 - 導入歌曲並建立可追溯時間資料
 
 ### 新增

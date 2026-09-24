@@ -8,6 +8,7 @@ using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.Puppet;
 using YingYun.Rhythm.Scoring;
 using YingYun.Rhythm.Timing;
+using YingYun.Rhythm.Unity.Config;
 using YingYun.Rhythm.View;
 
 namespace YingYun.Rhythm.Prototype
@@ -17,11 +18,14 @@ namespace YingYun.Rhythm.Prototype
     {
         private const double PrototypeDurationSeconds = 180d;
         private const double CountdownLeadInSeconds = 3d;
+        private const string TrialLightSongId = "trial-light";
+        private const string XiangWangXingSongId = "xiang-wang-xing-special";
         private const string AudioOffsetPreference = "YingYun.AudioOffsetMs";
         private const string InputOffsetPreference = "YingYun.InputOffsetMs";
 
         [SerializeField] private AudioClip music;
         [SerializeField] private InputActionAsset inputActions;
+        [SerializeField] private SongCatalogAsset songCatalog;
         [SerializeField] private double bpm = 120d;
         [SerializeField] private double audioOffsetSeconds;
         [SerializeField] private double inputOffsetSeconds;
@@ -39,9 +43,13 @@ namespace YingYun.Rhythm.Prototype
         private AudioSource _musicSource;
         private CalibrationSettings _calibration;
         private PlayDifficulty _difficulty = PlayDifficulty.Normal;
+        private SongDefinitionAsset _selectedSong;
+        private SongTimingMap _timingMap;
+        private double _resultTimeSec;
         private int _lastBeat = int.MinValue;
         private int _noteCount;
         private bool _isComplete;
+        private bool _allNotesJudged;
         private bool _isPaused;
 
         public void Configure(AudioClip clip, InputActionAsset actions)
@@ -52,6 +60,11 @@ namespace YingYun.Rhythm.Prototype
 
         private void Awake()
         {
+            if (songCatalog == null)
+            {
+                songCatalog = Resources.Load<SongCatalogAsset>("YingYun/SongCatalog");
+            }
+
             if (music == null || inputActions == null)
             {
                 Debug.LogError("[M2] RhythmPrototypeController requires Music and Input Actions.", this);
@@ -61,7 +74,7 @@ namespace YingYun.Rhythm.Prototype
 
             _musicSource = GetComponent<AudioSource>();
             _musicSource.playOnAwake = false;
-            _musicSource.loop = true;
+            _musicSource.loop = false;
             _musicSource.spatialBlend = 0f;
 
             _calibration = new CalibrationSettings(
@@ -106,6 +119,7 @@ namespace YingYun.Rhythm.Prototype
             _flow.ResumeRequested += ResumePerformance;
             _flow.RestartRequested += RestartFromPause;
             _flow.ReturnRequested += ShowSongSelection;
+            ConfigureSongSelection();
             ShowSongSelection();
         }
 
@@ -192,7 +206,12 @@ namespace YingYun.Rhythm.Prototype
                     result.RequiredLanesMask));
             }
 
-            if (!_isComplete && _judgment.JudgedNoteCount >= _noteCount)
+            if (!_allNotesJudged && _judgment.JudgedNoteCount >= _noteCount)
+            {
+                _allNotesJudged = true;
+            }
+
+            if (_allNotesJudged && _clock.SongTime >= _resultTimeSec)
             {
                 _isComplete = true;
                 _clock.Pause();
@@ -252,16 +271,36 @@ namespace YingYun.Rhythm.Prototype
             _hitErrorsMs.Clear();
             _lastBeat = int.MinValue;
             _isComplete = false;
+            _allNotesJudged = false;
             _isPaused = false;
             _flow.HidePause();
-            NoteData[] notes = PrototypeDanceChart.Create(bpm, PrototypeDurationSeconds, _difficulty);
-            DancePhrase[] dance = DanceChoreography.Create(notes, bpm, PrototypeDurationSeconds);
+            NoteData[] notes;
+            DancePhrase[] dance;
+            AudioClip activeMusic;
+            if (_selectedSong != null && _selectedSong.HasAuthoredCharts)
+            {
+                _selectedSong.ValidateOrThrow();
+                _timingMap = _selectedSong.CreateTimingMap();
+                notes = _selectedSong.GetNotes(_difficulty);
+                dance = DanceChoreography.CreateAuthored(notes, _timingMap, _selectedSong.GetDanceCues());
+                activeMusic = _selectedSong.Music;
+                _resultTimeSec = _selectedSong.PlayableEndSec;
+            }
+            else
+            {
+                _timingMap = null;
+                notes = PrototypeDanceChart.Create(bpm, PrototypeDurationSeconds, _difficulty);
+                dance = DanceChoreography.Create(notes, bpm, PrototypeDurationSeconds);
+                activeMusic = music;
+                _resultTimeSec = PrototypeDurationSeconds;
+            }
+
             _noteCount = notes.Length;
             _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
             _presenter.Begin(notes);
             _puppet.Begin(dance);
             _hud.Begin(notes.Length, DifficultyConfig.Prototype);
-            _clock.Schedule(music, CountdownLeadInSeconds, _calibration.AudioOffsetMs / 1000d);
+            _clock.Schedule(activeMusic, CountdownLeadInSeconds, _calibration.AudioOffsetMs / 1000d);
 
             for (int i = 0; i < dance.Length; i++)
             {
@@ -270,18 +309,28 @@ namespace YingYun.Rhythm.Prototype
 
             Debug.Log(string.Format(
                 System.Globalization.CultureInfo.InvariantCulture,
-                "[M7] scheduled | difficulty={0} | dspStart={1:F6} | leadIn={2:F3}s | bpm={3:F3} | clip={4} | audioOffsetMs={5:F1} | inputOffsetMs={6:F1}",
+                "[M9] scheduled | song={0} | difficulty={1} | dspStart={2:F6} | leadIn={3:F3}s | clip={4} | notes={5} | phrases={6} | audioOffsetMs={7:F1} | inputOffsetMs={8:F1}",
+                _selectedSong != null ? _selectedSong.SongId : TrialLightSongId,
                 _difficulty,
                 _clock.DspStart,
                 CountdownLeadInSeconds,
-                bpm,
-                music.name,
+                activeMusic.name,
+                notes.Length,
+                dance.Length,
                 _calibration.AudioOffsetMs,
                 _calibration.InputOffsetMs));
         }
 
-        public void StartPerformance(PlayDifficulty difficulty)
+        public void StartPerformance(string songId, PlayDifficulty difficulty)
         {
+            SongDefinitionAsset requested = songCatalog != null ? songCatalog.Find(songId) : null;
+            if (requested == null || (songId != TrialLightSongId && !requested.HasAuthoredCharts))
+            {
+                Debug.LogError($"[M9] Song is not playable: {songId}", this);
+                return;
+            }
+
+            _selectedSong = requested;
             _difficulty = difficulty;
             _flow.HideMenu();
             _flow.HidePause();
@@ -353,9 +402,9 @@ namespace YingYun.Rhythm.Prototype
 
             if (_flow.IsMenuVisible)
             {
-                if (keyboard.digit1Key.wasPressedThisFrame) StartPerformance(PlayDifficulty.Easy);
-                else if (keyboard.digit2Key.wasPressedThisFrame) StartPerformance(PlayDifficulty.Normal);
-                else if (keyboard.digit3Key.wasPressedThisFrame) StartPerformance(PlayDifficulty.Hard);
+                if (keyboard.digit1Key.wasPressedThisFrame) StartPerformance(_flow.SelectedSongId, PlayDifficulty.Easy);
+                else if (keyboard.digit2Key.wasPressedThisFrame) StartPerformance(_flow.SelectedSongId, PlayDifficulty.Normal);
+                else if (keyboard.digit3Key.wasPressedThisFrame) StartPerformance(_flow.SelectedSongId, PlayDifficulty.Hard);
                 else if (keyboard.leftBracketKey.wasPressedThisFrame) AdjustCalibration(-5d, 0d);
                 else if (keyboard.rightBracketKey.wasPressedThisFrame) AdjustCalibration(5d, 0d);
                 else if (keyboard.minusKey.wasPressedThisFrame) AdjustCalibration(0d, -5d);
@@ -398,7 +447,9 @@ namespace YingYun.Rhythm.Prototype
                 return;
             }
 
-            int beat = (int)Math.Floor(songTime * bpm / 60d);
+            int beat = (int)Math.Floor(_timingMap != null
+                ? _timingMap.SecondsToBeat(songTime)
+                : songTime * bpm / 60d);
             if (beat == _lastBeat)
             {
                 return;
@@ -429,6 +480,30 @@ namespace YingYun.Rhythm.Prototype
                 ? (copy[middle - 1] + copy[middle]) * 0.5d
                 : copy[middle];
             return median.ToString("F3", System.Globalization.CultureInfo.InvariantCulture);
+        }
+
+        private void ConfigureSongSelection()
+        {
+            if (songCatalog == null)
+            {
+                throw new InvalidOperationException("Song catalog is required.");
+            }
+
+            SongDefinitionAsset trialLight = songCatalog.Find(TrialLightSongId);
+            SongDefinitionAsset xiangWangXing = songCatalog.Find(XiangWangXingSongId);
+            if (trialLight == null || xiangWangXing == null || !xiangWangXing.HasAuthoredCharts)
+            {
+                throw new InvalidOperationException("《试灯》与《象王行》可玩资料必须存在。");
+            }
+
+            _selectedSong = trialLight;
+            _flow.ConfigureSongs(
+                new[]
+                {
+                    new SongMenuEntry(trialLight.SongId, trialLight.Title, trialLight.Artist),
+                    new SongMenuEntry(xiangWangXing.SongId, xiangWangXing.Title, xiangWangXing.Artist),
+                },
+                trialLight.SongId);
         }
     }
 }

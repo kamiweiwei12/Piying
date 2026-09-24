@@ -44,6 +44,7 @@ namespace YingYun.Rhythm.Editor
                 xiangTiming[0].timeSec,
                 xiangTiming,
                 SongDefinitionAsset.TimingStatus.AnalysisCandidate);
+            XiangWangXingChartAuthoring.Apply(xiangWangXing);
 
             SongDefinitionAsset.TimingPointData[] qingTiming = LoadBeatThisTiming(QingYuAnBeats);
 

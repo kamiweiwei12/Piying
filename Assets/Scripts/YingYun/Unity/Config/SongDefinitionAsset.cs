@@ -80,6 +80,7 @@ namespace YingYun.Rhythm.Unity.Config
         public TimingStatus CurrentTimingStatus => timingStatus;
         public double FirstPlayableSec => firstPlayableSec;
         public double PlayableEndSec => playableEndSec > 0d ? playableEndSec : music != null ? music.length : 0d;
+        public bool HasAuthoredCharts => charts != null && charts.Length > 0;
 
         public SongTimingMap CreateTimingMap()
         {
@@ -113,6 +114,28 @@ namespace YingYun.Rhythm.Unity.Config
             }
 
             return Array.Empty<NoteData>();
+        }
+
+        public AuthoredDanceCue[] GetDanceCues()
+        {
+            var result = new AuthoredDanceCue[danceCues.Length];
+            for (int i = 0; i < danceCues.Length; i++)
+            {
+                DanceCueData cue = danceCues[i];
+                if (Math.Abs(cue.startBeat - Math.Round(cue.startBeat)) > 0.000001d)
+                {
+                    throw new InvalidOperationException("Dance cue start beats must be whole beats.");
+                }
+
+                result[i] = new AuthoredDanceCue(
+                    cue.action,
+                    (int)Math.Round(cue.startBeat),
+                    cue.durationBeats,
+                    cue.anchorNoteId,
+                    cue.hasClosing);
+            }
+
+            return result;
         }
 
         public void ValidateOrThrow()
@@ -157,6 +180,23 @@ namespace YingYun.Rhythm.Unity.Config
                     throw new InvalidOperationException("Dance cues require a non-negative start and at least four beats.");
                 }
             }
+
+
+            AuthoredDanceCue[] authoredCues = GetDanceCues();
+            SongTimingMap timingMap = CreateTimingMap();
+            for (int i = 0; i < charts.Length; i++)
+            {
+                DancePhrase[] phrases = DanceChoreography.CreateAuthored(
+                    GetNotes(charts[i].difficulty),
+                    timingMap,
+                    authoredCues);
+                _ = new DancePlayback(phrases);
+                if (phrases.Length > 0 &&
+                    phrases[phrases.Length - 1].StartSeconds + phrases[phrases.Length - 1].DurationSeconds > endSec + 0.001d)
+                {
+                    throw new InvalidOperationException("Dance cues must remain inside the playable range.");
+                }
+            }
         }
 
 #if UNITY_EDITOR
@@ -180,6 +220,17 @@ namespace YingYun.Rhythm.Unity.Config
             timingPoints = points ?? Array.Empty<TimingPointData>();
             charts = Array.Empty<DifficultyChart>();
             danceCues = Array.Empty<DanceCueData>();
+        }
+
+
+        public void ConfigureAuthoredContentEditor(
+            DifficultyChart[] difficultyCharts,
+            DanceCueData[] cues,
+            TimingStatus status)
+        {
+            charts = difficultyCharts ?? Array.Empty<DifficultyChart>();
+            danceCues = cues ?? Array.Empty<DanceCueData>();
+            timingStatus = status;
         }
 #endif
     }

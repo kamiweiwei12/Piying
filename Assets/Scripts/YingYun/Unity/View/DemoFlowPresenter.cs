@@ -1,9 +1,24 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using YingYun.Rhythm.Scoring;
 
 namespace YingYun.Rhythm.View
 {
+    public readonly struct SongMenuEntry
+    {
+        public SongMenuEntry(string songId, string title, string artist)
+        {
+            SongId = songId;
+            Title = title;
+            Artist = artist;
+        }
+
+        public string SongId { get; }
+        public string Title { get; }
+        public string Artist { get; }
+    }
+
     /// <summary>M7 的選曲、難度與延遲校準入口；只發出意圖，不參與節奏判定。</summary>
     public sealed class DemoFlowPresenter : MonoBehaviour
     {
@@ -11,9 +26,12 @@ namespace YingYun.Rhythm.View
         private GameObject _menuPanel;
         private GameObject _pausePanel;
         private UnityEngine.UI.Text _calibrationText;
+        private UnityEngine.UI.Text _selectedSongText;
         private Font _runtimeFont;
+        private string _selectedSongId = string.Empty;
+        private readonly List<SongButton> _songButtons = new List<SongButton>(2);
 
-        public event Action<PlayDifficulty> PlayRequested;
+        public event Action<string, PlayDifficulty> PlayRequested;
         public event Action<double, double> CalibrationAdjusted;
         public event Action ResumeRequested;
         public event Action RestartRequested;
@@ -21,6 +39,14 @@ namespace YingYun.Rhythm.View
 
         public bool IsMenuVisible => _menuPanel != null && _menuPanel.activeSelf;
         public bool IsPauseVisible => _pausePanel != null && _pausePanel.activeSelf;
+        public string SelectedSongId => _selectedSongId;
+
+        private sealed class SongButton
+        {
+            public string SongId;
+            public string DisplayText;
+            public UnityEngine.UI.Button Button;
+        }
 
         private void Awake()
         {
@@ -44,6 +70,58 @@ namespace YingYun.Rhythm.View
             if (_calibrationText != null)
             {
                 _calibrationText.text = $"延迟校准　音频 {audioOffsetMs:+0;-0;0} ms　输入 {inputOffsetMs:+0;-0;0} ms";
+            }
+        }
+
+        public void ConfigureSongs(IReadOnlyList<SongMenuEntry> songs, string initialSongId)
+        {
+            if (songs == null || songs.Count == 0)
+            {
+                throw new ArgumentException("At least one playable song is required.", nameof(songs));
+            }
+
+            if (_songButtons.Count != 0)
+            {
+                throw new InvalidOperationException("Songs can only be configured once.");
+            }
+
+            RectTransform panel = (RectTransform)_menuPanel.transform;
+            float spacing = 500f;
+            float startX = -((songs.Count - 1) * spacing) * 0.5f;
+            for (int i = 0; i < songs.Count; i++)
+            {
+                SongMenuEntry entry = songs[i];
+                UnityEngine.UI.Button button = CreateButton(
+                    panel,
+                    entry.Title,
+                    27,
+                    new Vector2(startX + (i * spacing), 235f),
+                    new Vector2(450f, 78f));
+                string songId = entry.SongId;
+                button.onClick.AddListener(() => SelectSong(songId));
+                _songButtons.Add(new SongButton
+                {
+                    SongId = songId,
+                    DisplayText = $"当前：{entry.Title}　{entry.Artist}",
+                    Button = button,
+                });
+            }
+
+            _selectedSongId = string.IsNullOrWhiteSpace(initialSongId) ? songs[0].SongId : initialSongId;
+            RefreshSongSelection(songs);
+        }
+
+        public void SelectSong(string songId)
+        {
+            for (int i = 0; i < _songButtons.Count; i++)
+            {
+                if (_songButtons[i].SongId == songId)
+                {
+                    _selectedSongId = songId;
+                    RefreshSongButtonColors();
+                    _selectedSongText.text = _songButtons[i].DisplayText;
+                    return;
+                }
             }
         }
 
@@ -71,19 +149,20 @@ namespace YingYun.Rhythm.View
             panel.offsetMax = Vector2.zero;
             _menuPanel.GetComponent<UnityEngine.UI.Image>().color = new Color(0.075f, 0.018f, 0.012f, 0.97f);
 
-            AddText(panel, "影　韵", 94, new Vector2(0f, 390f), new Vector2(900f, 120f), new Color(1f, 0.76f, 0.23f));
-            AddText(panel, "数字皮影操演 · 第一折《试灯》", 32, new Vector2(0f, 310f), new Vector2(900f, 70f), new Color(1f, 0.90f, 0.68f));
+            AddText(panel, "影　韵", 86, new Vector2(0f, 405f), new Vector2(900f, 110f), new Color(1f, 0.76f, 0.23f));
+            AddText(panel, "数字皮影操演 · 选择曲目与难度", 30, new Vector2(0f, 330f), new Vector2(900f, 60f), new Color(1f, 0.90f, 0.68f));
+            _selectedSongText = AddText(panel, string.Empty, 25, new Vector2(0f, 170f), new Vector2(900f, 50f), new Color(0.93f, 0.80f, 0.58f));
 
-            AddDifficultyButton(panel, PlayDifficulty.Easy, 180f);
-            AddDifficultyButton(panel, PlayDifficulty.Normal, 35f);
-            AddDifficultyButton(panel, PlayDifficulty.Hard, -110f);
+            AddDifficultyButton(panel, PlayDifficulty.Easy, 75f);
+            AddDifficultyButton(panel, PlayDifficulty.Normal, -45f);
+            AddDifficultyButton(panel, PlayDifficulty.Hard, -165f);
 
-            _calibrationText = AddText(panel, string.Empty, 28, new Vector2(0f, -245f), new Vector2(900f, 60f), new Color(0.93f, 0.80f, 0.58f));
-            AddSmallButton(panel, "音频 -5", new Vector2(-315f, -320f), () => CalibrationAdjusted?.Invoke(-5d, 0d));
-            AddSmallButton(panel, "音频 +5", new Vector2(-105f, -320f), () => CalibrationAdjusted?.Invoke(5d, 0d));
-            AddSmallButton(panel, "输入 -5", new Vector2(105f, -320f), () => CalibrationAdjusted?.Invoke(0d, -5d));
-            AddSmallButton(panel, "输入 +5", new Vector2(315f, -320f), () => CalibrationAdjusted?.Invoke(0d, 5d));
-            AddText(panel, "快捷键：1 / 2 / 3 选择难度　[ ] 调音频　- = 调输入", 23, new Vector2(0f, -410f), new Vector2(1100f, 55f), new Color(0.72f, 0.59f, 0.43f));
+            _calibrationText = AddText(panel, string.Empty, 25, new Vector2(0f, -270f), new Vector2(900f, 55f), new Color(0.93f, 0.80f, 0.58f));
+            AddSmallButton(panel, "音频 -5", new Vector2(-315f, -340f), () => CalibrationAdjusted?.Invoke(-5d, 0d));
+            AddSmallButton(panel, "音频 +5", new Vector2(-105f, -340f), () => CalibrationAdjusted?.Invoke(5d, 0d));
+            AddSmallButton(panel, "输入 -5", new Vector2(105f, -340f), () => CalibrationAdjusted?.Invoke(0d, -5d));
+            AddSmallButton(panel, "输入 +5", new Vector2(315f, -340f), () => CalibrationAdjusted?.Invoke(0d, 5d));
+            AddText(panel, "《青玉案·兰芥》待制谱　快捷键：1 / 2 / 3 选择难度", 21, new Vector2(0f, -430f), new Vector2(1100f, 50f), new Color(0.72f, 0.59f, 0.43f));
             BuildPausePanel();
         }
 
@@ -113,7 +192,7 @@ namespace YingYun.Rhythm.View
         {
             string label = $"{PlayDifficultyInfo.DisplayName(difficulty)}　{PlayDifficultyInfo.Description(difficulty)}";
             UnityEngine.UI.Button button = CreateButton(parent, label, 30, new Vector2(0f, y), new Vector2(900f, 108f));
-            button.onClick.AddListener(() => PlayRequested?.Invoke(difficulty));
+            button.onClick.AddListener(() => PlayRequested?.Invoke(_selectedSongId, difficulty));
         }
 
         private void AddSmallButton(RectTransform parent, string label, Vector2 position, Action action)
@@ -134,6 +213,31 @@ namespace YingYun.Rhythm.View
             UnityEngine.UI.Text text = AddText(rect, label, size, Vector2.zero, dimensions - new Vector2(28f, 12f), new Color(1f, 0.89f, 0.62f));
             text.raycastTarget = false;
             return buttonObject.GetComponent<UnityEngine.UI.Button>();
+        }
+
+        private void RefreshSongSelection(IReadOnlyList<SongMenuEntry> songs)
+        {
+            for (int i = 0; i < songs.Count; i++)
+            {
+                if (songs[i].SongId == _selectedSongId)
+                {
+                    _selectedSongText.text = $"当前：{songs[i].Title}　{songs[i].Artist}";
+                    break;
+                }
+            }
+
+            RefreshSongButtonColors();
+        }
+
+        private void RefreshSongButtonColors()
+        {
+            for (int i = 0; i < _songButtons.Count; i++)
+            {
+                bool selected = _songButtons[i].SongId == _selectedSongId;
+                _songButtons[i].Button.GetComponent<UnityEngine.UI.Image>().color = selected
+                    ? new Color(0.68f, 0.22f, 0.07f, 1f)
+                    : new Color(0.34f, 0.085f, 0.045f, 0.96f);
+            }
         }
 
         private UnityEngine.UI.Text AddText(RectTransform parent, string value, int size, Vector2 position, Vector2 dimensions, Color color)

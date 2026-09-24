@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using YingYun.Rhythm.Chart;
 using YingYun.Rhythm.Judgment;
 
 namespace YingYun.Rhythm.Puppet
@@ -25,6 +26,34 @@ namespace YingYun.Rhythm.Puppet
     public enum DancePerformanceKind
     {
         Waiting, Pending, Performing, Closing, Holding, Interrupted
+    }
+
+    /// <summary>作者譜中的舞句提示。拍位只在載入時換算，播放時使用預編秒數。</summary>
+    public readonly struct AuthoredDanceCue
+    {
+        public AuthoredDanceCue(
+            DanceAction action,
+            int startBeat,
+            int durationBeats,
+            int anchorNoteId,
+            bool hasClosing)
+        {
+            if (startBeat < 0) throw new ArgumentOutOfRangeException(nameof(startBeat));
+            if (durationBeats < 4) throw new ArgumentOutOfRangeException(nameof(durationBeats));
+            if (anchorNoteId <= 0) throw new ArgumentOutOfRangeException(nameof(anchorNoteId));
+
+            Action = action;
+            StartBeat = startBeat;
+            DurationBeats = durationBeats;
+            AnchorNoteId = anchorNoteId;
+            HasClosing = hasClosing;
+        }
+
+        public DanceAction Action { get; }
+        public int StartBeat { get; }
+        public int DurationBeats { get; }
+        public int AnchorNoteId { get; }
+        public bool HasClosing { get; }
     }
 
     /// <summary>只描述實際操演狀態；Cue 為待開始或漏擊的舞句，不冒充已執行動作。</summary>
@@ -214,10 +243,70 @@ namespace YingYun.Rhythm.Puppet
                 if (anchor < 0) continue;
 
                 DanceAction action = ActionForPhrase(index, phraseCount);
-                result.Add(Build(beat, anchor, action, beatSeconds));
+                double startSeconds = beat * beatSeconds;
+                result.Add(Build(
+                    beat,
+                    BeatsPerPhrase,
+                    anchor,
+                    action,
+                    startSeconds,
+                    BeatsPerPhrase * beatSeconds,
+                    HasDefaultClosing(action)));
             }
 
             return result.ToArray();
+        }
+
+        public static DancePhrase[] CreateAuthored(
+            NoteData[] notes,
+            SongTimingMap timingMap,
+            IReadOnlyList<AuthoredDanceCue> cues)
+        {
+            if (notes == null) throw new ArgumentNullException(nameof(notes));
+            if (timingMap == null) throw new ArgumentNullException(nameof(timingMap));
+            if (cues == null) throw new ArgumentNullException(nameof(cues));
+
+            var notesById = new Dictionary<int, NoteData>(notes.Length);
+            for (int i = 0; i < notes.Length; i++)
+            {
+                notesById.Add(notes[i].Id, notes[i]);
+            }
+
+            var result = new DancePhrase[cues.Count];
+            int previousEndBeat = -1;
+            for (int i = 0; i < cues.Count; i++)
+            {
+                AuthoredDanceCue cue = cues[i];
+                if (cue.StartBeat < previousEndBeat)
+                {
+                    throw new ArgumentException("Dance cues must be ordered and cannot overlap.", nameof(cues));
+                }
+
+                if (!notesById.TryGetValue(cue.AnchorNoteId, out NoteData anchor) ||
+                    anchor.Kind != NoteKind.Tap)
+                {
+                    throw new ArgumentException("Every dance cue requires a tap-note anchor.", nameof(cues));
+                }
+
+                double startSeconds = timingMap.BeatToSeconds(cue.StartBeat);
+                if (Math.Abs(anchor.TimeSec - startSeconds) > 0.000001d)
+                {
+                    throw new ArgumentException("Dance anchor time must equal its cue start beat.", nameof(cues));
+                }
+
+                double endSeconds = timingMap.BeatToSeconds(cue.StartBeat + cue.DurationBeats);
+                result[i] = Build(
+                    cue.StartBeat,
+                    cue.DurationBeats,
+                    cue.AnchorNoteId,
+                    cue.Action,
+                    startSeconds,
+                    endSeconds - startSeconds,
+                    cue.HasClosing);
+                previousEndBeat = cue.StartBeat + cue.DurationBeats;
+            }
+
+            return result;
         }
 
         private static DanceAction ActionForPhrase(int index, int phraseCount)
@@ -249,7 +338,14 @@ namespace YingYun.Rhythm.Puppet
             return -1;
         }
 
-        private static DancePhrase Build(int beat, int anchor, DanceAction action, double beatSeconds)
+        private static DancePhrase Build(
+            int beat,
+            int durationBeats,
+            int anchor,
+            DanceAction action,
+            double startSeconds,
+            double durationSeconds,
+            bool hasClosing)
         {
             DanceJoint first;
             DanceJoint second;
@@ -363,16 +459,21 @@ namespace YingYun.Rhythm.Puppet
                 }
             }
 
-            return new DancePhrase(beat, BeatsPerPhrase, anchor, action, name, first, second,
-                beat * beatSeconds, BeatsPerPhrase * beatSeconds,
+            return new DancePhrase(beat, durationBeats, anchor, action, name, first, second,
+                startSeconds, durationSeconds,
                 firstSamples, secondSamples, blendSamples, linkedBlendSamples, widthSamples,
                 stepFoot,
-                action == DanceAction.CloudHand || action == DanceAction.DoubleMountainArm ||
-                action == DanceAction.ReverseCloudHand || action == DanceAction.FinalPose ||
-                action == DanceAction.SupportPalm || action == DanceAction.TurnWrist ||
-                action == DanceAction.FistPalmSalute || action == DanceAction.SingleFinger,
+                hasClosing,
                 handGesture, fistPalmSalute,
                 footReachSamples, footLiftSamples, weightShiftSamples);
+        }
+
+        private static bool HasDefaultClosing(DanceAction action)
+        {
+            return action == DanceAction.CloudHand || action == DanceAction.DoubleMountainArm ||
+                action == DanceAction.ReverseCloudHand || action == DanceAction.FinalPose ||
+                action == DanceAction.SupportPalm || action == DanceAction.TurnWrist ||
+                action == DanceAction.FistPalmSalute || action == DanceAction.SingleFinger;
         }
 
         private static double KeyValue(double[] keys, double progress)
