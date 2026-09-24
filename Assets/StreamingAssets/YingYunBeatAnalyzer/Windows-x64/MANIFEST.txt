@@ -1,0 +1,15 @@
+YingYun bundled beat analyzer
+
+beat_this_cpp source: https://github.com/mosynthkey/beat_this_cpp
+source commit: 07ab790a9ec2eda8093d52d249e3ec4f0510ee72
+model: Beat This final0 converted to ONNX by beat_this_cpp
+ONNX Runtime: 1.18.0 win-x64
+
+SHA-256:
+beat_this_cpp.exe  D5BFE08440F36B67744B2A933E7FE216436E34EA50F094FC90806B07CC643635
+beat_this_api.dll  0DE8A2F463662320FD282C96DA64E256D8ECA1EEFBB9F5A924B61A96763B1C8E
+onnxruntime.dll     B9021EB23A8594FC48E9AD8A02582C0CB19375722BFBBFC10171411A688AC062
+beat_this.onnx     C5C1466E08ABDB03FDEB50668A06F244B787D564C212490482231A9CFBE9CCBD
+
+Build compatibility patches are recorded in Tools/BeatAnalysisRuntime/windows-runtime.patch.
+No Python, PyTorch, FFmpeg, DBN, or network download is used by the shipped player.

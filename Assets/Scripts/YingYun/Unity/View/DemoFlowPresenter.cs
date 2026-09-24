@@ -27,15 +27,22 @@ namespace YingYun.Rhythm.View
         private GameObject _pausePanel;
         private UnityEngine.UI.Text _calibrationText;
         private UnityEngine.UI.Text _selectedSongText;
+        private UnityEngine.UI.Text _songImportStatusText;
+        private UnityEngine.UI.Text _songPageText;
         private Font _runtimeFont;
         private string _selectedSongId = string.Empty;
         private readonly List<SongButton> _songButtons = new List<SongButton>(3);
+        private readonly List<SongMenuEntry> _songEntries = new List<SongMenuEntry>();
+        private int _songPage;
+        private const int SongsPerPage = 3;
 
         public event Action<string, PlayDifficulty> PlayRequested;
         public event Action<double, double> CalibrationAdjusted;
         public event Action ResumeRequested;
         public event Action RestartRequested;
         public event Action ReturnRequested;
+        public event Action CustomSongsRefreshRequested;
+        public event Action CustomSongsFolderRequested;
 
         public bool IsMenuVisible => _menuPanel != null && _menuPanel.activeSelf;
         public bool IsPauseVisible => _pausePanel != null && _pausePanel.activeSelf;
@@ -80,22 +87,56 @@ namespace YingYun.Rhythm.View
                 throw new ArgumentException("At least one playable song is required.", nameof(songs));
             }
 
-            if (_songButtons.Count != 0)
+            _songEntries.Clear();
+            for (int i = 0; i < songs.Count; i++) _songEntries.Add(songs[i]);
+
+            bool selectionExists = false;
+            for (int i = 0; i < songs.Count; i++)
             {
-                throw new InvalidOperationException("Songs can only be configured once.");
+                if (songs[i].SongId == _selectedSongId) selectionExists = true;
             }
+
+            if (!selectionExists)
+            {
+                _selectedSongId = string.IsNullOrWhiteSpace(initialSongId) ? songs[0].SongId : initialSongId;
+            }
+
+            int selectedIndex = 0;
+            for (int i = 0; i < songs.Count; i++)
+            {
+                if (songs[i].SongId == _selectedSongId) selectedIndex = i;
+            }
+            _songPage = selectedIndex / SongsPerPage;
+            RebuildSongPage();
+            RefreshSongSelection(songs);
+        }
+
+        public void SetSongImportStatus(string status)
+        {
+            if (_songImportStatusText != null) _songImportStatusText.text = status ?? string.Empty;
+        }
+
+        private void RebuildSongPage()
+        {
+            for (int i = 0; i < _songButtons.Count; i++)
+            {
+                if (_songButtons[i].Button != null) Destroy(_songButtons[i].Button.gameObject);
+            }
+            _songButtons.Clear();
 
             RectTransform panel = (RectTransform)_menuPanel.transform;
             float spacing = 500f;
-            float startX = -((songs.Count - 1) * spacing) * 0.5f;
-            for (int i = 0; i < songs.Count; i++)
+            int first = _songPage * SongsPerPage;
+            int visibleCount = Math.Min(SongsPerPage, _songEntries.Count - first);
+            float startX = -((visibleCount - 1) * spacing) * 0.5f;
+            for (int i = 0; i < visibleCount; i++)
             {
-                SongMenuEntry entry = songs[i];
+                SongMenuEntry entry = _songEntries[first + i];
                 UnityEngine.UI.Button button = CreateButton(
                     panel,
                     entry.Title,
                     27,
-                    new Vector2(startX + (i * spacing), 235f),
+                    new Vector2(startX + (i * spacing), 220f),
                     new Vector2(450f, 78f));
                 string songId = entry.SongId;
                 button.onClick.AddListener(() => SelectSong(songId));
@@ -107,8 +148,16 @@ namespace YingYun.Rhythm.View
                 });
             }
 
-            _selectedSongId = string.IsNullOrWhiteSpace(initialSongId) ? songs[0].SongId : initialSongId;
-            RefreshSongSelection(songs);
+            int pageCount = Math.Max(1, (_songEntries.Count + SongsPerPage - 1) / SongsPerPage);
+            if (_songPageText != null) _songPageText.text = $"{_songPage + 1} / {pageCount}";
+            RefreshSongButtonColors();
+        }
+
+        private void ChangeSongPage(int delta)
+        {
+            int pageCount = Math.Max(1, (_songEntries.Count + SongsPerPage - 1) / SongsPerPage);
+            _songPage = (_songPage + delta + pageCount) % pageCount;
+            RebuildSongPage();
         }
 
         public void SelectSong(string songId)
@@ -151,11 +200,19 @@ namespace YingYun.Rhythm.View
 
             AddText(panel, "影　韵", 86, new Vector2(0f, 405f), new Vector2(900f, 110f), new Color(1f, 0.76f, 0.23f));
             AddText(panel, "数字皮影操演 · 选择曲目与难度", 30, new Vector2(0f, 330f), new Vector2(900f, 60f), new Color(1f, 0.90f, 0.68f));
-            _selectedSongText = AddText(panel, string.Empty, 25, new Vector2(0f, 170f), new Vector2(900f, 50f), new Color(0.93f, 0.80f, 0.58f));
+            AddSmallButton(panel, "打开歌曲文件夹", new Vector2(-130f, 280f), () => CustomSongsFolderRequested?.Invoke());
+            AddSmallButton(panel, "刷新歌曲", new Vector2(130f, 280f), () => CustomSongsRefreshRequested?.Invoke());
+            UnityEngine.UI.Button previousPage = CreateButton(panel, "‹", 34, new Vector2(-780f, 220f), new Vector2(72f, 72f));
+            UnityEngine.UI.Button nextPage = CreateButton(panel, "›", 34, new Vector2(780f, 220f), new Vector2(72f, 72f));
+            previousPage.onClick.AddListener(() => ChangeSongPage(-1));
+            nextPage.onClick.AddListener(() => ChangeSongPage(1));
+            _songPageText = AddText(panel, string.Empty, 20, new Vector2(0f, 275f), new Vector2(100f, 40f), new Color(0.72f, 0.59f, 0.43f));
+            _selectedSongText = AddText(panel, string.Empty, 25, new Vector2(0f, 150f), new Vector2(1200f, 50f), new Color(0.93f, 0.80f, 0.58f));
+            _songImportStatusText = AddText(panel, string.Empty, 19, new Vector2(0f, 112f), new Vector2(1300f, 38f), new Color(0.72f, 0.59f, 0.43f));
 
-            AddDifficultyButton(panel, PlayDifficulty.Easy, 75f);
-            AddDifficultyButton(panel, PlayDifficulty.Normal, -45f);
-            AddDifficultyButton(panel, PlayDifficulty.Hard, -165f);
+            AddDifficultyButton(panel, PlayDifficulty.Easy, 42f);
+            AddDifficultyButton(panel, PlayDifficulty.Normal, -74f);
+            AddDifficultyButton(panel, PlayDifficulty.Hard, -190f);
 
             _calibrationText = AddText(panel, string.Empty, 25, new Vector2(0f, -270f), new Vector2(900f, 55f), new Color(0.93f, 0.80f, 0.58f));
             AddSmallButton(panel, "音频 -5", new Vector2(-315f, -340f), () => CalibrationAdjusted?.Invoke(-5d, 0d));

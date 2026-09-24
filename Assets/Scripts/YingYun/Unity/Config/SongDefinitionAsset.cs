@@ -9,7 +9,7 @@ using YingYun.Rhythm.Scoring;
 namespace YingYun.Rhythm.Unity.Config
 {
     [CreateAssetMenu(menuName = "YingYun/Song Definition", fileName = "SongDefinition")]
-    public sealed class SongDefinitionAsset : ScriptableObject
+    public sealed class SongDefinitionAsset : ScriptableObject, IPlayableSongDefinition
     {
         public enum TimingStatus
         {

@@ -1,0 +1,109 @@
+diff --git a/Source/DBNPostprocessor.h b/Source/DBNPostprocessor.h
+index fc98ccc..84ff8d4 100644
+--- a/Source/DBNPostprocessor.h
++++ b/Source/DBNPostprocessor.h
+@@ -1,5 +1,6 @@
+ #pragma once
+
++#include <array>
+ #include <vector>
+ #include <cstdint>
+
+diff --git a/Source/beat_this_api.h b/Source/beat_this_api.h
+index 657645e..9e2fc2e 100644
+--- a/Source/beat_this_api.h
++++ b/Source/beat_this_api.h
+@@ -15,7 +15,7 @@ struct BeatResult {
+
+ class BeatThis {
+ public:
+-    explicit BeatThis(const std::string& onnx_model_path);
++    explicit BeatThis(const std::string& onnx_model_path, bool use_dbn = false);
+     ~BeatThis();
+
+     // Move semantics
+@@ -47,4 +47,4 @@ private:
+     std::unique_ptr<Impl> pImpl;
+ };
+
+-} // namespace BeatThis
+\ No newline at end of file
++} // namespace BeatThis
+diff --git a/Source/main.cpp b/Source/main.cpp
+index c434056..185fe11 100644
+--- a/Source/main.cpp
++++ b/Source/main.cpp
+@@ -41,12 +41,16 @@ bool load_audio_for_example(const std::string& path, std::vector<float>& audio_b
+     audio_buffer.resize(total_frames * channels);
+     ma_uint64 frames_read = 0;
+     result = ma_decoder_read_pcm_frames(&decoder, audio_buffer.data(), total_frames, &frames_read);
+-    if (result != MA_SUCCESS || frames_read != total_frames) {
++    if (result != MA_SUCCESS || frames_read == 0) {
+         std::cerr << "Error: could not read all audio frames: " << ma_result_description(result) << std::endl;
+         ma_decoder_uninit(&decoder);
+         return false;
+     }
+
++    // Some variable-bit-rate MP3 files report an estimated length that is a few
++    // frames longer than the decoder can actually return. Keep the decoded data.
++    audio_buffer.resize(static_cast<size_t>(frames_read * channels));
++
+     ma_decoder_uninit(&decoder);
+     return true;
+ }
+@@ -291,6 +295,7 @@ void print_usage(const char* program_name) {
+     std::cerr << "  --output-beats <file>    Save beat information to .beats file" << std::endl;
+     std::cerr << "  --output-audio <file>    Generate audio file with beats as click track" << std::endl;
+     std::cerr << "  --output-mixed <file>    Generate audio file with original music + click track" << std::endl;
++    std::cerr << "  --output-decoded <file>  Decode the original audio to float WAV" << std::endl;
+     std::cerr << "  --calc-bpm               Calculate and display BPM from detected beats" << std::endl;
+     std::cerr << std::endl;
+     std::cerr << "Examples:" << std::endl;
+@@ -317,6 +322,7 @@ int main(int argc, char* argv[]) {
+     std::string output_beats_file;
+     std::string output_wav_file;
+     std::string output_mixed_file;
++    std::string output_decoded_file;
+     bool calc_bpm = false;
+
+     // Parse command line arguments
+@@ -328,6 +334,8 @@ int main(int argc, char* argv[]) {
+             output_wav_file = argv[++i];
+         } else if (arg == "--output-mixed" && i + 1 < argc) {
+             output_mixed_file = argv[++i];
++        } else if (arg == "--output-decoded" && i + 1 < argc) {
++            output_decoded_file = argv[++i];
+         } else if (arg == "--calc-bpm") {
+             calc_bpm = true;
+         } else {
+@@ -338,7 +346,7 @@ int main(int argc, char* argv[]) {
+     }
+
+     // Check if at least one output is specified
+-    if (output_beats_file.empty() && output_wav_file.empty() && output_mixed_file.empty() && !calc_bpm) {
++    if (output_beats_file.empty() && output_wav_file.empty() && output_mixed_file.empty() && output_decoded_file.empty() && !calc_bpm) {
+         std::cerr << "Error: At least one output option must be specified (--output-beats, --output-audio, --output-mixed, or --calc-bpm)" << std::endl;
+         print_usage(argv[0]);
+         return 1;
+@@ -358,6 +366,14 @@ int main(int argc, char* argv[]) {
+
+         std::cout << "Loaded audio: " << audio_buffer.size() << " samples, " << samplerate << " Hz, " << channels << " channels" << std::endl;
+
++        if (!output_decoded_file.empty()) {
++            if (!write_wav_file(output_decoded_file, audio_buffer, samplerate, channels)) {
++                std::cerr << "Failed to decode original audio." << std::endl;
++                return 1;
++            }
++            std::cout << "Decoded audio saved to: " << output_decoded_file << std::endl;
++        }
++
+         // Process audio
+         auto result = beat_analyzer.process_audio(audio_buffer, samplerate, channels);
+
+@@ -409,4 +425,4 @@ int main(int argc, char* argv[]) {
+         std::cerr << "Error: " << e.what() << std::endl;
+         return 1;
+     }
+-}
+\ No newline at end of file
++}

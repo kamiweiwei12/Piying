@@ -9,6 +9,7 @@ using YingYun.Rhythm.Puppet;
 using YingYun.Rhythm.Scoring;
 using YingYun.Rhythm.Timing;
 using YingYun.Rhythm.Unity.Config;
+using YingYun.Rhythm.Unity.CustomSongs;
 using YingYun.Rhythm.View;
 
 namespace YingYun.Rhythm.Prototype
@@ -33,6 +34,8 @@ namespace YingYun.Rhythm.Prototype
 
         private readonly List<JudgmentResult> _frameResults = new List<JudgmentResult>(16);
         private readonly List<double> _hitErrorsMs = new List<double>(128);
+        private readonly Dictionary<string, IPlayableSongDefinition> _availableSongs =
+            new Dictionary<string, IPlayableSongDefinition>(StringComparer.Ordinal);
         private DspSongClock _clock;
         private ClockBridge _bridge;
         private InputSystemNoteInputSource _input;
@@ -44,7 +47,8 @@ namespace YingYun.Rhythm.Prototype
         private AudioSource _musicSource;
         private CalibrationSettings _calibration;
         private PlayDifficulty _difficulty = PlayDifficulty.Normal;
-        private SongDefinitionAsset _selectedSong;
+        private IPlayableSongDefinition _selectedSong;
+        private CustomSongLibrary _customSongs;
         private SongTimingMap _timingMap;
         private double _resultTimeSec;
         private int _lastBeat = int.MinValue;
@@ -120,7 +124,15 @@ namespace YingYun.Rhythm.Prototype
             _flow.ResumeRequested += ResumePerformance;
             _flow.RestartRequested += RestartFromPause;
             _flow.ReturnRequested += ShowSongSelection;
+            _flow.CustomSongsRefreshRequested += RefreshCustomSongs;
+            _flow.CustomSongsFolderRequested += OpenCustomSongsFolder;
             ConfigureSongSelection();
+            _customSongs = GetComponent<CustomSongLibrary>();
+            if (_customSongs == null) _customSongs = gameObject.AddComponent<CustomSongLibrary>();
+            _customSongs.SongsChanged += RefreshSongSelection;
+            _customSongs.StatusChanged += _flow.SetSongImportStatus;
+            _flow.SetSongImportStatus($"自定义歌曲文件夹：{_customSongs.UserSongsPath}");
+            _customSongs.BeginScan();
             ShowSongSelection();
         }
 
@@ -324,7 +336,7 @@ namespace YingYun.Rhythm.Prototype
 
         public void StartPerformance(string songId, PlayDifficulty difficulty)
         {
-            SongDefinitionAsset requested = songCatalog != null ? songCatalog.Find(songId) : null;
+            _availableSongs.TryGetValue(songId, out IPlayableSongDefinition requested);
             if (requested == null || (songId != TrialLightSongId && !requested.HasAuthoredCharts))
             {
                 Debug.LogError($"[M9] Song is not playable: {songId}", this);
@@ -389,6 +401,13 @@ namespace YingYun.Rhythm.Prototype
                 _flow.ResumeRequested -= ResumePerformance;
                 _flow.RestartRequested -= RestartFromPause;
                 _flow.ReturnRequested -= ShowSongSelection;
+                _flow.CustomSongsRefreshRequested -= RefreshCustomSongs;
+                _flow.CustomSongsFolderRequested -= OpenCustomSongsFolder;
+            }
+            if (_customSongs != null)
+            {
+                _customSongs.SongsChanged -= RefreshSongSelection;
+                _customSongs.StatusChanged -= _flow.SetSongImportStatus;
             }
             _input?.Dispose();
         }
@@ -500,14 +519,48 @@ namespace YingYun.Rhythm.Prototype
             }
 
             _selectedSong = trialLight;
-            _flow.ConfigureSongs(
-                new[]
+            RefreshSongSelection();
+        }
+
+        private void RefreshSongSelection()
+        {
+            if (_flow == null || songCatalog == null) return;
+
+            _availableSongs.Clear();
+            var entries = new List<SongMenuEntry>();
+            for (int i = 0; i < songCatalog.Songs.Count; i++)
+            {
+                SongDefinitionAsset song = songCatalog.Songs[i];
+                if (song == null || (song.SongId != TrialLightSongId && !song.HasAuthoredCharts)) continue;
+                _availableSongs.Add(song.SongId, song);
+                entries.Add(new SongMenuEntry(song.SongId, song.Title, song.Artist));
+            }
+
+            if (_customSongs != null)
+            {
+                for (int i = 0; i < _customSongs.Songs.Count; i++)
                 {
-                    new SongMenuEntry(trialLight.SongId, trialLight.Title, trialLight.Artist),
-                    new SongMenuEntry(xiangWangXing.SongId, xiangWangXing.Title, xiangWangXing.Artist),
-                    new SongMenuEntry(qingYuAnLanJie.SongId, qingYuAnLanJie.Title, qingYuAnLanJie.Artist),
-                },
-                trialLight.SongId);
+                    RuntimeSongDefinition song = _customSongs.Songs[i];
+                    _availableSongs[song.SongId] = song;
+                    entries.Add(new SongMenuEntry(song.SongId, song.Title, song.Artist));
+                }
+            }
+
+            string selectedId = _selectedSong != null && _availableSongs.ContainsKey(_selectedSong.SongId)
+                ? _selectedSong.SongId
+                : TrialLightSongId;
+            _selectedSong = _availableSongs[selectedId];
+            _flow.ConfigureSongs(entries, selectedId);
+        }
+
+        private void RefreshCustomSongs()
+        {
+            _customSongs?.BeginScan();
+        }
+
+        private void OpenCustomSongsFolder()
+        {
+            _customSongs?.OpenSongsFolder();
         }
     }
 }

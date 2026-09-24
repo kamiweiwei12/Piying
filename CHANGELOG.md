@@ -24,6 +24,45 @@
 
 ---
 
+## [2026-09-24] M9-B 候選 - 玩家 MP3 自動分析、三難度譜與隨機舞句
+
+### 新增
+
+* 開始畫面新增「開啟歌曲資料夾」「刷新歌曲」與分析狀態；歌曲按鈕以三首一頁顯示，玩家只需把 MP3 放入 `Application.persistentDataPath/UserSongs`。
+* 新增 Windows x64 執行期分析器：固定 `beat_this_cpp` commit `07ab790a9ec2eda8093d52d249e3ec4f0510ee72`、Beat This `final0` ONNX 模型與 ONNX Runtime 1.18.0；工具來源、最小修補、SHA-256 及所有第三方授權均保存於專案及成品。
+* 新增純 C# `.beats`／float WAV 解析、SHA-256 版本快取、動態歌曲定義，以及依檔案雜湊可重現的音符譜與十四式舞句生成器。
+
+### 修改
+
+* `SongDefinitionAsset` 與控制器改用共用可播放歌曲介面，內建三曲與執行期歌曲走同一套 DSP、判定、難度與舞句播放路徑。
+* 自動譜避免固定 `ASDQWE` 輪播；Easy 僅單鍵 Tap，Normal 加入 1／2／3／4 拍 Hold 且無 Chord，Hard 才加入拍內變奏及 Chord，並只禁止 `SW`、`QD`、`AE`。
+* 舞句每八拍選用現有十四式並確定性洗牌；相鄰不重複、不連續轉身，首尾保留亮相。分析與音訊解碼在遊玩前完成，遊玩幀不執行模型或即時建模。
+
+### 測試
+
+* 原生分析器以《象王行》與《青玉案·蘭芥》對照既有 Beat This 結果；分别为 399／399 及 381／382 个拍点在 50 ms 内匹配，直接 MP3 分析约六秒。
+* Unity 6000.6.2f1 EditMode 全量回歸 `total=183 / passed=183 / failed=0 / skipped=0`；結果 `Logs/M9-B-runtime-import-editmode-results.xml`。新增測試涵蓋拍點格式、變拍、三難度契約、四種 Hold 長度、合法和弦、舞句錨點、確定性及 float WAV。
+* Windows x64 建置 `Builds/M9-B-Runtime-Import/YingYun.exe`；`Logs/M9-B-runtime-import-build.log` 記錄 `Build Finished, Result: Success.`。
+* 實包將《青玉案·蘭芥》臨時放入 `UserSongs`，自動生成 382 行 `.beats` 與 80,852,388-byte WAV 快取後加入歌曲；測試 MP3 副本已移除，Player log 無腳本例外。
+
+### 驗收結果
+
+* 自動測試、打包與真實 MP3 管線煙測通過；本項保持技術候選，等待使用者在 Windows 候選確認歌曲按鈕、首次分析提示、三難度卡點及整段舞句觀感。
+
+### Git Commit
+
+* `feat(m9): add runtime custom song generation`（本工作單位提交）。
+
+### 風險 / 已知問題
+
+* 目前只打包 Windows x64 分析器且只掃描 MP3；首次分析每首約六秒，並建立約等同未壓縮音訊大小的 WAV 快取。《青玉案·蘭芥》快取約 80.9 MB。
+* 同一檔案會依 SHA-256 重現相同結果，但自動拍點、三難度與舞句仍需真人整曲驗收；玩家須自行確保音樂使用權。
+* 多首長曲同時載入的記憶體最佳化、其他平台、更多音訊格式與變拍曲專門策略不屬本候選範圍。
+
+### 下一步
+
+* 請使用者以 Windows 候選把一首未快取 MP3 放入歌曲資料夾，驗收按鈕、等待提示、三難度與整曲卡點；依具體時點做最小修正後再結案。
+
 ## [2026-09-24] M9-A3 驗收 - 《青玉案·蘭芥》正式通過
 
 ### 新增
