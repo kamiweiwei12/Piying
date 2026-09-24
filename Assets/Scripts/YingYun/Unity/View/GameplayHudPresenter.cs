@@ -18,6 +18,9 @@ namespace YingYun.Rhythm.View
         private UnityEngine.UI.Text _danceDetailText;
         private UnityEngine.UI.Text _resultTitle;
         private UnityEngine.UI.Text _resultDetails;
+        private UnityEngine.UI.Text _resultFooter;
+        private readonly UnityEngine.UI.Text[] _resultGradeCounts = new UnityEngine.UI.Text[4];
+        private JudgmentCalligraphyAtlas _calligraphyAtlas;
         private GameObject _resultPanel;
         private GameObject _countdownPanel;
         private UnityEngine.UI.Text _countdownText;
@@ -144,9 +147,12 @@ namespace YingYun.Rhythm.View
             _resultDetails.text =
                 $"总得分　{_statistics.Score:N0}\n" +
                 $"准确率　{_statistics.Accuracy:P2}\n" +
-                $"最高连击　{_statistics.MaxCombo}\n\n" +
-                $"契合　{_statistics.PerfectCount}　协律　{_statistics.GreatCount}\n" +
-                $"应拍　{_statistics.GoodCount}　空引　{_statistics.MissCount}\n\n" +
+                $"最高连击　{_statistics.MaxCombo}";
+            _resultGradeCounts[0].text = _statistics.PerfectCount.ToString();
+            _resultGradeCounts[1].text = _statistics.GreatCount.ToString();
+            _resultGradeCounts[2].text = _statistics.GoodCount.ToString();
+            _resultGradeCounts[3].text = _statistics.MissCount.ToString();
+            _resultFooter.text =
                 $"完成　{_statistics.JudgedCount}/{_totalNotes}\n" +
                 "按 Enter 返回选曲　·　按 R 再奏";
             _resultPanel.SetActive(true);
@@ -155,6 +161,7 @@ namespace YingYun.Rhythm.View
         private void BuildHud()
         {
             _runtimeFont = CreateChineseFont();
+            _calligraphyAtlas = JudgmentCalligraphyAtlas.Load();
 
             var canvasObject = new GameObject("M4 中文界面", typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
             canvasObject.transform.SetParent(transform, false);
@@ -249,8 +256,43 @@ namespace YingYun.Rhythm.View
             _resultTitle.color = new Color(1f, 0.78f, 0.24f);
 
             _resultDetails = CreateText("明细", rect, string.Empty, 34, TextAnchor.MiddleCenter);
-            Anchor(_resultDetails.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -60f), new Vector2(640f, 470f), new Vector2(0.5f, 0.5f));
+            Anchor(_resultDetails.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -180f), new Vector2(640f, 155f), new Vector2(0.5f, 1f));
+
+            CreateResultGradeCell(rect, "契合", 0, new Vector2(-175f, -370f), new Color(1f, 0.78f, 0.24f));
+            CreateResultGradeCell(rect, "协律", 1, new Vector2(175f, -370f), new Color(0.44f, 0.92f, 0.62f));
+            CreateResultGradeCell(rect, "应拍", 2, new Vector2(-175f, -485f), new Color(0.48f, 0.72f, 1f));
+            CreateResultGradeCell(rect, "空引", 3, new Vector2(175f, -485f), new Color(1f, 0.32f, 0.22f));
+
+            _resultFooter = CreateText("结算操作", rect, string.Empty, 25, TextAnchor.MiddleCenter);
+            Anchor(_resultFooter.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 28f), new Vector2(640f, 82f), new Vector2(0.5f, 0f));
             _resultPanel.SetActive(false);
+        }
+
+        private void CreateResultGradeCell(
+            RectTransform parent,
+            string label,
+            int index,
+            Vector2 position,
+            Color color)
+        {
+            var cellObject = new GameObject($"{label}统计", typeof(RectTransform));
+            cellObject.transform.SetParent(parent, false);
+            RectTransform cell = (RectTransform)cellObject.transform;
+            Anchor(cell, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), position, new Vector2(300f, 100f), new Vector2(0.5f, 1f));
+
+            var imageObject = new GameObject(label, typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            imageObject.transform.SetParent(cell, false);
+            RectTransform imageRect = (RectTransform)imageObject.transform;
+            Anchor(imageRect, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(8f, 0f), new Vector2(190f, 92f), new Vector2(0f, 0.5f));
+            UnityEngine.UI.Image image = imageObject.GetComponent<UnityEngine.UI.Image>();
+            image.sprite = _calligraphyAtlas.Get(label);
+            image.color = color;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+
+            _resultGradeCounts[index] = CreateText("次数", cell, "0", 38, TextAnchor.MiddleRight);
+            Anchor(_resultGradeCounts[index].rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-8f, 0f), new Vector2(85f, 70f), new Vector2(1f, 0.5f));
+            _resultGradeCounts[index].color = color;
         }
 
         private UnityEngine.UI.Text CreateText(string name, Transform parent, string value, int size, TextAnchor alignment)
@@ -344,6 +386,8 @@ namespace YingYun.Rhythm.View
             {
                 ChineseFontProvider.Release(_runtimeFont);
             }
+
+            _calligraphyAtlas?.Dispose();
         }
     }
 }

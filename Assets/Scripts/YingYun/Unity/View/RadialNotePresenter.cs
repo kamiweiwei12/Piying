@@ -56,6 +56,8 @@ namespace YingYun.Rhythm.View
         private NoteData[] _notes = Array.Empty<NoteData>();
         private Transform _visualRoot;
         private TextMesh _judgmentText;
+        private SpriteRenderer _judgmentCalligraphy;
+        private JudgmentCalligraphyAtlas _calligraphyAtlas;
         private SpriteRenderer _stageRenderer;
         private Sprite _noteSprite;
         private Texture2D _noteTexture;
@@ -100,6 +102,10 @@ namespace YingYun.Rhythm.View
             {
                 _judgmentText.text = string.Empty;
             }
+            if (_judgmentCalligraphy != null)
+            {
+                _judgmentCalligraphy.enabled = false;
+            }
 
             _judgmentTextClearSongTime = double.PositiveInfinity;
             _stageFeedbackClearSongTime = double.PositiveInfinity;
@@ -117,6 +123,10 @@ namespace YingYun.Rhythm.View
             if (_judgmentText != null && songTimeSec >= _judgmentTextClearSongTime)
             {
                 _judgmentText.text = string.Empty;
+                if (_judgmentCalligraphy != null)
+                {
+                    _judgmentCalligraphy.enabled = false;
+                }
                 _judgmentTextClearSongTime = double.PositiveInfinity;
             }
 
@@ -204,6 +214,7 @@ namespace YingYun.Rhythm.View
                 64f);
             _lineMaterial = new Material(Shader.Find("Sprites/Default"));
             _chineseFont = ChineseFontProvider.Load();
+            _calligraphyAtlas = JudgmentCalligraphyAtlas.Load();
 
             BuildCenterMarker();
             for (int lane = 0; lane < LaneCount; lane++)
@@ -228,6 +239,14 @@ namespace YingYun.Rhythm.View
             _judgmentText.text = string.Empty;
             ApplyChineseFont(_judgmentText);
             _judgmentText.GetComponent<MeshRenderer>().sortingOrder = 30;
+
+            var calligraphyObject = new GameObject("Judgment Calligraphy");
+            calligraphyObject.transform.SetParent(_visualRoot, false);
+            calligraphyObject.transform.localPosition = new Vector3(0f, -3.4f, 0f);
+            calligraphyObject.transform.localScale = new Vector3(1.25f, 0.72f, 1f);
+            _judgmentCalligraphy = calligraphyObject.AddComponent<SpriteRenderer>();
+            _judgmentCalligraphy.sortingOrder = 31;
+            _judgmentCalligraphy.enabled = false;
         }
 
         private void BuildCenterMarker()
@@ -298,6 +317,7 @@ namespace YingYun.Rhythm.View
 
         private void ShowSegmentFeedback(string text, Color color)
         {
+            _judgmentCalligraphy.enabled = false;
             _judgmentText.text = text;
             _judgmentText.color = color;
             _judgmentTextClearSongTime = _currentSongTime + 0.45d;
@@ -316,8 +336,19 @@ namespace YingYun.Rhythm.View
                 return;
             }
 
-            _judgmentText.text = text;
-            _judgmentText.color = color;
+            if (_calligraphyAtlas.TryGet(text, out Sprite sprite))
+            {
+                _judgmentText.text = string.Empty;
+                _judgmentCalligraphy.sprite = sprite;
+                _judgmentCalligraphy.color = color;
+                _judgmentCalligraphy.enabled = true;
+            }
+            else
+            {
+                _judgmentCalligraphy.enabled = false;
+                _judgmentText.text = text;
+                _judgmentText.color = color;
+            }
             _judgmentTextClearSongTime = _currentSongTime + releaseDelaySeconds;
         }
 
@@ -425,6 +456,8 @@ namespace YingYun.Rhythm.View
             {
                 ChineseFontProvider.Release(_chineseFont);
             }
+
+            _calligraphyAtlas?.Dispose();
         }
     }
 }

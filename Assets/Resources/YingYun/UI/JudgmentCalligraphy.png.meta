@@ -1,0 +1,1016 @@
+fileFormatVersion: 2
+guid: 86fb6f8c509755c44abe5c4a0904c460
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1820014358334867953
+    second: JudgmentCalligraphy_0
+  - first:
+      213: -4029927790284883670
+    second: JudgmentCalligraphy_1
+  - first:
+      213: 407100327620838261
+    second: JudgmentCalligraphy_2
+  - first:
+      213: -4743244690599343522
+    second: JudgmentCalligraphy_3
+  - first:
+      213: -7778815957425642333
+    second: JudgmentCalligraphy_4
+  - first:
+      213: -7161242849983788470
+    second: JudgmentCalligraphy_5
+  - first:
+      213: 1633205823769436890
+    second: JudgmentCalligraphy_6
+  - first:
+      213: -6889809242518690314
+    second: JudgmentCalligraphy_7
+  - first:
+      213: -1957872211657647448
+    second: JudgmentCalligraphy_8
+  - first:
+      213: -8375705144915344920
+    second: JudgmentCalligraphy_9
+  - first:
+      213: 6949107119357438715
+    second: JudgmentCalligraphy_10
+  - first:
+      213: -2627575074033974629
+    second: JudgmentCalligraphy_11
+  - first:
+      213: -6674489202270443352
+    second: JudgmentCalligraphy_12
+  - first:
+      213: -8593079024887456876
+    second: JudgmentCalligraphy_13
+  - first:
+      213: 7326430008602916016
+    second: JudgmentCalligraphy_14
+  - first:
+      213: 3740449178926874781
+    second: JudgmentCalligraphy_15
+  - first:
+      213: -6505999269948010
+    second: JudgmentCalligraphy_16
+  - first:
+      213: -2828347987966462923
+    second: JudgmentCalligraphy_17
+  - first:
+      213: -4700216322447763341
+    second: JudgmentCalligraphy_18
+  - first:
+      213: -8627323248582743867
+    second: JudgmentCalligraphy_19
+  - first:
+      213: -5064405369193473551
+    second: JudgmentCalligraphy_20
+  - first:
+      213: -2886382115931406949
+    second: JudgmentCalligraphy_21
+  - first:
+      213: 129610670903766165
+    second: JudgmentCalligraphy_22
+  - first:
+      213: -335175827935612805
+    second: JudgmentCalligraphy_23
+  - first:
+      213: 4548326517632875055
+    second: JudgmentCalligraphy_24
+  - first:
+      213: -1514414059140246201
+    second: JudgmentCalligraphy_25
+  - first:
+      213: 249217953127961832
+    second: JudgmentCalligraphy_26
+  - first:
+      213: -925333763140777833
+    second: JudgmentCalligraphy_27
+  - first:
+      213: -8458575885791380898
+    second: JudgmentCalligraphy_28
+  - first:
+      213: 35657469967537036
+    second: JudgmentCalligraphy_29
+  - first:
+      213: 998476521961711078
+    second: JudgmentCalligraphy_30
+  - first:
+      213: -1575403022218978221
+    second: JudgmentCalligraphy_31
+  - first:
+      213: -8972929160424365947
+    second: JudgmentCalligraphy_32
+  - first:
+      213: -4109676793375157359
+    second: JudgmentCalligraphy_33
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_0
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 1130
+        width: 156
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f909a28a6df14910800000000000000
+      internalID: 1820014358334867953
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_1
+      rect:
+        serializedVersion: 2
+        x: 621
+        y: 433
+        width: 621
+        height: 769
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a293895b602d218c0800000000000000
+      internalID: -4029927790284883670
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_2
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 487
+        width: 642
+        height: 600
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57309cf479f46a500800000000000000
+      internalID: 407100327620838261
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_3
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 1084
+        width: 52
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5a811ea51c9c2eb0800000000000000
+      internalID: -4743244690599343522
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_4
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 1080
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a42184c9181c0490800000000000000
+      internalID: -7778815957425642333
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_5
+      rect:
+        serializedVersion: 2
+        x: 406
+        y: 1078
+        width: 27
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4a0960e1972e9c90800000000000000
+      internalID: -7161242849983788470
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_6
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 1070
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad260ea2b005aa610800000000000000
+      internalID: 1633205823769436890
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_7
+      rect:
+        serializedVersion: 2
+        x: 301
+        y: 1068
+        width: 10
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f568796ffa7260a0800000000000000
+      internalID: -6889809242518690314
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_8
+      rect:
+        serializedVersion: 2
+        x: 319
+        y: 1052
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aa9984c89d34d4e0800000000000000
+      internalID: -1957872211657647448
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_9
+      rect:
+        serializedVersion: 2
+        x: 329
+        y: 1046
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e1c8ed0c8483cb80800000000000000
+      internalID: -8375705144915344920
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_10
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 1046
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfa207b6b10307060800000000000000
+      internalID: 6949107119357438715
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_11
+      rect:
+        serializedVersion: 2
+        x: 1099
+        y: 1051
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b92c883446af88bd0800000000000000
+      internalID: -2627575074033974629
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_12
+      rect:
+        serializedVersion: 2
+        x: 233
+        y: 1027
+        width: 7
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a86d79fe637f53a0800000000000000
+      internalID: -6674489202270443352
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_13
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 1044
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49b19baa7204fb880800000000000000
+      internalID: -8593079024887456876
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_14
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 501
+        width: 19
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b4f9869645bca560800000000000000
+      internalID: 7326430008602916016
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_15
+      rect:
+        serializedVersion: 2
+        x: 729
+        y: 495
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d908652e5beb8e330800000000000000
+      internalID: 3740449178926874781
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 49
+        width: 658
+        height: 443
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6951b9004d2e8eff0800000000000000
+      internalID: -6505999269948010
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_17
+      rect:
+        serializedVersion: 2
+        x: 311
+        y: 485
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 534711c7d70bfb8d0800000000000000
+      internalID: -2828347987966462923
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_18
+      rect:
+        serializedVersion: 2
+        x: 669
+        y: 0
+        width: 536
+        height: 500
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3781205582a75ceb0800000000000000
+      internalID: -4700216322447763341
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_19
+      rect:
+        serializedVersion: 2
+        x: 1188
+        y: 337
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c8a1c50737954880800000000000000
+      internalID: -8627323248582743867
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_20
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 326
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f954aa262e97b9b0800000000000000
+      internalID: -5064405369193473551
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_21
+      rect:
+        serializedVersion: 2
+        x: 653
+        y: 306
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9d3edd12c281f7d0800000000000000
+      internalID: -2886382115931406949
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_22
+      rect:
+        serializedVersion: 2
+        x: 1188
+        y: 306
+        width: 19
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59ca15ee7387cc100800000000000000
+      internalID: 129610670903766165
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_23
+      rect:
+        serializedVersion: 2
+        x: 1204
+        y: 312
+        width: 37
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b70b99e3c57395bf0800000000000000
+      internalID: -335175827935612805
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_24
+      rect:
+        serializedVersion: 2
+        x: 643
+        y: 302
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f2a3ff5aed6ee1f30800000000000000
+      internalID: 4548326517632875055
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_25
+      rect:
+        serializedVersion: 2
+        x: 1182
+        y: 309
+        width: 7
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 745961adf68bbfae0800000000000000
+      internalID: -1514414059140246201
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_26
+      rect:
+        serializedVersion: 2
+        x: 713
+        y: 272
+        width: 12
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e497df6866657300800000000000000
+      internalID: 249217953127961832
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_27
+      rect:
+        serializedVersion: 2
+        x: 689
+        y: 247
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 798815558dd8823f0800000000000000
+      internalID: -925333763140777833
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_28
+      rect:
+        serializedVersion: 2
+        x: 354
+        y: 127
+        width: 7
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e5a38bd1c0a1d9a80800000000000000
+      internalID: -8458575885791380898
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_29
+      rect:
+        serializedVersion: 2
+        x: 370
+        y: 136
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c83110fa74eae7000800000000000000
+      internalID: 35657469967537036
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_30
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 119
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e568184b1d4bdd00800000000000000
+      internalID: 998476521961711078
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_31
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 87
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35c9f825c4b032ae0800000000000000
+      internalID: -1575403022218978221
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_32
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 73
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 580692e1870c97380800000000000000
+      internalID: -8972929160424365947
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: JudgmentCalligraphy_33
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 15
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 193153dfabe77f6c0800000000000000
+      internalID: -4109676793375157359
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID:
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      JudgmentCalligraphy_0: 1820014358334867953
+      JudgmentCalligraphy_1: -4029927790284883670
+      JudgmentCalligraphy_10: 6949107119357438715
+      JudgmentCalligraphy_11: -2627575074033974629
+      JudgmentCalligraphy_12: -6674489202270443352
+      JudgmentCalligraphy_13: -8593079024887456876
+      JudgmentCalligraphy_14: 7326430008602916016
+      JudgmentCalligraphy_15: 3740449178926874781
+      JudgmentCalligraphy_16: -6505999269948010
+      JudgmentCalligraphy_17: -2828347987966462923
+      JudgmentCalligraphy_18: -4700216322447763341
+      JudgmentCalligraphy_19: -8627323248582743867
+      JudgmentCalligraphy_2: 407100327620838261
+      JudgmentCalligraphy_20: -5064405369193473551
+      JudgmentCalligraphy_21: -2886382115931406949
+      JudgmentCalligraphy_22: 129610670903766165
+      JudgmentCalligraphy_23: -335175827935612805
+      JudgmentCalligraphy_24: 4548326517632875055
+      JudgmentCalligraphy_25: -1514414059140246201
+      JudgmentCalligraphy_26: 249217953127961832
+      JudgmentCalligraphy_27: -925333763140777833
+      JudgmentCalligraphy_28: -8458575885791380898
+      JudgmentCalligraphy_29: 35657469967537036
+      JudgmentCalligraphy_3: -4743244690599343522
+      JudgmentCalligraphy_30: 998476521961711078
+      JudgmentCalligraphy_31: -1575403022218978221
+      JudgmentCalligraphy_32: -8972929160424365947
+      JudgmentCalligraphy_33: -4109676793375157359
+      JudgmentCalligraphy_4: -7778815957425642333
+      JudgmentCalligraphy_5: -7161242849983788470
+      JudgmentCalligraphy_6: 1633205823769436890
+      JudgmentCalligraphy_7: -6889809242518690314
+      JudgmentCalligraphy_8: -1957872211657647448
+      JudgmentCalligraphy_9: -8375705144915344920
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

@@ -24,6 +24,44 @@
 
 ---
 
+## [2026-09-24] UI - 四項判定墨筆字
+
+### 新增
+
+* 依使用者提供的視覺參考，以 imagegen 製作透明白色墨筆圖集，四格固定對應「契合、協律、應拍、空引」，可由 Unity 依判定等級著色。
+* 新增 `JudgmentCalligraphyAtlas`，在載入時建立四個固定 Sprite；不在每次判定或每幀切割圖片。
+* 新增图集资源完整性与即时判定切换测试。
+
+### 修改
+
+* 即时判定的四项成绩改用墨笔 Sprite；“按住、早放、未撑住、合势、断势”继续使用现有清晰字体，因为参考图未提供这些字形。
+* 结算面板将四项判定名称改为墨笔图形，次数数字继续使用包内中文字体以保持可读性。
+* 判定、计分、Combo、DSP 时间轴和判定文字内容均未改变。
+
+### 测试
+
+* Unity 6000.6.2f1 EditMode 全量回归：`total=167 / passed=167 / failed=0`；结果 `Logs/M9-A2-calligraphy-editmode.xml`。
+* 第一次新测试因 EditMode `AddComponent` 不自动调用运行时 `Awake` 而得到 `166/167`；测试夹具显式初始化后全量通过，未修改游戏逻辑。
+* Windows x64 建置：`Builds/M9-A2-Calligraphy/YingYun.exe`；`Logs/M9-A2-calligraphy-build.log` 记录 `Build Finished, Result: Success.`。
+* Windows 候选完成 20 秒启动烟雾测试，墨笔资源成功从 Resources 载入并进入 `shadow-play-ready`；日志为 `Logs/M9-A2-calligraphy-player-smoke.log`。
+
+### 验收结果
+
+* 四项指定判定已按参考图的墨笔方向完成程式接入、资源验证和 Windows 候选建置；最终画面大小与辨识度待使用者实机确认。
+
+### Git Commit
+
+* `feat(ui): render judgment calligraphy`（本 UI 工作单位提交）。
+
+### 风险 / 已知问题
+
+* 墨笔字为位图 Sprite；极端高分辨率下的锐利度受 1536 × 1536 图集限制，但运行时不产生字体图集扩张或即时建模成本。
+* 启动烟雾日志仍有既有 Unity Connect 证书验证讯息；本轮未修改 Unity Connect、ProjectSettings 或 URP。
+
+### 下一步
+
+* 请使用者运行 Windows 候选确认即时判定与结算面板的字形大小；通过后进入 M9-A3《青玉案·兰芥》制谱 Plan。
+
 ## [2026-09-24] M9-A2 驗收 - 《象王行》正式通過
 
 ### 新增
