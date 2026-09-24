@@ -20,6 +20,7 @@ namespace YingYun.Rhythm.Prototype
         private const double CountdownLeadInSeconds = 3d;
         private const string TrialLightSongId = "trial-light";
         private const string XiangWangXingSongId = "xiang-wang-xing-special";
+        private const string QingYuAnLanJieSongId = "qing-yu-an-lan-jie";
         private const string AudioOffsetPreference = "YingYun.AudioOffsetMs";
         private const string InputOffsetPreference = "YingYun.InputOffsetMs";
 
@@ -491,9 +492,11 @@ namespace YingYun.Rhythm.Prototype
 
             SongDefinitionAsset trialLight = songCatalog.Find(TrialLightSongId);
             SongDefinitionAsset xiangWangXing = songCatalog.Find(XiangWangXingSongId);
-            if (trialLight == null || xiangWangXing == null || !xiangWangXing.HasAuthoredCharts)
+            SongDefinitionAsset qingYuAnLanJie = songCatalog.Find(QingYuAnLanJieSongId);
+            if (trialLight == null || xiangWangXing == null || qingYuAnLanJie == null ||
+                !xiangWangXing.HasAuthoredCharts || !qingYuAnLanJie.HasAuthoredCharts)
             {
-                throw new InvalidOperationException("《试灯》与《象王行》可玩资料必须存在。");
+                throw new InvalidOperationException("三首歌曲的可玩资料必须存在。");
             }
 
             _selectedSong = trialLight;
@@ -502,6 +505,7 @@ namespace YingYun.Rhythm.Prototype
                 {
                     new SongMenuEntry(trialLight.SongId, trialLight.Title, trialLight.Artist),
                     new SongMenuEntry(xiangWangXing.SongId, xiangWangXing.Title, xiangWangXing.Artist),
+                    new SongMenuEntry(qingYuAnLanJie.SongId, qingYuAnLanJie.Title, qingYuAnLanJie.Artist),
                 },
                 trialLight.SongId);
         }

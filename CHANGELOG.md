@@ -24,6 +24,46 @@
 
 ---
 
+## [2026-09-24] M9-A3 候選 - 《青玉案·蘭芥》資料驅動關卡
+
+### 新增
+
+* 新增《青玉案·蘭芥》離線作者譜，直接使用已保存的 382 個 Beat This 拍點，不在執行時分析音訊或生成譜面。
+* 寫入 Easy 96、Normal 191、Hard 572 顆音符；三難度共用每 8 拍一次的 48 個舞句觸發錨點。
+* 新增 48 段固定套路：起 8、承 14、轉 14、合 12 段，最後亮相依歌曲可播放結尾計算為 11 拍。
+* 新增《青玉案·蘭芥》的數量、難度類型、六方向、排序、錨點、主動控制點及尾奏邊界回歸測試。
+
+### 修改
+
+* 開始介面由兩首選曲擴為《試燈》《象王行》《青玉案·蘭芥》三首，移除「待製譜」提示。
+* `SongAssetBootstrap` 重建歌曲資產時一併套用《青玉案·蘭芥》作者譜；歌曲狀態保持 `AnalysisCandidate`。
+* Easy 僅含單鍵 Tap；Normal 含單鍵 Tap／Hold 且沒有 Chord；Hard 才加入多鍵 Chord。
+
+### 測試
+
+* Unity 6000.6.2f1 EditMode 全量回歸：`total=175 / passed=175 / failed=0 / skipped=0`；結果 `Logs/M9-A3-editmode-2.xml`。
+* Windows x64 建置：`Builds/M9-A3-QingYuAnLanJie/YingYun.exe`；`Logs/M9-A3-build.log` 記錄 `Build Finished, Result: Success.` 及 PlayerBuildInfo success。
+* Windows 候選完成 20 秒啟動煙霧測試，進入 `[M6.5] shadow-play-ready`；`Logs/M9-A3-player-smoke.log` 未出現腳本例外。
+
+### 驗收結果
+
+* 自動驗證確認三檔數量與操作類型、48 個共享錨點、至少四拍、最多兩個主動控制點及尾奏範圍均符合資料契約。
+* 節拍分析仍是候選資料；歌曲開頭、變速段、轉折、尾奏卡點、三難度手感、轉身承接、Miss 恢復與最後收勢待使用者完整實機確認。
+
+### Git Commit
+
+* `feat(m9): add qing yu an lan jie playable chart`（本工作單位提交）。
+
+### 風險 / 已知問題
+
+* 自動測試和建置不能判定音樂卡點與整段舞感；通過實機驗收前不得把 `AnalysisCandidate` 改成 `Verified`。
+* 煙霧日誌仍有既有 Unity Connect 憑證訊息；本輪未修改 Unity Connect、ProjectSettings 或 URP。
+* Unity Editor 通用作者工具仍未實作；本輪作者資料為可維護的歌曲專用離線腳本。
+
+### 下一步
+
+* 請使用者在 Windows 候選完整測試《青玉案·蘭芥》三難度，特別檢查開頭、中段節奏變化、轉身後承接、Miss 恢復與最後 11 拍亮相；通過後另以驗收提交轉為 `Verified`。
+
 ## [2026-09-24] UI／難度 - 結算可讀性與操作類型分級
 
 ### 新增

@@ -124,6 +124,64 @@ namespace YingYun.Rhythm.Tests
             }
         }
 
+        [Test]
+        public void QingYuAnLanJie_ContainsThreeOrderedDifficultyCharts()
+        {
+            SongDefinitionAsset song = Resources.Load<SongCatalogAsset>("YingYun/SongCatalog")
+                .Find("qing-yu-an-lan-jie");
+
+            var easy = song.GetNotes(PlayDifficulty.Easy);
+            var normal = song.GetNotes(PlayDifficulty.Normal);
+            var hard = song.GetNotes(PlayDifficulty.Hard);
+
+            Assert.That(easy.Length, Is.EqualTo(96));
+            Assert.That(normal.Length, Is.EqualTo(191));
+            Assert.That(hard.Length, Is.EqualTo(572));
+            Assert.That(easy.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
+            Assert.That(normal.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
+            Assert.That(hard.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
+            Assert.That(easy.All(note => note.Kind == NoteKind.Tap && !note.IsChord), Is.True);
+            Assert.That(normal.Any(note => note.Kind == NoteKind.Hold), Is.True);
+            Assert.That(normal.Any(note => note.IsChord), Is.False);
+            Assert.That(hard.Any(note => note.Kind == NoteKind.Hold), Is.True);
+            Assert.That(hard.Any(note => note.IsChord), Is.True);
+            Assert.That(song.HasAuthoredCharts, Is.True);
+            Assert.That(IsOrdered(easy), Is.True);
+            Assert.That(IsOrdered(normal), Is.True);
+            Assert.That(IsOrdered(hard), Is.True);
+            Assert.DoesNotThrow(song.ValidateOrThrow);
+        }
+
+        [Test]
+        public void QingYuAnLanJie_DanceAnchorsAreSharedAndCompileToFortyEightPhrases()
+        {
+            SongDefinitionAsset song = Resources.Load<SongCatalogAsset>("YingYun/SongCatalog")
+                .Find("qing-yu-an-lan-jie");
+            AuthoredDanceCue[] cues = song.GetDanceCues();
+
+            Assert.That(cues.Length, Is.EqualTo(48));
+            Assert.That(cues[0].Action, Is.EqualTo(DanceAction.FinalPose));
+            Assert.That(cues[cues.Length - 1].Action, Is.EqualTo(DanceAction.FinalPose));
+            Assert.That(cues[cues.Length - 1].DurationBeats, Is.GreaterThanOrEqualTo(4));
+            foreach (PlayDifficulty difficulty in Enum.GetValues(typeof(PlayDifficulty)))
+            {
+                var notes = song.GetNotes(difficulty);
+                var ids = notes.Select(note => note.Id).ToHashSet();
+                Assert.That(cues.All(cue => ids.Contains(cue.AnchorNoteId)), Is.True, difficulty.ToString());
+
+                DancePhrase[] phrases = DanceChoreography.CreateAuthored(
+                    notes,
+                    song.CreateTimingMap(),
+                    cues);
+                Assert.That(phrases.Length, Is.EqualTo(48), difficulty.ToString());
+                Assert.That(phrases.All(phrase => phrase.DurationBeats >= 4), Is.True);
+                Assert.That(phrases.All(phrase => phrase.ActiveRodCount <= 2), Is.True);
+                Assert.That(
+                    phrases[phrases.Length - 1].StartSeconds + phrases[phrases.Length - 1].DurationSeconds,
+                    Is.LessThanOrEqualTo(song.PlayableEndSec + 0.001d));
+            }
+        }
+
         private static bool IsOrdered(NoteData[] notes)
         {
             for (int i = 1; i < notes.Length; i++)

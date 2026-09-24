@@ -29,7 +29,7 @@ namespace YingYun.Rhythm.View
         private UnityEngine.UI.Text _selectedSongText;
         private Font _runtimeFont;
         private string _selectedSongId = string.Empty;
-        private readonly List<SongButton> _songButtons = new List<SongButton>(2);
+        private readonly List<SongButton> _songButtons = new List<SongButton>(3);
 
         public event Action<string, PlayDifficulty> PlayRequested;
         public event Action<double, double> CalibrationAdjusted;
@@ -162,7 +162,7 @@ namespace YingYun.Rhythm.View
             AddSmallButton(panel, "音频 +5", new Vector2(-105f, -340f), () => CalibrationAdjusted?.Invoke(5d, 0d));
             AddSmallButton(panel, "输入 -5", new Vector2(105f, -340f), () => CalibrationAdjusted?.Invoke(0d, -5d));
             AddSmallButton(panel, "输入 +5", new Vector2(315f, -340f), () => CalibrationAdjusted?.Invoke(0d, 5d));
-            AddText(panel, "《青玉案·兰芥》待制谱　快捷键：1 / 2 / 3 选择难度", 21, new Vector2(0f, -430f), new Vector2(1100f, 50f), new Color(0.72f, 0.59f, 0.43f));
+            AddText(panel, "快捷键：1 / 2 / 3 选择难度", 21, new Vector2(0f, -430f), new Vector2(1100f, 50f), new Color(0.72f, 0.59f, 0.43f));
             BuildPausePanel();
         }
 

@@ -57,6 +57,7 @@ namespace YingYun.Rhythm.Editor
                 qingTiming[0].timeSec,
                 qingTiming,
                 SongDefinitionAsset.TimingStatus.AnalysisCandidate);
+            QingYuAnLanJieChartAuthoring.Apply(qingYuAn);
 
             SongCatalogAsset catalog = AssetDatabase.LoadAssetAtPath<SongCatalogAsset>(CatalogPath);
             if (catalog == null)
