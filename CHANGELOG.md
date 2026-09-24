@@ -24,6 +24,44 @@
 
 ---
 
+## [2026-09-24] UI - 四项判定固定蓝黑墨色
+
+### 新增
+
+* 新增四个判定等级的逐项显示回归，覆盖「契合、协律、应拍、空引」的 Sprite 映射、固定墨色与原始比例。
+* 新增舞句完成／中断事件不得覆盖当前判定的回归，以及结算面板四项书法标签的统一样式检查。
+
+### 修改
+
+* 即时判定与结算标签统一使用参考图方向的蓝黑墨色 `#071B1F`；次数数字继续使用既有清晰字体与颜色。
+* 即时判定 Sprite 改为等比显示，取消纵向压缩，并将书法判定可见时间固定为 0.32 秒。
+* `SegmentCompleted`／`SegmentInterrupted` 事件继续供舞句逻辑使用，但不再显示「合势／断势」，因此不会覆盖真正的四项判定。
+* 判定窗口、计分、Combo、DSP 时间轴、Hold 提示与书法图集内容均未改变。
+
+### 測試
+
+* Unity 6000.6.2f1 EditMode 全量回歸：`total=171 / passed=171 / failed=0 / skipped=0`；結果 `Logs/M9-A2-calligraphy-ink-editmode.xml`。
+* Windows x64 建置：`Builds/M9-A2-Calligraphy-Ink/YingYun.exe`；`Logs/M9-A2-calligraphy-ink-build.log` 記錄 PlayerBuildInfo 成功並以 return code 0 結束。
+* Windows 候選完成 20 秒啟動煙霧測試，進入 `[M6.5] shadow-play-ready`；`Logs/M9-A2-calligraphy-ink-player-smoke.log` 無腳本例外。
+
+### 驗收結果
+
+* 四項指定判定均已有同一藍黑墨色、正確字形與等比顯示的自動驗證；「合勢／斷勢」覆蓋問題已由回歸測試封鎖。
+* Windows 技術候選已完成；最終畫面辨識度仍待使用者實機確認。
+
+### Git Commit
+
+* `feat(ui): unify judgment ink feedback`（本 UI 工作單位提交）。
+
+### 風險 / 已知問題
+
+* 深色墨字在不同顯示器與遊戲背景上的最終可讀性仍屬視覺驗收項，不能只由 EditMode 測試代替。
+* 啟動煙霧日誌仍有既有 Unity Connect 憑證驗證訊息；本輪未修改 Unity Connect、ProjectSettings 或 URP。
+
+### 下一步
+
+* 請使用者實機確認四項判定均可見、顏色符合參考且畫面不再出現「合勢／斷勢」；通過後進入 M9-A3《青玉案·蘭芥》製譜 Plan。
+
 ## [2026-09-24] UI - 四項判定墨筆字
 
 ### 新增

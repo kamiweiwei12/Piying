@@ -258,10 +258,10 @@ namespace YingYun.Rhythm.View
             _resultDetails = CreateText("明细", rect, string.Empty, 34, TextAnchor.MiddleCenter);
             Anchor(_resultDetails.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -180f), new Vector2(640f, 155f), new Vector2(0.5f, 1f));
 
-            CreateResultGradeCell(rect, "契合", 0, new Vector2(-175f, -370f), new Color(1f, 0.78f, 0.24f));
-            CreateResultGradeCell(rect, "协律", 1, new Vector2(175f, -370f), new Color(0.44f, 0.92f, 0.62f));
-            CreateResultGradeCell(rect, "应拍", 2, new Vector2(-175f, -485f), new Color(0.48f, 0.72f, 1f));
-            CreateResultGradeCell(rect, "空引", 3, new Vector2(175f, -485f), new Color(1f, 0.32f, 0.22f));
+            CreateResultGradeCell(rect, "契合", 0, new Vector2(-175f, -370f));
+            CreateResultGradeCell(rect, "协律", 1, new Vector2(175f, -370f));
+            CreateResultGradeCell(rect, "应拍", 2, new Vector2(-175f, -485f));
+            CreateResultGradeCell(rect, "空引", 3, new Vector2(175f, -485f));
 
             _resultFooter = CreateText("结算操作", rect, string.Empty, 25, TextAnchor.MiddleCenter);
             Anchor(_resultFooter.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 28f), new Vector2(640f, 82f), new Vector2(0.5f, 0f));
@@ -272,8 +272,7 @@ namespace YingYun.Rhythm.View
             RectTransform parent,
             string label,
             int index,
-            Vector2 position,
-            Color color)
+            Vector2 position)
         {
             var cellObject = new GameObject($"{label}统计", typeof(RectTransform));
             cellObject.transform.SetParent(parent, false);
@@ -286,13 +285,12 @@ namespace YingYun.Rhythm.View
             Anchor(imageRect, new Vector2(0f, 0.5f), new Vector2(0f, 0.5f), new Vector2(8f, 0f), new Vector2(190f, 92f), new Vector2(0f, 0.5f));
             UnityEngine.UI.Image image = imageObject.GetComponent<UnityEngine.UI.Image>();
             image.sprite = _calligraphyAtlas.Get(label);
-            image.color = color;
+            image.color = JudgmentCalligraphyAtlas.InkColor;
             image.preserveAspect = true;
             image.raycastTarget = false;
 
             _resultGradeCounts[index] = CreateText("次数", cell, "0", 38, TextAnchor.MiddleRight);
             Anchor(_resultGradeCounts[index].rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-8f, 0f), new Vector2(85f, 70f), new Vector2(1f, 0.5f));
-            _resultGradeCounts[index].color = color;
         }
 
         private UnityEngine.UI.Text CreateText(string name, Transform parent, string value, int size, TextAnchor alignment)

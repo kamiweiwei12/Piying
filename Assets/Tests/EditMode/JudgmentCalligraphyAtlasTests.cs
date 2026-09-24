@@ -30,8 +30,11 @@ namespace YingYun.Rhythm.Tests
             }
         }
 
-        [Test]
-        public void PerfectJudgment_UsesCalligraphySpriteWhileHoldPromptKeepsText()
+        [TestCase(JudgmentGrade.Perfect, "契合")]
+        [TestCase(JudgmentGrade.Great, "协律")]
+        [TestCase(JudgmentGrade.Good, "应拍")]
+        [TestCase(JudgmentGrade.Miss, "空引")]
+        public void NoteJudgment_UsesFixedInkCalligraphy(JudgmentGrade grade, string expectedLabel)
         {
             var root = new GameObject("Judgment Calligraphy Presenter Test");
             try
@@ -47,7 +50,7 @@ namespace YingYun.Rhythm.Tests
                     JudgmentEventKind.NoteJudged,
                     1,
                     0,
-                    JudgmentGrade.Perfect,
+                    grade,
                     0d,
                     1,
                     1000,
@@ -56,7 +59,35 @@ namespace YingYun.Rhythm.Tests
                 SpriteRenderer brush = root.GetComponentsInChildren<SpriteRenderer>(true)
                     .Single(renderer => renderer.gameObject.name == "Judgment Calligraphy");
                 Assert.That(brush.enabled, Is.True);
-                Assert.That(brush.sprite.name, Does.Contain("契合"));
+                Assert.That(brush.sprite.name, Does.Contain(expectedLabel));
+                Assert.That(brush.color, Is.EqualTo(JudgmentCalligraphyAtlas.InkColor));
+                Assert.That(brush.transform.localScale, Is.EqualTo(Vector3.one));
+
+                presenter.OnJudged(new JudgmentResult(
+                    JudgmentEventKind.SegmentInterrupted,
+                    1,
+                    0,
+                    JudgmentGrade.Miss,
+                    0d,
+                    1,
+                    1000,
+                    1d));
+                presenter.OnJudged(new JudgmentResult(
+                    JudgmentEventKind.SegmentCompleted,
+                    1,
+                    0,
+                    JudgmentGrade.None,
+                    0d,
+                    1,
+                    1000,
+                    1d));
+                Assert.That(brush.enabled, Is.True);
+                Assert.That(brush.sprite.name, Does.Contain(expectedLabel));
+
+                presenter.Tick(1.319d);
+                Assert.That(brush.enabled, Is.True);
+                presenter.Tick(1.321d);
+                Assert.That(brush.enabled, Is.False);
 
                 presenter.OnJudged(new JudgmentResult(
                     JudgmentEventKind.HoldStarted,
@@ -68,6 +99,33 @@ namespace YingYun.Rhythm.Tests
                     1000,
                     1d));
                 Assert.That(brush.enabled, Is.False);
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
+        public void ResultPanel_UsesFixedInkForAllCalligraphyLabels()
+        {
+            var root = new GameObject("Result Calligraphy Presenter Test");
+            try
+            {
+                GameplayHudPresenter presenter = root.AddComponent<GameplayHudPresenter>();
+                typeof(GameplayHudPresenter)
+                    .GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(presenter, null);
+
+                string[] labels = { "契合", "协律", "应拍", "空引" };
+                UnityEngine.UI.Image[] images = root.GetComponentsInChildren<UnityEngine.UI.Image>(true);
+                foreach (string label in labels)
+                {
+                    UnityEngine.UI.Image image = images.Single(candidate => candidate.gameObject.name == label);
+                    Assert.That(image.sprite.name, Does.Contain(label));
+                    Assert.That(image.color, Is.EqualTo(JudgmentCalligraphyAtlas.InkColor));
+                    Assert.That(image.preserveAspect, Is.True);
+                }
             }
             finally
             {

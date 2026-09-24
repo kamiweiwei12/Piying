@@ -8,6 +8,8 @@ namespace YingYun.Rhythm.View
     public sealed class JudgmentCalligraphyAtlas : IDisposable
     {
         public const string ResourcePath = "YingYun/UI/JudgmentCalligraphy";
+        public const double DisplaySeconds = 0.32d;
+        public static readonly Color InkColor = new Color32(7, 27, 31, 255);
 
         private readonly Dictionary<string, Sprite> _sprites = new Dictionary<string, Sprite>(4);
 

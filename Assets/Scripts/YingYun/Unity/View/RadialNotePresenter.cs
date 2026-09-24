@@ -58,7 +58,6 @@ namespace YingYun.Rhythm.View
         private TextMesh _judgmentText;
         private SpriteRenderer _judgmentCalligraphy;
         private JudgmentCalligraphyAtlas _calligraphyAtlas;
-        private SpriteRenderer _stageRenderer;
         private Sprite _noteSprite;
         private Texture2D _noteTexture;
         private Material _lineMaterial;
@@ -66,7 +65,6 @@ namespace YingYun.Rhythm.View
         private int _nextNoteIndex;
         private double _currentSongTime;
         private double _judgmentTextClearSongTime = double.PositiveInfinity;
-        private double _stageFeedbackClearSongTime = double.PositiveInfinity;
 
         public int ActiveCount => _active.Count;
         public int PooledCount => _pool.Count;
@@ -108,12 +106,6 @@ namespace YingYun.Rhythm.View
             }
 
             _judgmentTextClearSongTime = double.PositiveInfinity;
-            _stageFeedbackClearSongTime = double.PositiveInfinity;
-            if (_stageRenderer != null)
-            {
-                _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.16f);
-                _stageRenderer.transform.localScale = new Vector3(2.8f, 4.0f, 1f);
-            }
         }
 
         public void Tick(double songTimeSec)
@@ -153,7 +145,6 @@ namespace YingYun.Rhythm.View
                 view.UpdateVisual(songTimeSec, visibleLeadSeconds);
             }
 
-            UpdateStageFeedback(songTimeSec);
         }
 
         public void OnJudged(JudgmentResult result)
@@ -172,13 +163,11 @@ namespace YingYun.Rhythm.View
 
             if (result.EventKind == JudgmentEventKind.SegmentCompleted)
             {
-                ShowSegmentFeedback("合势", new Color(1f, 0.82f, 0.25f));
                 return;
             }
 
             if (result.EventKind == JudgmentEventKind.SegmentInterrupted)
             {
-                ShowSegmentFeedback("断势", new Color(1f, 0.22f, 0.18f));
                 return;
             }
 
@@ -243,7 +232,7 @@ namespace YingYun.Rhythm.View
             var calligraphyObject = new GameObject("Judgment Calligraphy");
             calligraphyObject.transform.SetParent(_visualRoot, false);
             calligraphyObject.transform.localPosition = new Vector3(0f, -3.4f, 0f);
-            calligraphyObject.transform.localScale = new Vector3(1.25f, 0.72f, 1f);
+            calligraphyObject.transform.localScale = Vector3.one;
             _judgmentCalligraphy = calligraphyObject.AddComponent<SpriteRenderer>();
             _judgmentCalligraphy.sortingOrder = 31;
             _judgmentCalligraphy.enabled = false;
@@ -253,10 +242,10 @@ namespace YingYun.Rhythm.View
         {
             var center = new GameObject("Segment Feedback Glow");
             center.transform.SetParent(_visualRoot, false);
-            _stageRenderer = center.AddComponent<SpriteRenderer>();
-            _stageRenderer.sprite = _noteSprite;
-            _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.16f);
-            _stageRenderer.sortingOrder = -5;
+            SpriteRenderer stageRenderer = center.AddComponent<SpriteRenderer>();
+            stageRenderer.sprite = _noteSprite;
+            stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.16f);
+            stageRenderer.sortingOrder = -5;
             center.transform.localScale = new Vector3(2.8f, 4.0f, 1f);
         }
 
@@ -315,20 +304,6 @@ namespace YingYun.Rhythm.View
             return view;
         }
 
-        private void ShowSegmentFeedback(string text, Color color)
-        {
-            _judgmentCalligraphy.enabled = false;
-            _judgmentText.text = text;
-            _judgmentText.color = color;
-            _judgmentTextClearSongTime = _currentSongTime + 0.45d;
-            _stageFeedbackClearSongTime = _currentSongTime + 0.45d;
-            if (_stageRenderer != null)
-            {
-                _stageRenderer.color = color;
-                _stageRenderer.transform.localScale = new Vector3(3.0f, 4.2f, 1f);
-            }
-        }
-
         private void ShowJudgmentText(string text, Color color)
         {
             if (_judgmentText == null)
@@ -340,28 +315,17 @@ namespace YingYun.Rhythm.View
             {
                 _judgmentText.text = string.Empty;
                 _judgmentCalligraphy.sprite = sprite;
-                _judgmentCalligraphy.color = color;
+                _judgmentCalligraphy.color = JudgmentCalligraphyAtlas.InkColor;
                 _judgmentCalligraphy.enabled = true;
+                _judgmentTextClearSongTime = _currentSongTime + JudgmentCalligraphyAtlas.DisplaySeconds;
             }
             else
             {
                 _judgmentCalligraphy.enabled = false;
                 _judgmentText.text = text;
                 _judgmentText.color = color;
+                _judgmentTextClearSongTime = _currentSongTime + releaseDelaySeconds;
             }
-            _judgmentTextClearSongTime = _currentSongTime + releaseDelaySeconds;
-        }
-
-        private void UpdateStageFeedback(double songTimeSec)
-        {
-            if (_stageRenderer == null || songTimeSec < _stageFeedbackClearSongTime)
-            {
-                return;
-            }
-
-            _stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.16f);
-            _stageRenderer.transform.localScale = new Vector3(2.8f, 4.0f, 1f);
-            _stageFeedbackClearSongTime = double.PositiveInfinity;
         }
 
         private void ReleaseAt(int index)
