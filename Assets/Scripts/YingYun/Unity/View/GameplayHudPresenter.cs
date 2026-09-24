@@ -274,10 +274,13 @@ namespace YingYun.Rhythm.View
             int index,
             Vector2 position)
         {
-            var cellObject = new GameObject($"{label}统计", typeof(RectTransform));
+            var cellObject = new GameObject($"{label}统计", typeof(RectTransform), typeof(UnityEngine.UI.Image));
             cellObject.transform.SetParent(parent, false);
             RectTransform cell = (RectTransform)cellObject.transform;
             Anchor(cell, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), position, new Vector2(300f, 100f), new Vector2(0.5f, 1f));
+            UnityEngine.UI.Image background = cellObject.GetComponent<UnityEngine.UI.Image>();
+            background.color = new Color32(238, 222, 184, 235);
+            background.raycastTarget = false;
 
             var imageObject = new GameObject(label, typeof(RectTransform), typeof(UnityEngine.UI.Image));
             imageObject.transform.SetParent(cell, false);
@@ -291,6 +294,7 @@ namespace YingYun.Rhythm.View
 
             _resultGradeCounts[index] = CreateText("次数", cell, "0", 38, TextAnchor.MiddleRight);
             Anchor(_resultGradeCounts[index].rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-8f, 0f), new Vector2(85f, 70f), new Vector2(1f, 0.5f));
+            _resultGradeCounts[index].color = JudgmentCalligraphyAtlas.InkColor;
         }
 
         private UnityEngine.UI.Text CreateText(string name, Transform parent, string value, int size, TextAnchor alignment)

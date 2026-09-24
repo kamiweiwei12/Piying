@@ -142,9 +142,7 @@ namespace YingYun.Rhythm.Editor
                 return note;
             }
 
-            bool useChord = difficulty == PlayDifficulty.Normal
-                ? beat % 8 == 4
-                : difficulty == PlayDifficulty.Hard && beat % 4 == 2;
+            bool useChord = difficulty == PlayDifficulty.Hard && beat % 4 == 2;
             if (useChord)
             {
                 int pairedLane = (lane + 3) % 6;

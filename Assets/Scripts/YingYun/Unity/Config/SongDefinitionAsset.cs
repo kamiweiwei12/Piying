@@ -167,10 +167,12 @@ namespace YingYun.Rhythm.Unity.Config
                     throw new InvalidOperationException("Each difficulty chart must be unique and non-null.");
                 }
 
+                NoteData[] runtimeNotes = GetNotes(chart.difficulty);
                 SongChartValidation.ValidateNotes(
-                    GetNotes(chart.difficulty),
+                    runtimeNotes,
                     music.length,
                     playableRange);
+                SongChartValidation.ValidateDifficultyFeatures(runtimeNotes, chart.difficulty);
             }
 
             for (int i = 0; i < danceCues.Length; i++)

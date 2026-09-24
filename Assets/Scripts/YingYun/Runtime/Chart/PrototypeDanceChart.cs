@@ -23,13 +23,6 @@ namespace YingYun.Rhythm.Chart
         /// <summary>長按長度（拍）：120 BPM 下等於 1 秒。</summary>
         private const double HoldBeats = 2d;
 
-        private static readonly int[] NormalChordMasks =
-        {
-            Mask(LeftHandLane, RightHandLane),
-            Mask(LeftFootLane, RightFootLane),
-            Mask(HeadLane, BodyLane)
-        };
-
         /// <summary>六軌任取兩軌的 15 種組合；Hard 依序輪替，避免只重複雙手／雙腳。</summary>
         private static readonly int[] HardChordMasks =
         {
@@ -92,23 +85,14 @@ namespace YingYun.Rhythm.Chart
                 notes.Add(Tap(noteId++, laneBase, start, phrase));
                 notes.Add(Tap(noteId++, (laneBase + 1) % 6, start + (2d * beatDuration), phrase));
 
-                if (phrase % 2 == 0)
-                {
-                    int mask = NormalChordMasks[(phrase / 2) % NormalChordMasks.Length];
-                    notes.Add(Chord(noteId++, FirstLane(mask), mask, start + (3d * beatDuration), phrase));
-                }
-                else
-                {
-                    notes.Add(Tap(noteId++, (laneBase + 2) % 6, start + (3d * beatDuration), phrase));
-                }
+                notes.Add(Tap(noteId++, (laneBase + 2) % 6, start + (3d * beatDuration), phrase));
 
                 notes.Add(Hold(noteId++, (laneBase + 3) % 6, start + (4d * beatDuration), HoldBeats * beatDuration, phrase));
                 notes.Add(Tap(noteId++, (laneBase + 4) % 6, start + (6d * beatDuration), phrase));
                 notes.Add(Tap(noteId++, (laneBase + 5) % 6, start + (7d * beatDuration), phrase));
             }
 
-            int finaleMask = NormalChordMasks[phraseCount % NormalChordMasks.Length];
-            notes.Add(Chord(noteId, FirstLane(finaleMask), finaleMask, durationSeconds, phraseCount));
+            notes.Add(Tap(noteId, phraseCount % 6, durationSeconds, phraseCount));
             return notes.ToArray();
         }
 
@@ -156,10 +140,7 @@ namespace YingYun.Rhythm.Chart
             {
                 int lane = second % 6;
                 int segmentId = second / BeatsPerPhrase;
-                bool isTeachingHold = second >= 6 && second % 12 == 6;
-                notes.Add(isTeachingHold
-                    ? Hold(noteId++, lane, second, 0.75d, segmentId)
-                    : Tap(noteId++, lane, second, segmentId));
+                notes.Add(Tap(noteId++, lane, second, segmentId));
                 second++;
             }
 

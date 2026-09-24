@@ -24,6 +24,47 @@
 
 ---
 
+## [2026-09-24] UI／難度 - 結算可讀性與操作類型分級
+
+### 新增
+
+* 結算四項判定統計格增加半透明淺色宣紙底片，讓指定的藍黑墨字在深色結算面板上保持可讀。
+* `SongChartValidation` 新增難度操作類型契約：Easy 只允許單鍵 Tap；Normal 必須有 Hold 且禁止 Chord；Hard 必須同時有 Hold 與 Chord。
+* 新增契約正反例、三難度生成結果、結算底片與文字顏色的回歸測試。
+
+### 修改
+
+* Easy 移除原有教學 Hold，固定為每秒一顆單鍵 Tap。
+* Normal 將原有 Chord 位置改為單鍵 Tap，保留單鍵 Tap／Hold；Hard 才使用多鍵同時按。
+* 《象王行》離線作者譜依新契約重建，仍維持 Easy 100／Normal 200／Hard 598 顆音符及 50 段舞句錨點。
+* 選曲難度說明改為「單鍵點按」、「單鍵點按與長按」、「點按長按與多鍵合奏」。
+* 结算次数数字与书法标签统一使用 `#071B1F`；判定时间窗、计分、DSP 时钟、拍点与舞句均未改变。
+
+### 測試
+
+* 第一次全量回歸為 `172/173`：產品色值正確，但測試直接比較 `Color` 與 `Color32` 類型而失敗；統一斷言類型後重跑。
+* Unity 6000.6.2f1 EditMode 全量回歸：`total=173 / passed=173 / failed=0 / skipped=0`；結果 `Logs/difficulty-contract-editmode-2.xml`。
+* Windows x64 建置：`Builds/M9-Difficulty-Contract/YingYun.exe`；`Logs/difficulty-contract-build.log` 記錄 PlayerBuildInfo 成功並以 return code 0 結束。
+* Windows 候選完成 20 秒啟動煙霧測試，進入 `[M6.5] shadow-play-ready`；`Logs/difficulty-contract-player-smoke.log` 無腳本例外。
+
+### 驗收結果
+
+* 自動驗證確認三檔難度的音符種類已嚴格分離，且《象王行》的數量、排序、六方向、舞句錨點與結束範圍均未回歸。
+* 結算四格已具有宣紙底、藍黑書法字與藍黑次數；最終畫面可讀性和三檔實際手感待使用者實機確認。
+
+### Git Commit
+
+* `feat(difficulty): separate note mechanics by level`（本工作單位提交）。
+
+### 風險 / 已知問題
+
+* 《青玉案·蘭芥》尚未製譜；新驗證契約會在其 M9-A3 作者譜中強制套用相同分級。
+* 啟動煙霧日誌仍有既有 Unity Connect 憑證驗證訊息；本輪未修改 Unity Connect、ProjectSettings 或 URP。
+
+### 下一步
+
+* 請使用者實機確認結算四項文字與數字可讀，並各試 Easy／Normal／Hard 的 Tap、Hold、Chord 分級；通過後進入 M9-A3《青玉案·蘭芥》製譜 Plan。
+
 ## [2026-09-24] UI - 四项判定固定蓝黑墨色
 
 ### 新增

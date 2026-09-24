@@ -83,8 +83,9 @@ namespace YingYun.Rhythm.Tests
             Assert.That(easy.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
             Assert.That(normal.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
             Assert.That(hard.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
+            Assert.That(easy.All(note => note.Kind == NoteKind.Tap && !note.IsChord), Is.True);
             Assert.That(normal.Any(note => note.Kind == NoteKind.Hold), Is.True);
-            Assert.That(normal.Any(note => note.IsChord), Is.True);
+            Assert.That(normal.Any(note => note.IsChord), Is.False);
             Assert.That(hard.Any(note => note.Kind == NoteKind.Hold), Is.True);
             Assert.That(hard.Any(note => note.IsChord), Is.True);
             Assert.That(IsOrdered(easy), Is.True);

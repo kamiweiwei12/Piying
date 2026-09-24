@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using YingYun.Rhythm.Chart;
 using YingYun.Rhythm.Judgment;
+using YingYun.Rhythm.Scoring;
 
 namespace YingYun.Rhythm.Tests
 {
@@ -75,6 +76,36 @@ namespace YingYun.Rhythm.Tests
 
             Assert.Throws<ArgumentException>(() => SongChartValidation.ValidateNotes(
                 notes, 10d, new SongPlayableRange(2d, 9d)));
+        }
+
+        [Test]
+        public void DifficultyFeatures_AcceptOnlyTheApprovedMechanicLadder()
+        {
+            var tap = new NoteData(1, "tap", 0, 1d);
+            var hold = new NoteData(2, "hold", 1, 2d, 1d);
+            var chord = new NoteData(3, "chord", 0, 4d, requiredLanesMask: 5);
+
+            Assert.DoesNotThrow(() => SongChartValidation.ValidateDifficultyFeatures(
+                new[] { tap }, PlayDifficulty.Easy));
+            Assert.DoesNotThrow(() => SongChartValidation.ValidateDifficultyFeatures(
+                new[] { tap, hold }, PlayDifficulty.Normal));
+            Assert.DoesNotThrow(() => SongChartValidation.ValidateDifficultyFeatures(
+                new[] { tap, hold, chord }, PlayDifficulty.Hard));
+        }
+
+        [Test]
+        public void DifficultyFeatures_RejectMechanicsAssignedToTheWrongLevel()
+        {
+            var tap = new NoteData(1, "tap", 0, 1d);
+            var hold = new NoteData(2, "hold", 1, 2d, 1d);
+            var chord = new NoteData(3, "chord", 0, 4d, requiredLanesMask: 5);
+
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidateDifficultyFeatures(
+                new[] { tap, hold }, PlayDifficulty.Easy));
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidateDifficultyFeatures(
+                new[] { tap, hold, chord }, PlayDifficulty.Normal));
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidateDifficultyFeatures(
+                new[] { tap, hold }, PlayDifficulty.Hard));
         }
     }
 }

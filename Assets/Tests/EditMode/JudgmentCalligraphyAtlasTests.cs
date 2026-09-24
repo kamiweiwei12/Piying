@@ -122,9 +122,13 @@ namespace YingYun.Rhythm.Tests
                 foreach (string label in labels)
                 {
                     UnityEngine.UI.Image image = images.Single(candidate => candidate.gameObject.name == label);
+                    UnityEngine.UI.Image background = images.Single(candidate => candidate.gameObject.name == $"{label}统计");
+                    UnityEngine.UI.Text count = background.GetComponentInChildren<UnityEngine.UI.Text>(true);
                     Assert.That(image.sprite.name, Does.Contain(label));
                     Assert.That(image.color, Is.EqualTo(JudgmentCalligraphyAtlas.InkColor));
                     Assert.That(image.preserveAspect, Is.True);
+                    Assert.That(background.color, Is.EqualTo((Color)new Color32(238, 222, 184, 235)));
+                    Assert.That(count.color, Is.EqualTo(JudgmentCalligraphyAtlas.InkColor));
                 }
             }
             finally

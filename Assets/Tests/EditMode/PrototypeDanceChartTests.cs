@@ -21,14 +21,14 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void Create_EachTwoPhraseBlockContainsTapHoldAndChord()
+        public void Create_NormalContainsTapAndHoldWithoutChord()
         {
             NoteData[] notes = PrototypeDanceChart.Create(120d, 8d);
 
             NoteData[] phrases = notes.Where(x => x.SegmentId < 2).ToArray();
             Assert.That(phrases.Any(x => x.Kind == NoteKind.Tap && !x.IsChord), Is.True);
             Assert.That(phrases.Any(x => x.Kind == NoteKind.Hold), Is.True);
-            Assert.That(phrases.Any(x => x.IsChord), Is.True);
+            Assert.That(phrases.Any(x => x.IsChord), Is.False);
         }
 
         [Test]
@@ -80,14 +80,11 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void Create_UsesApprovedSpatialBodyMapping()
+        public void Create_NormalRequiresOnlyOneLanePerNote()
         {
             NoteData[] notes = PrototypeDanceChart.Create(120d, 4d);
-            NoteData openingChord = notes.Single(x => x.IsChord && x.TimeSec < 4d);
 
-            int bothHands = (1 << PrototypeDanceChart.LeftHandLane) |
-                            (1 << PrototypeDanceChart.RightHandLane);
-            Assert.That(openingChord.RequiredLanesMask, Is.EqualTo(bothHands));
+            Assert.That(notes.All(x => !x.IsChord), Is.True);
             Assert.That(notes.Any(x => x.Kind == NoteKind.Hold), Is.True);
         }
 
@@ -104,11 +101,13 @@ namespace YingYun.Rhythm.Tests
             {
                 Assert.That(chart.Zip(chart.Skip(1), (left, right) => left.TimeSec <= right.TimeSec).All(x => x), Is.True);
                 Assert.That(chart.Any(x => x.Kind == NoteKind.Tap && !x.IsChord), Is.True);
-                Assert.That(chart.Any(x => x.Kind == NoteKind.Hold), Is.True);
             }
 
+            Assert.That(easy.All(x => x.Kind == NoteKind.Tap), Is.True);
             Assert.That(easy.Any(x => x.IsChord), Is.False);
-            Assert.That(normal.Any(x => x.IsChord), Is.True);
+            Assert.That(normal.Any(x => x.Kind == NoteKind.Hold), Is.True);
+            Assert.That(normal.Any(x => x.IsChord), Is.False);
+            Assert.That(hard.Any(x => x.Kind == NoteKind.Hold), Is.True);
             Assert.That(hard.Any(x => x.IsChord), Is.True);
         }
 
@@ -140,6 +139,7 @@ namespace YingYun.Rhythm.Tests
         {
             NoteData[] easy = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Easy);
 
+            Assert.That(easy.All(x => x.Kind == NoteKind.Tap), Is.True);
             Assert.That(easy.All(x => (x.RequiredLanesMask & (x.RequiredLanesMask - 1)) == 0), Is.True);
             Assert.That(
                 easy.Zip(easy.Skip(1), (left, right) => right.TimeSec - left.TimeSec >= 1d - 1e-9d).All(x => x),
