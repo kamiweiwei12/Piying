@@ -146,8 +146,15 @@ namespace YingYun.Rhythm.Editor
             if (useChord)
             {
                 int pairedLane = (lane + 3) % 6;
+                int chordMask = (1 << lane) | (1 << pairedLane);
+                if (!KeyboardChordLayout.IsAllowed(chordMask))
+                {
+                    pairedLane = (lane + 2) % 6;
+                    chordMask = (1 << lane) | (1 << pairedLane);
+                }
+
                 note.typeId = "chord";
-                note.requiredLanesMask = (1 << lane) | (1 << pairedLane);
+                note.requiredLanesMask = chordMask;
             }
 
             return note;

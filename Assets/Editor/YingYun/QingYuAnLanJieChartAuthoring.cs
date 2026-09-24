@@ -15,6 +15,37 @@ namespace YingYun.Rhythm.Editor
     {
         private const int SharedAnchorBase = 400000;
 
+        private static readonly int[][] LaneMotifs =
+        {
+            new[] { 3, 4, 5, 2, 1, 0, 2, 4 },
+            new[] { 0, 1, 2, 4, 3, 5, 1, 3 },
+            new[] { 3, 1, 4, 2, 5, 0, 4, 1 },
+            new[] { 2, 0, 1, 3, 5, 4, 2, 5 },
+            new[] { 4, 5, 3, 1, 0, 2, 5, 1 },
+            new[] { 1, 3, 0, 4, 2, 5, 3, 0 },
+            new[] { 5, 2, 4, 1, 3, 0, 2, 4 },
+            new[] { 0, 3, 1, 5, 2, 4, 0, 5 },
+            new[] { 2, 4, 1, 3, 0, 5, 1, 4 },
+            new[] { 4, 2, 5, 0, 3, 1, 5, 2 },
+            new[] { 1, 5, 3, 0, 4, 2, 3, 5 },
+            new[] { 5, 4, 2, 3, 1, 0, 4, 2 },
+        };
+
+        private static readonly int[] PhraseMotifs =
+        {
+            // 起：8 段
+            0, 1, 2, 3, 4, 5, 6, 7,
+            // 承：14 段
+            2, 8, 4, 9, 1, 10, 5, 11, 3, 6, 0, 7, 8, 2,
+            // 转：14 段
+            9, 4, 11, 6, 10, 3, 8, 5, 1, 7, 2, 0, 6, 11,
+            // 合：12 段
+            5, 8, 3, 9, 1, 6, 4, 10, 2, 7, 0, 11,
+        };
+
+        private static readonly int[] OrnamentOffsets = { 2, 4, 1, 5, 3, 1, 4, 2 };
+        private static readonly int[] HoldLengthsBeats = { 1, 2, 3, 4, 2, 1, 4, 3 };
+
         // 48 段明确分为起、承、转、合，避免运行时机械轮替动作。
         private static readonly DanceAction[] Routine =
         {
@@ -80,6 +111,12 @@ namespace YingYun.Rhythm.Editor
             PlayDifficulty difficulty)
         {
             var notes = new List<SongDefinitionAsset.NoteRecord>(difficulty == PlayDifficulty.Hard ? 580 : 200);
+            var holdEndBeats = new double[KeyboardChordLayout.LaneCount];
+            for (int lane = 0; lane < holdEndBeats.Length; lane++)
+            {
+                holdEndBeats[lane] = double.NegativeInfinity;
+            }
+
             for (int beat = 0; beat < timing.Count; beat++)
             {
                 int interval = difficulty == PlayDifficulty.Easy ? 4 : difficulty == PlayDifficulty.Normal ? 2 : 1;
@@ -88,15 +125,17 @@ namespace YingYun.Rhythm.Editor
                     continue;
                 }
 
-                notes.Add(CreateBeatNote(timing, difficulty, beat));
+                notes.Add(CreateBeatNote(timing, difficulty, beat, holdEndBeats));
                 if (difficulty == PlayDifficulty.Hard && beat < timing.Count - 1 && beat % 2 == 1)
                 {
+                    double ornamentBeat = beat + 0.5d;
+                    int preferredLane = (LaneForBeat(beat) + OrnamentOffsets[beat % 8]) % 6;
                     notes.Add(new SongDefinitionAsset.NoteRecord
                     {
                         id = 620000 + (beat * 2) + 1,
                         typeId = "tap",
-                        lane = (beat + 2) % 6,
-                        timeSec = timing.BeatToSeconds(beat + 0.5d),
+                        lane = ChooseAvailableLane(preferredLane, ornamentBeat, holdEndBeats),
+                        timeSec = timing.BeatToSeconds(ornamentBeat),
                         segmentId = beat / 8,
                     });
                 }
@@ -112,11 +151,12 @@ namespace YingYun.Rhythm.Editor
         private static SongDefinitionAsset.NoteRecord CreateBeatNote(
             SongTimingMap timing,
             PlayDifficulty difficulty,
-            int beat)
+            int beat,
+            double[] holdEndBeats)
         {
             bool isAnchor = beat % 8 == 0;
-            int laneInterval = difficulty == PlayDifficulty.Easy ? 4 : difficulty == PlayDifficulty.Normal ? 2 : 1;
-            int lane = (beat / laneInterval) % 6;
+            int preferredLane = LaneForBeat(beat);
+            int lane = ChooseAvailableLane(preferredLane, beat, holdEndBeats);
             var note = new SongDefinitionAsset.NoteRecord
             {
                 id = isAnchor ? SharedAnchorBase + beat : DifficultyId(difficulty, beat),
@@ -131,22 +171,96 @@ namespace YingYun.Rhythm.Editor
                 return note;
             }
 
-            bool useHold = difficulty != PlayDifficulty.Easy && beat % 16 == 6 && beat + 2 < timing.Count;
+            int holdOrdinal = beat / 16;
+            int holdBeats = HoldLengthsBeats[holdOrdinal % HoldLengthsBeats.Length];
+            bool useHold = difficulty != PlayDifficulty.Easy && beat % 16 == 6 && beat + holdBeats < timing.Count;
             if (useHold)
             {
                 note.typeId = "hold";
-                note.durationSec = timing.BeatToSeconds(beat + 2) - note.timeSec;
+                note.durationSec = timing.BeatToSeconds(beat + holdBeats) - note.timeSec;
+                holdEndBeats[lane] = beat + holdBeats;
                 return note;
             }
 
             if (difficulty == PlayDifficulty.Hard && beat % 4 == 2)
             {
-                int pairedLane = (lane + 3) % 6;
+                int chordMask = FindChordMask(lane, beat / 4, beat, holdEndBeats);
                 note.typeId = "chord";
-                note.requiredLanesMask = (1 << lane) | (1 << pairedLane);
+                note.lane = FirstLane(chordMask);
+                note.requiredLanesMask = chordMask;
             }
 
             return note;
+        }
+
+        private static int LaneForBeat(int beat)
+        {
+            int phrase = Math.Min(beat / 8, PhraseMotifs.Length - 1);
+            return LaneMotifs[PhraseMotifs[phrase]][beat % 8];
+        }
+
+        private static int ChooseAvailableLane(int preferred, double beat, double[] holdEndBeats)
+        {
+            int[] offsets = { 0, 2, 4, 1, 3, 5 };
+            for (int i = 0; i < offsets.Length; i++)
+            {
+                int lane = (preferred + offsets[i]) % KeyboardChordLayout.LaneCount;
+                if (beat >= holdEndBeats[lane] - 0.000001d)
+                {
+                    return lane;
+                }
+            }
+
+            throw new InvalidOperationException("No free lane remains while authoring a note.");
+        }
+
+        private static int FindChordMask(
+            int preferredLane,
+            int sequenceIndex,
+            double beat,
+            double[] holdEndBeats)
+        {
+            for (int pass = 0; pass < 2; pass++)
+            {
+                for (int offset = 0; offset < KeyboardChordLayout.AllowedCount; offset++)
+                {
+                    int mask = KeyboardChordLayout.GetAllowedMask(sequenceIndex + offset);
+                    if (pass == 0 && !KeyboardChordLayout.ContainsLane(mask, preferredLane))
+                    {
+                        continue;
+                    }
+
+                    bool available = true;
+                    for (int lane = 0; lane < KeyboardChordLayout.LaneCount; lane++)
+                    {
+                        if (KeyboardChordLayout.ContainsLane(mask, lane) && beat < holdEndBeats[lane] - 0.000001d)
+                        {
+                            available = false;
+                            break;
+                        }
+                    }
+
+                    if (available)
+                    {
+                        return mask;
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("No allowed chord remains while a hold is active.");
+        }
+
+        private static int FirstLane(int mask)
+        {
+            for (int lane = 0; lane < KeyboardChordLayout.LaneCount; lane++)
+            {
+                if (KeyboardChordLayout.ContainsLane(mask, lane))
+                {
+                    return lane;
+                }
+            }
+
+            throw new ArgumentException("Chord mask must contain a lane.", nameof(mask));
         }
 
         private static int DifficultyId(PlayDifficulty difficulty, int beat)

@@ -107,5 +107,46 @@ namespace YingYun.Rhythm.Tests
             Assert.Throws<ArgumentException>(() => SongChartValidation.ValidateDifficultyFeatures(
                 new[] { tap, hold }, PlayDifficulty.Hard));
         }
+
+        [Test]
+        public void DifficultyFeatures_AllowsTwelvePairsAndRejectsOnlyThreePairs()
+        {
+            var tap = new NoteData(1, "tap", 0, 1d);
+            var hold = new NoteData(2, "hold", 1, 2d, 1d);
+            for (int i = 0; i < KeyboardChordLayout.AllowedCount; i++)
+            {
+                int mask = KeyboardChordLayout.GetAllowedMask(i);
+                var chord = new NoteData(10 + i, "chord", FirstLane(mask), 4d + i, requiredLanesMask: mask);
+                Assert.DoesNotThrow(() => SongChartValidation.ValidateDifficultyFeatures(
+                    new[] { tap, hold, chord }, PlayDifficulty.Hard), $"allowed mask {mask}");
+            }
+
+            int[] forbiddenMasks =
+            {
+                (1 << 1) | (1 << 4), // W+S
+                (1 << 0) | (1 << 5), // Q+D
+                (1 << 2) | (1 << 3), // E+A
+            };
+            for (int i = 0; i < forbiddenMasks.Length; i++)
+            {
+                int mask = forbiddenMasks[i];
+                var chord = new NoteData(30 + i, "chord", FirstLane(mask), 20d + i, requiredLanesMask: mask);
+                Assert.Throws<ArgumentException>(() => SongChartValidation.ValidateDifficultyFeatures(
+                    new[] { tap, hold, chord }, PlayDifficulty.Hard), $"forbidden mask {mask}");
+            }
+        }
+
+        private static int FirstLane(int mask)
+        {
+            for (int lane = 0; lane < KeyboardChordLayout.LaneCount; lane++)
+            {
+                if ((mask & (1 << lane)) != 0)
+                {
+                    return lane;
+                }
+            }
+
+            throw new ArgumentException("Mask needs a lane.", nameof(mask));
+        }
     }
 }

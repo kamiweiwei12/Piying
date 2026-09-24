@@ -24,6 +24,48 @@
 
 ---
 
+## [2026-09-24] M9-A3-R1 候選 - 譜面方向、長按與組合鍵手感修正
+
+### 新增
+
+* 新增 `KeyboardChordLayout` 共用契約，列出 Q/W/E/A/S/D 的 12 種允許雙鍵組合。
+* 新增載入驗證，僅拒絕 `SW`、`QD`、`AE` 三組困難模式 Chord；`QW`、`QE`、`QS` 等其他組合均為合法。
+* 新增《青玉案·蘭芥》方向動機、四種 Hold 拍長、Hold 占鍵及相鄰舞句方向簽名回歸。
+
+### 修改
+
+* 《青玉案·蘭芥》移除固定六鍵輪轉，改用 12 組八拍方向動機按起、承、轉、合排列；Hard 半拍音符使用獨立偏移。
+* 《青玉案·蘭芥》Normal／Hard 的 Hold 由固定 2 拍改為 1／2／3／4 拍固定作者表；Hold 期間其他音符與 Chord 不會重用被占用的實體鍵。
+* 《象王行》只替換違規 Chord，拍點、音符数、Hold、一般方向、舞句及 `Verified` 狀態不變。
+* 《試燈》Hard 由輪替全部 15 種雙鍵改為輪替 12 種允許組合。
+
+### 測試
+
+* 首次資產重建在編譯測試時發現目前 NUnit 不支援整數版 `Does.Not.Contain`；改用布林集合斷言後重新執行，未修改遊戲規則。
+* Unity 6000.6.2f1 EditMode 全量回歸：`total=177 / passed=177 / failed=0 / skipped=0`；結果 `Logs/M9-chart-feel-editmode.xml`。
+* Windows x64 建置：`Builds/M9-Chart-Feel/YingYun.exe`；`Logs/M9-chart-feel-build.log` 記錄 `Build Finished, Result: Success.` 及 PlayerBuildInfo success。
+* Windows 候選完成 20 秒啟動煙霧測試，進入 `[M6.5] shadow-play-ready`；`Logs/M9-chart-feel-player-smoke.log` 未出現腳本例外。
+
+### 驗收結果
+
+* 自動驗證確認三首 Hard 均不含 `SW`、`QD`、`AE`，且其餘 12 種組合全部能通過共用載入契約；《試燈》實際覆蓋 12 種。
+* 《青玉案·蘭芥》仍為 Easy 96／Normal 191／Hard 572 顆音符與 48 段舞句，Normal／Hard 實際覆蓋 1／2／3／4 拍 Hold，沒有 Hold 實體鍵衝突。
+* 方向變化、長短 Hold 視覺與困難組合的最終手感待使用者實機確認。
+
+### Git Commit
+
+* `fix(chart): improve lane variety and chord ergonomics`（本工作單位提交）。
+
+### 風險 / 已知問題
+
+* 自動測試能封鎖固定循環、錯誤拍長及禁用組合，不能代替完整歌曲的打譜吸引力與手部舒適度驗收。
+* 《青玉案·蘭芥》保持 `AnalysisCandidate`；《象王行》的拍點驗收狀態不因單纯替換違規 Chord 而降級。
+* 煙霧日誌仍有既有 Unity Connect 憑證訊息；本輪未修改 Unity Connect、ProjectSettings 或 URP。
+
+### 下一步
+
+* 請使用者實機測試 `Builds/M9-Chart-Feel/YingYun.exe`，重點確認《青玉案·蘭芥》的方向變化、四種 Hold 長度，以及三首 Hard 不再出現 `SW`、`QD`、`AE`。
+
 ## [2026-09-24] M9-A3 候選 - 《青玉案·蘭芥》資料驅動關卡
 
 ### 新增

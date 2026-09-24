@@ -82,6 +82,16 @@ namespace YingYun.Rhythm.Chart
 
             bool hasHold = notes.Any(note => note.Kind == NoteKind.Hold);
             bool hasChord = notes.Any(note => note.IsChord);
+            for (int i = 0; i < notes.Count; i++)
+            {
+                if (notes[i].IsChord && !KeyboardChordLayout.IsAllowed(notes[i].RequiredLanesMask))
+                {
+                    throw new ArgumentException(
+                        "Chord notes may not use Q+D, W+S, or E+A.",
+                        nameof(notes));
+                }
+            }
+
             switch (difficulty)
             {
                 case PlayDifficulty.Easy:

@@ -88,6 +88,8 @@ namespace YingYun.Rhythm.Tests
             Assert.That(normal.Any(note => note.IsChord), Is.False);
             Assert.That(hard.Any(note => note.Kind == NoteKind.Hold), Is.True);
             Assert.That(hard.Any(note => note.IsChord), Is.True);
+            Assert.That(hard.Where(note => note.IsChord).All(note =>
+                KeyboardChordLayout.IsAllowed(note.RequiredLanesMask)), Is.True);
             Assert.That(IsOrdered(easy), Is.True);
             Assert.That(IsOrdered(normal), Is.True);
             Assert.That(IsOrdered(hard), Is.True);
@@ -145,11 +147,50 @@ namespace YingYun.Rhythm.Tests
             Assert.That(normal.Any(note => note.IsChord), Is.False);
             Assert.That(hard.Any(note => note.Kind == NoteKind.Hold), Is.True);
             Assert.That(hard.Any(note => note.IsChord), Is.True);
+            Assert.That(hard.Where(note => note.IsChord).All(note =>
+                KeyboardChordLayout.IsAllowed(note.RequiredLanesMask)), Is.True);
             Assert.That(song.HasAuthoredCharts, Is.True);
             Assert.That(IsOrdered(easy), Is.True);
             Assert.That(IsOrdered(normal), Is.True);
             Assert.That(IsOrdered(hard), Is.True);
             Assert.DoesNotThrow(song.ValidateOrThrow);
+        }
+
+        [Test]
+        public void QingYuAnLanJie_UsesVariedMotifsAndOneToFourBeatHolds()
+        {
+            SongDefinitionAsset song = Resources.Load<SongCatalogAsset>("YingYun/SongCatalog")
+                .Find("qing-yu-an-lan-jie");
+            SongTimingMap timing = song.CreateTimingMap();
+
+            foreach (PlayDifficulty difficulty in new[] { PlayDifficulty.Normal, PlayDifficulty.Hard })
+            {
+                NoteData[] notes = song.GetNotes(difficulty);
+                int[] holdLengths = notes
+                    .Where(note => note.Kind == NoteKind.Hold)
+                    .Select(note => (int)Math.Round(
+                        timing.SecondsToBeat(note.EndTimeSec) - timing.SecondsToBeat(note.TimeSec)))
+                    .Distinct()
+                    .OrderBy(length => length)
+                    .ToArray();
+
+                Assert.That(holdLengths, Is.EqualTo(new[] { 1, 2, 3, 4 }), difficulty.ToString());
+                AssertHoldLanesRemainFree(notes);
+            }
+
+            NoteData[] hard = song.GetNotes(PlayDifficulty.Hard);
+            string[] phraseSignatures = hard
+                .GroupBy(note => note.SegmentId)
+                .OrderBy(group => group.Key)
+                .Select(group => string.Join(",", group
+                    .OrderBy(note => note.TimeSec)
+                    .Select(note => $"{note.Lane}:{note.RequiredLanesMask}")))
+                .ToArray();
+
+            Assert.That(phraseSignatures.Distinct().Count(), Is.GreaterThanOrEqualTo(10));
+            Assert.That(phraseSignatures.Zip(
+                phraseSignatures.Skip(1),
+                (left, right) => left != right).All(different => different), Is.True);
         }
 
         [Test]
@@ -193,6 +234,20 @@ namespace YingYun.Rhythm.Tests
             }
 
             return true;
+        }
+
+        private static void AssertHoldLanesRemainFree(NoteData[] notes)
+        {
+            foreach (NoteData hold in notes.Where(note => note.Kind == NoteKind.Hold))
+            {
+                int heldLaneMask = 1 << hold.Lane;
+                NoteData[] conflicts = notes.Where(note =>
+                    note.Id != hold.Id &&
+                    note.TimeSec > hold.TimeSec + 0.000001d &&
+                    note.TimeSec < hold.EndTimeSec - 0.000001d &&
+                    (note.RequiredLanesMask & heldLaneMask) != 0).ToArray();
+                Assert.That(conflicts, Is.Empty, $"hold {hold.Id} lane {hold.Lane}");
+            }
         }
     }
 }

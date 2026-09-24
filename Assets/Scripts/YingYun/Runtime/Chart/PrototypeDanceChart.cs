@@ -23,26 +23,6 @@ namespace YingYun.Rhythm.Chart
         /// <summary>長按長度（拍）：120 BPM 下等於 1 秒。</summary>
         private const double HoldBeats = 2d;
 
-        /// <summary>六軌任取兩軌的 15 種組合；Hard 依序輪替，避免只重複雙手／雙腳。</summary>
-        private static readonly int[] HardChordMasks =
-        {
-            Mask(LeftHandLane, HeadLane),
-            Mask(LeftHandLane, RightHandLane),
-            Mask(LeftHandLane, LeftFootLane),
-            Mask(LeftHandLane, BodyLane),
-            Mask(LeftHandLane, RightFootLane),
-            Mask(HeadLane, RightHandLane),
-            Mask(HeadLane, LeftFootLane),
-            Mask(HeadLane, BodyLane),
-            Mask(HeadLane, RightFootLane),
-            Mask(RightHandLane, LeftFootLane),
-            Mask(RightHandLane, BodyLane),
-            Mask(RightHandLane, RightFootLane),
-            Mask(LeftFootLane, BodyLane),
-            Mask(LeftFootLane, RightFootLane),
-            Mask(BodyLane, RightFootLane)
-        };
-
         public static NoteData[] Create(double bpm, double durationSeconds)
         {
             return Create(bpm, durationSeconds, PlayDifficulty.Normal);
@@ -111,21 +91,21 @@ namespace YingYun.Rhythm.Chart
                 notes.Add(Tap(noteId++, LeftHandLane, start, phrase));
                 notes.Add(Tap(noteId++, BodyLane, start + (0.5d * beatDuration), phrase));
                 notes.Add(Tap(noteId++, RightHandLane, start + beatDuration, phrase));
-                int firstMask = HardChordMasks[(phrase * 2) % HardChordMasks.Length];
+                int firstMask = KeyboardChordLayout.GetAllowedMask(phrase * 2);
                 notes.Add(Chord(noteId++, FirstLane(firstMask), firstMask, start + (2d * beatDuration), phrase));
                 notes.Add(Tap(noteId++, HeadLane, start + (3d * beatDuration), phrase));
                 notes.Add(Hold(noteId++, BodyLane, start + (4d * beatDuration), HoldBeats * beatDuration, phrase));
                 notes.Add(Tap(noteId++, phrase % 2 == 0 ? LeftHandLane : RightHandLane,
                     start + (5d * beatDuration), phrase));
                 notes.Add(Tap(noteId++, LeftFootLane, start + (6d * beatDuration), phrase));
-                int secondMask = HardChordMasks[((phrase * 2) + 1) % HardChordMasks.Length];
+                int secondMask = KeyboardChordLayout.GetAllowedMask((phrase * 2) + 1);
                 notes.Add(Chord(noteId++, FirstLane(secondMask), secondMask, start + (6.5d * beatDuration), phrase));
                 notes.Add(Tap(noteId++, RightFootLane, start + (7d * beatDuration), phrase));
                 notes.Add(Tap(noteId++, phrase % 2 == 0 ? RightHandLane : LeftHandLane,
                     start + (7.5d * beatDuration), phrase));
             }
 
-            int finaleMask = HardChordMasks[(phraseCount * 2) % HardChordMasks.Length];
+            int finaleMask = KeyboardChordLayout.GetAllowedMask(phraseCount * 2);
             notes.Add(Chord(noteId, FirstLane(finaleMask), finaleMask, durationSeconds, phraseCount));
             notes.Sort((left, right) => left.TimeSec.CompareTo(right.TimeSec));
             return notes.ToArray();
@@ -166,11 +146,6 @@ namespace YingYun.Rhythm.Chart
                 timeSec,
                 segmentId: segmentId,
                 requiredLanesMask: mask);
-        }
-
-        private static int Mask(int firstLane, int secondLane)
-        {
-            return (1 << firstLane) | (1 << secondLane);
         }
 
         private static int FirstLane(int mask)
