@@ -87,6 +87,7 @@ namespace YingYun.Rhythm.View
                 throw new ArgumentException("At least one playable song is required.", nameof(songs));
             }
 
+            int previousSongCount = _songEntries.Count;
             _songEntries.Clear();
             for (int i = 0; i < songs.Count; i++) _songEntries.Add(songs[i]);
 
@@ -106,9 +107,16 @@ namespace YingYun.Rhythm.View
             {
                 if (songs[i].SongId == _selectedSongId) selectedIndex = i;
             }
-            _songPage = selectedIndex / SongsPerPage;
+            _songPage = DetermineSongPage(previousSongCount, songs.Count, selectedIndex);
             RebuildSongPage();
             RefreshSongSelection(songs);
+        }
+
+        public static int DetermineSongPage(int previousSongCount, int currentSongCount, int selectedIndex)
+        {
+            if (currentSongCount <= 0) throw new ArgumentOutOfRangeException(nameof(currentSongCount));
+            bool songsWereAdded = currentSongCount > previousSongCount;
+            return songsWereAdded ? (currentSongCount - 1) / SongsPerPage : selectedIndex / SongsPerPage;
         }
 
         public void SetSongImportStatus(string status)

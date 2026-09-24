@@ -13,7 +13,7 @@ using Debug = UnityEngine.Debug;
 
 namespace YingYun.Rhythm.Unity.CustomSongs
 {
-    /// <summary>Scans user MP3 files, runs the bundled analyzer off the main thread, and caches beat grids.</summary>
+    /// <summary>Scans supported user audio files, runs the bundled analyzer off the main thread, and caches beat grids.</summary>
     public sealed class CustomSongLibrary : MonoBehaviour
     {
         private const string AnalyzerVersion = "beat-this-cpp-07ab790-final0-c5c1466e-decodewav1";
@@ -45,14 +45,16 @@ namespace YingYun.Rhythm.Unity.CustomSongs
             string cachePath = Path.Combine(Application.persistentDataPath, "GeneratedSongCache", AnalyzerVersion);
             Directory.CreateDirectory(cachePath);
 
-            string[] files = Directory.GetFiles(UserSongsPath, "*.mp3", SearchOption.TopDirectoryOnly);
+            string[] files = Array.FindAll(
+                Directory.GetFiles(UserSongsPath, "*", SearchOption.TopDirectoryOnly),
+                IsSupportedAudioFile);
             Array.Sort(files, StringComparer.OrdinalIgnoreCase);
             _songs.Clear();
             SongsChanged?.Invoke();
 
             if (files.Length == 0)
             {
-                StatusChanged?.Invoke("自定义歌曲：把 MP3 放入歌曲文件夹后按刷新");
+                StatusChanged?.Invoke("自定义歌曲：把 MP3／FLAC／WAV 放入歌曲文件夹后按刷新");
                 _scanRoutine = null;
                 yield break;
             }
@@ -99,7 +101,7 @@ namespace YingYun.Rhythm.Unity.CustomSongs
                 if (clip == null)
                 {
                     failures++;
-                    Debug.LogWarning($"[M9-B] MP3 load failed: {file}\n{loadError}");
+                    Debug.LogWarning($"[M9-B] Audio load failed: {file}\n{loadError}");
                     continue;
                 }
 
@@ -239,6 +241,14 @@ namespace YingYun.Rhythm.Unity.CustomSongs
             {
                 return BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", string.Empty);
             }
+        }
+
+        public static bool IsSupportedAudioFile(string path)
+        {
+            string extension = Path.GetExtension(path);
+            return extension.Equals(".mp3", StringComparison.OrdinalIgnoreCase) ||
+                   extension.Equals(".flac", StringComparison.OrdinalIgnoreCase) ||
+                   extension.Equals(".wav", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string Quote(string path) => "\"" + path.Replace("\"", "\\\"") + "\"";

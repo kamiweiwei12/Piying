@@ -7,6 +7,8 @@ using YingYun.Rhythm.Chart;
 using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.Puppet;
 using YingYun.Rhythm.Scoring;
+using YingYun.Rhythm.Unity.CustomSongs;
+using YingYun.Rhythm.View;
 
 namespace YingYun.Rhythm.Tests
 {
@@ -72,6 +74,30 @@ namespace YingYun.Rhythm.Tests
             {
                 if (File.Exists(path)) File.Delete(path);
             }
+        }
+
+        [TestCase("song.mp3", true)]
+        [TestCase("song.MP3", true)]
+        [TestCase("song.flac", true)]
+        [TestCase("song.FLAC", true)]
+        [TestCase("song.wav", true)]
+        [TestCase("song.txt", false)]
+        public void CustomSongLibrary_RecognizesSupportedAudioExtensions(string path, bool expected)
+        {
+            Assert.That(CustomSongLibrary.IsSupportedAudioFile(path), Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void SongMenu_WhenFourthSongIsAdded_MovesToSecondPage()
+        {
+            Assert.That(DemoFlowPresenter.DetermineSongPage(3, 4, 0), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void SongMenu_WhenSongCountIsStable_KeepsSelectedSongsPage()
+        {
+            Assert.That(DemoFlowPresenter.DetermineSongPage(4, 4, 1), Is.EqualTo(0));
+            Assert.That(DemoFlowPresenter.DetermineSongPage(4, 4, 3), Is.EqualTo(1));
         }
 
         [Test]

@@ -24,6 +24,45 @@
 
 ---
 
+## [2026-09-24] M9-B 修正 - FLAC／WAV 自訂歌曲掃描
+
+### 新增
+
+* 玩家歌曲資料夾新增 FLAC 與 WAV 支援，與 MP3 一樣使用既有 miniaudio 解碼、Beat This 分析及 SHA-256 快取；副檔名不分大小寫。
+* 新增六個副檔名回歸案例，覆蓋 `.mp3`／`.MP3`／`.flac`／`.FLAC`／`.wav` 及不支援的 `.txt`。
+
+### 修改
+
+* 掃描由固定 `Directory.GetFiles(..., "*.mp3")` 改為列出資料夾檔案後套用支援格式白名單。
+* 空資料夾提示改為「MP3／FLAC／WAV」，載入失敗日誌改用通用 Audio 文案。
+* 選曲列表偵測到新增歌曲時自動跳到最後一頁，避免第四首歌曲已生成卻藏在第 2 頁。
+* `DEVELOPMENT.md` 的目前里程碑、格式範圍與驗收步驟同步為三種格式。
+
+### 測試
+
+* 問題現場確認 `UserSongs` 內實際檔案為 `星降る海-Aqu3ra 早見沙織.flac`；舊版只掃描 `*.mp3`，因此沒有分析、快取或新按鈕。
+* 原生分析器直接读取该 FLAC 成功：417 拍、105 个强拍、估算 100 BPM。
+* Unity 6000.6.2f1 EditMode 全量回歸 `total=191 / passed=191 / failed=0 / skipped=0`；結果 `Logs/M9-B-audio-format-fix-results.xml`，包含新增歌曲自動翻至末頁及既有選取頁保持測試。
+* Windows x64 重建成功；`Logs/M9-B-audio-format-fix-build.log` 記錄 `Build Finished, Result: Success.`。
+* 修正版實包直接掃描使用者原始 FLAC，生成 417 行 `.beats`、97,321,532-byte WAV 快取，且無 `.tmp` 殘留；就緒資料為 Easy 105／Normal 209／Hard 625。
+
+### 驗收結果
+
+* 已重現並修正「刷新後沒有新歌曲」的根因，實際 FLAC 已通過完整分析與歌曲資料生成；畫面按鈕及整曲手感仍由使用者在修正版候選確認。
+
+### Git Commit
+
+* `fix(m9): recognize flac and wav custom songs`（本工作單位提交）。
+
+### 風險 / 已知問題
+
+* FLAC／WAV 與 MP3 同樣只支援 Windows x64；首次分析及未壓縮 WAV 快取可能占用明显磁盘空间。
+* 自動生成結果仍需逐曲驗收；格式支援通過不代表每個來源檔都必然具有可辨識節拍。
+
+### 下一步
+
+* 使用者以修正版候選確認 `星降る海-Aqu3ra 早見沙織` 按鈕可見，並依序試玩三種難度；若卡點或舞句有具體異常，再按時間點修正。
+
 ## [2026-09-24] M9-B 候選 - 玩家 MP3 自動分析、三難度譜與隨機舞句
 
 ### 新增
