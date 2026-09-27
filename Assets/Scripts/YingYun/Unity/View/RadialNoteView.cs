@@ -7,7 +7,6 @@ namespace YingYun.Rhythm.View
     public sealed class RadialNoteView : MonoBehaviour
     {
         private const int LaneCount = 6;
-        private const float ChordEndpointSpanRatio = 0.69f;
 
         public static readonly Color TapColor = new Color(0.90f, 0.24f, 0.12f, 1f);
         public static readonly Color HoldColor = new Color(0.96f, 0.68f, 0.12f, 1f);
@@ -16,11 +15,15 @@ namespace YingYun.Rhythm.View
         private readonly SpriteRenderer[] _markers = new SpriteRenderer[LaneCount];
         private readonly Vector2[] _spawnPositions = new Vector2[LaneCount];
         private readonly Vector2[] _receptorPositions = new Vector2[LaneCount];
-        private SpriteRenderer _chordVisual;
-        private SpriteRenderer _holdVisual;
+        private LineRenderer _chordBridgeOutline;
+        private LineRenderer _chordBridge;
+        private SpriteRenderer _holdHeadVisual;
+        private SpriteRenderer _holdBodyVisual;
+        private SpriteRenderer _holdTailVisual;
         private Sprite _tapSprite;
-        private Sprite _holdSprite;
-        private Sprite _chordSprite;
+        private Sprite _holdHeadSprite;
+        private Sprite _holdBodySprite;
+        private Sprite _holdTailSprite;
         private float _baseScale;
         private float _bodyWidth;
         private float _bodyLength;
@@ -35,35 +38,45 @@ namespace YingYun.Rhythm.View
         public int RequiredLanesMask { get; private set; }
         public bool IsResolved { get; private set; }
         public double ReleaseSongTimeSec { get; private set; }
-        public bool IsChordVisualActive => _chordVisual != null && _chordVisual.gameObject.activeSelf;
-        public bool IsHoldVisualActive => _holdVisual != null && _holdVisual.gameObject.activeSelf;
+        public bool IsChordVisualActive => _chordBridge != null && _chordBridge.gameObject.activeSelf;
+        public bool IsHoldVisualActive => _holdTailVisual != null && _holdTailVisual.gameObject.activeSelf;
         public bool IsHolding => _isHolding;
         public bool IsHoldNote => _isHold;
-        public bool IsHoldHeadActive => IsHoldVisualActive;
-        public Vector3 NoteMarkerScale => _isHold && _holdVisual != null
+        public bool IsHoldHeadActive => _holdHeadVisual != null && _holdHeadVisual.gameObject.activeSelf;
+        public Vector3 NoteMarkerScale => _isHold && _holdBodyVisual != null
             ? new Vector3(_bodyWidth, _bodyLength, 1f)
-            : IsChordVisualActive
-                ? _chordVisual.transform.localScale
-                : _markers[Lane] == null ? Vector3.zero : _markers[Lane].transform.localScale;
+            : FirstActiveMarkerScale();
         public Color NoteMarkerColor => _logicalColor;
-        public Vector3 NoteMarkerUp => _isHold && _holdVisual != null
-            ? _holdVisual.transform.up
-            : IsChordVisualActive ? _chordVisual.transform.up : _markers[Lane].transform.up;
+        public Vector3 NoteMarkerUp => _isHold && _holdBodyVisual != null
+            ? _holdBodyVisual.transform.up
+            : FirstActiveMarkerUp();
         public Vector2 HoldHeadPosition { get; private set; }
         public Vector2 HoldTailPosition { get; private set; }
         public int ActiveMarkerCount => IsChordVisualActive ? CountRequiredLanes() : IsHoldVisualActive ? 1 : CountActiveTapMarkers();
 
         public void Initialize(Sprite sprite, float scale, Material lineMaterial)
         {
-            Initialize(sprite, sprite, sprite, scale, lineMaterial);
+            Initialize(sprite, sprite, sprite, sprite, scale, lineMaterial);
         }
 
         public void Initialize(Sprite tapSprite, Sprite holdSprite, Sprite chordSprite, float scale, Material lineMaterial)
         {
+            Initialize(tapSprite, holdSprite, holdSprite, holdSprite, scale, lineMaterial);
+        }
+
+        public void Initialize(
+            Sprite tapSprite,
+            Sprite holdHeadSprite,
+            Sprite holdBodySprite,
+            Sprite holdTailSprite,
+            float scale,
+            Material lineMaterial)
+        {
             _baseScale = scale;
             _tapSprite = tapSprite;
-            _holdSprite = holdSprite;
-            _chordSprite = chordSprite;
+            _holdHeadSprite = holdHeadSprite;
+            _holdBodySprite = holdBodySprite;
+            _holdTailSprite = holdTailSprite;
             SpriteRenderer rootRenderer = GetComponent<SpriteRenderer>();
             if (rootRenderer != null) rootRenderer.enabled = false;
 
@@ -78,8 +91,11 @@ namespace YingYun.Rhythm.View
                 _markers[lane] = marker;
             }
 
-            _chordVisual = CreateArtRenderer("Chord Note Art", _chordSprite, 20);
-            _holdVisual = CreateArtRenderer("Hold Note Art", _holdSprite, 21);
+            _chordBridgeOutline = CreateLine("Chord Bridge Outline", lineMaterial, 18, 0.20f, Color.white);
+            _chordBridge = CreateLine("Chord Bridge", lineMaterial, 19, 0.10f, new Color(0.52f, 0.95f, 0.86f, 1f));
+            _holdBodyVisual = CreateArtRenderer("Hold Body", _holdBodySprite, 20);
+            _holdHeadVisual = CreateArtRenderer("Hold Head", _holdHeadSprite, 21);
+            _holdTailVisual = CreateArtRenderer("Hold Tail", _holdTailSprite, 22);
             gameObject.SetActive(false);
         }
 
@@ -102,7 +118,7 @@ namespace YingYun.Rhythm.View
             {
                 _spawnPositions[lane] = spawnPositions[lane];
                 _receptorPositions[lane] = receptorPositions[lane];
-                bool activeTapMarker = !note.IsChord && !_isHold && (RequiredLanesMask & (1 << lane)) != 0;
+                bool activeTapMarker = !_isHold && (RequiredLanesMask & (1 << lane)) != 0;
                 _markers[lane].gameObject.SetActive(activeTapMarker);
                 if (activeTapMarker)
                 {
@@ -113,8 +129,11 @@ namespace YingYun.Rhythm.View
                 }
             }
 
-            _chordVisual.gameObject.SetActive(note.IsChord);
-            _holdVisual.gameObject.SetActive(_isHold);
+            _chordBridgeOutline.gameObject.SetActive(note.IsChord);
+            _chordBridge.gameObject.SetActive(note.IsChord);
+            _holdHeadVisual.gameObject.SetActive(_isHold);
+            _holdBodyVisual.gameObject.SetActive(_isHold);
+            _holdTailVisual.gameObject.SetActive(_isHold);
             HoldHeadPosition = spawnPositions[Lane];
             HoldTailPosition = spawnPositions[Lane];
             gameObject.SetActive(true);
@@ -148,6 +167,7 @@ namespace YingYun.Rhythm.View
         public void BeginHold()
         {
             _isHolding = true;
+            if (_holdHeadVisual != null) _holdHeadVisual.gameObject.SetActive(false);
         }
 
         public void Resolve(Color resultColor, double releaseSongTimeSec)
@@ -155,14 +175,7 @@ namespace YingYun.Rhythm.View
             IsResolved = true;
             ReleaseSongTimeSec = releaseSongTimeSec;
             _isHolding = false;
-            if (_isHold)
-            {
-                _bodyWidth *= 1.12f;
-                _bodyLength *= 1.04f;
-                ApplyHoldScale();
-            }
-            else if (IsChordVisualActive) _chordVisual.transform.localScale *= 1.12f;
-            else
+            if (!_isHold)
             {
                 for (int lane = 0; lane < LaneCount; lane++)
                 {
@@ -193,8 +206,11 @@ namespace YingYun.Rhythm.View
                 _markers[lane].transform.localRotation = Quaternion.identity;
             }
 
-            _chordVisual.gameObject.SetActive(false);
-            _holdVisual.gameObject.SetActive(false);
+            _chordBridgeOutline.gameObject.SetActive(false);
+            _chordBridge.gameObject.SetActive(false);
+            _holdHeadVisual.gameObject.SetActive(false);
+            _holdBodyVisual.gameObject.SetActive(false);
+            _holdTailVisual.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }
 
@@ -207,20 +223,39 @@ namespace YingYun.Rhythm.View
             HoldHeadPosition = head;
             HoldTailPosition = tail;
             float holdProgress = RadialNoteGeometry.Progress(songTimeSec, NoteTimeSec, visibleLeadSec);
-            _bodyWidth = _baseScale * (1f + (0.12f * holdProgress) + (_isHolding ? 0.16f : 0f));
+            _bodyWidth = _baseScale * (1f + (0.12f * holdProgress));
             Vector2 direction = tail - head;
-            _bodyLength = Mathf.Max(direction.magnitude, _bodyWidth);
-            _holdVisual.transform.localPosition = (head + tail) * 0.5f;
-            _holdVisual.transform.localRotation = Quaternion.Euler(
-                0f, 0f, (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) - 90f);
-            ApplyHoldScale();
-            _holdVisual.color = Color.white;
+            _bodyLength = direction.magnitude;
+            Vector2 axis = _bodyLength > 0.001f
+                ? direction / _bodyLength
+                : (_spawnPositions[Lane] - _receptorPositions[Lane]).normalized;
+            Quaternion rotation = Quaternion.Euler(
+                0f, 0f, (Mathf.Atan2(axis.y, axis.x) * Mathf.Rad2Deg) - 90f);
+
+            _holdHeadVisual.gameObject.SetActive(!_isHolding);
+            _holdHeadVisual.transform.localPosition = head;
+            _holdHeadVisual.transform.localRotation = rotation;
+            _holdHeadVisual.transform.localScale = UniformScaleForWidth(_holdHeadSprite, _bodyWidth);
+
+            bool bodyVisible = _bodyLength > 0.02f;
+            _holdBodyVisual.gameObject.SetActive(bodyVisible);
+            if (bodyVisible)
+            {
+                _holdBodyVisual.transform.localPosition = (head + tail) * 0.5f;
+                _holdBodyVisual.transform.localRotation = rotation;
+                ApplyHoldBodyScale();
+            }
+
+            _holdTailVisual.gameObject.SetActive(true);
+            _holdTailVisual.transform.localPosition = tail;
+            _holdTailVisual.transform.localRotation = rotation;
+            _holdTailVisual.transform.localScale = UniformScaleForWidth(_holdTailSprite, _bodyWidth);
         }
 
-        private void ApplyHoldScale()
+        private void ApplyHoldBodyScale()
         {
-            Vector2 spriteSize = _holdSprite == null ? Vector2.one : _holdSprite.bounds.size;
-            _holdVisual.transform.localScale = new Vector3(
+            Vector2 spriteSize = _holdBodySprite == null ? Vector2.one : _holdBodySprite.bounds.size;
+            _holdBodyVisual.transform.localScale = new Vector3(
                 _bodyWidth / Mathf.Max(0.001f, spriteSize.x),
                 _bodyLength / Mathf.Max(0.001f, spriteSize.y),
                 1f);
@@ -242,14 +277,17 @@ namespace YingYun.Rhythm.View
                 _spawnPositions[firstLane], _receptorPositions[firstLane], songTimeSec, NoteTimeSec, visibleLeadSec);
             Vector2 second = RadialNoteGeometry.Position(
                 _spawnPositions[secondLane], _receptorPositions[secondLane], songTimeSec, NoteTimeSec, visibleLeadSec);
-            Vector2 direction = second - first;
-            float spriteWidth = Mathf.Max(0.001f, _chordSprite.bounds.size.x * ChordEndpointSpanRatio);
-            float uniformScale = direction.magnitude / spriteWidth;
-            _chordVisual.transform.localPosition = (first + second) * 0.5f;
-            _chordVisual.transform.localRotation = Quaternion.Euler(0f, 0f,
-                Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
-            _chordVisual.transform.localScale = Vector3.one * uniformScale;
-            _chordVisual.color = Color.white;
+            float progress = RadialNoteGeometry.Progress(songTimeSec, NoteTimeSec, visibleLeadSec);
+            float targetHeight = _baseScale * (1.75f + (0.18f * progress));
+            Vector3 endpointScale = UniformScaleForHeight(_tapSprite, targetHeight);
+            _markers[firstLane].transform.localPosition = first;
+            _markers[firstLane].transform.localScale = endpointScale;
+            _markers[secondLane].transform.localPosition = second;
+            _markers[secondLane].transform.localScale = endpointScale;
+            _chordBridgeOutline.SetPosition(0, first);
+            _chordBridgeOutline.SetPosition(1, second);
+            _chordBridge.SetPosition(0, first);
+            _chordBridge.SetPosition(1, second);
         }
 
         private SpriteRenderer CreateArtRenderer(string objectName, Sprite sprite, int sortingOrder)
@@ -264,11 +302,34 @@ namespace YingYun.Rhythm.View
             return renderer;
         }
 
+        private LineRenderer CreateLine(string objectName, Material material, int sortingOrder, float width, Color color)
+        {
+            var lineObject = new GameObject(objectName);
+            lineObject.transform.SetParent(transform, false);
+            var line = lineObject.AddComponent<LineRenderer>();
+            line.useWorldSpace = false;
+            line.positionCount = 2;
+            line.startWidth = width;
+            line.endWidth = width;
+            line.sharedMaterial = material;
+            line.startColor = color;
+            line.endColor = color;
+            line.sortingOrder = sortingOrder;
+            lineObject.SetActive(false);
+            return line;
+        }
+
         private static Vector3 UniformScaleForHeight(Sprite sprite, float targetHeight)
         {
             float height = sprite == null ? 1f : Mathf.Max(0.001f, sprite.bounds.size.y);
             float scale = targetHeight / height;
             return Vector3.one * scale;
+        }
+
+        private static Vector3 UniformScaleForWidth(Sprite sprite, float targetWidth)
+        {
+            float width = sprite == null ? 1f : Mathf.Max(0.001f, sprite.bounds.size.x);
+            return Vector3.one * (targetWidth / width);
         }
 
         private int CountRequiredLanes()
@@ -291,6 +352,32 @@ namespace YingYun.Rhythm.View
             }
 
             return count;
+        }
+
+        private Vector3 FirstActiveMarkerScale()
+        {
+            for (int lane = 0; lane < LaneCount; lane++)
+            {
+                if (_markers[lane] != null && _markers[lane].gameObject.activeSelf)
+                {
+                    return _markers[lane].transform.localScale;
+                }
+            }
+
+            return Vector3.zero;
+        }
+
+        private Vector3 FirstActiveMarkerUp()
+        {
+            for (int lane = 0; lane < LaneCount; lane++)
+            {
+                if (_markers[lane] != null && _markers[lane].gameObject.activeSelf)
+                {
+                    return _markers[lane].transform.up;
+                }
+            }
+
+            return Vector3.up;
         }
     }
 }

@@ -125,7 +125,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -133,7 +133,73 @@ TextureImporter:
       spriteID: 8457c7b110fd7a750800000000000000
       internalID: 6316262198259512648
       vertices: []
-      indices: 
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: note_hold_head
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 183
+        width: 243
+        height: 220
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eeb706e61de7c39438e24e4c0a971e1d
+      internalID: 4268184
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: note_hold_body
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 360
+        width: 146
+        height: 400
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af1e582e14f741a4295784bf4f10e01c
+      internalID: 1978458357
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: note_hold_tail
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 700
+        width: 243
+        height: 197
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b1a2978503549548b525bb9d5833795
+      internalID: -2041987
+      vertices: []
+      indices:
       edges: []
       weights: []
     outline: []
@@ -151,6 +217,9 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       note_hold_0: 6316262198259512648
+      note_hold_body: 1978458357
+      note_hold_head: 4268184
+      note_hold_tail: -2041987
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -61,8 +61,9 @@ namespace YingYun.Rhythm.View
         private JudgmentCalligraphyAtlas _calligraphyAtlas;
         private Sprite _noteSprite;
         private Sprite _tapSprite;
-        private Sprite _holdSprite;
-        private Sprite _chordSprite;
+        private Sprite _holdHeadSprite;
+        private Sprite _holdBodySprite;
+        private Sprite _holdTailSprite;
         private Sprite _hitRingSprite;
         private Texture2D _noteTexture;
         private Material _lineMaterial;
@@ -72,6 +73,7 @@ namespace YingYun.Rhythm.View
         private double _judgmentTextClearSongTime = double.PositiveInfinity;
         private readonly SpriteRenderer[] _hitEffects = new SpriteRenderer[LaneCount];
         private readonly double[] _hitEffectStartTimes = new double[LaneCount];
+        private int _sustainedHitEffectMask;
 
         public int ActiveCount => _active.Count;
         public int PooledCount => _pool.Count;
@@ -126,6 +128,7 @@ namespace YingYun.Rhythm.View
             }
 
             _judgmentTextClearSongTime = double.PositiveInfinity;
+            _sustainedHitEffectMask = 0;
             for (int lane = 0; lane < LaneCount; lane++)
             {
                 if (_hitEffects[lane] != null) _hitEffects[lane].gameObject.SetActive(false);
@@ -181,6 +184,7 @@ namespace YingYun.Rhythm.View
                     holdView.BeginHold();
                 }
 
+                _sustainedHitEffectMask |= result.RequiredLanesMask;
                 TriggerHitEffects(result.RequiredLanesMask);
                 ShowJudgmentText(JudgmentLabels.HoldHolding, new Color(1f, 0.88f, 0.28f));
                 _judgmentTextClearSongTime = double.PositiveInfinity;
@@ -202,6 +206,8 @@ namespace YingYun.Rhythm.View
                 return;
             }
 
+            _sustainedHitEffectMask &= ~result.RequiredLanesMask;
+
             Color resultColor = GradeColor(result.Grade);
             bool isHoldNote = false;
             bool wasHolding = false;
@@ -215,6 +221,10 @@ namespace YingYun.Rhythm.View
             if (result.Grade != JudgmentGrade.Miss)
             {
                 TriggerHitEffects(result.RequiredLanesMask);
+            }
+            else
+            {
+                DeactivateHitEffects(result.RequiredLanesMask);
             }
             ShowJudgmentText(JudgmentLabels.For(result, isHoldNote, wasHolding), resultColor);
         }
@@ -233,15 +243,18 @@ namespace YingYun.Rhythm.View
                 64f);
             _lineMaterial = new Material(Shader.Find("Sprites/Default"));
             _tapSprite = LoadSpriteResource("YingYun/Art/Notes/note_tap");
-            _holdSprite = LoadSpriteResource("YingYun/Art/Notes/note_hold");
-            _chordSprite = LoadSpriteResource("YingYun/Art/Notes/note_chord");
+            _holdHeadSprite = LoadSpriteResource("YingYun/Art/Notes/note_hold", "note_hold_head");
+            _holdBodySprite = LoadSpriteResource("YingYun/Art/Notes/note_hold", "note_hold_body");
+            _holdTailSprite = LoadSpriteResource("YingYun/Art/Notes/note_hold", "note_hold_tail");
             _hitRingSprite = LoadSpriteResource("YingYun/Art/Notes/hit_ring");
-            if (_tapSprite == null || _holdSprite == null || _chordSprite == null || _hitRingSprite == null)
+            if (_tapSprite == null || _holdHeadSprite == null || _holdBodySprite == null ||
+                _holdTailSprite == null || _hitRingSprite == null)
             {
-                Debug.LogWarning("[M11-Art] One or more note art sprites are missing; runtime circle fallback is active.");
+                Debug.LogWarning("[M11-Art] One or more note-part sprites are missing; runtime circle fallback is active.");
                 _tapSprite = _tapSprite != null ? _tapSprite : _noteSprite;
-                _holdSprite = _holdSprite != null ? _holdSprite : _noteSprite;
-                _chordSprite = _chordSprite != null ? _chordSprite : _noteSprite;
+                _holdHeadSprite = _holdHeadSprite != null ? _holdHeadSprite : _noteSprite;
+                _holdBodySprite = _holdBodySprite != null ? _holdBodySprite : _noteSprite;
+                _holdTailSprite = _holdTailSprite != null ? _holdTailSprite : _noteSprite;
                 _hitRingSprite = _hitRingSprite != null ? _hitRingSprite : _noteSprite;
             }
             _chineseFont = ChineseFontProvider.Load();
@@ -342,7 +355,13 @@ namespace YingYun.Rhythm.View
             var noteObject = new GameObject($"Pooled Note {CreatedViewCount + 1}");
             noteObject.transform.SetParent(_visualRoot, false);
             var view = noteObject.AddComponent<RadialNoteView>();
-            view.Initialize(_tapSprite, _holdSprite, _chordSprite, noteScale, _lineMaterial);
+            view.Initialize(
+                _tapSprite,
+                _holdHeadSprite,
+                _holdBodySprite,
+                _holdTailSprite,
+                noteScale,
+                _lineMaterial);
             CreatedViewCount++;
             return view;
         }
@@ -374,10 +393,29 @@ namespace YingYun.Rhythm.View
             }
         }
 
-        private static Sprite LoadSpriteResource(string resourcePath)
+        private static Sprite LoadSpriteResource(string resourcePath, string spriteName = null)
         {
             Sprite[] sprites = Resources.LoadAll<Sprite>(resourcePath);
+            if (!string.IsNullOrEmpty(spriteName))
+            {
+                for (int i = 0; i < sprites.Length; i++)
+                {
+                    if (sprites[i].name == spriteName) return sprites[i];
+                }
+
+                return null;
+            }
+
             return sprites.Length > 0 ? sprites[0] : Resources.Load<Sprite>(resourcePath);
+        }
+
+        private void DeactivateHitEffects(int laneMask)
+        {
+            for (int lane = 0; lane < LaneCount; lane++)
+            {
+                if ((laneMask & (1 << lane)) == 0 || _hitEffects[lane] == null) continue;
+                _hitEffects[lane].gameObject.SetActive(false);
+            }
         }
 
         private void UpdateHitEffects(double songTimeSec)
@@ -385,10 +423,22 @@ namespace YingYun.Rhythm.View
             for (int lane = 0; lane < LaneCount; lane++)
             {
                 SpriteRenderer effect = _hitEffects[lane];
-                if (effect == null || !effect.gameObject.activeSelf) continue;
+                if (effect == null) continue;
+                bool sustained = (_sustainedHitEffectMask & (1 << lane)) != 0;
+                if (!effect.gameObject.activeSelf)
+                {
+                    if (!sustained) continue;
+                    _hitEffectStartTimes[lane] = songTimeSec;
+                    effect.gameObject.SetActive(true);
+                }
+
                 double elapsed = songTimeSec - _hitEffectStartTimes[lane];
                 if (elapsed < 0d) continue;
-                if (elapsed >= HitEffectDurationSeconds)
+                if (sustained)
+                {
+                    elapsed %= HitEffectDurationSeconds;
+                }
+                else if (elapsed >= HitEffectDurationSeconds)
                 {
                     effect.gameObject.SetActive(false);
                     continue;

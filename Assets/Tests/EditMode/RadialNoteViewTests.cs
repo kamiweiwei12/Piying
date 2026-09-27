@@ -42,6 +42,8 @@ namespace YingYun.Rhythm.Tests
                 Assert.That(fixture.View.ActiveMarkerCount, Is.EqualTo(2));
                 Assert.That(fixture.View.IsChordVisualActive, Is.True);
                 Assert.That(fixture.View.IsHoldVisualActive, Is.False);
+                Assert.That(fixture.View.transform.Find("Chord Note Art"), Is.Null,
+                    "a chord must be generated from two tap circles and a bridge, not a combined texture");
             }
             finally
             {
@@ -61,6 +63,8 @@ namespace YingYun.Rhythm.Tests
 
                 Assert.That(fixture.View.ActiveMarkerCount, Is.EqualTo(1));
                 Assert.That(fixture.View.IsHoldVisualActive, Is.True);
+                Assert.That(fixture.View.IsHoldHeadActive, Is.False,
+                    "the entered head should disappear into the judgment circle");
                 Assert.That(fixture.View.IsChordVisualActive, Is.False);
                 Assert.That(fixture.View.IsHolding, Is.True);
 
@@ -75,7 +79,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void BindHold_RendersAnElongatedEllipseWithAHeadCap()
+        public void BindHold_RendersBodyFromHeadToTail()
         {
             Fixture fixture = CreateFixture();
             try
@@ -140,39 +144,43 @@ namespace YingYun.Rhythm.Tests
         public void NoteArtResources_LoadAsCroppedSprites()
         {
             Sprite tap = LoadImportedSprite("YingYun/Art/Notes/note_tap");
-            Sprite hold = LoadImportedSprite("YingYun/Art/Notes/note_hold");
-            Sprite chord = LoadImportedSprite("YingYun/Art/Notes/note_chord");
+            Sprite holdHead = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_head");
+            Sprite holdBody = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_body");
+            Sprite holdTail = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_tail");
             Sprite ring = LoadImportedSprite("YingYun/Art/Notes/hit_ring");
 
             Assert.That(tap, Is.Not.Null);
-            Assert.That(hold, Is.Not.Null);
-            Assert.That(chord, Is.Not.Null);
+            Assert.That(holdHead, Is.Not.Null);
+            Assert.That(holdBody, Is.Not.Null);
+            Assert.That(holdTail, Is.Not.Null);
             Assert.That(ring, Is.Not.Null);
-            Assert.That(hold.rect.width, Is.LessThan(hold.texture.width * 0.5f));
-            Assert.That(hold.rect.height, Is.LessThan(hold.texture.height * 0.8f));
+            Assert.That(holdBody.rect.height, Is.GreaterThan(holdHead.rect.height));
+            Assert.That(holdBody.rect.height, Is.GreaterThan(holdTail.rect.height));
+            Assert.That(holdBody.rect.width, Is.LessThan(holdHead.rect.width));
         }
 
         [Test]
         public void NoteArt_RendersImportedTapHoldAndChordPreview()
         {
             Sprite tap = LoadImportedSprite("YingYun/Art/Notes/note_tap");
-            Sprite hold = LoadImportedSprite("YingYun/Art/Notes/note_hold");
-            Sprite chord = LoadImportedSprite("YingYun/Art/Notes/note_chord");
+            Sprite holdHead = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_head");
+            Sprite holdBody = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_body");
+            Sprite holdTail = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_tail");
             var material = new Material(Shader.Find("Sprites/Default"));
             var root = new GameObject("Imported Note Art Preview");
 
-            RadialNoteView tapView = CreatePreviewView(root.transform, "Tap", new Vector3(-4f, 1f), tap, hold, chord, material);
+            RadialNoteView tapView = CreatePreviewView(root.transform, "Tap", new Vector3(-4f, 1f), tap, holdHead, holdBody, holdTail, material);
             tapView.Bind(new NoteData(1, "tap", 4, 2d), Spawn, Receptor, Colors);
             tapView.UpdateVisual(2d, 2d);
 
-            RadialNoteView holdView = CreatePreviewView(root.transform, "Hold", new Vector3(0f, 2f), tap, hold, chord, material);
+            RadialNoteView holdView = CreatePreviewView(root.transform, "Hold", new Vector3(0f, 2f), tap, holdHead, holdBody, holdTail, material);
             holdView.Bind(new NoteData(2, "hold", 4, 2d, 1d), Spawn, Receptor, Colors);
             holdView.UpdateVisual(2d, 2d);
-            SpriteRenderer holdRenderer = holdView.transform.Find("Hold Note Art").GetComponent<SpriteRenderer>();
+            SpriteRenderer holdRenderer = holdView.transform.Find("Hold Body").GetComponent<SpriteRenderer>();
             Assert.That(holdRenderer.bounds.size.x, Is.GreaterThan(0.1f));
             Assert.That(holdRenderer.bounds.size.y, Is.GreaterThan(0.1f));
 
-            RadialNoteView chordView = CreatePreviewView(root.transform, "Chord", new Vector3(3.4f, 1f), tap, hold, chord, material);
+            RadialNoteView chordView = CreatePreviewView(root.transform, "Chord", new Vector3(3.4f, 1f), tap, holdHead, holdBody, holdTail, material);
             chordView.Bind(new NoteData(3, "chord", 4, 2d, requiredLanesMask: (1 << 4) | (1 << 5)), Spawn, Receptor, Colors);
             chordView.UpdateVisual(2d, 2d);
 
@@ -193,7 +201,7 @@ namespace YingYun.Rhythm.Tests
             capture.Apply();
 
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-            string output = Path.Combine(projectRoot, "Logs", "M11-note-art-preview.png");
+            string output = Path.Combine(projectRoot, "Logs", "M11-note-art-preview-v2.png");
             Directory.CreateDirectory(Path.GetDirectoryName(output));
             File.WriteAllBytes(output, capture.EncodeToPNG());
 
@@ -230,7 +238,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void BeginHold_KeepsTheDedicatedHoldColorAndStaysElongated()
+        public void BeginHold_HidesEnteredHeadWithoutChangingBodyWidth()
         {
             Fixture fixture = CreateFixture();
             try
@@ -246,8 +254,40 @@ namespace YingYun.Rhythm.Tests
                 Color during = fixture.View.NoteMarkerColor;
                 Assert.That(before, Is.EqualTo(RadialNoteView.HoldColor));
                 Assert.That(during, Is.EqualTo(RadialNoteView.HoldColor));
-                Assert.That(fixture.View.NoteMarkerScale.x, Is.GreaterThan(widthBefore));
+                Assert.That(fixture.View.IsHoldHeadActive, Is.False);
+                Assert.That(fixture.View.NoteMarkerScale.x, Is.EqualTo(widthBefore).Within(0.0001f));
                 Assert.That(fixture.View.NoteMarkerScale.y, Is.GreaterThan(fixture.View.NoteMarkerScale.x * 2f));
+            }
+            finally
+            {
+                fixture.Dispose();
+            }
+        }
+
+        [Test]
+        public void HoldDuringSustain_ShortensTowardJudgmentWithoutCompressingTail()
+        {
+            Fixture fixture = CreateFixture();
+            try
+            {
+                fixture.View.Bind(new NoteData(1, "hold", 4, 1d, 1d), Spawn, Receptor, Colors);
+                fixture.View.BeginHold();
+                fixture.View.UpdateVisual(1.25d, 1.5d);
+
+                float firstLength = fixture.View.NoteMarkerScale.y;
+                Vector3 firstTailScale = fixture.View.transform.Find("Hold Tail").localScale;
+                float firstTailDistance = Vector2.Distance(fixture.View.HoldHeadPosition, fixture.View.HoldTailPosition);
+
+                fixture.View.UpdateVisual(1.75d, 1.5d);
+
+                Vector3 secondTailScale = fixture.View.transform.Find("Hold Tail").localScale;
+                float secondTailDistance = Vector2.Distance(fixture.View.HoldHeadPosition, fixture.View.HoldTailPosition);
+                Assert.That(fixture.View.NoteMarkerScale.y, Is.LessThan(firstLength));
+                Assert.That(secondTailDistance, Is.LessThan(firstTailDistance));
+                Assert.That(firstTailScale.x, Is.EqualTo(firstTailScale.y).Within(0.0001f));
+                Assert.That(secondTailScale.x, Is.EqualTo(secondTailScale.y).Within(0.0001f));
+                Assert.That(secondTailScale.x, Is.EqualTo(firstTailScale.x).Within(0.05f),
+                    "the tail cap stays uniform instead of being squashed with the body");
             }
             finally
             {
@@ -370,21 +410,32 @@ namespace YingYun.Rhythm.Tests
             string name,
             Vector3 position,
             Sprite tap,
-            Sprite hold,
-            Sprite chord,
+            Sprite holdHead,
+            Sprite holdBody,
+            Sprite holdTail,
             Material material)
         {
             var noteRoot = new GameObject(name);
             noteRoot.transform.SetParent(parent, false);
             noteRoot.transform.localPosition = position;
             var view = noteRoot.AddComponent<RadialNoteView>();
-            view.Initialize(tap, hold, chord, 0.62f, material);
+            view.Initialize(tap, holdHead, holdBody, holdTail, 0.62f, material);
             return view;
         }
 
-        private static Sprite LoadImportedSprite(string resourcePath)
+        private static Sprite LoadImportedSprite(string resourcePath, string spriteName = null)
         {
             Sprite[] sprites = Resources.LoadAll<Sprite>(resourcePath);
+            if (!string.IsNullOrEmpty(spriteName))
+            {
+                foreach (Sprite sprite in sprites)
+                {
+                    if (sprite.name == spriteName) return sprite;
+                }
+
+                return null;
+            }
+
             return sprites.Length > 0 ? sprites[0] : Resources.Load<Sprite>(resourcePath);
         }
 

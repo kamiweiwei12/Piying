@@ -136,5 +136,54 @@ namespace YingYun.Rhythm.Tests
                 Object.DestroyImmediate(root);
             }
         }
+
+        [Test]
+        public void HoldHitRing_RemainsActiveUntilFinalJudgment()
+        {
+            var root = new GameObject("Sustained Hold Hit Ring Test");
+            try
+            {
+                RadialNotePresenter presenter = root.AddComponent<RadialNotePresenter>();
+                typeof(RadialNotePresenter)
+                    .GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .Invoke(presenter, null);
+
+                const int laneMask = 1;
+                presenter.Begin(new[] { new NoteData(1, "hold", 0, 1d, 2d) });
+                presenter.Tick(1d);
+                presenter.OnJudged(new JudgmentResult(
+                    JudgmentEventKind.HoldStarted,
+                    1,
+                    0,
+                    JudgmentGrade.None,
+                    0d,
+                    1,
+                    1000,
+                    1d,
+                    laneMask));
+
+                Assert.That(presenter.ActiveHitEffectCount, Is.EqualTo(1));
+                presenter.Tick(2.1d);
+                Assert.That(presenter.ActiveHitEffectCount, Is.EqualTo(1),
+                    "the white ring must keep cycling for the whole hold");
+
+                presenter.OnJudged(new JudgmentResult(
+                    JudgmentEventKind.NoteJudged,
+                    1,
+                    0,
+                    JudgmentGrade.Miss,
+                    0d,
+                    1,
+                    1000,
+                    3d,
+                    laneMask));
+
+                Assert.That(presenter.ActiveHitEffectCount, Is.Zero);
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
     }
 }
