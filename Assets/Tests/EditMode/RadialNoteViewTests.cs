@@ -102,6 +102,113 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void HoldHeadAndTail_FollowStartAndEndJudgmentTimes()
+        {
+            Fixture fixture = CreateFixture();
+            try
+            {
+                const double startTime = 1d;
+                const double duration = 1d;
+                const double visibleLead = 1.5d;
+                fixture.View.Bind(new NoteData(1, "hold", 4, startTime, duration), Spawn, Receptor, Colors);
+
+                fixture.View.UpdateVisual(startTime, visibleLead);
+                Assert.That(fixture.View.HoldHeadPosition.x, Is.EqualTo(Receptor[4].x).Within(0.0001f));
+                Assert.That(fixture.View.HoldHeadPosition.y, Is.EqualTo(Receptor[4].y).Within(0.0001f));
+                Vector2 expectedTailAtStart = RadialNoteGeometry.Position(
+                    Spawn[4], Receptor[4], startTime, startTime + duration, visibleLead);
+                Assert.That(fixture.View.HoldTailPosition.x, Is.EqualTo(expectedTailAtStart.x).Within(0.0001f));
+                Assert.That(fixture.View.HoldTailPosition.y, Is.EqualTo(expectedTailAtStart.y).Within(0.0001f));
+                Assert.That(Vector2.Dot(
+                    (fixture.View.HoldTailPosition - fixture.View.HoldHeadPosition).normalized,
+                    fixture.View.NoteMarkerUp), Is.GreaterThan(0.999f),
+                    "the hold art's small tail cap must point at the release judgment position");
+
+                fixture.View.UpdateVisual(startTime + duration, visibleLead);
+                Assert.That(fixture.View.HoldHeadPosition.x, Is.EqualTo(Receptor[4].x).Within(0.0001f));
+                Assert.That(fixture.View.HoldHeadPosition.y, Is.EqualTo(Receptor[4].y).Within(0.0001f));
+                Assert.That(fixture.View.HoldTailPosition.x, Is.EqualTo(Receptor[4].x).Within(0.0001f));
+                Assert.That(fixture.View.HoldTailPosition.y, Is.EqualTo(Receptor[4].y).Within(0.0001f));
+            }
+            finally
+            {
+                fixture.Dispose();
+            }
+        }
+
+        [Test]
+        public void NoteArtResources_LoadAsCroppedSprites()
+        {
+            Sprite tap = LoadImportedSprite("YingYun/Art/Notes/note_tap");
+            Sprite hold = LoadImportedSprite("YingYun/Art/Notes/note_hold");
+            Sprite chord = LoadImportedSprite("YingYun/Art/Notes/note_chord");
+            Sprite ring = LoadImportedSprite("YingYun/Art/Notes/hit_ring");
+
+            Assert.That(tap, Is.Not.Null);
+            Assert.That(hold, Is.Not.Null);
+            Assert.That(chord, Is.Not.Null);
+            Assert.That(ring, Is.Not.Null);
+            Assert.That(hold.rect.width, Is.LessThan(hold.texture.width * 0.5f));
+            Assert.That(hold.rect.height, Is.LessThan(hold.texture.height * 0.8f));
+        }
+
+        [Test]
+        public void NoteArt_RendersImportedTapHoldAndChordPreview()
+        {
+            Sprite tap = LoadImportedSprite("YingYun/Art/Notes/note_tap");
+            Sprite hold = LoadImportedSprite("YingYun/Art/Notes/note_hold");
+            Sprite chord = LoadImportedSprite("YingYun/Art/Notes/note_chord");
+            var material = new Material(Shader.Find("Sprites/Default"));
+            var root = new GameObject("Imported Note Art Preview");
+
+            RadialNoteView tapView = CreatePreviewView(root.transform, "Tap", new Vector3(-4f, 1f), tap, hold, chord, material);
+            tapView.Bind(new NoteData(1, "tap", 4, 2d), Spawn, Receptor, Colors);
+            tapView.UpdateVisual(2d, 2d);
+
+            RadialNoteView holdView = CreatePreviewView(root.transform, "Hold", new Vector3(0f, 2f), tap, hold, chord, material);
+            holdView.Bind(new NoteData(2, "hold", 4, 2d, 1d), Spawn, Receptor, Colors);
+            holdView.UpdateVisual(2d, 2d);
+            SpriteRenderer holdRenderer = holdView.transform.Find("Hold Note Art").GetComponent<SpriteRenderer>();
+            Assert.That(holdRenderer.bounds.size.x, Is.GreaterThan(0.1f));
+            Assert.That(holdRenderer.bounds.size.y, Is.GreaterThan(0.1f));
+
+            RadialNoteView chordView = CreatePreviewView(root.transform, "Chord", new Vector3(3.4f, 1f), tap, hold, chord, material);
+            chordView.Bind(new NoteData(3, "chord", 4, 2d, requiredLanesMask: (1 << 4) | (1 << 5)), Spawn, Receptor, Colors);
+            chordView.UpdateVisual(2d, 2d);
+
+            var cameraObject = new GameObject("Imported Art Validation Camera");
+            var camera = cameraObject.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 0f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 4f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.055f, 0.012f, 0.009f, 1f);
+
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+            camera.Render();
+            RenderTexture.active = target;
+            capture.ReadPixels(new Rect(0f, 0f, 1280f, 720f), 0, 0);
+            capture.Apply();
+
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            string output = Path.Combine(projectRoot, "Logs", "M11-note-art-preview.png");
+            Directory.CreateDirectory(Path.GetDirectoryName(output));
+            File.WriteAllBytes(output, capture.EncodeToPNG());
+
+            Assert.That(new FileInfo(output).Length, Is.GreaterThan(10000));
+
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraObject);
+            Object.DestroyImmediate(root);
+            Object.DestroyImmediate(material);
+        }
+
+        [Test]
         public void BindTap_RendersACircleWithoutAHoldVisual()
         {
             Fixture fixture = CreateFixture();
@@ -256,6 +363,29 @@ namespace YingYun.Rhythm.Tests
             var view = root.AddComponent<RadialNoteView>();
             view.Initialize(sprite, 0.4f, material);
             return new Fixture(root, texture, sprite, material, view);
+        }
+
+        private static RadialNoteView CreatePreviewView(
+            Transform parent,
+            string name,
+            Vector3 position,
+            Sprite tap,
+            Sprite hold,
+            Sprite chord,
+            Material material)
+        {
+            var noteRoot = new GameObject(name);
+            noteRoot.transform.SetParent(parent, false);
+            noteRoot.transform.localPosition = position;
+            var view = noteRoot.AddComponent<RadialNoteView>();
+            view.Initialize(tap, hold, chord, 0.62f, material);
+            return view;
+        }
+
+        private static Sprite LoadImportedSprite(string resourcePath)
+        {
+            Sprite[] sprites = Resources.LoadAll<Sprite>(resourcePath);
+            return sprites.Length > 0 ? sprites[0] : Resources.Load<Sprite>(resourcePath);
         }
 
         private sealed class Fixture

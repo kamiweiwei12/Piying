@@ -9,6 +9,7 @@ namespace YingYun.Rhythm.View
     public sealed class RadialNotePresenter : MonoBehaviour
     {
         private const int LaneCount = 6;
+        private const double HitEffectDurationSeconds = 0.5d;
 
         private static readonly Vector2[] ReceptorPositions =
         {
@@ -59,16 +60,35 @@ namespace YingYun.Rhythm.View
         private SpriteRenderer _judgmentCalligraphy;
         private JudgmentCalligraphyAtlas _calligraphyAtlas;
         private Sprite _noteSprite;
+        private Sprite _tapSprite;
+        private Sprite _holdSprite;
+        private Sprite _chordSprite;
+        private Sprite _hitRingSprite;
         private Texture2D _noteTexture;
         private Material _lineMaterial;
         private Font _chineseFont;
         private int _nextNoteIndex;
         private double _currentSongTime;
         private double _judgmentTextClearSongTime = double.PositiveInfinity;
+        private readonly SpriteRenderer[] _hitEffects = new SpriteRenderer[LaneCount];
+        private readonly double[] _hitEffectStartTimes = new double[LaneCount];
 
         public int ActiveCount => _active.Count;
         public int PooledCount => _pool.Count;
         public int CreatedViewCount { get; private set; }
+        public int ActiveHitEffectCount
+        {
+            get
+            {
+                int count = 0;
+                for (int lane = 0; lane < LaneCount; lane++)
+                {
+                    if (_hitEffects[lane] != null && _hitEffects[lane].gameObject.activeSelf) count++;
+                }
+
+                return count;
+            }
+        }
 
         public static Vector2 ReceptorPositionForLane(int lane)
         {
@@ -106,11 +126,16 @@ namespace YingYun.Rhythm.View
             }
 
             _judgmentTextClearSongTime = double.PositiveInfinity;
+            for (int lane = 0; lane < LaneCount; lane++)
+            {
+                if (_hitEffects[lane] != null) _hitEffects[lane].gameObject.SetActive(false);
+            }
         }
 
         public void Tick(double songTimeSec)
         {
             _currentSongTime = songTimeSec;
+            UpdateHitEffects(songTimeSec);
 
             if (_judgmentText != null && songTimeSec >= _judgmentTextClearSongTime)
             {
@@ -156,6 +181,7 @@ namespace YingYun.Rhythm.View
                     holdView.BeginHold();
                 }
 
+                TriggerHitEffects(result.RequiredLanesMask);
                 ShowJudgmentText(JudgmentLabels.HoldHolding, new Color(1f, 0.88f, 0.28f));
                 _judgmentTextClearSongTime = double.PositiveInfinity;
                 return;
@@ -186,6 +212,10 @@ namespace YingYun.Rhythm.View
                 view.Resolve(resultColor, _currentSongTime + releaseDelaySeconds);
             }
 
+            if (result.Grade != JudgmentGrade.Miss)
+            {
+                TriggerHitEffects(result.RequiredLanesMask);
+            }
             ShowJudgmentText(JudgmentLabels.For(result, isHoldNote, wasHolding), resultColor);
         }
 
@@ -202,6 +232,18 @@ namespace YingYun.Rhythm.View
                 new Vector2(0.5f, 0.5f),
                 64f);
             _lineMaterial = new Material(Shader.Find("Sprites/Default"));
+            _tapSprite = LoadSpriteResource("YingYun/Art/Notes/note_tap");
+            _holdSprite = LoadSpriteResource("YingYun/Art/Notes/note_hold");
+            _chordSprite = LoadSpriteResource("YingYun/Art/Notes/note_chord");
+            _hitRingSprite = LoadSpriteResource("YingYun/Art/Notes/hit_ring");
+            if (_tapSprite == null || _holdSprite == null || _chordSprite == null || _hitRingSprite == null)
+            {
+                Debug.LogWarning("[M11-Art] One or more note art sprites are missing; runtime circle fallback is active.");
+                _tapSprite = _tapSprite != null ? _tapSprite : _noteSprite;
+                _holdSprite = _holdSprite != null ? _holdSprite : _noteSprite;
+                _chordSprite = _chordSprite != null ? _chordSprite : _noteSprite;
+                _hitRingSprite = _hitRingSprite != null ? _hitRingSprite : _noteSprite;
+            }
             _chineseFont = ChineseFontProvider.Load();
             _calligraphyAtlas = JudgmentCalligraphyAtlas.Load();
 
@@ -209,6 +251,7 @@ namespace YingYun.Rhythm.View
             for (int lane = 0; lane < LaneCount; lane++)
             {
                 BuildReceptor(lane);
+                BuildHitEffect(lane);
             }
 
             for (int i = 0; i < initialPoolSize; i++)
@@ -299,9 +342,81 @@ namespace YingYun.Rhythm.View
             var noteObject = new GameObject($"Pooled Note {CreatedViewCount + 1}");
             noteObject.transform.SetParent(_visualRoot, false);
             var view = noteObject.AddComponent<RadialNoteView>();
-            view.Initialize(_noteSprite, noteScale, _lineMaterial);
+            view.Initialize(_tapSprite, _holdSprite, _chordSprite, noteScale, _lineMaterial);
             CreatedViewCount++;
             return view;
+        }
+
+        private void BuildHitEffect(int lane)
+        {
+            var effectObject = new GameObject($"Lane {lane + 1} Hit Ring");
+            effectObject.transform.SetParent(_visualRoot, false);
+            effectObject.transform.localPosition = ReceptorPositions[lane];
+            var renderer = effectObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = _hitRingSprite;
+            renderer.sortingOrder = 25;
+            renderer.color = Color.white;
+            effectObject.SetActive(false);
+            _hitEffects[lane] = renderer;
+            _hitEffectStartTimes[lane] = double.NegativeInfinity;
+        }
+
+        private void TriggerHitEffects(int laneMask)
+        {
+            for (int lane = 0; lane < LaneCount; lane++)
+            {
+                if ((laneMask & (1 << lane)) == 0 || _hitEffects[lane] == null) continue;
+                _hitEffectStartTimes[lane] = _currentSongTime;
+                _hitEffects[lane].transform.localPosition = ReceptorPositions[lane];
+                _hitEffects[lane].transform.localScale = UniformScaleForMaxSize(_hitRingSprite, 0.10f);
+                _hitEffects[lane].color = Color.white;
+                _hitEffects[lane].gameObject.SetActive(true);
+            }
+        }
+
+        private static Sprite LoadSpriteResource(string resourcePath)
+        {
+            Sprite[] sprites = Resources.LoadAll<Sprite>(resourcePath);
+            return sprites.Length > 0 ? sprites[0] : Resources.Load<Sprite>(resourcePath);
+        }
+
+        private void UpdateHitEffects(double songTimeSec)
+        {
+            for (int lane = 0; lane < LaneCount; lane++)
+            {
+                SpriteRenderer effect = _hitEffects[lane];
+                if (effect == null || !effect.gameObject.activeSelf) continue;
+                double elapsed = songTimeSec - _hitEffectStartTimes[lane];
+                if (elapsed < 0d) continue;
+                if (elapsed >= HitEffectDurationSeconds)
+                {
+                    effect.gameObject.SetActive(false);
+                    continue;
+                }
+
+                float targetSize;
+                float alpha;
+                if (elapsed <= 0.2d)
+                {
+                    targetSize = Mathf.Lerp(0.10f, 1.10f, (float)(elapsed / 0.2d));
+                    alpha = 1f;
+                }
+                else
+                {
+                    float fade = (float)((elapsed - 0.2d) / 0.3d);
+                    targetSize = Mathf.Lerp(1.10f, 0.42f, fade);
+                    alpha = 1f - fade;
+                }
+
+                effect.transform.localScale = UniformScaleForMaxSize(_hitRingSprite, targetSize);
+                effect.color = new Color(1f, 1f, 1f, alpha);
+            }
+        }
+
+        private static Vector3 UniformScaleForMaxSize(Sprite sprite, float targetSize)
+        {
+            float sourceSize = sprite == null ? 1f : Mathf.Max(0.001f, Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y));
+            return Vector3.one * (targetSize / sourceSize);
         }
 
         private void ShowJudgmentText(string text, Color color)
