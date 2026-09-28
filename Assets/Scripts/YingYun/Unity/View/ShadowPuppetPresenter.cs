@@ -55,9 +55,16 @@ namespace YingYun.Rhythm.View
         private Transform _pelvisArt;
         private Transform _leftSleeveArt;
         private Transform _rightSleeveArt;
+        private Transform _leftHandArt;
+        private Transform _rightHandArt;
         private Vector3 _pelvisArtBaseScale;
         private Vector3 _leftSleeveArtBaseScale;
         private Vector3 _rightSleeveArtBaseScale;
+        private Vector3 _leftHandArtBaseScale;
+        private Vector3 _rightHandArtBaseScale;
+        private Quaternion _leftHandArtBaseRotation;
+        private Quaternion _rightHandArtBaseRotation;
+        private float _leftPointFingerAmount;
         private Sprite[] _puppetArtSprites = Array.Empty<Sprite>();
         private bool _usesSegmentedPuppetArt;
         private Sprite _squareSprite;
@@ -143,6 +150,8 @@ namespace YingYun.Rhythm.View
             _rightFingerJoint.localScale = Vector3.one;
             _leftPointFinger.gameObject.SetActive(false);
             _rightPointFinger.gameObject.SetActive(false);
+            _leftPointFingerAmount = 0f;
+            SyncSegmentedHandArt();
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
         }
@@ -223,6 +232,7 @@ namespace YingYun.Rhythm.View
             _rightFingerJoint.localScale = Vector3.one;
             ApplyLeftPointFinger((float)phrase.PointFinger(t));
             _rightPointFinger.gameObject.SetActive(false);
+            SyncSegmentedHandArt();
             SetRotation(_torsoJoint, 0d);
             _torsoJoint.localScale = Vector3.one;
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
@@ -250,6 +260,7 @@ namespace YingYun.Rhythm.View
             float closure = (float)phrase.RightClosure(t);
             _rightFingerJoint.localScale = new Vector3(1f - (0.48f * closure),
                 1f - (0.30f * closure), 1f);
+            SyncSegmentedHandArt();
             SetRotation(_torsoJoint, 0d);
             _torsoJoint.localScale = Vector3.one;
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
@@ -575,8 +586,11 @@ namespace YingYun.Rhythm.View
             SetRotation(_rightForearmJoint, _dancePlayback.Angle(DanceJoint.RightElbow));
             float facing = (float)_dancePlayback.FacingScale;
             _facingScale = facing;
-            float visibleFacing = Mathf.Sign(facing == 0f ? 1f : facing) *
-                Mathf.Lerp(0.16f, 1f, Mathf.Abs(facing));
+            // 舊幾何剪影可以靠連續縮放穿過側身；完整分片貼圖若照做會被壓成細線。
+            // 保留原舞句的 FacingScale，只在美術適配層以完整寬度換面。
+            float visibleFacing = _usesSegmentedPuppetArt
+                ? (facing < 0f ? -1f : 1f)
+                : facing;
             _torsoJoint.localScale = new Vector3(visibleFacing, 1f, 1f);
             // 分片的下身各自改向，不縮放骨盆根節點，避免足點反解在側身時失穩。
             _robeSkirt.localScale = new Vector3(1.28f * visibleFacing, 0.72f, 1f);
@@ -658,14 +672,14 @@ namespace YingYun.Rhythm.View
                 FindPuppetArt("puppet_left_upper_arm"), 1.03f, 9, -7.2f);
             CreateRigArt("Art Left Forearm", _leftForearmJoint,
                 FindPuppetArt("puppet_left_forearm"), 0.89f, 10, 5.8f);
-            CreateRigArt("Art Left Hand", _leftWristJoint,
+            _leftHandArt = CreateRigArt("Art Left Hand", _leftWristJoint,
                 FindPuppetArt("puppet_left_hand"), 0.42f, 12);
 
             _rightSleeveArt = CreateRigArt("Art Right Upper Arm", _rightUpperArmJoint,
-                FindPuppetArt("puppet_right_forearm"), 1.02f, 9, -1.4f);
+                FindPuppetArt("puppet_right_upper_arm"), 1.02f, 9, -1.4f);
             CreateRigArt("Art Right Forearm", _rightForearmJoint,
                 FindPuppetArt("puppet_right_forearm"), 0.90f, 10, -1.4f);
-            CreateRigArt("Art Right Hand", _rightWristJoint,
+            _rightHandArt = CreateRigArt("Art Right Hand", _rightWristJoint,
                 FindPuppetArt("puppet_right_hand"), 0.42f, 12);
 
             CreateRigArt("Art Left Thigh", _leftThighJoint,
@@ -685,7 +699,12 @@ namespace YingYun.Rhythm.View
             _pelvisArtBaseScale = _pelvisArt.localScale;
             _leftSleeveArtBaseScale = _leftSleeveArt.localScale;
             _rightSleeveArtBaseScale = _rightSleeveArt.localScale;
+            _leftHandArtBaseScale = _leftHandArt.localScale;
+            _rightHandArtBaseScale = _rightHandArt.localScale;
+            _leftHandArtBaseRotation = _leftHandArt.localRotation;
+            _rightHandArtBaseRotation = _rightHandArt.localRotation;
             _usesSegmentedPuppetArt = true;
+            SyncSegmentedHandArt();
         }
 
         private Sprite FindPuppetArt(string spriteName)
@@ -757,6 +776,7 @@ namespace YingYun.Rhythm.View
                 _rightFingerJoint.localScale = Vector3.Lerp(_rightFingerJoint.localScale,
                     Vector3.one, blend);
             }
+            SyncSegmentedHandArt();
             EaseRotation(_leftSleeveTail, -leftWrist * 0.85f, blend * 0.45f);
             EaseRotation(_rightSleeveTail, -rightWrist * 0.85f, blend * 0.45f);
         }
@@ -879,8 +899,25 @@ namespace YingYun.Rhythm.View
         private void ApplyLeftPointFinger(float amount)
         {
             amount = Mathf.Clamp01(amount);
+            _leftPointFingerAmount = amount;
             _leftPointFinger.gameObject.SetActive(amount > 0.01f);
             _leftPointFinger.localScale = new Vector3(0.075f * amount, 0.52f * amount, 1f);
+        }
+
+        private void SyncSegmentedHandArt()
+        {
+            if (!_usesSegmentedPuppetArt || _leftHandArt == null || _rightHandArt == null) return;
+
+            Vector3 leftGestureScale = _leftFingerJoint.localScale;
+            // 單指原本由獨立的舊剪影顯示。新美術只有完整手掌，因此在美術適配層
+            // 將同一張手掌收窄、延長；动作轨迹和手势参数保持不变。
+            leftGestureScale.x = Mathf.Lerp(leftGestureScale.x, 0.34f, _leftPointFingerAmount);
+            leftGestureScale.y = Mathf.Lerp(leftGestureScale.y, 1.22f, _leftPointFingerAmount);
+            _leftHandArt.localRotation = _leftHandArtBaseRotation * _leftFingerJoint.localRotation;
+            _leftHandArt.localScale = Vector3.Scale(_leftHandArtBaseScale, leftGestureScale);
+
+            _rightHandArt.localRotation = _rightHandArtBaseRotation * _rightFingerJoint.localRotation;
+            _rightHandArt.localScale = Vector3.Scale(_rightHandArtBaseScale, _rightFingerJoint.localScale);
         }
 
         private static Color ShadowColor() => new Color(0.12f, 0.025f, 0.018f, 0.96f);

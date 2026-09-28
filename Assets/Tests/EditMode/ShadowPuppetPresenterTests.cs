@@ -201,6 +201,78 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void SegmentedArt_UsesDedicatedRightUpperArmSprite()
+        {
+            var root = new GameObject("Right Upper Arm Art Binding Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+
+            SpriteRenderer upperArm = root.transform.Find(
+                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Right Shoulder/Art Right Upper Arm")
+                .GetComponent<SpriteRenderer>();
+
+            Assert.That(upperArm.sprite.name, Is.EqualTo("puppet_right_upper_arm"));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void SegmentedHandArt_FollowsExistingFingerAndFistDrivers()
+        {
+            var root = new GameObject("Segmented Hand Driver Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 72d, PlayDifficulty.Normal), 120d, 72d);
+            presenter.Begin(phrases);
+
+            Transform leftHand = root.transform.Find(
+                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Art Left Hand");
+            Transform rightHand = root.transform.Find(
+                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Right Shoulder/Joint Right Elbow/Joint Right Wrist/Art Right Hand");
+            Vector3 leftBase = leftHand.localScale;
+            Vector3 rightBase = rightHand.localScale;
+
+            DancePhrase singleFinger = phrases.First(p => p.Action == DanceAction.SingleFinger);
+            presenter.Tick(singleFinger.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                singleFinger.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(singleFinger.StartSeconds + (singleFinger.DurationSeconds * 0.7d));
+            Assert.That(leftHand.localScale.x / leftBase.x, Is.LessThan(0.45f));
+            Assert.That(leftHand.localScale.y / leftBase.y, Is.GreaterThan(1.1f));
+
+            presenter.Begin(phrases);
+            DancePhrase salute = phrases.First(p => p.Action == DanceAction.FistPalmSalute);
+            presenter.Tick(salute.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                salute.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(salute.StartSeconds + (salute.DurationSeconds * 0.7d));
+            Assert.That(rightHand.localScale.x / rightBase.x, Is.LessThan(0.7f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void SegmentedTurn_PreservesArtworkWidthWhileUsingExistingFacingTrack()
+        {
+            var root = new GameObject("Segmented Turn Art Adapter Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            presenter.Begin(phrases);
+            DancePhrase turn = phrases.First(p => p.Action == DanceAction.Turn);
+            presenter.Tick(turn.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                turn.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+
+            presenter.Tick(turn.StartSeconds + (turn.DurationSeconds * 0.55d));
+            Transform torso = root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist");
+            Assert.That(Mathf.Abs(presenter.FacingScale), Is.LessThan(0.15f));
+            Assert.That(Mathf.Abs(torso.localScale.x), Is.EqualTo(1f).Within(0.001f));
+
+            presenter.Tick(turn.StartSeconds + (turn.DurationSeconds * 0.82d));
+            Assert.That(torso.localScale.x, Is.EqualTo(-1f).Within(0.001f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void RawPress_TightensTheStringAndStartsMovingTheJointWithinThreeFrames()
         {
             var root = new GameObject("Puppet Test");
