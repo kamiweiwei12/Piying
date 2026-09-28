@@ -24,6 +24,41 @@
 
 ---
 
+## [2026-09-28] 美術 A1-R2 候選 - 組合音素材化端點與花紋橋
+
+### 新增
+
+* 透過 Sprite Editor 將既有 `note_chord.png` 拆成左側圓形端點、中央花紋橋、右側圓形端點三個 Sprite，不另造替代圖形。
+
+### 修改
+
+* 組合音兩端改用素材庫原圖內的紅青圓形紋樣，與單音的長條裝飾外形明確區分。
+* 中央連接件改用素材原圖的白色外暈、紅色雙線與青色內芯；依兩個實際判定端點旋轉和延伸，移除上一版程式生成的純色 `LineRenderer`。
+* 端點保持等比例，橋位於端點後方；組合音的兩個位置仍由各自 lane 與同一 `NoteTimeSec` 計算，不改判定邏輯。
+
+### 測試
+
+* `RadialNoteViewTests` 11/11 通過，驗證三個切片存在、兩端使用指定圓形 Sprite、中央使用指定花紋橋且不含 `LineRenderer`；預覽輸出為 `Logs/M11-note-art-preview-v3.png`。
+* Unity 6000.6.2f1 EditMode 全量回歸 `total=198 / passed=198 / failed=0 / skipped=0`。
+* `StandaloneWindows64` 驗證建置成功，輸出 `Builds/M11-Art-Notes-R3/YingYun.exe`，BuildReport 為 `Succeeded`、0 error、308,177,957 bytes。
+
+### 驗收結果
+
+* 組合音素材切片、生成邏輯、預覽、全量回歸與 Windows 建置技術驗收通過；等待使用者實機確認各種 lane 組合下的端點與花紋橋觀感。
+
+### Git Commit
+
+* `fix(art): use patterned chord components`（本工作單位提交）。
+
+### 風險 / 已知問題
+
+* 同一張原圖的完整組合音 Sprite 仍保留，供追溯與比較；執行期只載入三個新切片。
+* 建置仍有既有 Inference Engine shader variant 警告，本次為 187 warning、0 error。
+
+### 下一步
+
+* 使用者實機確認圓形端點大小、橋寬與花紋延伸效果；確認後才進入皮影關節重繪。
+
 ## [2026-09-28] 美術 A1-R1 候選 - 長音隧道收束與組合音重製
 
 ### 新增

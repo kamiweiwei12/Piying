@@ -61,6 +61,9 @@ namespace YingYun.Rhythm.View
         private JudgmentCalligraphyAtlas _calligraphyAtlas;
         private Sprite _noteSprite;
         private Sprite _tapSprite;
+        private Sprite _chordLeftSprite;
+        private Sprite _chordBridgeSprite;
+        private Sprite _chordRightSprite;
         private Sprite _holdHeadSprite;
         private Sprite _holdBodySprite;
         private Sprite _holdTailSprite;
@@ -243,15 +246,22 @@ namespace YingYun.Rhythm.View
                 64f);
             _lineMaterial = new Material(Shader.Find("Sprites/Default"));
             _tapSprite = LoadSpriteResource("YingYun/Art/Notes/note_tap");
+            _chordLeftSprite = LoadSpriteResource("YingYun/Art/Notes/note_chord", "note_chord_left");
+            _chordBridgeSprite = LoadSpriteResource("YingYun/Art/Notes/note_chord", "note_chord_bridge");
+            _chordRightSprite = LoadSpriteResource("YingYun/Art/Notes/note_chord", "note_chord_right");
             _holdHeadSprite = LoadSpriteResource("YingYun/Art/Notes/note_hold", "note_hold_head");
             _holdBodySprite = LoadSpriteResource("YingYun/Art/Notes/note_hold", "note_hold_body");
             _holdTailSprite = LoadSpriteResource("YingYun/Art/Notes/note_hold", "note_hold_tail");
             _hitRingSprite = LoadSpriteResource("YingYun/Art/Notes/hit_ring");
-            if (_tapSprite == null || _holdHeadSprite == null || _holdBodySprite == null ||
+            if (_tapSprite == null || _chordLeftSprite == null || _chordBridgeSprite == null ||
+                _chordRightSprite == null || _holdHeadSprite == null || _holdBodySprite == null ||
                 _holdTailSprite == null || _hitRingSprite == null)
             {
                 Debug.LogWarning("[M11-Art] One or more note-part sprites are missing; runtime circle fallback is active.");
                 _tapSprite = _tapSprite != null ? _tapSprite : _noteSprite;
+                _chordLeftSprite = _chordLeftSprite != null ? _chordLeftSprite : _noteSprite;
+                _chordBridgeSprite = _chordBridgeSprite != null ? _chordBridgeSprite : _noteSprite;
+                _chordRightSprite = _chordRightSprite != null ? _chordRightSprite : _noteSprite;
                 _holdHeadSprite = _holdHeadSprite != null ? _holdHeadSprite : _noteSprite;
                 _holdBodySprite = _holdBodySprite != null ? _holdBodySprite : _noteSprite;
                 _holdTailSprite = _holdTailSprite != null ? _holdTailSprite : _noteSprite;
@@ -357,6 +367,9 @@ namespace YingYun.Rhythm.View
             var view = noteObject.AddComponent<RadialNoteView>();
             view.Initialize(
                 _tapSprite,
+                _chordLeftSprite,
+                _chordBridgeSprite,
+                _chordRightSprite,
                 _holdHeadSprite,
                 _holdBodySprite,
                 _holdTailSprite,

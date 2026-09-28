@@ -44,6 +44,9 @@ namespace YingYun.Rhythm.Tests
                 Assert.That(fixture.View.IsHoldVisualActive, Is.False);
                 Assert.That(fixture.View.transform.Find("Chord Note Art"), Is.Null,
                     "a chord must be generated from two tap circles and a bridge, not a combined texture");
+                Assert.That(fixture.View.GetComponentsInChildren<LineRenderer>(true), Is.Empty,
+                    "the bridge must come from the supplied art rather than a procedural line");
+                Assert.That(fixture.View.transform.Find("Chord Bridge Art"), Is.Not.Null);
             }
             finally
             {
@@ -144,12 +147,21 @@ namespace YingYun.Rhythm.Tests
         public void NoteArtResources_LoadAsCroppedSprites()
         {
             Sprite tap = LoadImportedSprite("YingYun/Art/Notes/note_tap");
+            Sprite chordLeft = LoadImportedSprite("YingYun/Art/Notes/note_chord", "note_chord_left");
+            Sprite chordBridge = LoadImportedSprite("YingYun/Art/Notes/note_chord", "note_chord_bridge");
+            Sprite chordRight = LoadImportedSprite("YingYun/Art/Notes/note_chord", "note_chord_right");
             Sprite holdHead = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_head");
             Sprite holdBody = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_body");
             Sprite holdTail = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_tail");
             Sprite ring = LoadImportedSprite("YingYun/Art/Notes/hit_ring");
 
             Assert.That(tap, Is.Not.Null);
+            Assert.That(chordLeft, Is.Not.Null);
+            Assert.That(chordBridge, Is.Not.Null);
+            Assert.That(chordRight, Is.Not.Null);
+            Assert.That(chordLeft.rect.width, Is.EqualTo(chordLeft.rect.height));
+            Assert.That(chordRight.rect.width, Is.EqualTo(chordRight.rect.height));
+            Assert.That(chordBridge.rect.width, Is.LessThan(chordLeft.rect.width));
             Assert.That(holdHead, Is.Not.Null);
             Assert.That(holdBody, Is.Not.Null);
             Assert.That(holdTail, Is.Not.Null);
@@ -163,26 +175,35 @@ namespace YingYun.Rhythm.Tests
         public void NoteArt_RendersImportedTapHoldAndChordPreview()
         {
             Sprite tap = LoadImportedSprite("YingYun/Art/Notes/note_tap");
+            Sprite chordLeft = LoadImportedSprite("YingYun/Art/Notes/note_chord", "note_chord_left");
+            Sprite chordBridge = LoadImportedSprite("YingYun/Art/Notes/note_chord", "note_chord_bridge");
+            Sprite chordRight = LoadImportedSprite("YingYun/Art/Notes/note_chord", "note_chord_right");
             Sprite holdHead = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_head");
             Sprite holdBody = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_body");
             Sprite holdTail = LoadImportedSprite("YingYun/Art/Notes/note_hold", "note_hold_tail");
             var material = new Material(Shader.Find("Sprites/Default"));
             var root = new GameObject("Imported Note Art Preview");
 
-            RadialNoteView tapView = CreatePreviewView(root.transform, "Tap", new Vector3(-4f, 1f), tap, holdHead, holdBody, holdTail, material);
+            RadialNoteView tapView = CreatePreviewView(root.transform, "Tap", new Vector3(-4f, 1f), tap, chordLeft, chordBridge, chordRight, holdHead, holdBody, holdTail, material);
             tapView.Bind(new NoteData(1, "tap", 4, 2d), Spawn, Receptor, Colors);
             tapView.UpdateVisual(2d, 2d);
 
-            RadialNoteView holdView = CreatePreviewView(root.transform, "Hold", new Vector3(0f, 2f), tap, holdHead, holdBody, holdTail, material);
+            RadialNoteView holdView = CreatePreviewView(root.transform, "Hold", new Vector3(0f, 2f), tap, chordLeft, chordBridge, chordRight, holdHead, holdBody, holdTail, material);
             holdView.Bind(new NoteData(2, "hold", 4, 2d, 1d), Spawn, Receptor, Colors);
             holdView.UpdateVisual(2d, 2d);
             SpriteRenderer holdRenderer = holdView.transform.Find("Hold Body").GetComponent<SpriteRenderer>();
             Assert.That(holdRenderer.bounds.size.x, Is.GreaterThan(0.1f));
             Assert.That(holdRenderer.bounds.size.y, Is.GreaterThan(0.1f));
 
-            RadialNoteView chordView = CreatePreviewView(root.transform, "Chord", new Vector3(3.4f, 1f), tap, holdHead, holdBody, holdTail, material);
+            RadialNoteView chordView = CreatePreviewView(root.transform, "Chord", new Vector3(3.4f, 1f), tap, chordLeft, chordBridge, chordRight, holdHead, holdBody, holdTail, material);
             chordView.Bind(new NoteData(3, "chord", 4, 2d, requiredLanesMask: (1 << 4) | (1 << 5)), Spawn, Receptor, Colors);
             chordView.UpdateVisual(2d, 2d);
+            Assert.That(chordView.transform.Find("Lane 5 Marker").GetComponent<SpriteRenderer>().sprite.name,
+                Is.EqualTo("note_chord_left"));
+            Assert.That(chordView.transform.Find("Lane 6 Marker").GetComponent<SpriteRenderer>().sprite.name,
+                Is.EqualTo("note_chord_right"));
+            Assert.That(chordView.transform.Find("Chord Bridge Art").GetComponent<SpriteRenderer>().sprite.name,
+                Is.EqualTo("note_chord_bridge"));
 
             var cameraObject = new GameObject("Imported Art Validation Camera");
             var camera = cameraObject.AddComponent<Camera>();
@@ -201,7 +222,7 @@ namespace YingYun.Rhythm.Tests
             capture.Apply();
 
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
-            string output = Path.Combine(projectRoot, "Logs", "M11-note-art-preview-v2.png");
+            string output = Path.Combine(projectRoot, "Logs", "M11-note-art-preview-v3.png");
             Directory.CreateDirectory(Path.GetDirectoryName(output));
             File.WriteAllBytes(output, capture.EncodeToPNG());
 
@@ -410,6 +431,9 @@ namespace YingYun.Rhythm.Tests
             string name,
             Vector3 position,
             Sprite tap,
+            Sprite chordLeft,
+            Sprite chordBridge,
+            Sprite chordRight,
             Sprite holdHead,
             Sprite holdBody,
             Sprite holdTail,
@@ -419,7 +443,16 @@ namespace YingYun.Rhythm.Tests
             noteRoot.transform.SetParent(parent, false);
             noteRoot.transform.localPosition = position;
             var view = noteRoot.AddComponent<RadialNoteView>();
-            view.Initialize(tap, holdHead, holdBody, holdTail, 0.62f, material);
+            view.Initialize(
+                tap,
+                chordLeft,
+                chordBridge,
+                chordRight,
+                holdHead,
+                holdBody,
+                holdTail,
+                0.62f,
+                material);
             return view;
         }
 

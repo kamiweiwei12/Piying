@@ -15,12 +15,14 @@ namespace YingYun.Rhythm.View
         private readonly SpriteRenderer[] _markers = new SpriteRenderer[LaneCount];
         private readonly Vector2[] _spawnPositions = new Vector2[LaneCount];
         private readonly Vector2[] _receptorPositions = new Vector2[LaneCount];
-        private LineRenderer _chordBridgeOutline;
-        private LineRenderer _chordBridge;
+        private SpriteRenderer _chordBridgeVisual;
         private SpriteRenderer _holdHeadVisual;
         private SpriteRenderer _holdBodyVisual;
         private SpriteRenderer _holdTailVisual;
         private Sprite _tapSprite;
+        private Sprite _chordLeftSprite;
+        private Sprite _chordBridgeSprite;
+        private Sprite _chordRightSprite;
         private Sprite _holdHeadSprite;
         private Sprite _holdBodySprite;
         private Sprite _holdTailSprite;
@@ -38,7 +40,7 @@ namespace YingYun.Rhythm.View
         public int RequiredLanesMask { get; private set; }
         public bool IsResolved { get; private set; }
         public double ReleaseSongTimeSec { get; private set; }
-        public bool IsChordVisualActive => _chordBridge != null && _chordBridge.gameObject.activeSelf;
+        public bool IsChordVisualActive => _chordBridgeVisual != null && _chordBridgeVisual.gameObject.activeSelf;
         public bool IsHoldVisualActive => _holdTailVisual != null && _holdTailVisual.gameObject.activeSelf;
         public bool IsHolding => _isHolding;
         public bool IsHoldNote => _isHold;
@@ -56,16 +58,19 @@ namespace YingYun.Rhythm.View
 
         public void Initialize(Sprite sprite, float scale, Material lineMaterial)
         {
-            Initialize(sprite, sprite, sprite, sprite, scale, lineMaterial);
+            Initialize(sprite, sprite, sprite, sprite, sprite, sprite, sprite, scale, lineMaterial);
         }
 
         public void Initialize(Sprite tapSprite, Sprite holdSprite, Sprite chordSprite, float scale, Material lineMaterial)
         {
-            Initialize(tapSprite, holdSprite, holdSprite, holdSprite, scale, lineMaterial);
+            Initialize(tapSprite, chordSprite, chordSprite, chordSprite, holdSprite, holdSprite, holdSprite, scale, lineMaterial);
         }
 
         public void Initialize(
             Sprite tapSprite,
+            Sprite chordLeftSprite,
+            Sprite chordBridgeSprite,
+            Sprite chordRightSprite,
             Sprite holdHeadSprite,
             Sprite holdBodySprite,
             Sprite holdTailSprite,
@@ -74,6 +79,9 @@ namespace YingYun.Rhythm.View
         {
             _baseScale = scale;
             _tapSprite = tapSprite;
+            _chordLeftSprite = chordLeftSprite;
+            _chordBridgeSprite = chordBridgeSprite;
+            _chordRightSprite = chordRightSprite;
             _holdHeadSprite = holdHeadSprite;
             _holdBodySprite = holdBodySprite;
             _holdTailSprite = holdTailSprite;
@@ -91,8 +99,7 @@ namespace YingYun.Rhythm.View
                 _markers[lane] = marker;
             }
 
-            _chordBridgeOutline = CreateLine("Chord Bridge Outline", lineMaterial, 18, 0.20f, Color.white);
-            _chordBridge = CreateLine("Chord Bridge", lineMaterial, 19, 0.10f, new Color(0.52f, 0.95f, 0.86f, 1f));
+            _chordBridgeVisual = CreateArtRenderer("Chord Bridge Art", _chordBridgeSprite, 18);
             _holdBodyVisual = CreateArtRenderer("Hold Body", _holdBodySprite, 20);
             _holdHeadVisual = CreateArtRenderer("Hold Head", _holdHeadSprite, 21);
             _holdTailVisual = CreateArtRenderer("Hold Tail", _holdTailSprite, 22);
@@ -129,8 +136,7 @@ namespace YingYun.Rhythm.View
                 }
             }
 
-            _chordBridgeOutline.gameObject.SetActive(note.IsChord);
-            _chordBridge.gameObject.SetActive(note.IsChord);
+            _chordBridgeVisual.gameObject.SetActive(note.IsChord);
             _holdHeadVisual.gameObject.SetActive(_isHold);
             _holdBodyVisual.gameObject.SetActive(_isHold);
             _holdTailVisual.gameObject.SetActive(_isHold);
@@ -206,8 +212,7 @@ namespace YingYun.Rhythm.View
                 _markers[lane].transform.localRotation = Quaternion.identity;
             }
 
-            _chordBridgeOutline.gameObject.SetActive(false);
-            _chordBridge.gameObject.SetActive(false);
+            _chordBridgeVisual.gameObject.SetActive(false);
             _holdHeadVisual.gameObject.SetActive(false);
             _holdBodyVisual.gameObject.SetActive(false);
             _holdTailVisual.gameObject.SetActive(false);
@@ -279,15 +284,25 @@ namespace YingYun.Rhythm.View
                 _spawnPositions[secondLane], _receptorPositions[secondLane], songTimeSec, NoteTimeSec, visibleLeadSec);
             float progress = RadialNoteGeometry.Progress(songTimeSec, NoteTimeSec, visibleLeadSec);
             float targetHeight = _baseScale * (1.75f + (0.18f * progress));
-            Vector3 endpointScale = UniformScaleForHeight(_tapSprite, targetHeight);
+            _markers[firstLane].sprite = _chordLeftSprite;
+            _markers[secondLane].sprite = _chordRightSprite;
+            Vector3 firstScale = UniformScaleForHeight(_chordLeftSprite, targetHeight);
+            Vector3 secondScale = UniformScaleForHeight(_chordRightSprite, targetHeight);
             _markers[firstLane].transform.localPosition = first;
-            _markers[firstLane].transform.localScale = endpointScale;
+            _markers[firstLane].transform.localScale = firstScale;
             _markers[secondLane].transform.localPosition = second;
-            _markers[secondLane].transform.localScale = endpointScale;
-            _chordBridgeOutline.SetPosition(0, first);
-            _chordBridgeOutline.SetPosition(1, second);
-            _chordBridge.SetPosition(0, first);
-            _chordBridge.SetPosition(1, second);
+            _markers[secondLane].transform.localScale = secondScale;
+
+            Vector2 bridgeDirection = second - first;
+            _chordBridgeVisual.transform.localPosition = (first + second) * 0.5f;
+            _chordBridgeVisual.transform.localRotation = Quaternion.Euler(
+                0f, 0f, Mathf.Atan2(bridgeDirection.y, bridgeDirection.x) * Mathf.Rad2Deg);
+            Vector2 bridgeSize = _chordBridgeSprite == null ? Vector2.one : _chordBridgeSprite.bounds.size;
+            float bridgeHeight = targetHeight * 0.527f;
+            _chordBridgeVisual.transform.localScale = new Vector3(
+                bridgeDirection.magnitude / Mathf.Max(0.001f, bridgeSize.x),
+                bridgeHeight / Mathf.Max(0.001f, bridgeSize.y),
+                1f);
         }
 
         private SpriteRenderer CreateArtRenderer(string objectName, Sprite sprite, int sortingOrder)
@@ -300,23 +315,6 @@ namespace YingYun.Rhythm.View
             renderer.sortingOrder = sortingOrder;
             artObject.SetActive(false);
             return renderer;
-        }
-
-        private LineRenderer CreateLine(string objectName, Material material, int sortingOrder, float width, Color color)
-        {
-            var lineObject = new GameObject(objectName);
-            lineObject.transform.SetParent(transform, false);
-            var line = lineObject.AddComponent<LineRenderer>();
-            line.useWorldSpace = false;
-            line.positionCount = 2;
-            line.startWidth = width;
-            line.endWidth = width;
-            line.sharedMaterial = material;
-            line.startColor = color;
-            line.endColor = color;
-            line.sortingOrder = sortingOrder;
-            lineObject.SetActive(false);
-            return line;
         }
 
         private static Vector3 UniformScaleForHeight(Sprite sprite, float targetHeight)

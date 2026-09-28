@@ -125,7 +125,7 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
+      customData:
       outline: []
       physicsShape: []
       tessellationDetail: -1
@@ -133,7 +133,73 @@ TextureImporter:
       spriteID: db4d551dbd4434790800000000000000
       internalID: -7547112839642229571
       vertices: []
-      indices: 
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: note_chord_left
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 821
+        width: 544
+        height: 544
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5fdd568535a078f4da6f9634fb5adbd1
+      internalID: 815394964
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: note_chord_bridge
+      rect:
+        serializedVersion: 2
+        x: 940
+        y: 951
+        width: 220
+        height: 287
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6614f5b3991b28459a06326bc44db9b
+      internalID: 435920015
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: note_chord_right
+      rect:
+        serializedVersion: 2
+        x: 1149
+        y: 821
+        width: 544
+        height: 544
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3aeb41b50838de149a210c0eda6cafb8
+      internalID: -434614361
+      vertices: []
+      indices:
       edges: []
       weights: []
     outline: []
@@ -151,6 +217,9 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       note_chord_0: -7547112839642229571
+      note_chord_bridge: 435920015
+      note_chord_left: 815394964
+      note_chord_right: -434614361
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
