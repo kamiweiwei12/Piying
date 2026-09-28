@@ -20,6 +20,7 @@ namespace YingYun.Rhythm.View
         };
 
         private readonly LineRenderer[] _rods = new LineRenderer[6];
+        private readonly SpriteRenderer[] _rodGrips = new SpriteRenderer[6];
         private readonly Transform[] _rodTargets = new Transform[6];
         private readonly float[] _rodDrive = new float[6];
         private readonly bool[] _heldRods = new bool[6];
@@ -88,6 +89,8 @@ namespace YingYun.Rhythm.View
         private Material _lineMaterial;
         private double _songTime;
         private float _facingScale = 1f;
+        private bool _v2TurnActive;
+        private float _v2TurnProgress;
 
         public int JointCount => 21;
         public bool UsesSegmentedPuppetArt => _usesSegmentedPuppetArt;
@@ -112,6 +115,7 @@ namespace YingYun.Rhythm.View
         public float GetRodDrive(int lane) => _rodDrive[lane];
         public Vector3 GetRodGripPosition(int lane) => _rods[lane] == null ? Vector3.zero : _rods[lane].GetPosition(0);
         public float GetStringTension(int lane) => GetRodDrive(lane);
+        public int GetRodSortingOrder(int lane) => _rods[lane] == null ? 0 : _rods[lane].sortingOrder;
         public float FacingScale => _facingScale;
         public float LowerBodyFacingScale => _facingScale;
         public float LeftWristRotation => _leftWristJoint == null ? 0f : _leftWristJoint.localEulerAngles.z;
@@ -180,6 +184,8 @@ namespace YingYun.Rhythm.View
             if (_dancePlayback != null)
                 _dancePlayback.StatusChanged -= ForwardDanceStatus;
             _dancePlayback = null;
+            _v2TurnActive = false;
+            _v2TurnProgress = 0f;
             DanceStatusChanged?.Invoke(new DancePerformanceStatus(DancePerformanceKind.Waiting, null));
             _evaluator = new PuppetPoseEvaluator(PrototypeActionBindings.All);
             _songTime = double.NegativeInfinity;
@@ -334,6 +340,7 @@ namespace YingYun.Rhythm.View
         public void PreviewV2DoubleMountainArm(float progress)
         {
             EnsureInitialized();
+            _v2TurnActive = false;
             PuppetV2Pose pose = DoubleMountainArmChoreography.Evaluate(progress);
             _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
             SetRotation(_torsoJoint, pose.Torso);
@@ -381,6 +388,7 @@ namespace YingYun.Rhythm.View
         public void PreviewV2RaisedKneeHookedFoot(float progress)
         {
             EnsureInitialized();
+            _v2TurnActive = false;
             PuppetV2Pose pose = RaisedKneeHookedFootChoreography.Evaluate(progress);
             _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
             SetRotation(_torsoJoint, pose.Torso);
@@ -429,6 +437,8 @@ namespace YingYun.Rhythm.View
         public void PreviewV2TurnBackSetPose(float progress)
         {
             EnsureInitialized();
+            _v2TurnActive = true;
+            _v2TurnProgress = Mathf.Clamp01(progress);
             PuppetV2Pose pose = TurnBackSetPoseChoreography.Evaluate(progress);
             _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
             _torsoJoint.localScale = Vector3.one;
@@ -749,8 +759,9 @@ namespace YingYun.Rhythm.View
                 line.sortingOrder = 9;
                 _rods[lane] = line;
 
-                CreateSprite($"Bamboo Grip {lane}", _visualRoot, RodGripPoints[lane], new Vector2(0.46f, 0.12f),
+                Transform grip = CreateSprite($"Bamboo Grip {lane}", _visualRoot, RodGripPoints[lane], new Vector2(0.46f, 0.12f),
                     new Color(0.38f, 0.16f, 0.055f, principalRod ? 0.98f : 0.58f), 10, _circleSprite);
+                _rodGrips[lane] = grip.GetComponent<SpriteRenderer>();
             }
 
             UpdateRods();
@@ -1082,6 +1093,15 @@ namespace YingYun.Rhythm.View
             for (int lane = 0; lane < _rods.Length; lane++)
             {
                 Vector3 restGrip = RodGripPoints[lane];
+                bool bodyRodBehind = _v2TurnActive && lane == 4 &&
+                    _v2TurnProgress > 0.16f && _v2TurnProgress < 0.84f;
+                if (_v2TurnActive && lane == 4)
+                {
+                    // 主杆握端绕角色背面走一整圈投影：右侧起、左后方通过、回到右侧。
+                    float orbit = _v2TurnProgress * Mathf.PI * 2f;
+                    restGrip = new Vector3(0.55f * Mathf.Cos(orbit),
+                        -3.05f + (0.18f * Mathf.Sin(orbit)), 0f);
+                }
                 Vector3 target = _visualRoot.InverseTransformPoint(_rodTargets[lane].position);
                 Vector3 direction = (target - restGrip).normalized;
                 Vector3 normal = new Vector3(-direction.y, direction.x, 0f);
@@ -1093,6 +1113,13 @@ namespace YingYun.Rhythm.View
                 grip += normal * (holdPulse * 0.35f);
                 _rods[lane].SetPosition(0, grip);
                 _rods[lane].SetPosition(1, target);
+                _rods[lane].sortingOrder = bodyRodBehind ? 1 : 9;
+                if (_rodGrips[lane] != null)
+                {
+                    if (lane == 4)
+                        _rodGrips[lane].transform.localPosition = _v2TurnActive ? grip : RodGripPoints[lane];
+                    _rodGrips[lane].sortingOrder = bodyRodBehind ? 1 : 10;
+                }
                 bool principalRod = lane == 0 || lane == 2 || lane == 4;
                 Color color = Color.Lerp(new Color(0.30f, 0.13f, 0.045f, principalRod ? 0.48f : 0.27f),
                     new Color(0.78f, 0.34f, 0.07f, principalRod ? 1f : 0.68f), _rodDrive[lane]);
