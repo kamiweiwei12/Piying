@@ -127,8 +127,8 @@ namespace YingYun.Rhythm.View
             _torsoJoint.localScale = Vector3.one;
             _robeSkirt.localScale = new Vector3(1.28f, 0.72f, 1f);
             _robeHem.localScale = new Vector3(1.36f, 0.14f, 1f);
-            _leftThighJoint.localPosition = new Vector3(-0.27f, 0.08f, 0f);
-            _rightThighJoint.localPosition = new Vector3(0.27f, 0.08f, 0f);
+            _leftThighJoint.localPosition = new Vector3(-0.19f, 0f, 0f);
+            _rightThighJoint.localPosition = new Vector3(0.19f, 0f, 0f);
             _leftFootPlate.localPosition = new Vector3(-0.19f, -0.04f, 0f);
             _rightFootPlate.localPosition = new Vector3(0.19f, -0.04f, 0f);
             _leftSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
@@ -367,7 +367,7 @@ namespace YingYun.Rhythm.View
             Transform bodyRodSocket = CreateJoint("Chest Rod Socket", _torsoJoint, new Vector3(0f, 0.85f, 0f));
             CreateJointPin(bodyRodSocket, 5);
 
-            _headJoint = CreateJoint("Joint Neck", _torsoJoint, new Vector3(0f, 1.33f, 0f));
+            _headJoint = CreateJoint("Joint Neck", _torsoJoint, new Vector3(0f, 1.26f, 0f));
             Transform head = CreateSprite("Head", _headJoint, new Vector3(0f, 0.28f, 0f), new Vector2(0.62f, 0.72f),
                 ShadowColor(), 5, _circleSprite);
             CreateSprite("Profile Nose", _headJoint, new Vector3(0.33f, 0.30f, 0f), new Vector2(0.22f, 0.16f),
@@ -385,7 +385,7 @@ namespace YingYun.Rhythm.View
             CreateSprite("Crown Jewel", _headJoint, new Vector3(0f, 0.86f, 0f), new Vector2(0.18f, 0.18f),
                 new Color(0.92f, 0.48f, 0.08f, 0.98f), 7, _circleSprite);
 
-            _leftUpperArmJoint = CreateJoint("Joint Left Shoulder", _torsoJoint, new Vector3(-0.48f, 0.97f, 0f));
+            _leftUpperArmJoint = CreateJoint("Joint Left Shoulder", _torsoJoint, new Vector3(-0.34f, 0.93f, 0f));
             CreateLimb("Left Upper Arm", _leftUpperArmJoint, 0.82f, 0.20f, 5);
             _leftSleeve = CreateSprite("Left Flowing Sleeve", _leftUpperArmJoint, new Vector3(-0.12f, -0.48f, 0f), new Vector2(0.48f, 0.82f),
                 ShadowColor(), 4, _circleSprite);
@@ -395,7 +395,7 @@ namespace YingYun.Rhythm.View
             BuildHand(_leftWristJoint, true);
             _leftSleeveTail = BuildSleeveTail(_leftForearmJoint, true);
 
-            _rightUpperArmJoint = CreateJoint("Joint Right Shoulder", _torsoJoint, new Vector3(0.48f, 0.97f, 0f));
+            _rightUpperArmJoint = CreateJoint("Joint Right Shoulder", _torsoJoint, new Vector3(0.30f, 0.93f, 0f));
             CreateLimb("Right Upper Arm", _rightUpperArmJoint, 0.82f, 0.20f, 5);
             _rightSleeve = CreateSprite("Right Flowing Sleeve", _rightUpperArmJoint, new Vector3(0.12f, -0.48f, 0f), new Vector2(0.48f, 0.82f),
                 ShadowColor(), 4, _circleSprite);
@@ -405,14 +405,14 @@ namespace YingYun.Rhythm.View
             BuildHand(_rightWristJoint, false);
             _rightSleeveTail = BuildSleeveTail(_rightForearmJoint, false);
 
-            _leftThighJoint = CreateJoint("Joint Left Hip", _pelvisJoint, new Vector3(-0.27f, 0.08f, 0f));
+            _leftThighJoint = CreateJoint("Joint Left Hip", _pelvisJoint, new Vector3(-0.19f, 0f, 0f));
             CreateLimb("Left Thigh", _leftThighJoint, 0.88f, 0.24f, 3);
             _leftShinJoint = CreateJoint("Joint Left Knee", _leftThighJoint, new Vector3(0f, -0.88f, 0f));
             Transform leftFoot = CreateLimb("Left Shin", _leftShinJoint, 0.82f, 0.19f, 4);
             _leftAnkleJoint = CreateJoint("Joint Left Ankle", _leftShinJoint, new Vector3(0f, -0.82f, 0f));
             _leftFootPlate = BuildFoot(_leftAnkleJoint, true);
 
-            _rightThighJoint = CreateJoint("Joint Right Hip", _pelvisJoint, new Vector3(0.27f, 0.08f, 0f));
+            _rightThighJoint = CreateJoint("Joint Right Hip", _pelvisJoint, new Vector3(0.19f, 0f, 0f));
             CreateLimb("Right Thigh", _rightThighJoint, 0.88f, 0.24f, 3);
             _rightShinJoint = CreateJoint("Joint Right Knee", _rightThighJoint, new Vector3(0f, -0.88f, 0f));
             Transform rightFoot = CreateLimb("Right Shin", _rightShinJoint, 0.82f, 0.19f, 4);
@@ -587,9 +587,9 @@ namespace YingYun.Rhythm.View
                     _pelvisArtBaseScale.y, _pelvisArtBaseScale.z);
             }
             // 側身時讓兩個鉚接髖位收攏並交換前後，但保持足點在地平線上。
-            float hipOffset = (0.21f + (0.06f * facing)) * facing;
-            _leftThighJoint.localPosition = new Vector3(-hipOffset, 0.08f, 0f);
-            _rightThighJoint.localPosition = new Vector3(hipOffset, 0.08f, 0f);
+            float hipOffset = (0.15f + (0.04f * facing)) * facing;
+            _leftThighJoint.localPosition = new Vector3(-hipOffset, 0f, 0f);
+            _rightThighJoint.localPosition = new Vector3(hipOffset, 0f, 0f);
             _leftFootPlate.localPosition = new Vector3(-0.19f * facing, -0.04f, 0f);
             _rightFootPlate.localPosition = new Vector3(0.19f * facing, -0.04f, 0f);
             _pelvisJoint.localPosition = new Vector3((float)_dancePlayback.PelvisX, -0.55f, 0f);
@@ -655,30 +655,30 @@ namespace YingYun.Rhythm.View
             _pelvisArt.localPosition = new Vector3(0f, 0.16f, 0f);
 
             _leftSleeveArt = CreateRigArt("Art Left Upper Arm", _leftUpperArmJoint,
-                FindPuppetArt("puppet_left_upper_arm"), 0.94f, 9);
+                FindPuppetArt("puppet_left_upper_arm"), 1.03f, 9, -7.2f);
             CreateRigArt("Art Left Forearm", _leftForearmJoint,
-                FindPuppetArt("puppet_left_forearm"), 0.82f, 10);
+                FindPuppetArt("puppet_left_forearm"), 0.89f, 10, 5.8f);
             CreateRigArt("Art Left Hand", _leftWristJoint,
                 FindPuppetArt("puppet_left_hand"), 0.42f, 12);
 
             _rightSleeveArt = CreateRigArt("Art Right Upper Arm", _rightUpperArmJoint,
-                FindPuppetArt("puppet_right_upper_arm"), 0.94f, 9);
+                FindPuppetArt("puppet_right_forearm"), 1.02f, 9, -1.4f);
             CreateRigArt("Art Right Forearm", _rightForearmJoint,
-                FindPuppetArt("puppet_right_forearm"), 0.82f, 10);
+                FindPuppetArt("puppet_right_forearm"), 0.90f, 10, -1.4f);
             CreateRigArt("Art Right Hand", _rightWristJoint,
                 FindPuppetArt("puppet_right_hand"), 0.42f, 12);
 
             CreateRigArt("Art Left Thigh", _leftThighJoint,
-                FindPuppetArt("puppet_left_thigh"), 0.96f, 6);
+                FindPuppetArt("puppet_left_thigh"), 1.08f, 6, 1.5f);
             CreateRigArt("Art Left Shin", _leftShinJoint,
-                FindPuppetArt("puppet_left_shin"), 0.88f, 7);
+                FindPuppetArt("puppet_left_shin"), 0.99f, 7);
             CreateRigArt("Art Left Shoe", _leftAnkleJoint,
                 FindPuppetArt("puppet_left_shoe"), 0.24f, 8);
 
             CreateRigArt("Art Right Thigh", _rightThighJoint,
-                FindPuppetArt("puppet_right_thigh"), 0.96f, 6);
+                FindPuppetArt("puppet_right_thigh"), 1.07f, 6);
             CreateRigArt("Art Right Shin", _rightShinJoint,
-                FindPuppetArt("puppet_right_shin"), 0.88f, 7);
+                FindPuppetArt("puppet_right_shin"), 0.99f, 7, -5.4f);
             CreateRigArt("Art Right Shoe", _rightAnkleJoint,
                 FindPuppetArt("puppet_right_shoe"), 0.24f, 8);
 
@@ -698,12 +698,19 @@ namespace YingYun.Rhythm.View
             return null;
         }
 
-        private Transform CreateRigArt(string objectName, Transform joint, Sprite sprite, float targetHeight, int sortingOrder)
+        private Transform CreateRigArt(
+            string objectName,
+            Transform joint,
+            Sprite sprite,
+            float targetHeight,
+            int sortingOrder,
+            float localRotation = 0f)
         {
             var artObject = new GameObject(objectName);
             artObject.transform.SetParent(joint, false);
             float sourceHeight = Mathf.Max(0.001f, sprite.bounds.size.y);
             artObject.transform.localScale = Vector3.one * (targetHeight / sourceHeight);
+            artObject.transform.localRotation = Quaternion.Euler(0f, 0f, localRotation);
             var renderer = artObject.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
             renderer.color = Color.white;

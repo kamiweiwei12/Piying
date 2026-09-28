@@ -20,6 +20,7 @@ namespace YingYun.Rhythm.Prototype
     {
         private const double PrototypeDurationSeconds = 180d;
         private const double CountdownLeadInSeconds = 3d;
+        private const double NoteApproachLeadInSeconds = 1.75d;
         public const string XiangWangXingSongId = "xiang-wang-xing-special";
         public const string QingYuAnLanJieSongId = "qing-yu-an-lan-jie";
         private const string AudioOffsetPreference = "YingYun.AudioOffsetMs";
@@ -167,14 +168,15 @@ namespace YingYun.Rhythm.Prototype
             }
 
             _bridge.Capture(AudioSettings.dspTime, Time.realtimeSinceStartupAsDouble);
-            _hud.TickSongTime(_clock.SongTime);
+            double songTime = _clock.SongTime;
+            _hud.TickSongTime(songTime + NoteApproachLeadInSeconds);
             while (_input.TryDequeue(out HitInput input))
             {
                 _judgment.EnqueueInput(input);
             }
 
-            _presenter.Tick(_clock.SongTime);
-            _puppet.Tick(_clock.SongTime);
+            _presenter.Tick(songTime, songTime >= -NoteApproachLeadInSeconds);
+            _puppet.Tick(songTime);
             _judgment.Advance(_frameResults);
             for (int i = 0; i < _frameResults.Count; i++)
             {
@@ -231,7 +233,7 @@ namespace YingYun.Rhythm.Prototype
                 _allNotesJudged = true;
             }
 
-            if (_allNotesJudged && _clock.SongTime >= _resultTimeSec)
+            if (_allNotesJudged && songTime >= _resultTimeSec)
             {
                 _isComplete = true;
                 _clock.Pause();
@@ -320,7 +322,9 @@ namespace YingYun.Rhythm.Prototype
             _presenter.Begin(notes);
             _puppet.Begin(dance);
             _hud.Begin(notes.Length, DifficultyConfig.Prototype);
-            _clock.Schedule(activeMusic, CountdownLeadInSeconds, _calibration.AudioOffsetMs / 1000d);
+            _clock.Schedule(activeMusic,
+                CountdownLeadInSeconds + NoteApproachLeadInSeconds,
+                _calibration.AudioOffsetMs / 1000d);
 
             for (int i = 0; i < dance.Length; i++)
             {
@@ -333,7 +337,7 @@ namespace YingYun.Rhythm.Prototype
                 _selectedSong != null ? _selectedSong.SongId : XiangWangXingSongId,
                 _difficulty,
                 _clock.DspStart,
-                CountdownLeadInSeconds,
+                CountdownLeadInSeconds + NoteApproachLeadInSeconds,
                 activeMusic.name,
                 notes.Length,
                 dance.Length,

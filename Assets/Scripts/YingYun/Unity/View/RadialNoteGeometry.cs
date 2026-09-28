@@ -5,11 +5,6 @@ namespace YingYun.Rhythm.View
     /// <summary>六部位放射式音符的純位置計算。</summary>
     public static class RadialNoteGeometry
     {
-        public static double CountdownSafeLead(double noteTimeSec, double configuredLeadSec)
-        {
-            return System.Math.Min(configuredLeadSec, System.Math.Max(0d, noteTimeSec));
-        }
-
         public static float Progress(double songTimeSec, double noteTimeSec, double visibleLeadSec)
         {
             if (visibleLeadSec <= 0d)

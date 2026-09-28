@@ -147,19 +147,22 @@ namespace YingYun.Rhythm.View
 
         public void UpdateVisual(double songTimeSec, double visibleLeadSec)
         {
+            float entryProgress = RadialNoteGeometry.Progress(songTimeSec, NoteTimeSec, visibleLeadSec);
             if (IsChordVisualActive)
             {
                 UpdateChord(songTimeSec, visibleLeadSec);
+                ApplyEntryAlpha(entryProgress);
                 return;
             }
 
             if (_isHold)
             {
                 UpdateHold(songTimeSec, visibleLeadSec);
+                ApplyEntryAlpha(entryProgress);
                 return;
             }
 
-            float progress = RadialNoteGeometry.Progress(songTimeSec, NoteTimeSec, visibleLeadSec);
+            float progress = entryProgress;
             for (int lane = 0; lane < LaneCount; lane++)
             {
                 if (!_markers[lane].gameObject.activeSelf) continue;
@@ -168,6 +171,31 @@ namespace YingYun.Rhythm.View
                 float targetHeight = _baseScale * (1.75f + (0.18f * progress));
                 _markers[lane].transform.localScale = UniformScaleForHeight(_tapSprite, targetHeight);
             }
+
+            ApplyEntryAlpha(entryProgress);
+        }
+
+        private void ApplyEntryAlpha(float progress)
+        {
+            float alpha = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(progress / 0.25f));
+            for (int lane = 0; lane < LaneCount; lane++)
+            {
+                if (!_markers[lane].gameObject.activeSelf) continue;
+                Color color = _markers[lane].color;
+                _markers[lane].color = new Color(color.r, color.g, color.b, alpha);
+            }
+
+            ApplyAlpha(_chordBridgeVisual, alpha);
+            ApplyAlpha(_holdHeadVisual, alpha);
+            ApplyAlpha(_holdBodyVisual, alpha);
+            ApplyAlpha(_holdTailVisual, alpha);
+        }
+
+        private static void ApplyAlpha(SpriteRenderer renderer, float alpha)
+        {
+            if (renderer == null || !renderer.gameObject.activeSelf) return;
+            Color color = renderer.color;
+            renderer.color = new Color(color.r, color.g, color.b, alpha);
         }
 
         public void BeginHold()

@@ -26,43 +26,46 @@ namespace YingYun.Rhythm.Tests
         };
 
         [Test]
-        public void Presenter_CountdownBlocksEntryUntilZero()
+        public void Presenter_CountdownBlocksEntryUntilExplicitOpen()
         {
             var root = new GameObject("Countdown Entry Gate Test");
             try
             {
                 RadialNotePresenter presenter = root.AddComponent<RadialNotePresenter>();
-                presenter.Begin(new[] { new NoteData(1, "tap", 0, 0.86d) });
+                presenter.Begin(new[] { new NoteData(1, "tap", 0, 0.52d) });
 
-                presenter.Tick(-3d);
-                presenter.Tick(-2d);
-                presenter.Tick(-1d);
-                presenter.Tick(-0.000001d);
+                presenter.Tick(-4.75d, false);
+                presenter.Tick(-3.75d, false);
+                presenter.Tick(-2.75d, false);
+                presenter.Tick(-1.750001d, false);
                 Assert.That(presenter.ActiveCount, Is.Zero,
                     "no note may enter while the three-second countdown is active");
 
-                presenter.Tick(0d);
+                presenter.Tick(-1.75d, true);
+                Assert.That(presenter.ActiveCount, Is.Zero,
+                    "countdown completion opens entry without pulling a future note in early");
+
+                presenter.Tick(-1.23d, true);
                 Assert.That(presenter.ActiveCount, Is.EqualTo(1));
 
-                double entryLead = RadialNoteGeometry.CountdownSafeLead(0.86d, 1.75d);
                 Vector2 atEntry = RadialNoteGeometry.Position(
                     new Vector2(-7.5f, 0.65f),
                     RadialNotePresenter.ReceptorPositionForLane(0),
-                    0d,
-                    0.86d,
-                    entryLead);
+                    -1.23d,
+                    0.52d,
+                    1.75d);
                 Assert.That(atEntry.x, Is.EqualTo(-7.5f).Within(0.0001f));
                 Assert.That(atEntry.y, Is.EqualTo(0.65f).Within(0.0001f));
 
-                presenter.Tick(0.86d);
+                presenter.Tick(0.52d, true);
                 Assert.That(presenter.ActiveCount, Is.EqualTo(1),
                     "the gate must not change or discard the note's original judgment time");
                 Vector2 atJudgment = RadialNoteGeometry.Position(
                     new Vector2(-7.5f, 0.65f),
                     RadialNotePresenter.ReceptorPositionForLane(0),
-                    0.86d,
-                    0.86d,
-                    entryLead);
+                    0.52d,
+                    0.52d,
+                    1.75d);
                 Assert.That(atJudgment.x, Is.EqualTo(-3.3f).Within(0.0001f));
                 Assert.That(atJudgment.y, Is.EqualTo(0.35f).Within(0.0001f));
             }
@@ -94,6 +97,28 @@ namespace YingYun.Rhythm.Tests
                 Assert.That(fixture.View.GetComponentsInChildren<LineRenderer>(true), Is.Empty,
                     "the bridge must come from the supplied art rather than a procedural line");
                 Assert.That(fixture.View.transform.Find("Chord Bridge Art"), Is.Not.Null);
+            }
+            finally
+            {
+                fixture.Dispose();
+            }
+        }
+
+        [Test]
+        public void TapEntry_FadesInInsteadOfFlashingAtSpawnEdge()
+        {
+            Fixture fixture = CreateFixture();
+            try
+            {
+                fixture.View.Bind(new NoteData(1, "tap", 0, 1d), Spawn, Receptor, Colors);
+                SpriteRenderer marker = fixture.View.transform.Find("Lane 1 Marker")
+                    .GetComponent<SpriteRenderer>();
+
+                fixture.View.UpdateVisual(-0.5d, 1.5d);
+                Assert.That(marker.color.a, Is.Zero.Within(0.0001f));
+
+                fixture.View.UpdateVisual(-0.125d, 1.5d);
+                Assert.That(marker.color.a, Is.EqualTo(1f).Within(0.0001f));
             }
             finally
             {

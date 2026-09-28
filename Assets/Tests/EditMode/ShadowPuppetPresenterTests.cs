@@ -177,6 +177,30 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void SegmentedArt_UsesVisibleJointCentersAsPivots()
+        {
+            var root = new GameObject("Puppet Pivot Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+
+            Transform stage = root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis");
+            Sprite head = stage.Find("Joint Waist/Joint Neck/Art Head")
+                .GetComponent<SpriteRenderer>().sprite;
+            Sprite upperArm = stage.Find("Joint Waist/Joint Left Shoulder/Art Left Upper Arm")
+                .GetComponent<SpriteRenderer>().sprite;
+            Sprite shin = stage.Find("Joint Right Hip/Joint Right Knee/Art Right Shin")
+                .GetComponent<SpriteRenderer>().sprite;
+            Sprite shoe = stage.Find("Joint Right Hip/Joint Right Knee/Joint Right Ankle/Art Right Shoe")
+                .GetComponent<SpriteRenderer>().sprite;
+
+            AssertPivot(head, 0.530f, 0.147f);
+            AssertPivot(upperArm, 0.346f, 0.900f);
+            AssertPivot(shin, 0.432f, 0.911f);
+            AssertPivot(shoe, 0.562f, 0.684f);
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void RawPress_TightensTheStringAndStartsMovingTheJointWithinThreeFrames()
         {
             var root = new GameObject("Puppet Test");
@@ -985,6 +1009,15 @@ namespace YingYun.Rhythm.Tests
             Object.DestroyImmediate(target);
             Object.DestroyImmediate(cameraObject);
             Object.DestroyImmediate(root);
+        }
+
+        private static void AssertPivot(Sprite sprite, float expectedX, float expectedY)
+        {
+            Vector2 normalized = new Vector2(
+                sprite.pivot.x / sprite.rect.width,
+                sprite.pivot.y / sprite.rect.height);
+            Assert.That(normalized.x, Is.EqualTo(expectedX).Within(0.002f));
+            Assert.That(normalized.y, Is.EqualTo(expectedY).Within(0.002f));
         }
     }
 
