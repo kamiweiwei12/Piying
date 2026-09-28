@@ -58,11 +58,23 @@ namespace YingYun.Rhythm.View
         private Transform _rightSleeveArt;
         private Transform _leftHandArt;
         private Transform _rightHandArt;
+        private Transform _leftThighArt;
+        private Transform _leftShinArt;
+        private Transform _leftShoeArt;
+        private Transform _rightThighArt;
+        private Transform _rightShinArt;
+        private Transform _rightShoeArt;
         private Vector3 _pelvisArtBaseScale;
         private Vector3 _leftSleeveArtBaseScale;
         private Vector3 _rightSleeveArtBaseScale;
         private Vector3 _leftHandArtBaseScale;
         private Vector3 _rightHandArtBaseScale;
+        private Vector3 _leftThighArtBaseScale;
+        private Vector3 _leftShinArtBaseScale;
+        private Vector3 _leftShoeArtBaseScale;
+        private Vector3 _rightThighArtBaseScale;
+        private Vector3 _rightShinArtBaseScale;
+        private Vector3 _rightShoeArtBaseScale;
         private Quaternion _leftHandArtBaseRotation;
         private Quaternion _rightHandArtBaseRotation;
         private float _leftPointFingerAmount;
@@ -115,6 +127,7 @@ namespace YingYun.Rhythm.View
         public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
         public Vector3 V2LeftHandTarget { get; private set; }
         public Vector3 V2RightHandTarget { get; private set; }
+        public float V2VisibleFacing { get; private set; } = 1f;
 
         /// <summary>读取当前 15 分片的可见边界和末端接触点，供 V2 标定与回归测试使用。</summary>
         public PuppetRigCalibrationSnapshot CaptureV2Calibration()
@@ -190,6 +203,7 @@ namespace YingYun.Rhythm.View
                 _pelvisArt.localScale = _pelvisArtBaseScale;
                 _leftSleeveArt.localScale = _leftSleeveArtBaseScale;
                 _rightSleeveArt.localScale = _rightSleeveArtBaseScale;
+                RestoreV2LowerArtScale();
             }
             _leftFingerJoint.localScale = Vector3.one;
             _rightFingerJoint.localScale = Vector3.one;
@@ -326,6 +340,8 @@ namespace YingYun.Rhythm.View
             SetRotation(_headJoint, pose.Head);
             _torsoJoint.localScale = Vector3.one;
             _facingScale = 1f;
+            _pelvisArt.localScale = _pelvisArtBaseScale;
+            RestoreV2LowerArtScale();
 
             Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
             Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
@@ -371,6 +387,8 @@ namespace YingYun.Rhythm.View
             SetRotation(_headJoint, pose.Head);
             _torsoJoint.localScale = Vector3.one;
             _facingScale = 1f;
+            _pelvisArt.localScale = _pelvisArtBaseScale;
+            RestoreV2LowerArtScale();
 
             Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
             Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
@@ -404,6 +422,59 @@ namespace YingYun.Rhythm.View
             _rodDrive[0] = Mathf.Clamp01(progress);
             _rodDrive[3] = Mathf.Clamp01(Mathf.Abs((float)pose.RootX) / 0.18f);
             _rodDrive[5] = Mathf.Clamp01(((float)pose.RightFootY + 2.08f) / 0.43f);
+            UpdateRods();
+        }
+
+        /// <summary>V2-P3 回身定相预览；短暂侧身并统一交换分片前后层级。</summary>
+        public void PreviewV2TurnBackSetPose(float progress)
+        {
+            EnsureInitialized();
+            PuppetV2Pose pose = TurnBackSetPoseChoreography.Evaluate(progress);
+            _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
+            _torsoJoint.localScale = Vector3.one;
+            SetRotation(_torsoJoint, pose.Torso);
+            SetRotation(_headJoint, pose.Head);
+            _facingScale = (float)pose.Facing;
+
+            Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
+            Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
+            V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
+            V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
+            PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
+                out float leftShoulderAngle, out float leftElbowAngle);
+            PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
+                out float rightShoulderAngle, out float rightElbowAngle);
+            SetRotation(_leftUpperArmJoint, leftShoulderAngle);
+            SetRotation(_leftForearmJoint, leftElbowAngle);
+            SetRotation(_rightUpperArmJoint, rightShoulderAngle);
+            SetRotation(_rightForearmJoint, rightElbowAngle);
+            SetRotation(_leftWristJoint, pose.LeftWrist);
+            SetRotation(_rightWristJoint, pose.RightWrist);
+
+            ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
+                new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
+            ApplyGroundedLeg(_rightThighJoint, _rightShinJoint, _rightAnkleJoint,
+                new Vector2((float)pose.RightFootX, (float)pose.RightFootY), 1f);
+            SetRotation(_leftAnkleJoint, 0d);
+            SetRotation(_rightAnkleJoint, 0d);
+
+            float facing = (float)pose.Facing;
+            float sign = facing < 0f ? -1f : 1f;
+            V2VisibleFacing = sign * Mathf.Max(0.10f, Mathf.Abs(facing));
+            _torsoJoint.localScale = new Vector3(V2VisibleFacing, 1f, 1f);
+            _pelvisArt.localScale = MirrorX(_pelvisArtBaseScale, V2VisibleFacing);
+            _leftThighArt.localScale = MirrorX(_leftThighArtBaseScale, V2VisibleFacing);
+            _leftShinArt.localScale = MirrorX(_leftShinArtBaseScale, V2VisibleFacing);
+            _leftShoeArt.localScale = MirrorX(_leftShoeArtBaseScale, V2VisibleFacing);
+            _rightThighArt.localScale = MirrorX(_rightThighArtBaseScale, V2VisibleFacing);
+            _rightShinArt.localScale = MirrorX(_rightShinArtBaseScale, V2VisibleFacing);
+            _rightShoeArt.localScale = MirrorX(_rightShoeArtBaseScale, V2VisibleFacing);
+            ApplyV2FacingSorting(facing < 0f);
+            for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
+            _rodDrive[1] = Mathf.Clamp01(1f - Mathf.Abs(facing));
+            _rodDrive[4] = _rodDrive[1];
             UpdateRods();
         }
 
@@ -822,18 +893,18 @@ namespace YingYun.Rhythm.View
             _rightHandArt = CreateRigArt("Art Right Hand", _rightWristJoint,
                 FindPuppetArt("puppet_right_hand"), 0.42f, 12);
 
-            CreateRigArt("Art Left Thigh", _leftThighJoint,
+            _leftThighArt = CreateRigArt("Art Left Thigh", _leftThighJoint,
                 FindPuppetArt("puppet_left_thigh"), 1.08f, 6, 1.5f);
-            CreateRigArt("Art Left Shin", _leftShinJoint,
+            _leftShinArt = CreateRigArt("Art Left Shin", _leftShinJoint,
                 FindPuppetArt("puppet_left_shin"), 0.99f, 7);
-            CreateRigArt("Art Left Shoe", _leftAnkleJoint,
+            _leftShoeArt = CreateRigArt("Art Left Shoe", _leftAnkleJoint,
                 FindPuppetArt("puppet_left_shoe"), 0.24f, 8);
 
-            CreateRigArt("Art Right Thigh", _rightThighJoint,
+            _rightThighArt = CreateRigArt("Art Right Thigh", _rightThighJoint,
                 FindPuppetArt("puppet_right_thigh"), 1.07f, 6);
-            CreateRigArt("Art Right Shin", _rightShinJoint,
+            _rightShinArt = CreateRigArt("Art Right Shin", _rightShinJoint,
                 FindPuppetArt("puppet_right_shin"), 0.99f, 7, -5.4f);
-            CreateRigArt("Art Right Shoe", _rightAnkleJoint,
+            _rightShoeArt = CreateRigArt("Art Right Shoe", _rightAnkleJoint,
                 FindPuppetArt("puppet_right_shoe"), 0.24f, 8);
 
             _pelvisArtBaseScale = _pelvisArt.localScale;
@@ -841,6 +912,12 @@ namespace YingYun.Rhythm.View
             _rightSleeveArtBaseScale = _rightSleeveArt.localScale;
             _leftHandArtBaseScale = _leftHandArt.localScale;
             _rightHandArtBaseScale = _rightHandArt.localScale;
+            _leftThighArtBaseScale = _leftThighArt.localScale;
+            _leftShinArtBaseScale = _leftShinArt.localScale;
+            _leftShoeArtBaseScale = _leftShoeArt.localScale;
+            _rightThighArtBaseScale = _rightThighArt.localScale;
+            _rightShinArtBaseScale = _rightShinArt.localScale;
+            _rightShoeArtBaseScale = _rightShoeArt.localScale;
             _leftHandArtBaseRotation = _leftHandArt.localRotation;
             _rightHandArtBaseRotation = _rightHandArt.localRotation;
             _usesSegmentedPuppetArt = true;
@@ -951,6 +1028,42 @@ namespace YingYun.Rhythm.View
         }
 
         private static float Smooth(float t) => t * t * (3f - (2f * t));
+
+        private static Vector3 MirrorX(Vector3 baseScale, float facing) =>
+            new Vector3(baseScale.x * facing, baseScale.y, baseScale.z);
+
+        private void RestoreV2LowerArtScale()
+        {
+            V2VisibleFacing = 1f;
+            _leftThighArt.localScale = _leftThighArtBaseScale;
+            _leftShinArt.localScale = _leftShinArtBaseScale;
+            _leftShoeArt.localScale = _leftShoeArtBaseScale;
+            _rightThighArt.localScale = _rightThighArtBaseScale;
+            _rightShinArt.localScale = _rightShinArtBaseScale;
+            _rightShoeArt.localScale = _rightShoeArtBaseScale;
+            ApplyV2FacingSorting(false);
+        }
+
+        private void ApplyV2FacingSorting(bool reversed)
+        {
+            SetArtOrder(_leftSleeveArt, reversed ? 9 : 13);
+            SetArtOrder(_leftForearmJoint.Find("Art Left Forearm"), reversed ? 10 : 14);
+            SetArtOrder(_leftHandArt, reversed ? 11 : 15);
+            SetArtOrder(_rightSleeveArt, reversed ? 13 : 9);
+            SetArtOrder(_rightForearmJoint.Find("Art Right Forearm"), reversed ? 14 : 10);
+            SetArtOrder(_rightHandArt, reversed ? 15 : 11);
+            SetArtOrder(_leftThighArt, reversed ? 6 : 9);
+            SetArtOrder(_leftShinArt, reversed ? 7 : 10);
+            SetArtOrder(_leftShoeArt, reversed ? 8 : 11);
+            SetArtOrder(_rightThighArt, reversed ? 9 : 6);
+            SetArtOrder(_rightShinArt, reversed ? 10 : 7);
+            SetArtOrder(_rightShoeArt, reversed ? 11 : 8);
+        }
+
+        private static void SetArtOrder(Transform art, int order)
+        {
+            if (art != null) art.GetComponent<SpriteRenderer>().sortingOrder = order;
+        }
 
         private double HoldOscillation(int lane)
         {

@@ -150,4 +150,42 @@ namespace YingYun.Rhythm.Puppet.V2
             return values[segment] + ((values[segment + 1] - values[segment]) * smooth);
         }
     }
+
+    /// <summary>16 回身定相：收臂、短侧身、整体换面、反向展开。</summary>
+    public static class TurnBackSetPoseChoreography
+    {
+        public const string Name = "回身定相";
+        public const int Beats = 12;
+
+        private static readonly double[] Times = { 0d, 0.25d, 0.42d, 0.50d, 0.58d, 0.75d, 1d };
+        private static readonly double[] Facing = { 1d, 1d, 1d, 0d, -1d, -1d, -1d };
+        private static readonly double[] LeftX = { -1.35d, -0.65d, -0.48d, -0.44d, -0.48d, -0.90d, -1.35d };
+        private static readonly double[] LeftY = { 0.45d, 0.18d, 0.05d, 0.02d, 0.05d, 0.28d, 0.45d };
+        private static readonly double[] RightX = { 1.35d, 0.65d, 0.48d, 0.44d, 0.48d, 0.90d, 1.35d };
+        private static readonly double[] RightY = { 0.45d, 0.18d, 0.05d, 0.02d, 0.05d, 0.28d, 0.45d };
+        private static readonly double[] Head = { 0d, -5d, -5d, 0d, 5d, 5d, 3d };
+
+        public static PuppetV2Pose Evaluate(double progress)
+        {
+            double t = Math.Max(0d, Math.Min(1d, progress));
+            return new PuppetV2Pose(
+                0d, -0.40d, 0d, Sample(Head, t),
+                Sample(LeftX, t), Sample(LeftY, t), Sample(RightX, t), Sample(RightY, t),
+                6d, -6d, -0.34d, -2.08d, 0.34d, -2.08d,
+                0d, 0d, Sample(Facing, t),
+                PuppetHandShape.NaturalPalm, PuppetHandShape.NaturalPalm,
+                true, true);
+        }
+
+        private static double Sample(double[] values, double progress)
+        {
+            int segment = 0;
+            while (segment < Times.Length - 2 && progress > Times[segment + 1]) segment++;
+            double span = Times[segment + 1] - Times[segment];
+            double t = span <= 0d ? 0d : (progress - Times[segment]) / span;
+            t = Math.Max(0d, Math.Min(1d, t));
+            double smooth = t * t * (3d - (2d * t));
+            return values[segment] + ((values[segment + 1] - values[segment]) * smooth);
+        }
+    }
 }
