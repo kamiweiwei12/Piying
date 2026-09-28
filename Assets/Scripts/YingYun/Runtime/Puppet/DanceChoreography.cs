@@ -368,20 +368,21 @@ namespace YingYun.Rhythm.Puppet
                 case DanceAction.WindFlag:
                     name = "順風旗"; first = DanceJoint.LeftShoulder; second = DanceJoint.RightShoulder;
                     firstKeys = new[] { -24d, -45d, -62d, -62d, -60d };
-                    secondKeys = new[] { 0d, -65d, -145d, -145d, -138d }; break;
+                    // 右臂的外展方向为正角；旧值误用了左臂符号，导致双手同时落在身体左侧。
+                    secondKeys = new[] { 0d, 65d, 145d, 145d, 138d }; break;
                 case DanceAction.Turn:
                     name = "轉身"; first = DanceJoint.Torso; second = DanceJoint.LeftShoulder;
                     firstKeys = new[] { 0d, 4d, 0d, -4d, 0d };
                     secondKeys = new[] { -60d, -48d, -40d, -48d, -60d }; break;
                 case DanceAction.RaiseSleeve:
                     name = "揚袖"; first = DanceJoint.RightShoulder; second = DanceJoint.RightElbow;
-                    firstKeys = new[] { -138d, -75d, -135d, -150d, -115d };
+                    firstKeys = new[] { 138d, 75d, 135d, 150d, 115d };
                     secondKeys = new[] { 0d, 18d, 38d, 22d, 12d }; break;
                 case DanceAction.DoubleMountainArm:
                     name = "雙山膀"; first = DanceJoint.LeftShoulder; second = DanceJoint.RightShoulder;
                     // 先定住雙山膀，末兩拍左臂收勢；右臂留給反雲手。
                     firstKeys = new[] { -60d, -68d, -76d, -76d, 0d };
-                    secondKeys = new[] { -115d, 20d, 76d, 76d, 68d }; break;
+                    secondKeys = new[] { 115d, 82d, 76d, 76d, 68d }; break;
                 case DanceAction.ReverseCloudHand:
                     name = "反雲手"; first = DanceJoint.RightShoulder; second = DanceJoint.RightElbow;
                     // 亮相前把右臂收回，不能讓前一招的手臂懸空殘留。
@@ -525,7 +526,9 @@ namespace YingYun.Rhythm.Puppet
         private double _pelvisStartX;
         private double _wristStart;
         private double _fingerStart;
+        private double _leftShoulderStart;
         private double _leftElbowStart;
+        private double _rightShoulderStart;
         private double _rightElbowStart;
         private double _rightWristStart;
         private double _rightFingerStart;
@@ -618,6 +621,10 @@ namespace YingYun.Rhythm.Puppet
                 DancePhrase.Sample(_active.FirstSamples, progress) * blend;
             _angles[(int)_active.SecondJoint] = _secondStart * (1d - blend) +
                 DancePhrase.Sample(_active.SecondSamples, progress) * blend;
+            RecoverUnusedArmJoint(DanceJoint.LeftShoulder, _leftShoulderStart, blend);
+            RecoverUnusedArmJoint(DanceJoint.LeftElbow, _leftElbowStart, blend);
+            RecoverUnusedArmJoint(DanceJoint.RightShoulder, _rightShoulderStart, blend);
+            RecoverUnusedArmJoint(DanceJoint.RightElbow, _rightElbowStart, blend);
             double reach = DancePhrase.Sample(_active.FootReachSamples, progress);
             double lift = DancePhrase.Sample(_active.FootLiftSamples, progress);
             double weight = DancePhrase.Sample(_active.WeightShiftSamples, progress);
@@ -700,7 +707,9 @@ namespace YingYun.Rhythm.Puppet
             _pelvisStartX = PelvisX;
             _wristStart = LeftWristAngle;
             _fingerStart = LeftFingerAngle;
+            _leftShoulderStart = _angles[(int)DanceJoint.LeftShoulder];
             _leftElbowStart = _angles[(int)DanceJoint.LeftElbow];
+            _rightShoulderStart = _angles[(int)DanceJoint.RightShoulder];
             _rightElbowStart = _angles[(int)DanceJoint.RightElbow];
             _rightWristStart = RightWristAngle;
             _rightFingerStart = RightFingerAngle;
@@ -711,6 +720,17 @@ namespace YingYun.Rhythm.Puppet
             HasExplicitLeftHandPose = phrase.HandGesture != null || phrase.FistPalmSalute != null;
             HasExplicitRightHandPose = phrase.FistPalmSalute != null;
             StatusChanged?.Invoke(new DancePerformanceStatus(DancePerformanceKind.Performing, phrase));
+        }
+
+        private void RecoverUnusedArmJoint(DanceJoint joint, double startAngle, double blend)
+        {
+            bool explicitlyDriven = _active.FirstJoint == joint || _active.SecondJoint == joint ||
+                (_active.FistPalmSalute != null &&
+                 (joint == DanceJoint.LeftElbow || joint == DanceJoint.RightElbow));
+            if (!explicitlyDriven)
+            {
+                _angles[(int)joint] = startAngle * (1d - blend);
+            }
         }
     }
 }

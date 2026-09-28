@@ -522,7 +522,7 @@ namespace YingYun.Rhythm.Tests
                         Assert.That(player.Angle(DanceJoint.LeftElbow), Is.Zero.Within(0.001d));
                         break;
                     case DanceAction.WindFlag:
-                        Assert.That(player.Angle(DanceJoint.RightShoulder), Is.EqualTo(-138d).Within(0.001d));
+                        Assert.That(player.Angle(DanceJoint.RightShoulder), Is.EqualTo(138d).Within(0.001d));
                         break;
                     case DanceAction.DoubleMountainArm:
                         Assert.That(player.Angle(DanceJoint.LeftShoulder), Is.Zero.Within(0.001d));
@@ -559,6 +559,43 @@ namespace YingYun.Rhythm.Tests
             recovering.Evaluate(4.25d);
             Assert.That(Math.Abs(recovering.Angle(DanceJoint.LeftShoulder)),
                 Is.LessThan(Math.Abs(linked.Angle(DanceJoint.LeftShoulder))));
+        }
+
+        [Test]
+        public void WindFlagAndRaiseSleeve_KeepTheRightArmOnTheRightSide()
+        {
+            DancePhrase[] phrases = Phrases();
+            var player = new DancePlayback(phrases);
+            foreach (DanceAction action in new[] { DanceAction.WindFlag, DanceAction.RaiseSleeve })
+            {
+                DancePhrase phrase = phrases.First(p => p.Action == action);
+                player.OnJudged(Result(phrase.AnchorNoteId, JudgmentGrade.Perfect), phrase.StartSeconds);
+                player.Evaluate(phrase.StartSeconds + (phrase.DurationSeconds * 0.65d));
+                Assert.That(player.Angle(DanceJoint.RightShoulder), Is.GreaterThan(100d),
+                    $"{phrase.Name} 的右臂不得套用左臂的负角符号");
+            }
+        }
+
+        [Test]
+        public void UnusedArm_ReturnsToNeutralInsteadOfLeakingFromPreviousPhrase()
+        {
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 180d, PlayDifficulty.Normal), 120d, 180d);
+            int raiseIndex = Enumerable.Range(0, phrases.Length - 1).First(i =>
+                phrases[i].Action == DanceAction.RaiseSleeve &&
+                phrases[i + 1].Action == DanceAction.Turn);
+
+            var player = new DancePlayback(phrases);
+            DancePhrase raise = phrases[raiseIndex];
+            DancePhrase turn = phrases[raiseIndex + 1];
+            player.OnJudged(Result(raise.AnchorNoteId, JudgmentGrade.Perfect), raise.StartSeconds);
+            player.Evaluate(raise.StartSeconds + raise.DurationSeconds);
+            Assert.That(player.Angle(DanceJoint.RightShoulder), Is.GreaterThan(100d));
+
+            player.OnJudged(Result(turn.AnchorNoteId, JudgmentGrade.Perfect), turn.StartSeconds);
+            player.Evaluate(turn.StartSeconds + turn.DurationSeconds);
+            Assert.That(player.Angle(DanceJoint.RightShoulder), Is.Zero.Within(0.001d));
+            Assert.That(player.Angle(DanceJoint.RightElbow), Is.Zero.Within(0.001d));
         }
 
         [Test]
