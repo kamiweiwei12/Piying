@@ -92,6 +92,8 @@ namespace YingYun.Rhythm.View
         public float LeftShinRotation => _leftShinJoint == null ? 0f : _leftShinJoint.localEulerAngles.z;
         public float RightThighRotation => _rightThighJoint == null ? 0f : _rightThighJoint.localEulerAngles.z;
         public float RightShinRotation => _rightShinJoint == null ? 0f : _rightShinJoint.localEulerAngles.z;
+        public float LeftAnkleRotation => _leftAnkleJoint == null ? 0f : _leftAnkleJoint.localEulerAngles.z;
+        public float RightAnkleRotation => _rightAnkleJoint == null ? 0f : _rightAnkleJoint.localEulerAngles.z;
         public float HeadRotation => _headJoint == null ? 0f : _headJoint.localEulerAngles.z;
         public float TorsoRotation => _torsoJoint == null ? 0f : _torsoJoint.localEulerAngles.z;
         public Vector3 PelvisPosition => _pelvisJoint == null ? Vector3.zero : _pelvisJoint.localPosition;
@@ -356,6 +358,52 @@ namespace YingYun.Rhythm.View
             _rodDrive[2] = Mathf.Clamp01(progress);
             for (int lane = 1; lane < _rodDrive.Length; lane++)
                 if (lane != 2) _rodDrive[lane] = 0f;
+            UpdateRods();
+        }
+
+        /// <summary>V2-P2 提膝挂脚预览；左足锁定，右足落稳后才回收重心。</summary>
+        public void PreviewV2RaisedKneeHookedFoot(float progress)
+        {
+            EnsureInitialized();
+            PuppetV2Pose pose = RaisedKneeHookedFootChoreography.Evaluate(progress);
+            _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
+            SetRotation(_torsoJoint, pose.Torso);
+            SetRotation(_headJoint, pose.Head);
+            _torsoJoint.localScale = Vector3.one;
+            _facingScale = 1f;
+
+            Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
+            Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
+            V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
+            V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
+            PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
+                out float leftShoulderAngle, out float leftElbowAngle);
+            PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
+                out float rightShoulderAngle, out float rightElbowAngle);
+            SetRotation(_leftUpperArmJoint, leftShoulderAngle);
+            SetRotation(_leftForearmJoint, leftElbowAngle);
+            SetRotation(_rightUpperArmJoint, rightShoulderAngle);
+            SetRotation(_rightForearmJoint, rightElbowAngle);
+            SetRotation(_leftWristJoint, pose.LeftWrist);
+            SetRotation(_rightWristJoint, pose.RightWrist);
+            _leftFingerJoint.localScale = Vector3.one;
+            _rightFingerJoint.localScale = Vector3.one;
+            _leftPointFinger.gameObject.SetActive(false);
+            _rightPointFinger.gameObject.SetActive(false);
+            SyncSegmentedHandArt();
+
+            ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
+                new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
+            ApplyGroundedLeg(_rightThighJoint, _rightShinJoint, _rightAnkleJoint,
+                new Vector2((float)pose.RightFootX, (float)pose.RightFootY), 1f);
+            SetRotation(_leftAnkleJoint, pose.LeftShoe);
+            SetRotation(_rightAnkleJoint, pose.RightShoe);
+            for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
+            _rodDrive[0] = Mathf.Clamp01(progress);
+            _rodDrive[3] = Mathf.Clamp01(Mathf.Abs((float)pose.RootX) / 0.18f);
+            _rodDrive[5] = Mathf.Clamp01(((float)pose.RightFootY + 2.08f) / 0.43f);
             UpdateRods();
         }
 

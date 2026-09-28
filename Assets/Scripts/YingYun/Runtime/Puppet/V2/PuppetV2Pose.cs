@@ -32,12 +32,15 @@ namespace YingYun.Rhythm.Puppet.V2
         public readonly double Facing;
         public readonly PuppetHandShape LeftHandShape;
         public readonly PuppetHandShape RightHandShape;
+        public readonly bool LeftFootPlanted;
+        public readonly bool RightFootPlanted;
 
         public PuppetV2Pose(double rootX, double rootY, double torso, double head,
             double leftHandX, double leftHandY, double rightHandX, double rightHandY,
             double leftWrist, double rightWrist, double leftFootX, double leftFootY,
             double rightFootX, double rightFootY, double leftShoe, double rightShoe,
-            double facing, PuppetHandShape leftHandShape, PuppetHandShape rightHandShape)
+            double facing, PuppetHandShape leftHandShape, PuppetHandShape rightHandShape,
+            bool leftFootPlanted, bool rightFootPlanted)
         {
             RootX = rootX;
             RootY = rootY;
@@ -58,6 +61,8 @@ namespace YingYun.Rhythm.Puppet.V2
             Facing = facing;
             LeftHandShape = leftHandShape;
             RightHandShape = rightHandShape;
+            LeftFootPlanted = leftFootPlanted;
+            RightFootPlanted = rightFootPlanted;
         }
     }
 
@@ -86,7 +91,52 @@ namespace YingYun.Rhythm.Puppet.V2
                 Sample(LeftX, t), Sample(LeftY, t), Sample(RightX, t), Sample(RightY, t),
                 Sample(LeftWrist, t), Sample(RightWrist, t),
                 -0.34d, -2.08d, 0.34d, -2.08d,
-                0d, 0d, 1d, PuppetHandShape.NaturalPalm, PuppetHandShape.NaturalPalm);
+                0d, 0d, 1d, PuppetHandShape.NaturalPalm, PuppetHandShape.NaturalPalm,
+                true, true);
+        }
+
+        private static double Sample(double[] values, double progress)
+        {
+            int segment = 0;
+            while (segment < Times.Length - 2 && progress > Times[segment + 1]) segment++;
+            double span = Times[segment + 1] - Times[segment];
+            double t = span <= 0d ? 0d : (progress - Times[segment]) / span;
+            t = Math.Max(0d, Math.Min(1d, t));
+            double smooth = t * t * (3d - (2d * t));
+            return values[segment] + ((values[segment + 1] - values[segment]) * smooth);
+        }
+    }
+
+    /// <summary>15 提膝挂脚：左脚承重，右脚折提，落脚完成后才回正重心。</summary>
+    public static class RaisedKneeHookedFootChoreography
+    {
+        public const string Name = "提膝挂脚";
+        public const int Beats = 8;
+
+        private static readonly double[] Times = { 0d, 0.25d, 0.45d, 0.65d, 0.85d, 1d };
+        private static readonly double[] RootX = { 0d, -0.18d, -0.18d, -0.18d, -0.18d, 0d };
+        // 右脚落在移重心后的真实可达点并锁住；骨盆回中时不拖动已落地的鞋。
+        private static readonly double[] RightFootX = { 0.34d, 0.34d, 0.60d, 0.60d, 0.14d, 0.14d };
+        private static readonly double[] RightFootY = { -2.08d, -2.08d, -1.65d, -1.65d, -2.08d, -2.08d };
+        private static readonly double[] RightShoe = { 0d, 0d, -10d, -10d, 0d, 0d };
+        private static readonly double[] LeftHandX = { -0.34d, -0.75d, -1.40d, -1.48d, -1.10d, -0.55d };
+        private static readonly double[] LeftHandY = { -0.86d, -0.20d, 0.48d, 0.52d, 0.20d, -0.55d };
+        private static readonly double[] RightHandX = { 0.30d, 0.52d, 0.62d, 0.62d, 0.48d, 0.34d };
+        private static readonly double[] RightHandY = { -0.86d, -0.10d, 0.25d, 0.25d, -0.10d, -0.60d };
+
+        public static PuppetV2Pose Evaluate(double progress)
+        {
+            double t = Math.Max(0d, Math.Min(1d, progress));
+            bool rightPlanted = t <= 0.25d || t >= 0.85d;
+            return new PuppetV2Pose(
+                Sample(RootX, t), -0.40d, 0d, 0d,
+                Sample(LeftHandX, t), Sample(LeftHandY, t),
+                Sample(RightHandX, t), Sample(RightHandY, t),
+                8d, -8d, -0.34d, -2.08d,
+                Sample(RightFootX, t), Sample(RightFootY, t),
+                0d, Sample(RightShoe, t), 1d,
+                PuppetHandShape.NaturalPalm, PuppetHandShape.NaturalPalm,
+                true, rightPlanted);
         }
 
         private static double Sample(double[] values, double progress)
