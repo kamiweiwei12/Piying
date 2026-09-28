@@ -153,7 +153,10 @@ namespace YingYun.Rhythm.View
                 _judgmentTextClearSongTime = double.PositiveInfinity;
             }
 
-            while (_nextNoteIndex < _notes.Length &&
+            // 三秒预备倒数使用负歌曲时间。倒数结束前不创建任何音符，
+            // 避免可见提前量把首批音符带进舞台。
+            while (songTimeSec >= 0d &&
+                   _nextNoteIndex < _notes.Length &&
                    _notes[_nextNoteIndex].TimeSec - songTimeSec <= visibleLeadSeconds)
             {
                 Spawn(_notes[_nextNoteIndex]);
@@ -173,7 +176,11 @@ namespace YingYun.Rhythm.View
                     continue;
                 }
 
-                view.UpdateVisual(songTimeSec, visibleLeadSeconds);
+                // 首批音符可能离零点不足完整提前量；从零点的生成位开始加速进入，
+                // 但仍在原 NoteTimeSec 抵达判定圈，显示与判定保持同一时间源。
+                double visualLeadSeconds = RadialNoteGeometry.CountdownSafeLead(
+                    view.NoteTimeSec, visibleLeadSeconds);
+                view.UpdateVisual(songTimeSec, visualLeadSeconds);
             }
 
         }

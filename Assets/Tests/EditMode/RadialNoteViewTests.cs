@@ -26,6 +26,53 @@ namespace YingYun.Rhythm.Tests
         };
 
         [Test]
+        public void Presenter_CountdownBlocksEntryUntilZero()
+        {
+            var root = new GameObject("Countdown Entry Gate Test");
+            try
+            {
+                RadialNotePresenter presenter = root.AddComponent<RadialNotePresenter>();
+                presenter.Begin(new[] { new NoteData(1, "tap", 0, 0.86d) });
+
+                presenter.Tick(-3d);
+                presenter.Tick(-2d);
+                presenter.Tick(-1d);
+                presenter.Tick(-0.000001d);
+                Assert.That(presenter.ActiveCount, Is.Zero,
+                    "no note may enter while the three-second countdown is active");
+
+                presenter.Tick(0d);
+                Assert.That(presenter.ActiveCount, Is.EqualTo(1));
+
+                double entryLead = RadialNoteGeometry.CountdownSafeLead(0.86d, 1.75d);
+                Vector2 atEntry = RadialNoteGeometry.Position(
+                    new Vector2(-7.5f, 0.65f),
+                    RadialNotePresenter.ReceptorPositionForLane(0),
+                    0d,
+                    0.86d,
+                    entryLead);
+                Assert.That(atEntry.x, Is.EqualTo(-7.5f).Within(0.0001f));
+                Assert.That(atEntry.y, Is.EqualTo(0.65f).Within(0.0001f));
+
+                presenter.Tick(0.86d);
+                Assert.That(presenter.ActiveCount, Is.EqualTo(1),
+                    "the gate must not change or discard the note's original judgment time");
+                Vector2 atJudgment = RadialNoteGeometry.Position(
+                    new Vector2(-7.5f, 0.65f),
+                    RadialNotePresenter.ReceptorPositionForLane(0),
+                    0.86d,
+                    0.86d,
+                    entryLead);
+                Assert.That(atJudgment.x, Is.EqualTo(-3.3f).Within(0.0001f));
+                Assert.That(atJudgment.y, Is.EqualTo(0.35f).Within(0.0001f));
+            }
+            finally
+            {
+                Object.DestroyImmediate(root);
+            }
+        }
+
+        [Test]
         public void BindChord_ActivatesAllRequiredMarkersAndConnector()
         {
             Fixture fixture = CreateFixture();
