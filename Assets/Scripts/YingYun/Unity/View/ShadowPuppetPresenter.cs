@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.Puppet;
+using YingYun.Rhythm.Puppet.V2;
 
 namespace YingYun.Rhythm.View
 {
@@ -110,6 +111,8 @@ namespace YingYun.Rhythm.View
         public bool LeftPointFingerVisible => _leftPointFinger != null && _leftPointFinger.gameObject.activeSelf;
         public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
         public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
+        public Vector3 V2LeftHandTarget { get; private set; }
+        public Vector3 V2RightHandTarget { get; private set; }
 
         /// <summary>读取当前 15 分片的可见边界和末端接触点，供 V2 标定与回归测试使用。</summary>
         public PuppetRigCalibrationSnapshot CaptureV2Calibration()
@@ -308,6 +311,51 @@ namespace YingYun.Rhythm.View
             for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
             _rodDrive[0] = t;
             _rodDrive[2] = t;
+            UpdateRods();
+        }
+
+        /// <summary>V2-P1 双展山膀预览；与正式旧舞句隔离。</summary>
+        public void PreviewV2DoubleMountainArm(float progress)
+        {
+            EnsureInitialized();
+            PuppetV2Pose pose = DoubleMountainArmChoreography.Evaluate(progress);
+            _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
+            SetRotation(_torsoJoint, pose.Torso);
+            SetRotation(_headJoint, pose.Head);
+            _torsoJoint.localScale = Vector3.one;
+            _facingScale = 1f;
+
+            Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
+            Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
+            V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
+            V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
+            PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
+                out float leftShoulderAngle, out float leftElbowAngle);
+            PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
+                out float rightShoulderAngle, out float rightElbowAngle);
+            SetRotation(_leftUpperArmJoint, leftShoulderAngle);
+            SetRotation(_leftForearmJoint, leftElbowAngle);
+            SetRotation(_rightUpperArmJoint, rightShoulderAngle);
+            SetRotation(_rightForearmJoint, rightElbowAngle);
+            SetRotation(_leftWristJoint, pose.LeftWrist);
+            SetRotation(_rightWristJoint, pose.RightWrist);
+            _leftFingerJoint.localScale = Vector3.one;
+            _rightFingerJoint.localScale = Vector3.one;
+            _leftPointFinger.gameObject.SetActive(false);
+            _rightPointFinger.gameObject.SetActive(false);
+            SyncSegmentedHandArt();
+            ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
+                new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
+            ApplyGroundedLeg(_rightThighJoint, _rightShinJoint, _rightAnkleJoint,
+                new Vector2((float)pose.RightFootX, (float)pose.RightFootY), 1f);
+            SetRotation(_leftAnkleJoint, pose.LeftShoe);
+            SetRotation(_rightAnkleJoint, pose.RightShoe);
+            _rodDrive[0] = Mathf.Clamp01(progress);
+            _rodDrive[2] = Mathf.Clamp01(progress);
+            for (int lane = 1; lane < _rodDrive.Length; lane++)
+                if (lane != 2) _rodDrive[lane] = 0f;
             UpdateRods();
         }
 
@@ -833,9 +881,15 @@ namespace YingYun.Rhythm.View
 
         private void ApplyGroundedLeg(Transform thigh, Transform shin, Transform ankle, Vector2 stageTarget)
         {
+            ApplyGroundedLeg(thigh, shin, ankle, stageTarget, 1f);
+        }
+
+        private void ApplyGroundedLeg(Transform thigh, Transform shin, Transform ankle,
+            Vector2 stageTarget, float bendSide)
+        {
             Vector3 targetWorld = _visualRoot.TransformPoint(stageTarget);
             Vector2 targetLocal = _pelvisJoint.InverseTransformPoint(targetWorld);
-            NorthernShadowLegSolver.Solve(thigh.localPosition, targetLocal, 1f,
+            NorthernShadowLegSolver.Solve(thigh.localPosition, targetLocal, bendSide,
                 out float hipDegrees, out float kneeDegrees);
             SetRotation(thigh, hipDegrees);
             SetRotation(shin, kneeDegrees);
