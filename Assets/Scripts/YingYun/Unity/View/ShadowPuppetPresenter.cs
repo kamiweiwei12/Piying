@@ -111,6 +111,46 @@ namespace YingYun.Rhythm.View
         public Vector3 LeftAnklePosition => _leftAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_leftAnkleJoint.position);
         public Vector3 RightAnklePosition => _rightAnkleJoint == null ? Vector3.zero : _visualRoot.InverseTransformPoint(_rightAnkleJoint.position);
 
+        /// <summary>读取当前 15 分片的可见边界和末端接触点，供 V2 标定与回归测试使用。</summary>
+        public PuppetRigCalibrationSnapshot CaptureV2Calibration()
+        {
+            EnsureInitialized();
+            Bounds visible = default;
+            bool hasBounds = false;
+            foreach (PuppetArtCalibration art in PuppetRigV2Calibration.Art)
+            {
+                Transform part = _visualRoot.Find(art.Path);
+                SpriteRenderer renderer = part == null ? null : part.GetComponent<SpriteRenderer>();
+                if (renderer == null || !renderer.enabled) continue;
+                if (!hasBounds)
+                {
+                    visible = renderer.bounds;
+                    hasBounds = true;
+                }
+                else visible.Encapsulate(renderer.bounds);
+            }
+
+            Vector2 leftTip = LowestPoint(_leftHandArt.GetComponent<SpriteRenderer>().bounds);
+            Vector2 rightTip = LowestPoint(_rightHandArt.GetComponent<SpriteRenderer>().bounds);
+            Vector2 leftSole = LowestPoint(_leftAnkleJoint.Find("Art Left Shoe").GetComponent<SpriteRenderer>().bounds);
+            Vector2 rightSole = LowestPoint(_rightAnkleJoint.Find("Art Right Shoe").GetComponent<SpriteRenderer>().bounds);
+            return new PuppetRigCalibrationSnapshot(ToLocalBounds(visible), ToLocal(leftTip), ToLocal(rightTip),
+                ToLocal(leftSole), ToLocal(rightSole));
+        }
+
+        private Vector2 ToLocal(Vector2 world) => _visualRoot.InverseTransformPoint(world);
+
+        private Bounds ToLocalBounds(Bounds world)
+        {
+            Vector3 min = _visualRoot.InverseTransformPoint(world.min);
+            Vector3 max = _visualRoot.InverseTransformPoint(world.max);
+            var result = new Bounds();
+            result.SetMinMax(Vector3.Min(min, max), Vector3.Max(min, max));
+            return result;
+        }
+
+        private static Vector2 LowestPoint(Bounds bounds) => new Vector2(bounds.center.x, bounds.min.y);
+
         private void Awake()
         {
             EnsureInitialized();
