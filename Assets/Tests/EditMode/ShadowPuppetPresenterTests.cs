@@ -155,6 +155,8 @@ namespace YingYun.Rhythm.Tests
             Assert.That(presenter.JointCount, Is.EqualTo(21));
             Assert.That(presenter.RodCount, Is.EqualTo(6));
             Assert.That(presenter.HasBackgroundPicture, Is.True);
+            Assert.That(presenter.UsesSegmentedPuppetArt, Is.True);
+            Assert.That(presenter.PuppetArtRendererCount, Is.EqualTo(15));
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Traditional Shadow Play Background"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee"), Is.Not.Null);
@@ -167,6 +169,9 @@ namespace YingYun.Rhythm.Tests
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Robe Skirt"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Neck/Crown Wing Left"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Chest Rod Socket"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Neck/Art Head"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Art Left Upper Arm"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Hip/Joint Left Knee/Art Left Shin"), Is.Not.Null);
 
             Object.DestroyImmediate(root);
         }

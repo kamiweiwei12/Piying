@@ -52,6 +52,14 @@ namespace YingYun.Rhythm.View
         private Transform _robeHem;
         private Transform _leftFootPlate;
         private Transform _rightFootPlate;
+        private Transform _pelvisArt;
+        private Transform _leftSleeveArt;
+        private Transform _rightSleeveArt;
+        private Vector3 _pelvisArtBaseScale;
+        private Vector3 _leftSleeveArtBaseScale;
+        private Vector3 _rightSleeveArtBaseScale;
+        private Sprite[] _puppetArtSprites = Array.Empty<Sprite>();
+        private bool _usesSegmentedPuppetArt;
         private Sprite _squareSprite;
         private Sprite _circleSprite;
         private Sprite _backgroundSprite;
@@ -59,8 +67,11 @@ namespace YingYun.Rhythm.View
         private Texture2D _circleTexture;
         private Material _lineMaterial;
         private double _songTime;
+        private float _facingScale = 1f;
 
         public int JointCount => 21;
+        public bool UsesSegmentedPuppetArt => _usesSegmentedPuppetArt;
+        public int PuppetArtRendererCount { get; private set; }
         public event Action<DancePerformanceStatus> DanceStatusChanged;
         public int RodCount => _rods.Length;
         public int StringCount => RodCount;
@@ -79,8 +90,8 @@ namespace YingYun.Rhythm.View
         public float GetRodDrive(int lane) => _rodDrive[lane];
         public Vector3 GetRodGripPosition(int lane) => _rods[lane] == null ? Vector3.zero : _rods[lane].GetPosition(0);
         public float GetStringTension(int lane) => GetRodDrive(lane);
-        public float FacingScale => _torsoJoint == null ? 1f : _torsoJoint.localScale.x;
-        public float LowerBodyFacingScale => _robeSkirt == null ? 1f : _robeSkirt.localScale.x / 1.28f;
+        public float FacingScale => _facingScale;
+        public float LowerBodyFacingScale => _facingScale;
         public float LeftWristRotation => _leftWristJoint == null ? 0f : _leftWristJoint.localEulerAngles.z;
         public float LeftFingerRotation => _leftFingerJoint == null ? 0f : _leftFingerJoint.localEulerAngles.z;
         public Vector3 LeftWristPosition => _leftWristJoint == null ? Vector3.zero :
@@ -112,6 +123,7 @@ namespace YingYun.Rhythm.View
                 _heldRods[lane] = false;
             }
             ApplyPose(default);
+            _facingScale = 1f;
             _torsoJoint.localScale = Vector3.one;
             _robeSkirt.localScale = new Vector3(1.28f, 0.72f, 1f);
             _robeHem.localScale = new Vector3(1.36f, 0.14f, 1f);
@@ -121,6 +133,12 @@ namespace YingYun.Rhythm.View
             _rightFootPlate.localPosition = new Vector3(0.19f, -0.04f, 0f);
             _leftSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
             _rightSleeve.localScale = new Vector3(0.48f, 0.82f, 1f);
+            if (_usesSegmentedPuppetArt)
+            {
+                _pelvisArt.localScale = _pelvisArtBaseScale;
+                _leftSleeveArt.localScale = _leftSleeveArtBaseScale;
+                _rightSleeveArt.localScale = _rightSleeveArtBaseScale;
+            }
             _leftFingerJoint.localScale = Vector3.one;
             _rightFingerJoint.localScale = Vector3.one;
             _leftPointFinger.gameObject.SetActive(false);
@@ -414,6 +432,8 @@ namespace YingYun.Rhythm.View
             CreateJointPin(_leftAnkleJoint, 6);
             CreateJointPin(_rightAnkleJoint, 6);
 
+            LoadAndBuildSegmentedPuppetArt();
+
             _rodTargets[0] = _leftWristJoint;
             _rodTargets[1] = head;
             _rodTargets[2] = _rightWristJoint;
@@ -554,10 +574,18 @@ namespace YingYun.Rhythm.View
             SetRotation(_rightUpperArmJoint, _dancePlayback.Angle(DanceJoint.RightShoulder));
             SetRotation(_rightForearmJoint, _dancePlayback.Angle(DanceJoint.RightElbow));
             float facing = (float)_dancePlayback.FacingScale;
-            _torsoJoint.localScale = new Vector3(facing, 1f, 1f);
+            _facingScale = facing;
+            float visibleFacing = Mathf.Sign(facing == 0f ? 1f : facing) *
+                Mathf.Lerp(0.16f, 1f, Mathf.Abs(facing));
+            _torsoJoint.localScale = new Vector3(visibleFacing, 1f, 1f);
             // 分片的下身各自改向，不縮放骨盆根節點，避免足點反解在側身時失穩。
-            _robeSkirt.localScale = new Vector3(1.28f * facing, 0.72f, 1f);
-            _robeHem.localScale = new Vector3(1.36f * facing, 0.14f, 1f);
+            _robeSkirt.localScale = new Vector3(1.28f * visibleFacing, 0.72f, 1f);
+            _robeHem.localScale = new Vector3(1.36f * visibleFacing, 0.14f, 1f);
+            if (_usesSegmentedPuppetArt)
+            {
+                _pelvisArt.localScale = new Vector3(_pelvisArtBaseScale.x * visibleFacing,
+                    _pelvisArtBaseScale.y, _pelvisArtBaseScale.z);
+            }
             // 側身時讓兩個鉚接髖位收攏並交換前後，但保持足點在地平線上。
             float hipOffset = (0.21f + (0.06f * facing)) * facing;
             _leftThighJoint.localPosition = new Vector3(-hipOffset, 0.08f, 0f);
@@ -587,6 +615,101 @@ namespace YingYun.Rhythm.View
             float right = Mathf.Lerp(_rightSleeve.localScale.y, _heldRods[2] ? 1.07f : 0.82f, step);
             _leftSleeve.localScale = new Vector3(0.48f, left, 1f);
             _rightSleeve.localScale = new Vector3(0.48f, right, 1f);
+            if (_usesSegmentedPuppetArt)
+            {
+                float leftArtY = Mathf.Lerp(_leftSleeveArt.localScale.y,
+                    _leftSleeveArtBaseScale.y * (_heldRods[0] ? 1.12f : 1f), step);
+                float rightArtY = Mathf.Lerp(_rightSleeveArt.localScale.y,
+                    _rightSleeveArtBaseScale.y * (_heldRods[2] ? 1.12f : 1f), step);
+                _leftSleeveArt.localScale = new Vector3(_leftSleeveArtBaseScale.x, leftArtY, 1f);
+                _rightSleeveArt.localScale = new Vector3(_rightSleeveArtBaseScale.x, rightArtY, 1f);
+            }
+        }
+
+        private void LoadAndBuildSegmentedPuppetArt()
+        {
+            _puppetArtSprites = Resources.LoadAll<Sprite>("YingYun/Art/Puppet/puppet_parts_v1");
+            string[] requiredNames =
+            {
+                "puppet_head", "puppet_torso", "puppet_pelvis",
+                "puppet_left_upper_arm", "puppet_left_forearm", "puppet_left_hand",
+                "puppet_right_upper_arm", "puppet_right_forearm", "puppet_right_hand",
+                "puppet_left_thigh", "puppet_left_shin", "puppet_left_shoe",
+                "puppet_right_thigh", "puppet_right_shin", "puppet_right_shoe"
+            };
+            for (int i = 0; i < requiredNames.Length; i++)
+            {
+                if (FindPuppetArt(requiredNames[i]) == null)
+                {
+                    Debug.LogWarning($"[M11-Art] Missing segmented puppet sprite: {requiredNames[i]}. Legacy puppet art remains active.");
+                    return;
+                }
+            }
+
+            SpriteRenderer[] legacy = _pelvisJoint.GetComponentsInChildren<SpriteRenderer>(true);
+            for (int i = 0; i < legacy.Length; i++) legacy[i].enabled = false;
+
+            CreateRigArt("Art Head", _headJoint, FindPuppetArt("puppet_head"), 1.42f, 12);
+            CreateRigArt("Art Torso", _torsoJoint, FindPuppetArt("puppet_torso"), 1.45f, 8);
+            _pelvisArt = CreateRigArt("Art Pelvis", _pelvisJoint, FindPuppetArt("puppet_pelvis"), 0.86f, 7);
+            _pelvisArt.localPosition = new Vector3(0f, 0.16f, 0f);
+
+            _leftSleeveArt = CreateRigArt("Art Left Upper Arm", _leftUpperArmJoint,
+                FindPuppetArt("puppet_left_upper_arm"), 0.94f, 9);
+            CreateRigArt("Art Left Forearm", _leftForearmJoint,
+                FindPuppetArt("puppet_left_forearm"), 0.82f, 10);
+            CreateRigArt("Art Left Hand", _leftWristJoint,
+                FindPuppetArt("puppet_left_hand"), 0.42f, 12);
+
+            _rightSleeveArt = CreateRigArt("Art Right Upper Arm", _rightUpperArmJoint,
+                FindPuppetArt("puppet_right_upper_arm"), 0.94f, 9);
+            CreateRigArt("Art Right Forearm", _rightForearmJoint,
+                FindPuppetArt("puppet_right_forearm"), 0.82f, 10);
+            CreateRigArt("Art Right Hand", _rightWristJoint,
+                FindPuppetArt("puppet_right_hand"), 0.42f, 12);
+
+            CreateRigArt("Art Left Thigh", _leftThighJoint,
+                FindPuppetArt("puppet_left_thigh"), 0.96f, 6);
+            CreateRigArt("Art Left Shin", _leftShinJoint,
+                FindPuppetArt("puppet_left_shin"), 0.88f, 7);
+            CreateRigArt("Art Left Shoe", _leftAnkleJoint,
+                FindPuppetArt("puppet_left_shoe"), 0.24f, 8);
+
+            CreateRigArt("Art Right Thigh", _rightThighJoint,
+                FindPuppetArt("puppet_right_thigh"), 0.96f, 6);
+            CreateRigArt("Art Right Shin", _rightShinJoint,
+                FindPuppetArt("puppet_right_shin"), 0.88f, 7);
+            CreateRigArt("Art Right Shoe", _rightAnkleJoint,
+                FindPuppetArt("puppet_right_shoe"), 0.24f, 8);
+
+            _pelvisArtBaseScale = _pelvisArt.localScale;
+            _leftSleeveArtBaseScale = _leftSleeveArt.localScale;
+            _rightSleeveArtBaseScale = _rightSleeveArt.localScale;
+            _usesSegmentedPuppetArt = true;
+        }
+
+        private Sprite FindPuppetArt(string spriteName)
+        {
+            for (int i = 0; i < _puppetArtSprites.Length; i++)
+            {
+                if (_puppetArtSprites[i].name == spriteName) return _puppetArtSprites[i];
+            }
+
+            return null;
+        }
+
+        private Transform CreateRigArt(string objectName, Transform joint, Sprite sprite, float targetHeight, int sortingOrder)
+        {
+            var artObject = new GameObject(objectName);
+            artObject.transform.SetParent(joint, false);
+            float sourceHeight = Mathf.Max(0.001f, sprite.bounds.size.y);
+            artObject.transform.localScale = Vector3.one * (targetHeight / sourceHeight);
+            var renderer = artObject.AddComponent<SpriteRenderer>();
+            renderer.sprite = sprite;
+            renderer.color = Color.white;
+            renderer.sortingOrder = sortingOrder;
+            PuppetArtRendererCount++;
+            return artObject.transform;
         }
 
         private void UpdateArticulatedDetails(double elapsed)

@@ -1,0 +1,657 @@
+fileFormatVersion: 2
+guid: cd542da339ed05448bc5be948b6fc66a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -3549511307570261814
+    second: puppet_parts_v1_0
+  - first:
+      213: -7153151946019473660
+    second: puppet_parts_v1_1
+  - first:
+      213: 4903403844377659221
+    second: puppet_parts_v1_2
+  - first:
+      213: -3796609210959273806
+    second: puppet_parts_v1_3
+  - first:
+      213: -1202933167290143009
+    second: puppet_parts_v1_4
+  - first:
+      213: -1156535521170414119
+    second: puppet_parts_v1_5
+  - first:
+      213: -6085951057354888856
+    second: puppet_parts_v1_6
+  - first:
+      213: -1295661547564748595
+    second: puppet_parts_v1_7
+  - first:
+      213: -2734228634766043776
+    second: puppet_parts_v1_8
+  - first:
+      213: -3428339104684381511
+    second: puppet_parts_v1_9
+  - first:
+      213: 5754347491306204265
+    second: puppet_parts_v1_10
+  - first:
+      213: 8480092326090998225
+    second: puppet_parts_v1_11
+  - first:
+      213: -7922681075116372511
+    second: puppet_parts_v1_12
+  - first:
+      213: -3721974994997542099
+    second: puppet_parts_v1_13
+  - first:
+      213: -3540941712311355663
+    second: puppet_parts_v1_14
+  - first:
+      213: -2377353737275814645
+    second: puppet_parts_v1_15
+  - first:
+      213: 2437773205634386789
+    second: puppet_parts_v1_16
+  - first:
+      213: -3340923081850922140
+    second: puppet_parts_v1_17
+  - first:
+      213: -745274479564358634
+    second: puppet_parts_v1_18
+  - first:
+      213: 6669103735065573053
+    second: puppet_parts_v1_19
+  - first:
+      213: -4543449829421041368
+    second: puppet_parts_v1_20
+  - first:
+      213: -359350821670370667
+    second: puppet_parts_v1_21
+  - first:
+      213: -4805409522475553604
+    second: puppet_parts_v1_22
+  - first:
+      213: -4342171602734326373
+    second: puppet_parts_v1_23
+  - first:
+      213: -9170449379930946107
+    second: puppet_parts_v1_24
+  - first:
+      213: -3398463165432859539
+    second: puppet_parts_v1_25
+  - first:
+      213: -5476568373395636105
+    second: puppet_parts_v1_26
+  - first:
+      213: 8000809937737929527
+    second: puppet_parts_v1_27
+  - first:
+      213: -7733871603214665175
+    second: puppet_parts_v1_28
+  - first:
+      213: -2442833977395439628
+    second: puppet_parts_v1_29
+  - first:
+      213: -1830687376973397580
+    second: puppet_parts_v1_30
+  - first:
+      213: 2155534666764985064
+    second: puppet_parts_v1_31
+  - first:
+      213: -9181768653781160997
+    second: puppet_parts_v1_32
+  - first:
+      213: -7161069732701856028
+    second: puppet_parts_v1_33
+  - first:
+      213: -3279436969492246222
+    second: puppet_parts_v1_34
+  - first:
+      213: -7501767790438991610
+    second: puppet_parts_v1_35
+  - first:
+      213: 3186527340307002394
+    second: puppet_parts_v1_36
+  - first:
+      213: 6560409308727413753
+    second: puppet_parts_v1_37
+  - first:
+      213: 1578394416121680682
+    second: puppet_parts_v1_38
+  - first:
+      213: 199756830227518370
+    second: puppet_parts_v1_39
+  - first:
+      213: -3883914794480384439
+    second: puppet_parts_v1_40
+  - first:
+      213: 8080311968774567947
+    second: puppet_parts_v1_41
+  - first:
+      213: -1908966487385389039
+    second: puppet_parts_v1_42
+  - first:
+      213: 294233160288646650
+    second: puppet_parts_v1_43
+  - first:
+      213: -5522567640108924218
+    second: puppet_parts_v1_44
+  - first:
+      213: 6202802665005080325
+    second: puppet_parts_v1_45
+  - first:
+      213: 5639497067998820342
+    second: puppet_parts_v1_46
+  - first:
+      213: -409846273956445386
+    second: puppet_parts_v1_47
+  - first:
+      213: 4974510372029643724
+    second: puppet_parts_v1_48
+  - first:
+      213: -4767075926309449775
+    second: puppet_parts_v1_49
+  - first:
+      213: -1431551088063896091
+    second: puppet_parts_v1_50
+  - first:
+      213: 7109572648295229521
+    second: puppet_parts_v1_51
+  - first:
+      213: 2304726108386922047
+    second: puppet_parts_v1_52
+  - first:
+      213: 4181342885597029607
+    second: puppet_parts_v1_53
+  - first:
+      213: -593536711850473368
+    second: puppet_parts_v1_54
+  - first:
+      213: 8905725520792537831
+    second: puppet_parts_v1_55
+  - first:
+      213: -3335027207680002973
+    second: puppet_parts_v1_56
+  - first:
+      213: -1604328729208853808
+    second: puppet_parts_v1_57
+  - first:
+      213: -4788200160784843961
+    second: puppet_parts_v1_58
+  - first:
+      213: -8217872417986692106
+    second: puppet_parts_v1_59
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationMethod: 0
+  spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: puppet_head
+      rect:
+        serializedVersion: 2
+        x: 104
+        y: 897
+        width: 219
+        height: 387
+      alignment: 9
+      pivot: {x: 0.5, y: 0.04}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6baeec984328aab4cb00277f5c8e6c22
+      internalID: 1934834147
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_torso
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 880
+        width: 196
+        height: 354
+      alignment: 9
+      pivot: {x: 0.5, y: 0.03}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 921b84fddc59dbf47bf7803c82f81ba3
+      internalID: 144815147
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_pelvis
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 910
+        width: 284
+        height: 263
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08be6e1555f85fa44acedc005ddcf5df
+      internalID: -2106571228
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_right_upper_arm
+      rect:
+        serializedVersion: 2
+        x: 1000
+        y: 888
+        width: 154
+        height: 334
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc5c1ad2a360ecd4a94026401d085f14
+      internalID: 98677666
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_left_upper_arm
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 611
+        width: 159
+        height: 259
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a1e11ae4ec9fac48a0f17fc0260cb63
+      internalID: -986395850
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_right_hand
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 602
+        width: 123
+        height: 215
+      alignment: 9
+      pivot: {x: 0.5, y: 0.93}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc87c24d204de9f4982f34060eb3db7f
+      internalID: 1562280448
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_right_forearm
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 604
+        width: 155
+        height: 261
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1675b869761f16142a9b927789a0820c
+      internalID: -1320258248
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_left_forearm
+      rect:
+        serializedVersion: 2
+        x: 961
+        y: 607
+        width: 156
+        height: 256
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1363541214ba5f646ae83e1aa7cc3af8
+      internalID: 488223832
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_left_hand
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 333
+        width: 118
+        height: 208
+      alignment: 9
+      pivot: {x: 0.5, y: 0.93}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30d067d3ba92c4c459814483331fec0b
+      internalID: -457760058
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_left_thigh
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 307
+        width: 209
+        height: 279
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afe65abf589bc8e4d997cfa46891df4b
+      internalID: -1740243368
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_right_thigh
+      rect:
+        serializedVersion: 2
+        x: 697
+        y: 306
+        width: 174
+        height: 280
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bb7eca4a307bfc438c37a608514b99a
+      internalID: 33660925
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_left_shoe
+      rect:
+        serializedVersion: 2
+        x: 992
+        y: 323
+        width: 141
+        height: 113
+      alignment: 9
+      pivot: {x: 0.5, y: 0.86}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f810d1dedc9f7640881b5575e13e664
+      internalID: 829701295
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_left_shin
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 39
+        width: 217
+        height: 277
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c720206f34bb6f24495076bfb232242d
+      internalID: -1451132608
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_right_shin
+      rect:
+        serializedVersion: 2
+        x: 394
+        y: 36
+        width: 176
+        height: 270
+      alignment: 9
+      pivot: {x: 0.5, y: 0.94}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 085dbbe0eb0ab81438d069f9f5f7db61
+      internalID: 1544786622
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: puppet_right_shoe
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 49
+        width: 146
+        height: 114
+      alignment: 9
+      pivot: {x: 0.5, y: 0.86}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData:
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a686788153b2324da5ec3aff985de46
+      internalID: -216399374
+      vertices: []
+      indices:
+      edges: []
+      weights: []
+    outline: []
+    customData:
+    physicsShape: []
+    bones: []
+    spriteID: 9184853cf64479e4593c7c76284f8885
+    internalID: 0
+    vertices: []
+    indices:
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      puppet_head: 1934834147
+      puppet_left_forearm: 488223832
+      puppet_left_hand: -457760058
+      puppet_left_shin: -1451132608
+      puppet_left_shoe: 829701295
+      puppet_left_thigh: -1740243368
+      puppet_left_upper_arm: -986395850
+      puppet_pelvis: -2106571228
+      puppet_right_forearm: -1320258248
+      puppet_right_hand: 1562280448
+      puppet_right_shin: 1544786622
+      puppet_right_shoe: -216399374
+      puppet_right_thigh: 33660925
+      puppet_right_upper_arm: 98677666
+      puppet_torso: 144815147
+  mipmapLimitGroupName:
+  pSDRemoveMatte: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:
