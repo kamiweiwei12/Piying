@@ -358,36 +358,37 @@ namespace YingYun.Rhythm.Puppet
             {
                 case DanceAction.SingleMountainArm:
                     name = "單山膀"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
-                    firstKeys = new[] { 0d, -55d, -66d, -66d, -60d };
-                    secondKeys = new[] { 0d, -12d, -22d, -22d, -18d }; break;
+                    firstKeys = new[] { 0d, -62d, -78d, -78d, -60d };
+                    secondKeys = new[] { 0d, -16d, -28d, -28d, -18d }; break;
                 case DanceAction.CloudHand:
                     name = "雲手"; first = DanceJoint.LeftShoulder; second = DanceJoint.LeftElbow;
-                    firstKeys = new[] { -60d, -22d, 35d, 12d, -24d };
+                    // 保留原五段雲手時序；分片長袖的可見高點位於負角方向，第三段抬至托掌高度。
+                    firstKeys = new[] { -60d, -30d, -155d, -88d, -24d };
                     // 接順風旗前收肘，肩仍保留入勢方向。
-                    secondKeys = new[] { -18d, -48d, -25d, -10d, 0d }; break;
+                    secondKeys = new[] { -18d, -58d, 42d, 18d, 0d }; break;
                 case DanceAction.WindFlag:
                     name = "順風旗"; first = DanceJoint.LeftShoulder; second = DanceJoint.RightShoulder;
-                    firstKeys = new[] { -24d, -45d, -62d, -62d, -60d };
+                    firstKeys = new[] { -24d, -52d, -76d, -76d, -60d };
                     // 右臂的外展方向为正角；旧值误用了左臂符号，导致双手同时落在身体左侧。
-                    secondKeys = new[] { 0d, 65d, 145d, 145d, 138d }; break;
+                    secondKeys = new[] { 0d, 75d, 160d, 160d, 138d }; break;
                 case DanceAction.Turn:
                     name = "轉身"; first = DanceJoint.Torso; second = DanceJoint.LeftShoulder;
-                    firstKeys = new[] { 0d, 4d, 0d, -4d, 0d };
-                    secondKeys = new[] { -60d, -48d, -40d, -48d, -60d }; break;
+                    firstKeys = new[] { 0d, 6d, 0d, -6d, 0d };
+                    secondKeys = new[] { -60d, -55d, -48d, -55d, -60d }; break;
                 case DanceAction.RaiseSleeve:
                     name = "揚袖"; first = DanceJoint.RightShoulder; second = DanceJoint.RightElbow;
-                    firstKeys = new[] { 138d, 75d, 135d, 150d, 115d };
-                    secondKeys = new[] { 0d, 18d, 38d, 22d, 12d }; break;
+                    firstKeys = new[] { 138d, 62d, 145d, 160d, 115d };
+                    secondKeys = new[] { 0d, 24d, 48d, 30d, 12d }; break;
                 case DanceAction.DoubleMountainArm:
                     name = "雙山膀"; first = DanceJoint.LeftShoulder; second = DanceJoint.RightShoulder;
                     // 先定住雙山膀，末兩拍左臂收勢；右臂留給反雲手。
-                    firstKeys = new[] { -60d, -68d, -76d, -76d, 0d };
-                    secondKeys = new[] { 115d, 82d, 76d, 76d, 68d }; break;
+                    firstKeys = new[] { -60d, -76d, -88d, -88d, 0d };
+                    secondKeys = new[] { 115d, 88d, 84d, 84d, 68d }; break;
                 case DanceAction.ReverseCloudHand:
                     name = "反雲手"; first = DanceJoint.RightShoulder; second = DanceJoint.RightElbow;
                     // 亮相前把右臂收回，不能讓前一招的手臂懸空殘留。
-                    firstKeys = new[] { 68d, 25d, -35d, -12d, 0d };
-                    secondKeys = new[] { 12d, 48d, 25d, 10d, 0d }; break;
+                    firstKeys = new[] { 68d, 30d, -62d, -22d, 0d };
+                    secondKeys = new[] { 12d, 56d, 34d, 16d, 0d }; break;
                 case DanceAction.FinalPose:
                     name = "亮相"; first = DanceJoint.Torso; second = DanceJoint.Head;
                     // 亮相定住至第六拍，再收身回到下一循環的起勢。
@@ -454,9 +455,10 @@ namespace YingYun.Rhythm.Puppet
                 {
                     // 工程驗證用的抬落腳弧線，非特定戲曲步法；端點速度為零。
                     double arc = Math.Sin(Math.PI * Smooth(progress));
-                    footReachSamples[i] = 0.32d * arc;
-                    footLiftSamples[i] = 0.34d * arc;
-                    weightShiftSamples[i] = 0.14d * arc;
+                    // 新分片人物的腿片更长；沿用同一侧别与同一抬落时序，仅提高可读幅度。
+                    footReachSamples[i] = 0.50d * arc;
+                    footLiftSamples[i] = 0.50d * arc;
+                    weightShiftSamples[i] = 0.20d * arc;
                 }
             }
 

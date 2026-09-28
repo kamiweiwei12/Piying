@@ -586,11 +586,15 @@ namespace YingYun.Rhythm.View
             SetRotation(_rightForearmJoint, _dancePlayback.Angle(DanceJoint.RightElbow));
             float facing = (float)_dancePlayback.FacingScale;
             _facingScale = facing;
-            // 舊幾何剪影可以靠連續縮放穿過側身；完整分片貼圖若照做會被壓成細線。
-            // 保留原舞句的 FacingScale，只在美術適配層以完整寬度換面。
-            float visibleFacing = _usesSegmentedPuppetArt
-                ? (facing < 0f ? -1f : 1f)
-                : facing;
+            // 舊幾何剪影可以靠連續縮放穿過側身；完整分片貼圖照原值會被壓成細線，
+            // 上一版改成整寬換面又失去了側身深度。保留原 FacingScale 時序，在美術層把
+            // 最窄側面限制為 56%，使正面－側面－背面仍有連續透視且不破壞分片細節。
+            float visibleFacing = facing;
+            if (_usesSegmentedPuppetArt)
+            {
+                float turnDepth = Mathf.Lerp(0.56f, 1f, Mathf.Abs(facing));
+                visibleFacing = (facing < 0f ? -1f : 1f) * turnDepth;
+            }
             _torsoJoint.localScale = new Vector3(visibleFacing, 1f, 1f);
             // 分片的下身各自改向，不縮放骨盆根節點，避免足點反解在側身時失穩。
             _robeSkirt.localScale = new Vector3(1.28f * visibleFacing, 0.72f, 1f);

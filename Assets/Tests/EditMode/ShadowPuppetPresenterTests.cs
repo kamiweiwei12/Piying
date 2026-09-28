@@ -250,7 +250,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void SegmentedTurn_PreservesArtworkWidthWhileUsingExistingFacingTrack()
+        public void SegmentedTurn_UsesReadableForeshorteningWhileFollowingExistingFacingTrack()
         {
             var root = new GameObject("Segmented Turn Art Adapter Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
@@ -265,10 +265,29 @@ namespace YingYun.Rhythm.Tests
             presenter.Tick(turn.StartSeconds + (turn.DurationSeconds * 0.55d));
             Transform torso = root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist");
             Assert.That(Mathf.Abs(presenter.FacingScale), Is.LessThan(0.15f));
-            Assert.That(Mathf.Abs(torso.localScale.x), Is.EqualTo(1f).Within(0.001f));
+            Assert.That(Mathf.Abs(torso.localScale.x), Is.InRange(0.55f, 0.64f));
 
             presenter.Tick(turn.StartSeconds + (turn.DurationSeconds * 0.82d));
-            Assert.That(torso.localScale.x, Is.EqualTo(-1f).Within(0.001f));
+            Assert.That(torso.localScale.x, Is.LessThan(-0.75f));
+            Assert.That(torso.localScale.x, Is.GreaterThan(-1f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void CloudHand_PeakPlacesVisibleHandAboveTheShoulderLine()
+        {
+            var root = new GameObject("Cloud Hand Height Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] phrases = DanceChoreography.Create(
+                PrototypeDanceChart.Create(120d, 32d, PlayDifficulty.Normal), 120d, 32d);
+            presenter.Begin(phrases);
+            DancePhrase cloud = phrases.First(p => p.Action == DanceAction.CloudHand);
+            presenter.Tick(cloud.StartSeconds);
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.NoteJudged,
+                cloud.AnchorNoteId, 0, JudgmentGrade.Perfect, 0d, 1, 1000, 1d));
+            presenter.Tick(cloud.StartSeconds + (cloud.DurationSeconds * 0.50d));
+
+            Assert.That(presenter.LeftWristPosition.y, Is.GreaterThan(1.55f));
             Object.DestroyImmediate(root);
         }
 

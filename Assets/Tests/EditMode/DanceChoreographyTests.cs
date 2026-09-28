@@ -325,12 +325,29 @@ namespace YingYun.Rhythm.Tests
             player.Evaluate(2d);
             Assert.That(player.LeftFootX, Is.EqualTo(-0.34d).Within(0.00001d));
             Assert.That(player.LeftFootY, Is.EqualTo(-2.08d).Within(0.00001d));
-            Assert.That(player.RightFootX, Is.GreaterThan(0.60d));
-            Assert.That(player.RightFootY, Is.GreaterThan(-1.80d));
-            Assert.That(player.PelvisX, Is.LessThan(-0.10d));
+            Assert.That(player.RightFootX, Is.GreaterThan(0.80d));
+            Assert.That(player.RightFootY, Is.GreaterThan(-1.62d));
+            Assert.That(player.PelvisX, Is.LessThan(-0.18d));
             player.Evaluate(4d);
             Assert.That(player.RightFootX, Is.EqualTo(0.34d).Within(0.00001d));
             Assert.That(player.RightFootY, Is.EqualTo(-2.08d).Within(0.00001d));
+        }
+
+        [Test]
+        public void CloudHand_UsesRaisedShoulderPeakWithoutChangingItsFivePartTiming()
+        {
+            DancePhrase cloud = Phrases().First(p => p.Action == DanceAction.CloudHand);
+            var player = new DancePlayback(new[] { cloud });
+            player.OnJudged(Result(cloud.AnchorNoteId, JudgmentGrade.Perfect), cloud.StartSeconds);
+            double raisedShoulder = double.MaxValue;
+            for (int i = 0; i < DancePhrase.SampleCount; i++)
+            {
+                player.Evaluate(cloud.StartSeconds + (cloud.DurationSeconds * i / (DancePhrase.SampleCount - 1d)));
+                raisedShoulder = Math.Min(raisedShoulder, player.Angle(DanceJoint.LeftShoulder));
+            }
+
+            Assert.That(raisedShoulder, Is.LessThan(-148d));
+            Assert.That(player.Angle(DanceJoint.LeftShoulder), Is.EqualTo(-24d).Within(0.001d));
         }
 
         [Test]
@@ -549,7 +566,7 @@ namespace YingYun.Rhythm.Tests
             linked.Evaluate(4d);
             linked.OnJudged(Result(phrases[1].AnchorNoteId, JudgmentGrade.Perfect), 4d);
             linked.Evaluate(4.25d);
-            Assert.That(linked.Angle(DanceJoint.LeftShoulder), Is.GreaterThan(-58d));
+            Assert.That(linked.Angle(DanceJoint.LeftShoulder), Is.GreaterThan(-59d));
 
             var recovering = new DancePlayback(phrases);
             recovering.OnJudged(Result(phrases[0].AnchorNoteId, JudgmentGrade.Miss), 0d);
