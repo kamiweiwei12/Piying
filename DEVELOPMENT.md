@@ -37,7 +37,7 @@
 
 ## 2. 當前 Prototype 階段
 
-2026-09-28 新请求：A2-R5 当前动作版 `fceb628` 已以 `archive/puppet-v1-20260928` 标签和经验证的离线 bundle 存档。[皮影 V2 十八式计划](PUPPET_ACTION_V2_PLAN.md) 已获确认。V2-P0 至 P3-R1 已通过用户验收。P4 首版因改变既有素材风格被退回；当前 `P4-hand-shapes-preview-v2.png` 以 `puppet_parts_v1.png` 为严格母版重做自然掌、托掌、指向掌、拢拳，只允许指尖和必要关节变形，用户附图仅作弯指姿态参考。该图尚未导入 Unity、切片或绑定，必须经用户审批后才制作生产 Sprite。
+2026-09-28 新请求：A2-R5 当前动作版 `fceb628` 已以 `archive/puppet-v1-20260928` 标签和经验证的离线 bundle 存档。[皮影 V2 十八式计划](PUPPET_ACTION_V2_PLAN.md) 已获确认。V2-P0 至 P3-R1 已通过用户验收，P4 v2 风格样稿也已通过。四手型现已通过 Sprite Editor 数据接口切入生产图集，100 PPU、腕铆点 pivot、左右镜像与旧手图恢复路径均已验证；P4 定向 3/3、全量 EditMode 222/222 通过，四张游戏尺寸截图等待用户确认后才进入 P5。
 
 | 項目 | 狀態 |
 |---|---|

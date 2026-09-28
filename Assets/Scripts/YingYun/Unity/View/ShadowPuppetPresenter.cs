@@ -80,6 +80,9 @@ namespace YingYun.Rhythm.View
         private Quaternion _rightHandArtBaseRotation;
         private float _leftPointFingerAmount;
         private Sprite[] _puppetArtSprites = Array.Empty<Sprite>();
+        private Sprite[] _v2HandSprites = Array.Empty<Sprite>();
+        private Sprite _leftDefaultHandSprite;
+        private Sprite _rightDefaultHandSprite;
         private bool _usesSegmentedPuppetArt;
         private Sprite _squareSprite;
         private Sprite _circleSprite;
@@ -132,6 +135,11 @@ namespace YingYun.Rhythm.View
         public Vector3 V2LeftHandTarget { get; private set; }
         public Vector3 V2RightHandTarget { get; private set; }
         public float V2VisibleFacing { get; private set; } = 1f;
+        public bool HasV2HandShapes => _v2HandSprites.Length == 4;
+        public string LeftHandSpriteName => _leftHandArt == null ? string.Empty :
+            _leftHandArt.GetComponent<SpriteRenderer>().sprite.name;
+        public string RightHandSpriteName => _rightHandArt == null ? string.Empty :
+            _rightHandArt.GetComponent<SpriteRenderer>().sprite.name;
 
         /// <summary>读取当前 15 分片的可见边界和末端接触点，供 V2 标定与回归测试使用。</summary>
         public PuppetRigCalibrationSnapshot CaptureV2Calibration()
@@ -216,6 +224,7 @@ namespace YingYun.Rhythm.View
             _leftPointFinger.gameObject.SetActive(false);
             _rightPointFinger.gameObject.SetActive(false);
             _leftPointFingerAmount = 0f;
+            RestoreDefaultHandSprites();
             SyncSegmentedHandArt();
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
@@ -282,6 +291,7 @@ namespace YingYun.Rhythm.View
         public void PreviewHandGesture(HandGesture gesture, float progress)
         {
             EnsureInitialized();
+            RestoreDefaultHandSprites();
             HandGesturePhrase phrase = HandGestureChoreography.Get(gesture);
             float t = Mathf.Clamp01(progress);
             SetRotation(_leftUpperArmJoint, phrase.Shoulder(t));
@@ -311,6 +321,7 @@ namespace YingYun.Rhythm.View
         public void PreviewFistPalmSalute(float progress)
         {
             EnsureInitialized();
+            RestoreDefaultHandSprites();
             FistPalmSalutePhrase phrase = FistPalmSaluteChoreography.Get();
             float t = Mathf.Clamp01(progress);
             SetRotation(_leftUpperArmJoint, phrase.LeftShoulder(t));
@@ -371,6 +382,7 @@ namespace YingYun.Rhythm.View
             _leftPointFinger.gameObject.SetActive(false);
             _rightPointFinger.gameObject.SetActive(false);
             SyncSegmentedHandArt();
+            ApplyV2HandShapes(pose.LeftHandShape, pose.RightHandShape);
             ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
                 new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
             ApplyGroundedLeg(_rightThighJoint, _rightShinJoint, _rightAnkleJoint,
@@ -419,6 +431,7 @@ namespace YingYun.Rhythm.View
             _leftPointFinger.gameObject.SetActive(false);
             _rightPointFinger.gameObject.SetActive(false);
             SyncSegmentedHandArt();
+            ApplyV2HandShapes(pose.LeftHandShape, pose.RightHandShape);
 
             ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
                 new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
@@ -462,6 +475,7 @@ namespace YingYun.Rhythm.View
             SetRotation(_rightForearmJoint, rightElbowAngle);
             SetRotation(_leftWristJoint, pose.LeftWrist);
             SetRotation(_rightWristJoint, pose.RightWrist);
+            ApplyV2HandShapes(pose.LeftHandShape, pose.RightHandShape);
 
             ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
                 new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
@@ -485,6 +499,29 @@ namespace YingYun.Rhythm.View
             for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
             _rodDrive[1] = Mathf.Clamp01(1f - Mathf.Abs(facing));
             _rodDrive[4] = _rodDrive[1];
+            UpdateRods();
+        }
+
+        /// <summary>V2-P4 四手型生产预览；只切换获批手图，不改变旧舞句。</summary>
+        public void PreviewV2HandShape(PuppetHandShape shape)
+        {
+            EnsureInitialized();
+            _v2TurnActive = false;
+            _pelvisJoint.localPosition = new Vector3(0f, -0.40f, 0f);
+            _torsoJoint.localScale = Vector3.one;
+            SetRotation(_torsoJoint, 0d);
+            SetRotation(_headJoint, 0d);
+            SetRotation(_leftUpperArmJoint, -92d);
+            SetRotation(_leftForearmJoint, 18d);
+            SetRotation(_rightUpperArmJoint, 92d);
+            SetRotation(_rightForearmJoint, -18d);
+            SetRotation(_leftWristJoint, 0d);
+            SetRotation(_rightWristJoint, 0d);
+            SetRotation(_leftFingerJoint, 0d);
+            SetRotation(_rightFingerJoint, 0d);
+            ApplyV2HandShapes(shape, shape);
+            ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
+            for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
             UpdateRods();
         }
 
@@ -865,6 +902,7 @@ namespace YingYun.Rhythm.View
         private void LoadAndBuildSegmentedPuppetArt()
         {
             _puppetArtSprites = Resources.LoadAll<Sprite>("YingYun/Art/Puppet/puppet_parts_v1");
+            _v2HandSprites = Resources.LoadAll<Sprite>("YingYun/Art/Puppet/V2/puppet_hand_shapes_v2");
             string[] requiredNames =
             {
                 "puppet_head", "puppet_torso", "puppet_pelvis",
@@ -903,6 +941,8 @@ namespace YingYun.Rhythm.View
                 FindPuppetArt("puppet_right_forearm"), 0.90f, 10, -1.4f);
             _rightHandArt = CreateRigArt("Art Right Hand", _rightWristJoint,
                 FindPuppetArt("puppet_right_hand"), 0.42f, 12);
+            _leftDefaultHandSprite = _leftHandArt.GetComponent<SpriteRenderer>().sprite;
+            _rightDefaultHandSprite = _rightHandArt.GetComponent<SpriteRenderer>().sprite;
 
             _leftThighArt = CreateRigArt("Art Left Thigh", _leftThighJoint,
                 FindPuppetArt("puppet_left_thigh"), 1.08f, 6, 1.5f);
@@ -943,6 +983,47 @@ namespace YingYun.Rhythm.View
             }
 
             return null;
+        }
+
+        private Sprite FindV2HandArt(PuppetHandShape shape)
+        {
+            string expectedName = shape switch
+            {
+                PuppetHandShape.NaturalPalm => "puppet_hand_natural_v2",
+                PuppetHandShape.SupportPalm => "puppet_hand_support_v2",
+                PuppetHandShape.DirectionPalm => "puppet_hand_point_v2",
+                PuppetHandShape.ClosedPalm => "puppet_hand_fist_v2",
+                _ => "puppet_hand_natural_v2"
+            };
+            for (int i = 0; i < _v2HandSprites.Length; i++)
+                if (_v2HandSprites[i].name == expectedName) return _v2HandSprites[i];
+            return null;
+        }
+
+        private void ApplyV2HandShapes(PuppetHandShape left, PuppetHandShape right)
+        {
+            if (!_usesSegmentedPuppetArt || _v2HandSprites.Length != 4) return;
+            Sprite leftSprite = FindV2HandArt(left);
+            Sprite rightSprite = FindV2HandArt(right);
+            if (leftSprite == null || rightSprite == null) return;
+
+            _leftHandArt.GetComponent<SpriteRenderer>().sprite = leftSprite;
+            _rightHandArt.GetComponent<SpriteRenderer>().sprite = rightSprite;
+            _leftHandArt.localRotation = _leftHandArtBaseRotation * _leftFingerJoint.localRotation *
+                Quaternion.Euler(0f, 0f, 90f);
+            _rightHandArt.localRotation = _rightHandArtBaseRotation * _rightFingerJoint.localRotation *
+                Quaternion.Euler(0f, 0f, -90f);
+            // 四张图保持同一 PPU 与同一腕铆点，统一比例避免切换手型时掌片跳动。
+            _leftHandArt.localScale = new Vector3(0.08f, 0.08f, 1f);
+            _rightHandArt.localScale = new Vector3(-0.08f, 0.08f, 1f);
+        }
+
+        private void RestoreDefaultHandSprites()
+        {
+            if (_leftHandArt == null || _rightHandArt == null ||
+                _leftDefaultHandSprite == null || _rightDefaultHandSprite == null) return;
+            _leftHandArt.GetComponent<SpriteRenderer>().sprite = _leftDefaultHandSprite;
+            _rightHandArt.GetComponent<SpriteRenderer>().sprite = _rightDefaultHandSprite;
         }
 
         private Transform CreateRigArt(
