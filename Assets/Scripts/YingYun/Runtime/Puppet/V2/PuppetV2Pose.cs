@@ -68,12 +68,13 @@ namespace YingYun.Rhythm.Puppet.V2
         public const int Beats = 8;
 
         private static readonly double[] Times = { 0d, 0.25d, 0.625d, 0.75d, 1d };
-        private static readonly double[] LeftX = { -0.34d, -0.38d, -1.62d, -1.62d, -1.48d };
-        private static readonly double[] LeftY = { -0.86d, 0.37d, 0.58d, 0.58d, 0.55d };
-        private static readonly double[] RightX = { 0.30d, 0.38d, 1.62d, 1.62d, 1.48d };
-        private static readonly double[] RightY = { -0.86d, 0.37d, 0.58d, 0.58d, 0.55d };
-        private static readonly double[] LeftWrist = { 0d, 15d, 10d, 10d, 8d };
-        private static readonly double[] RightWrist = { 0d, -15d, -10d, -10d, -8d };
+        // 双手始终先向身体外侧引出，再沿外弧上升到水平展翅；禁止先收向胸前。
+        private static readonly double[] LeftX = { -0.34d, -0.70d, -1.35d, -1.84d, -1.76d };
+        private static readonly double[] LeftY = { -0.86d, -0.66d, 0.18d, 0.66d, 0.62d };
+        private static readonly double[] RightX = { 0.30d, 0.70d, 1.35d, 1.84d, 1.76d };
+        private static readonly double[] RightY = { -0.86d, -0.66d, 0.18d, 0.66d, 0.62d };
+        private static readonly double[] LeftWrist = { 0d, 5d, 9d, 12d, 9d };
+        private static readonly double[] RightWrist = { 0d, -5d, -9d, -12d, -9d };
 
         public static PuppetV2Pose Evaluate(double progress)
         {

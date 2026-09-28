@@ -19,9 +19,9 @@ namespace YingYun.Rhythm.Tests
             PuppetV2Pose peak = DoubleMountainArmChoreography.Evaluate(0.75d);
             PuppetV2Pose exit = DoubleMountainArmChoreography.Evaluate(1d);
             Assert.That(start.LeftHandX, Is.EqualTo(-0.34d).Within(0.0001d));
-            Assert.That(peak.LeftHandX, Is.LessThan(-1.6d));
-            Assert.That(peak.RightHandX, Is.GreaterThan(1.6d));
-            Assert.That(exit.LeftHandX, Is.LessThan(-1.4d));
+            Assert.That(peak.LeftHandX, Is.LessThan(-1.8d));
+            Assert.That(peak.RightHandX, Is.GreaterThan(1.8d));
+            Assert.That(exit.LeftHandX, Is.LessThan(-1.7d));
             Assert.That(exit.LeftHandShape, Is.EqualTo(PuppetHandShape.NaturalPalm));
             Assert.That(exit.RightHandShape, Is.EqualTo(PuppetHandShape.NaturalPalm));
             Assert.That(exit.LeftFootY, Is.EqualTo(-2.08d));
@@ -36,21 +36,31 @@ namespace YingYun.Rhythm.Tests
             presenter.Begin();
             float previousLeftShoulder = presenter.LeftUpperArmRotation;
             float previousRightShoulder = presenter.RightUpperArmRotation;
+            float previousLeftSpread = Mathf.Abs(presenter.V2LeftHandTarget.x);
+            float previousRightSpread = Mathf.Abs(presenter.V2RightHandTarget.x);
             for (int i = 0; i <= 240; i++)
             {
-                presenter.PreviewV2DoubleMountainArm(i / 240f);
+                float progress = i / 240f;
+                presenter.PreviewV2DoubleMountainArm(progress);
                 Assert.That(Vector3.Distance(presenter.LeftWristPosition, presenter.V2LeftHandTarget), Is.LessThan(0.003f));
                 Assert.That(Vector3.Distance(presenter.RightWristPosition, presenter.V2RightHandTarget), Is.LessThan(0.003f));
                 Assert.That(Mathf.Abs(Mathf.DeltaAngle(previousLeftShoulder, presenter.LeftUpperArmRotation)), Is.LessThan(4f));
                 Assert.That(Mathf.Abs(Mathf.DeltaAngle(previousRightShoulder, presenter.RightUpperArmRotation)), Is.LessThan(4f));
                 Assert.That(presenter.LeftWristPosition.x, Is.LessThan(0f));
                 Assert.That(presenter.RightWristPosition.x, Is.GreaterThan(0f));
+                if (progress <= 0.75f)
+                {
+                    Assert.That(Mathf.Abs(presenter.V2LeftHandTarget.x), Is.GreaterThanOrEqualTo(previousLeftSpread - 0.0001f));
+                    Assert.That(Mathf.Abs(presenter.V2RightHandTarget.x), Is.GreaterThanOrEqualTo(previousRightSpread - 0.0001f));
+                }
+                previousLeftSpread = Mathf.Abs(presenter.V2LeftHandTarget.x);
+                previousRightSpread = Mathf.Abs(presenter.V2RightHandTarget.x);
                 previousLeftShoulder = presenter.LeftUpperArmRotation;
                 previousRightShoulder = presenter.RightUpperArmRotation;
             }
             presenter.PreviewV2DoubleMountainArm(0.75f);
-            Assert.That(presenter.LeftWristPosition.x, Is.LessThan(-1.6f));
-            Assert.That(presenter.RightWristPosition.x, Is.GreaterThan(1.6f));
+            Assert.That(presenter.LeftWristPosition.x, Is.LessThan(-1.8f));
+            Assert.That(presenter.RightWristPosition.x, Is.GreaterThan(1.8f));
             Assert.That(Mathf.Abs(presenter.LeftWristPosition.y - presenter.RightWristPosition.y), Is.LessThan(0.01f));
             Assert.That(presenter.LeftAnklePosition.y, Is.EqualTo(-2.08f).Within(0.025f));
             Assert.That(presenter.RightAnklePosition.y, Is.EqualTo(-2.08f).Within(0.025f));
@@ -82,7 +92,7 @@ namespace YingYun.Rhythm.Tests
             var capture = new Texture2D(1280, 800, TextureFormat.RGB24, false);
             camera.targetTexture = target;
             float[] stages = { 0f, 0.25f, 0.625f, 0.75f, 1f };
-            string[] names = { "01-start", "02-gather", "03-expand", "04-peak", "05-exit" };
+            string[] names = { "01-start", "02-side-lead", "03-wing-rise", "04-peak", "05-exit" };
             for (int i = 0; i < stages.Length; i++)
             {
                 presenter.PreviewV2DoubleMountainArm(stages[i]);
