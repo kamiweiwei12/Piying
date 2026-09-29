@@ -50,7 +50,7 @@
 
 ### Git Commit
 
-* 待本工作单位提交后补记。
+* `abfd3c4 feat(puppet): add v2 moon offering gaze`（本工作单位提交）。
 
 ### 风险 / 已知问题
 
