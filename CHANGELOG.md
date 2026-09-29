@@ -52,7 +52,7 @@
 
 * `70ade68 feat(puppet): add v2 bowing salute`（被否决的初版候选，历史保留）。
 * `33adfd5 fix(puppet): keep salute arms on their own sides`（左右臂严格分侧修正）。
-* 左拳入右掌的合礼收拢修正待提交。
+* `374b097 fix(puppet): nest left fist in right palm`（左拳入右掌的合礼收拢修正）。
 
 ### 风险 / 已知问题
 
