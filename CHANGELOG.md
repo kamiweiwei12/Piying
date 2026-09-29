@@ -50,7 +50,7 @@
 
 ### Git Commit
 
-* `feat(puppet): add v2 cloud hands circle`（本工作单位待提交）。
+* `25003c7 feat(puppet): add v2 cloud hands circle`（本工作单位提交）。
 
 ### 风险 / 已知问题
 
