@@ -57,6 +57,10 @@ namespace YingYun.Rhythm.Tests
                 Assert.That(Vector3.Distance(presenter.RightWristPosition, presenter.V2RightHandTarget),
                     Is.LessThan(0.0031f), $"right wrist at {progress:F4}");
                 Assert.That(presenter.V2LeftHandTarget.x, Is.LessThan(presenter.V2RightHandTarget.x - 0.45f));
+                Assert.That(presenter.RightElbowPosition.y, Is.LessThan(presenter.RightWristPosition.y),
+                    $"right elbow must stay below the hand at {progress:F4}");
+                Assert.That(presenter.RightElbowPosition.x, Is.GreaterThan(presenter.RightShoulderPosition.x),
+                    $"right elbow must stay outside the shoulder at {progress:F4}");
                 Assert.That(Vector3.Distance(presenter.LeftAnklePosition, leftFoot), Is.LessThan(0.0001f));
                 Assert.That(Vector3.Distance(presenter.RightAnklePosition, rightFoot), Is.LessThan(0.0001f));
                 maximumLeftElbowStep = Mathf.Max(maximumLeftElbowStep,
