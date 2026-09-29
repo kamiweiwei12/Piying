@@ -767,7 +767,7 @@ namespace YingYun.Rhythm.View
                 PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
                 out float leftShoulderAngle, out float leftElbowAngle);
             PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
-                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
                 out float rightShoulderAngle, out float rightElbowAngle);
             SetRotation(_leftUpperArmJoint, leftShoulderAngle - (float)pose.Torso);
             SetRotation(_leftForearmJoint, leftElbowAngle);

@@ -24,10 +24,10 @@ namespace YingYun.Rhythm.Tests
             Assert.That(raised.RightHandY, Is.GreaterThan(raised.LeftHandY + 1.35d));
             Assert.That(palm.RightWrist, Is.EqualTo(45d).Within(0.001d));
             Assert.That(palm.RightHandShape, Is.EqualTo(PuppetHandShape.SupportPalm));
-            Assert.That(gaze.Head, Is.EqualTo(12d).Within(0.001d));
+            Assert.That(gaze.Head, Is.EqualTo(24d).Within(0.001d));
             Assert.That(gaze.RightHandY, Is.GreaterThan(1.70d));
             Assert.That(gaze.LeftHandY, Is.LessThan(-0.25d));
-            Assert.That(finish.RightHandY, Is.InRange(1.40d, 1.50d));
+            Assert.That(finish.RightHandY, Is.InRange(1.50d, 1.60d));
             Assert.That(finish.RightHandY, Is.GreaterThan(start.RightHandY + 1d));
             Assert.That(finish.LeftHandY, Is.LessThan(0d));
             Assert.That(finish.LeftFootPlanted && finish.RightFootPlanted, Is.True);
@@ -75,6 +75,13 @@ namespace YingYun.Rhythm.Tests
                 $"maximum left elbow step {maximumLeftElbowStep:F6}");
             Assert.That(maximumRightElbowStep, Is.LessThan(0.080f),
                 $"maximum right elbow step {maximumRightElbowStep:F6}");
+            presenter.PreviewV2MoonOfferingGaze(0.72f);
+            Assert.That(presenter.HeadRotation, Is.EqualTo(24f).Within(0.01f));
+            Assert.That(presenter.RightElbowPosition.x, Is.GreaterThan(0.60f));
+            Assert.That(presenter.RightElbowPosition.y, Is.GreaterThan(1.35f));
+            Assert.That(presenter.RightWristPosition.x - presenter.RightElbowPosition.x,
+                Is.GreaterThan(0.50f));
+            presenter.PreviewV2MoonOfferingGaze(1f);
             for (int lane = 0; lane < presenter.RodCount; lane++)
                 Assert.That(presenter.GetRodDrive(lane), Is.EqualTo(0f).Within(0.0001f));
             Object.DestroyImmediate(root);
