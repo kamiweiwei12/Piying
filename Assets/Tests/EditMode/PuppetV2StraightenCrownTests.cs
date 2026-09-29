@@ -10,23 +10,32 @@ namespace YingYun.Rhythm.Tests
     public sealed class PuppetV2StraightenCrownTests
     {
         [Test]
-        public void P5_02_HasEightBeatSideApproachAndOneWristAdjustment()
+        public void P5_02_HasEightBeatCrownDwellAndThreePartAdjustment()
         {
             Assert.That(StraightenCrownChoreography.Name, Is.EqualTo("整冠肃立"));
             Assert.That(StraightenCrownChoreography.Beats, Is.EqualTo(8));
             PuppetV2Pose start = StraightenCrownChoreography.Evaluate(0d);
-            PuppetV2Pose elbows = StraightenCrownChoreography.Evaluate(0.25d);
-            PuppetV2Pose contact = StraightenCrownChoreography.Evaluate(0.50d);
-            PuppetV2Pose adjust = StraightenCrownChoreography.Evaluate(0.625d);
+            PuppetV2Pose elbows = StraightenCrownChoreography.Evaluate(0.22d);
+            PuppetV2Pose contact = StraightenCrownChoreography.Evaluate(0.38d);
+            PuppetV2Pose inwardPress = StraightenCrownChoreography.Evaluate(0.50d);
+            PuppetV2Pose liftAndReseat = StraightenCrownChoreography.Evaluate(0.61d);
+            PuppetV2Pose finalSet = StraightenCrownChoreography.Evaluate(0.72d);
             PuppetV2Pose end = StraightenCrownChoreography.Evaluate(1d);
             Assert.That(elbows.LeftHandX, Is.LessThan(start.LeftHandX));
             Assert.That(elbows.RightHandX, Is.GreaterThan(start.RightHandX));
-            Assert.That(contact.LeftHandX, Is.LessThanOrEqualTo(-0.47d));
-            Assert.That(contact.RightHandX, Is.GreaterThanOrEqualTo(0.47d));
-            Assert.That(contact.LeftHandY, Is.GreaterThan(1.60d));
-            Assert.That(contact.RightHandY, Is.GreaterThan(1.60d));
-            Assert.That(adjust.LeftWrist, Is.GreaterThan(contact.LeftWrist));
-            Assert.That(adjust.RightWrist, Is.LessThan(contact.RightWrist));
+            Assert.That(contact.LeftHandY, Is.GreaterThanOrEqualTo(1.60d));
+            Assert.That(contact.RightHandY, Is.GreaterThanOrEqualTo(1.60d));
+            Assert.That(inwardPress.LeftHandX, Is.GreaterThan(contact.LeftHandX));
+            Assert.That(inwardPress.RightHandX, Is.LessThan(contact.RightHandX));
+            Assert.That(inwardPress.LeftWrist, Is.GreaterThan(contact.LeftWrist));
+            Assert.That(inwardPress.RightWrist, Is.LessThan(contact.RightWrist));
+            Assert.That(liftAndReseat.LeftHandY, Is.GreaterThan(inwardPress.LeftHandY));
+            Assert.That(liftAndReseat.RightHandY, Is.GreaterThan(inwardPress.RightHandY));
+            Assert.That(liftAndReseat.LeftWrist, Is.LessThan(inwardPress.LeftWrist));
+            Assert.That(finalSet.LeftHandY, Is.GreaterThan(1.60d));
+            Assert.That(finalSet.RightHandY, Is.GreaterThan(1.60d));
+            Assert.That(finalSet.LeftWrist, Is.GreaterThan(liftAndReseat.LeftWrist));
+            Assert.That(finalSet.RightWrist, Is.LessThan(liftAndReseat.RightWrist));
             Assert.That(start.Head, Is.EqualTo(8d).Within(0.0001d));
             Assert.That(end.Head, Is.EqualTo(2d).Within(0.0001d));
             Assert.That(end.RootX, Is.EqualTo(start.RootX).Within(0.0001d));
@@ -55,10 +64,10 @@ namespace YingYun.Rhythm.Tests
                     Is.LessThan(0.003f), $"right wrist at {progress:F4}");
                 Assert.That(Vector3.Distance(presenter.LeftAnklePosition, leftFoot), Is.LessThan(0.0015f));
                 Assert.That(Vector3.Distance(presenter.RightAnklePosition, rightFoot), Is.LessThan(0.0015f));
-                Assert.That(presenter.V2LeftHandTarget.x, Is.LessThan(-0.46f));
-                Assert.That(presenter.V2RightHandTarget.x, Is.GreaterThan(0.46f));
-                Assert.That(Vector3.Distance(presenter.V2LeftHandTarget, previousLeftTarget), Is.LessThan(0.025f));
-                Assert.That(Vector3.Distance(presenter.V2RightHandTarget, previousRightTarget), Is.LessThan(0.025f));
+                Assert.That(presenter.V2LeftHandTarget.x, Is.LessThan(-0.40f));
+                Assert.That(presenter.V2RightHandTarget.x, Is.GreaterThan(0.40f));
+                Assert.That(Vector3.Distance(presenter.V2LeftHandTarget, previousLeftTarget), Is.LessThan(0.032f));
+                Assert.That(Vector3.Distance(presenter.V2RightHandTarget, previousRightTarget), Is.LessThan(0.032f));
                 previousLeftTarget = presenter.V2LeftHandTarget;
                 previousRightTarget = presenter.V2RightHandTarget;
             }
@@ -69,7 +78,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void P5_02_RendersFiveAcceptanceStagesAndAnimationFrames()
+        public void P5_02_RendersSixAcceptanceStagesAndAnimationFrames()
         {
             DestroyNamed("V2 P5-02 Visual Test");
             DestroyNamed("V2 P5-02 Camera");
@@ -91,16 +100,16 @@ namespace YingYun.Rhythm.Tests
             var target = new RenderTexture(1280, 800, 24, RenderTextureFormat.ARGB32);
             var capture = new Texture2D(1280, 800, TextureFormat.RGB24, false);
             camera.targetTexture = target;
-            float[] stages = { 0f, 0.25f, 0.50f, 0.625f, 1f };
-            string[] names = { "01-stand", "02-elbows-rise", "03-crown-contact", "04-wrist-adjust", "05-settle" };
+            float[] stages = { 0f, 0.38f, 0.50f, 0.61f, 0.72f, 1f };
+            string[] names = { "01-stand", "02-crown-arrive", "03-inward-press", "04-lift-reseat", "05-final-set", "06-settle" };
             for (int i = 0; i < stages.Length; i++)
             {
                 presenter.PreviewV2StraightenCrown(stages[i]);
                 SaveFrame(camera, target, capture, Path.Combine(directory, names[i] + ".png"));
             }
-            for (int i = 0; i <= 64; i++)
+            for (int i = 0; i <= 80; i++)
             {
-                presenter.PreviewV2StraightenCrown(i / 64f);
+                presenter.PreviewV2StraightenCrown(i / 80f);
                 SaveFrame(camera, target, capture, Path.Combine(frames, $"frame-{i:000}.png"));
             }
             RenderTexture.active = null;
