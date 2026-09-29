@@ -51,7 +51,7 @@
 ### Git Commit
 
 * `70ade68 feat(puppet): add v2 bowing salute`（被否决的初版候选，历史保留）。
-* 左右臂严格分侧修正待提交。
+* `33adfd5 fix(puppet): keep salute arms on their own sides`（左右臂严格分侧修正）。
 
 ### 风险 / 已知问题
 
