@@ -72,9 +72,9 @@ namespace YingYun.Rhythm.Tests
             Assert.That(presenter.LeftWristPosition.y, Is.InRange(0.88f, 0.94f));
             Assert.That(presenter.RightWristPosition.y, Is.InRange(0.93f, 0.99f));
             Assert.That(presenter.LeftElbowPosition.x, Is.GreaterThan(0.55f));
-            Assert.That(presenter.RightElbowPosition.x, Is.LessThan(0.30f));
+            Assert.That(presenter.RightElbowPosition.x, Is.GreaterThan(presenter.RightShoulderPosition.x + 0.70f));
             Assert.That(presenter.LeftElbowPosition.y, Is.LessThan(0.72f));
-            Assert.That(presenter.RightElbowPosition.y, Is.LessThan(1.18f));
+            Assert.That(presenter.RightElbowPosition.y, Is.LessThan(presenter.RightWristPosition.y - 0.25f));
             presenter.PreviewV2VeiledFaceLament(1f);
             for (int lane = 0; lane < presenter.RodCount; lane++)
                 Assert.That(presenter.GetRodDrive(lane), Is.Zero.Within(0.0001f));
