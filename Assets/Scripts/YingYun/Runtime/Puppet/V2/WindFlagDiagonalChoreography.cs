@@ -13,13 +13,13 @@ namespace YingYun.Rhythm.Puppet.V2
         private static readonly double[] Head = { 0d, 1d, 4d, 8d, 8d, 6d };
 
         // 左手由身侧向外平展，始终留在左侧，不先横穿胸口。
-        private static readonly double[] LeftX = { -0.42d, -0.78d, -1.26d, -1.64d, -1.68d, -1.58d };
-        private static readonly double[] LeftY = { -0.30d, -0.08d, 0.24d, 0.54d, 0.58d, 0.50d };
+        private static readonly double[] LeftX = { -0.42d, -0.78d, -1.30d, -1.91d, -1.92d, -1.90d };
+        private static readonly double[] LeftY = { -0.30d, -0.08d, 0.26d, 0.58d, 0.58d, 0.58d };
         private static readonly double[] LeftWrist = { 4d, 7d, 10d, 12d, 12d, 9d };
 
         // 右手沿肩外斜线升高；高臂不贴冠，显势后保留高度供下一招衔接。
-        private static readonly double[] RightX = { 0.48d, 0.74d, 1.00d, 1.18d, 1.22d, 1.15d };
-        private static readonly double[] RightY = { -0.12d, 0.34d, 1.08d, 1.66d, 1.82d, 1.70d };
+        private static readonly double[] RightX = { 0.48d, 0.74d, 1.02d, 1.28d, 1.27d, 1.32d };
+        private static readonly double[] RightY = { -0.12d, 0.34d, 1.10d, 1.78d, 1.82d, 1.78d };
         private static readonly double[] RightWrist = { -4d, 2d, 12d, 22d, 24d, 20d };
 
         public static PuppetV2Pose Evaluate(double progress)

@@ -131,6 +131,10 @@ namespace YingYun.Rhythm.View
             _visualRoot.InverseTransformPoint(_leftForearmJoint.position);
         public Vector3 RightElbowPosition => _rightForearmJoint == null ? Vector3.zero :
             _visualRoot.InverseTransformPoint(_rightForearmJoint.position);
+        public Vector3 LeftShoulderPosition => _leftUpperArmJoint == null ? Vector3.zero :
+            _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
+        public Vector3 RightShoulderPosition => _rightUpperArmJoint == null ? Vector3.zero :
+            _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
         public Vector3 RightFingerScale => _rightFingerJoint == null ? Vector3.one : _rightFingerJoint.localScale;
         public Vector3 LeftFingerScale => _leftFingerJoint == null ? Vector3.one : _leftFingerJoint.localScale;
         public bool LeftPointFingerVisible => _leftPointFinger != null && _leftPointFinger.gameObject.activeSelf;

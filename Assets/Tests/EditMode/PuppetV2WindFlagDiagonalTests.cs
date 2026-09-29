@@ -67,6 +67,12 @@ namespace YingYun.Rhythm.Tests
             Assert.That(presenter.LeftElbowPosition.x, Is.LessThan(-0.45f));
             Assert.That(presenter.RightElbowPosition.x, Is.GreaterThan(0.55f));
             Assert.That(presenter.RightWristPosition.y - presenter.LeftWristPosition.y, Is.GreaterThan(1.20f));
+            float leftReach = Vector3.Distance(presenter.LeftShoulderPosition, presenter.LeftWristPosition);
+            float rightReach = Vector3.Distance(presenter.RightShoulderPosition, presenter.RightWristPosition);
+            Assert.That(leftReach, Is.GreaterThan(1.51f), $"left reach {leftReach:F6}");
+            Assert.That(rightReach, Is.GreaterThan(1.51f), $"right reach {rightReach:F6}");
+            Assert.That(PuppetRigV2Calibration.ArmMaximumReach - leftReach, Is.LessThan(0.03f));
+            Assert.That(PuppetRigV2Calibration.ArmMaximumReach - rightReach, Is.LessThan(0.03f));
             presenter.PreviewV2WindFlagDiagonal(1f);
             for (int lane = 0; lane < presenter.RodCount; lane++)
                 Assert.That(presenter.GetRodDrive(lane), Is.Zero.Within(0.0001f));
