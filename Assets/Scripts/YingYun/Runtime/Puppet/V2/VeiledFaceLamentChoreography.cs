@@ -13,13 +13,13 @@ namespace YingYun.Rhythm.Puppet.V2
         private static readonly double[] Torso = { -2d, -3d, -7d, -11d, -13d, -10d, -7d, -6d };
         private static readonly double[] Head = { 2d, 0d, -4d, -8d, -10d, -8d, -6d, -6d };
 
-        // 双手分别从脸的后侧与前侧靠近下脸，不在鼻眼区域交叉。
-        private static readonly double[] LeftX = { -0.06d, -0.02d, 0.05d, 0.10d, 0.09d, 0.08d, 0.05d, 0.02d };
-        private static readonly double[] LeftY = { -0.18d, 0.40d, 0.78d, 0.91d, 0.84d, 0.76d, 0.52d, 0.38d };
-        private static readonly double[] RightX = { 0.96d, 0.86d, 0.74d, 0.68d, 0.69d, 0.70d, 0.68d, 0.64d };
-        private static readonly double[] RightY = { 0.48d, 0.62d, 0.86d, 0.96d, 0.89d, 0.81d, 0.58d, 0.44d };
-        private static readonly double[] LeftWrist = { 8d, 18d, 30d, 38d, 42d, 36d, 24d, 18d };
-        private static readonly double[] RightWrist = { 16d, 2d, -18d, -30d, -34d, -28d, -8d, 4d };
+        // 腰肩先带肘从两侧张开，再把腕送到面侧；掌指向下覆面，不用近肩腕点逼出尖锐折肘。
+        private static readonly double[] LeftX = { -0.70d, -0.60d, -0.05d, -0.02d, -0.02d, -0.05d, -0.50d, -0.50d };
+        private static readonly double[] LeftY = { 0.05d, 0.62d, 1.08d, 1.10d, 1.08d, 1.02d, 0.76d, 0.36d };
+        private static readonly double[] RightX = { 1.15d, 0.91d, 0.66d, 0.58d, 0.58d, 0.60d, 0.79d, 0.93d };
+        private static readonly double[] RightY = { 0.15d, 0.67d, 1.10d, 1.10d, 1.08d, 1.02d, 0.79d, 0.43d };
+        private static readonly double[] LeftWrist = { 8d, 55d, 110d, 145d, 150d, 128d, 62d, 20d };
+        private static readonly double[] RightWrist = { 16d, -45d, -105d, -145d, -150d, -128d, -58d, 4d };
 
         public static PuppetV2Pose Evaluate(double progress)
         {

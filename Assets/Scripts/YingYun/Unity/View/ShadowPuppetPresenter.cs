@@ -1028,9 +1028,9 @@ namespace YingYun.Rhythm.View
             Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
             V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
             V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
-            // 左前臂在胸前内收；右肘保持在右肩外下侧，避免折肘分支把右肘翻到手掌上方。
+            // 两肘从身体两侧自然张开，腕在面侧上方、掌指向下覆面。
             PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
-                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
                 out float leftShoulderAngle, out float leftElbowAngle);
             PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
                 PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,

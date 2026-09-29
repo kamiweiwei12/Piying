@@ -35,7 +35,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void P5_11_HandsFrameLowerFaceWithoutCrossingAndFeetStayLocked()
+        public void P5_11_HandsCoverFaceWithElbowsOpenAndFeetStayLocked()
         {
             DestroyNamed("V2 P5-11 Continuity Test");
             var root = new GameObject("V2 P5-11 Continuity Test");
@@ -56,11 +56,22 @@ namespace YingYun.Rhythm.Tests
                     Is.LessThan(0.0031f), $"left wrist at {progress:F4}");
                 Assert.That(Vector3.Distance(presenter.RightWristPosition, presenter.V2RightHandTarget),
                     Is.LessThan(0.0031f), $"right wrist at {progress:F4}");
-                Assert.That(presenter.V2LeftHandTarget.x, Is.LessThan(presenter.V2RightHandTarget.x - 0.45f));
+                Assert.That(presenter.V2LeftHandTarget.x, Is.LessThan(presenter.V2RightHandTarget.x - 0.30f));
                 Assert.That(presenter.RightElbowPosition.y, Is.LessThan(presenter.RightWristPosition.y),
                     $"right elbow must stay below the hand at {progress:F4}");
                 Assert.That(presenter.RightElbowPosition.x, Is.GreaterThan(presenter.RightShoulderPosition.x),
                     $"right elbow must stay outside the shoulder at {progress:F4}");
+                if (progress >= 0.60f && progress <= 0.78f)
+                {
+                    Assert.That(presenter.LeftElbowPosition.x, Is.LessThan(presenter.LeftShoulderPosition.x),
+                        $"left elbow must open outside during the face cover at {progress:F4}");
+                    Assert.That(presenter.LeftElbowPosition.y, Is.LessThan(presenter.LeftWristPosition.y + 0.11f),
+                        $"left forearm must stay near-horizontal rather than hinge over the face at {progress:F4}");
+                    Assert.That(BendAngle(presenter.LeftShoulderPosition, presenter.LeftElbowPosition,
+                        presenter.LeftWristPosition), Is.InRange(130f, 150f), $"left elbow at {progress:F4}");
+                    Assert.That(BendAngle(presenter.RightShoulderPosition, presenter.RightElbowPosition,
+                        presenter.RightWristPosition), Is.InRange(120f, 140f), $"right elbow at {progress:F4}");
+                }
                 Assert.That(Vector3.Distance(presenter.LeftAnklePosition, leftFoot), Is.LessThan(0.0001f));
                 Assert.That(Vector3.Distance(presenter.RightAnklePosition, rightFoot), Is.LessThan(0.0001f));
                 maximumLeftElbowStep = Mathf.Max(maximumLeftElbowStep,
@@ -70,14 +81,14 @@ namespace YingYun.Rhythm.Tests
                 previousLeftElbow = presenter.LeftElbowPosition;
                 previousRightElbow = presenter.RightElbowPosition;
             }
-            Assert.That(maximumLeftElbowStep, Is.LessThan(0.08f));
-            Assert.That(maximumRightElbowStep, Is.LessThan(0.08f));
+            Assert.That(maximumLeftElbowStep, Is.LessThan(0.055f));
+            Assert.That(maximumRightElbowStep, Is.LessThan(0.03f));
             presenter.PreviewV2VeiledFaceLament(0.6667f);
-            Assert.That(presenter.LeftWristPosition.y, Is.InRange(0.88f, 0.94f));
-            Assert.That(presenter.RightWristPosition.y, Is.InRange(0.93f, 0.99f));
-            Assert.That(presenter.LeftElbowPosition.x, Is.GreaterThan(0.55f));
-            Assert.That(presenter.RightElbowPosition.x, Is.GreaterThan(presenter.RightShoulderPosition.x + 0.70f));
-            Assert.That(presenter.LeftElbowPosition.y, Is.LessThan(0.72f));
+            Assert.That(presenter.LeftWristPosition.y, Is.InRange(1.06f, 1.14f));
+            Assert.That(presenter.RightWristPosition.y, Is.InRange(1.06f, 1.14f));
+            Assert.That(presenter.LeftElbowPosition.x, Is.LessThan(presenter.LeftShoulderPosition.x - 0.30f));
+            Assert.That(presenter.RightElbowPosition.x, Is.GreaterThan(presenter.RightShoulderPosition.x + 0.50f));
+            Assert.That(presenter.LeftElbowPosition.y, Is.LessThan(presenter.LeftWristPosition.y + 0.11f));
             Assert.That(presenter.RightElbowPosition.y, Is.LessThan(presenter.RightWristPosition.y - 0.25f));
             presenter.PreviewV2VeiledFaceLament(1f);
             for (int lane = 0; lane < presenter.RodCount; lane++)
@@ -135,6 +146,11 @@ namespace YingYun.Rhythm.Tests
             GameObject existing;
             while ((existing = GameObject.Find(name)) != null)
                 Object.DestroyImmediate(existing);
+        }
+
+        private static float BendAngle(Vector3 shoulder, Vector3 elbow, Vector3 wrist)
+        {
+            return Vector2.Angle(elbow - shoulder, wrist - elbow);
         }
 
         private static void SaveFrame(Camera camera, RenderTexture target, Texture2D capture, string path)
