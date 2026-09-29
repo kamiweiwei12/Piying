@@ -51,6 +51,7 @@
 ### Git Commit
 
 * `25003c7 feat(puppet): add v2 cloud hands circle`（本工作单位提交）。
+* `224735a fix(puppet): return cloud hands to gathered finish`（按十二拍展圆、原弧回收及固定双足标准修正）。
 
 ### 风险 / 已知问题
 
