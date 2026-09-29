@@ -10,22 +10,23 @@ namespace YingYun.Rhythm.Puppet.V2
 
         private static readonly double[] Times = { 0d, 0.12d, 0.24d, 0.48d, 0.68d, 0.82d, 1d };
         private static readonly double[] RootX = { 0d, 0d, 0d, 0.08d, 0.16d, 0.16d, 0.10d };
-        private static readonly double[] RootY = { -0.425d, -0.425d, -0.425d, -0.425d, -0.425d, -0.425d, -0.425d };
+        private static readonly double[] RootY = { -0.45d, -0.45d, -0.45d, -0.45d, -0.45d, -0.45d, -0.45d };
         private static readonly double[] Torso = { 0d, 0d, 0d, 4d, 7d, 7d, 3d };
         private static readonly double[] Head = { 3d, 3d, 3d, 2d, 0d, 0d, 1d };
 
         // 左手随身体守在腹前，只作低位呼应，不与穿掌手争抢直线路径。
         private static readonly double[] LeftX = { -0.18d, -0.12d, -0.05d, 0.02d, 0.08d, 0.08d, 0.02d };
-        private static readonly double[] LeftY = { -0.20d, -0.17d, -0.15d, -0.12d, -0.10d, -0.10d, -0.14d };
+        private static readonly double[] LeftY = { -0.225d, -0.195d, -0.175d, -0.145d, -0.125d, -0.125d, -0.165d };
         private static readonly double[] LeftWrist = { 10d, 10d, 9d, 8d, 7d, 7d, 8d };
 
         // 右掌先在胸前聚势，再沿近水平直线送出；末段只回收约三分之一。
         private static readonly double[] RightX = { 0.48d, 0.55d, 0.62d, 1.28d, 1.88d, 1.88d, 1.48d };
-        private static readonly double[] RightY = { 0.10d, 0.16d, 0.25d, 0.50d, 0.695d, 0.695d, 0.52d };
-        private static readonly double[] RightWrist = { 20d, 18d, 14d, 4d, -15d, -15d, -8d };
+        private static readonly double[] RightY = { 0.075d, 0.135d, 0.225d, 0.475d, 0.67d, 0.67d, 0.495d };
+        // 补偿前臂在穿送过程中的世界旋转，使掌面从胸前推出到回收始终保持立掌。
+        private static readonly double[] RightWrist = { 20d, 30d, 40d, 25d, 65d, 65d, 32d };
 
         // 右脚先引、轻抬、落稳；落地后才允许 root 前送。左脚全程作为后侧支撑点。
-        private static readonly double[] RightFootX = { 0.34d, 0.50d, 0.50d, 0.50d, 0.50d, 0.50d, 0.50d };
+        private static readonly double[] RightFootX = { 0.34d, 0.60d, 0.60d, 0.60d, 0.60d, 0.60d, 0.60d };
         private static readonly double[] RightFootY = { -2.08d, -2.02d, -2.08d, -2.08d, -2.08d, -2.08d, -2.08d };
         private static readonly double[] RightShoe = { 0d, 6d, 0d, 0d, 0d, 0d, 0d };
 

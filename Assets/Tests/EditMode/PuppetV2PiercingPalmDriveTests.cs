@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using YingYun.Rhythm.Puppet.V2;
@@ -21,17 +22,21 @@ namespace YingYun.Rhythm.Tests
             PuppetV2Pose finish = PiercingPalmDriveChoreography.Evaluate(1d);
 
             Assert.That(lifted.RootX, Is.Zero.Within(0.001d));
-            Assert.That(lifted.RightFootX, Is.GreaterThan(start.RightFootX + 0.15d));
+            Assert.That(lifted.RightFootX, Is.GreaterThan(start.RightFootX + 0.25d));
             Assert.That(lifted.RightFootY, Is.GreaterThan(start.RightFootY + 0.05d));
             Assert.That(lifted.RightFootPlanted, Is.False);
             Assert.That(planted.RootX, Is.Zero.Within(0.001d));
             Assert.That(planted.RightFootY, Is.EqualTo(start.RightFootY).Within(0.001d));
             Assert.That(planted.RightFootPlanted, Is.True);
+            Assert.That(planted.RightFootX - planted.LeftFootX, Is.GreaterThan(0.92d));
             Assert.That(peak.RootX, Is.EqualTo(0.16d).Within(0.001d));
             Assert.That(peak.RightHandX, Is.GreaterThan(1.87d));
-            Assert.That(peak.RightHandY, Is.EqualTo(0.695d).Within(0.001d));
+            Assert.That(peak.RightHandY, Is.EqualTo(0.67d).Within(0.001d));
             Assert.That(peak.LeftHandY, Is.LessThan(0d));
+            Assert.That(planted.RightWrist, Is.EqualTo(40d).Within(0.001d));
+            Assert.That(peak.RightWrist, Is.EqualTo(65d).Within(0.001d));
             Assert.That(finish.RightHandX, Is.EqualTo(1.48d).Within(0.001d));
+            Assert.That(finish.RightWrist, Is.EqualTo(32d).Within(0.001d));
             Assert.That(peak.RightHandX - finish.RightHandX, Is.InRange(0.39d, 0.48d));
             Assert.That(finish.RightFootX, Is.EqualTo(planted.RightFootX).Within(0.001d));
             Assert.That(finish.Facing, Is.EqualTo(1d));
@@ -44,6 +49,8 @@ namespace YingYun.Rhythm.Tests
             var root = new GameObject("V2 P5-08 Continuity Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
+            Transform rightHandArt = root.GetComponentsInChildren<Transform>(true)
+                .First(transform => transform.name == "Art Right Hand");
             presenter.PreviewV2PiercingPalmDrive(0f);
             Vector3 supportFoot = presenter.LeftAnklePosition;
             Vector3 previousLeftElbow = presenter.LeftElbowPosition;
@@ -67,6 +74,12 @@ namespace YingYun.Rhythm.Tests
                         Is.LessThan(0.0001f), $"planted front foot at {progress:F4}");
                 if (progress < 0.24f)
                     Assert.That(presenter.PelvisPosition.x, Is.Zero.Within(0.0001f));
+                if (progress >= 0.24f)
+                {
+                    float uprightAngle = Mathf.DeltaAngle(0f, rightHandArt.eulerAngles.z);
+                    Assert.That(uprightAngle, Is.InRange(65f, 82f),
+                        $"upright palm at {progress:F4}");
+                }
                 if (progress >= 0.24f && progress <= 0.68f)
                 {
                     Assert.That(presenter.RightWristPosition.x + 0.0001f, Is.GreaterThanOrEqualTo(previousDriveX),
