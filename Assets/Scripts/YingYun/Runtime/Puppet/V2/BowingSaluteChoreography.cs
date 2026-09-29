@@ -12,9 +12,9 @@ namespace YingYun.Rhythm.Puppet.V2
         private static readonly double[] RootY = { -0.40d, -0.40d, -0.40d, -0.40d, -0.415d, -0.44d, -0.415d, -0.40d };
         private static readonly double[] Torso = { 0d, 0d, 0d, 0d, -7d, -14d, -7d, 0d };
         private static readonly double[] Head = { 5d, 5d, 5d, 5d, 0d, -6d, 0d, 5d };
-        private static readonly double[] LeftX = { -0.68d, -0.58d, -0.30d, -0.13d, -0.09d, -0.03d, -0.09d, -0.34d };
+        private static readonly double[] LeftX = { -0.68d, -0.58d, -0.38d, -0.24d, -0.22d, -0.18d, -0.22d, -0.40d };
         private static readonly double[] LeftY = { -0.78d, -0.14d, 0.20d, 0.34d, 0.30d, 0.22d, 0.30d, 0.05d };
-        private static readonly double[] RightX = { 0.68d, 0.58d, 0.30d, 0.13d, 0.17d, 0.23d, 0.17d, 0.34d };
+        private static readonly double[] RightX = { 0.68d, 0.58d, 0.38d, 0.24d, 0.26d, 0.30d, 0.26d, 0.40d };
         private static readonly double[] RightY = { -0.78d, -0.14d, 0.20d, 0.34d, 0.30d, 0.22d, 0.30d, 0.05d };
         private static readonly double[] LeftWrist = { 0d, 8d, 15d, 15d, 15d, 15d, 13d, 8d };
         private static readonly double[] RightWrist = { 0d, -8d, -15d, -15d, -15d, -15d, -13d, -8d };

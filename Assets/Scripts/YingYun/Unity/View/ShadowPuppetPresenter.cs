@@ -127,6 +127,10 @@ namespace YingYun.Rhythm.View
             _visualRoot.InverseTransformPoint(_leftWristJoint.position);
         public Vector3 RightWristPosition => _rightWristJoint == null ? Vector3.zero :
             _visualRoot.InverseTransformPoint(_rightWristJoint.position);
+        public Vector3 LeftElbowPosition => _leftForearmJoint == null ? Vector3.zero :
+            _visualRoot.InverseTransformPoint(_leftForearmJoint.position);
+        public Vector3 RightElbowPosition => _rightForearmJoint == null ? Vector3.zero :
+            _visualRoot.InverseTransformPoint(_rightForearmJoint.position);
         public Vector3 RightFingerScale => _rightFingerJoint == null ? Vector3.one : _rightFingerJoint.localScale;
         public Vector3 LeftFingerScale => _leftFingerJoint == null ? Vector3.one : _leftFingerJoint.localScale;
         public bool LeftPointFingerVisible => _leftPointFinger != null && _leftPointFinger.gameObject.activeSelf;
@@ -652,10 +656,10 @@ namespace YingYun.Rhythm.View
             V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
             V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
             PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
-                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
                 out float leftShoulderAngle, out float leftElbowAngle);
             PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
-                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
                 out float rightShoulderAngle, out float rightElbowAngle);
             SetRotation(_leftUpperArmJoint, leftShoulderAngle - (float)pose.Torso);
             SetRotation(_leftForearmJoint, leftElbowAngle);
