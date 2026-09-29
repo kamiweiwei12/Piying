@@ -707,9 +707,10 @@ namespace YingYun.Rhythm.View
             Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
             V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
             V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
-            // 胸前聚手沿用向外折肘；两臂接近伸直的外缘时切换分支，避免袖片交叉或肘部跳变。
-            float leftBend = progress < 0.30f ? -1f : 1f;
-            float rightBend = progress < 0.30f ? 1f : -1f;
+            // 聚手阶段保持袖片分离；展圆和回收都只在双臂接近伸直时切换折肘分支。
+            bool openBranch = progress >= 0.70f && progress < 0.82f;
+            float leftBend = openBranch ? 1f : -1f;
+            float rightBend = openBranch ? -1f : 1f;
             PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
                 PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, leftBend,
                 out float leftShoulderAngle, out float leftElbowAngle);
@@ -740,7 +741,7 @@ namespace YingYun.Rhythm.View
             _rodDrive[0] = Mathf.Sin(Mathf.Clamp01(progress) * Mathf.PI);
             float delayed = Mathf.Clamp01((progress - 0.125f) / 0.875f);
             _rodDrive[2] = Mathf.Sin(delayed * Mathf.PI);
-            _rodDrive[4] = Mathf.Abs(Mathf.Sin(Mathf.Clamp01(progress) * Mathf.PI * 2f)) * 0.45f;
+            _rodDrive[4] = Mathf.Abs(Mathf.Sin(Mathf.Clamp01(progress) * Mathf.PI * 2f)) * 0.15f;
             UpdateRods();
         }
 

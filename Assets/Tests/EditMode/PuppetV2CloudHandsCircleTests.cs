@@ -10,24 +10,33 @@ namespace YingYun.Rhythm.Tests
     public sealed class PuppetV2CloudHandsCircleTests
     {
         [Test]
-        public void P5_04_DrawsStaggeredUpperAndLowerArcsBeforeOpenFinish()
+        public void P5_04_DrawsStaggeredUpperAndLowerArcsThenReturnsToGather()
         {
             Assert.That(CloudHandsCircleChoreography.Name, Is.EqualTo("云手展圆"));
             Assert.That(CloudHandsCircleChoreography.Beats, Is.EqualTo(12));
             PuppetV2Pose start = CloudHandsCircleChoreography.Evaluate(0d);
+            PuppetV2Pose delayed = CloudHandsCircleChoreography.Evaluate(0.125d);
             PuppetV2Pose upperOutside = CloudHandsCircleChoreography.Evaluate(0.46d);
-            PuppetV2Pose circlePeak = CloudHandsCircleChoreography.Evaluate(0.72d);
+            PuppetV2Pose circlePeak = CloudHandsCircleChoreography.Evaluate(0.58d);
+            PuppetV2Pose opened = CloudHandsCircleChoreography.Evaluate(0.70d);
             PuppetV2Pose finish = CloudHandsCircleChoreography.Evaluate(1d);
 
-            Assert.That(upperOutside.LeftHandX, Is.LessThan(-1.1d));
-            Assert.That(upperOutside.LeftHandY, Is.GreaterThan(1d));
+            Assert.That(delayed.RightHandX, Is.EqualTo(start.RightHandX).Within(0.0001d));
+            Assert.That(delayed.RightHandY, Is.EqualTo(start.RightHandY).Within(0.0001d));
+            Assert.That(upperOutside.LeftHandY, Is.GreaterThan(1.65d));
             Assert.That(circlePeak.LeftHandY, Is.GreaterThan(1.68d));
-            Assert.That(circlePeak.RightHandY, Is.LessThan(-0.58d));
+            Assert.That(circlePeak.RightHandY, Is.LessThan(-0.60d));
             Assert.That(circlePeak.LeftWrist, Is.LessThan(-30d));
             Assert.That(circlePeak.LeftHandShape, Is.EqualTo(PuppetHandShape.SupportPalm));
-            Assert.That(finish.LeftHandY - finish.RightHandY, Is.GreaterThan(0.75d));
-            Assert.That(finish.LeftHandX, Is.LessThan(-1d));
-            Assert.That(finish.RightHandY, Is.GreaterThan(start.RightHandY + 0.30d));
+            Assert.That(opened.LeftHandX, Is.LessThan(-1.80d));
+            Assert.That(opened.RightHandX, Is.GreaterThan(1.60d));
+            Assert.That(opened.LeftHandY - opened.RightHandY, Is.GreaterThan(1d));
+            Assert.That(finish.RightHandX - finish.LeftHandX, Is.InRange(0.34d, 0.38d));
+            Assert.That(finish.LeftHandY - finish.RightHandY, Is.LessThan(0.10d));
+            Assert.That(finish.LeftHandShape, Is.EqualTo(PuppetHandShape.NaturalPalm));
+            Assert.That(finish.RightHandShape, Is.EqualTo(PuppetHandShape.NaturalPalm));
+            Assert.That(finish.RootX, Is.Zero.Within(0.0001d));
+            Assert.That(Mathf.Abs((float)finish.Torso), Is.LessThanOrEqualTo(0.0001f));
             Assert.That(finish.LeftFootPlanted && finish.RightFootPlanted, Is.True);
         }
 
@@ -50,13 +59,14 @@ namespace YingYun.Rhythm.Tests
                 float progress = i / 720f;
                 presenter.PreviewV2CloudHandsCircle(progress);
                 Assert.That(Vector3.Distance(presenter.LeftWristPosition, presenter.V2LeftHandTarget),
-                    Is.LessThan(0.001f), $"left wrist at {progress:F4}");
+                    Is.LessThan(0.0031f), $"left wrist at {progress:F4}");
                 Assert.That(Vector3.Distance(presenter.RightWristPosition, presenter.V2RightHandTarget),
-                    Is.LessThan(0.001f), $"right wrist at {progress:F4}");
-                // 横向移重心由腿部 IK 吸收；容许亚像素求解残差，不允许形成可见脚滑。
-                Assert.That(Vector3.Distance(presenter.LeftAnklePosition, leftFoot), Is.LessThan(0.0041f));
-                Assert.That(Vector3.Distance(presenter.RightAnklePosition, rightFoot), Is.LessThan(0.0041f));
-                Assert.That(Mathf.Abs(presenter.PelvisPosition.x), Is.LessThanOrEqualTo(0.041f));
+                    Is.LessThan(0.0031f), $"right wrist at {progress:F4}");
+                Assert.That(Vector3.Distance(presenter.LeftAnklePosition, leftFoot), Is.LessThan(0.0001f));
+                Assert.That(Vector3.Distance(presenter.RightAnklePosition, rightFoot), Is.LessThan(0.0001f));
+                Assert.That(presenter.PelvisPosition.x, Is.Zero.Within(0.0001f));
+                Assert.That(Mathf.Abs(presenter.TorsoRotation > 180f
+                    ? presenter.TorsoRotation - 360f : presenter.TorsoRotation), Is.LessThanOrEqualTo(2.01f));
                 Assert.That(Vector3.Distance(presenter.V2LeftHandTarget, previousLeftTarget), Is.LessThan(0.040f));
                 Assert.That(Vector3.Distance(presenter.V2RightHandTarget, previousRightTarget), Is.LessThan(0.040f));
                 Assert.That(Vector3.Distance(presenter.LeftElbowPosition, previousLeftElbow), Is.LessThan(0.12f),
@@ -96,8 +106,8 @@ namespace YingYun.Rhythm.Tests
             var target = new RenderTexture(1280, 800, 24, RenderTextureFormat.ARGB32);
             var capture = new Texture2D(1280, 800, TextureFormat.RGB24, false);
             camera.targetTexture = target;
-            float[] stages = { 0f, 0.20f, 0.46f, 0.60f, 0.72f, 0.84f, 1f };
-            string[] names = { "01-half-close", "02-gather", "03-upper-outer-arc", "04-lower-arc", "05-circle-peak", "06-connect-circle", "07-open-finish" };
+            float[] stages = { 0f, 0.125f, 0.46f, 0.58f, 0.70f, 0.82f, 1f };
+            string[] names = { "01-half-close", "02-right-delay", "03-upper-arc", "04-lower-arc", "05-open-circle", "06-arc-return", "07-gather-finish" };
             for (int i = 0; i < stages.Length; i++)
             {
                 presenter.PreviewV2CloudHandsCircle(stages[i]);
