@@ -767,7 +767,7 @@ namespace YingYun.Rhythm.View
                 PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
                 out float leftShoulderAngle, out float leftElbowAngle);
             PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
-                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
                 out float rightShoulderAngle, out float rightElbowAngle);
             SetRotation(_leftUpperArmJoint, leftShoulderAngle - (float)pose.Torso);
             SetRotation(_leftForearmJoint, leftElbowAngle);
@@ -794,6 +794,58 @@ namespace YingYun.Rhythm.View
             _rodDrive[0] = lift * 0.30f;
             _rodDrive[2] = lift;
             _rodDrive[4] = Mathf.Sin(Mathf.Clamp01((progress - 0.50f) / 0.50f) * Mathf.PI) * 0.18f;
+            UpdateRods();
+        }
+
+        /// <summary>V2-P5-07 斜展顺风旗预览；左臂横展、右臂斜上，双足固定形成强对角线。</summary>
+        public void PreviewV2WindFlagDiagonal(float progress)
+        {
+            EnsureInitialized();
+            _v2TurnActive = false;
+            PuppetV2Pose pose = WindFlagDiagonalChoreography.Evaluate(progress);
+            _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
+            SetRotation(_torsoJoint, pose.Torso);
+            SetRotation(_headJoint, pose.Head);
+            _torsoJoint.localScale = Vector3.one;
+            _facingScale = 1f;
+            _pelvisArt.localScale = _pelvisArtBaseScale;
+            RestoreV2LowerArtScale();
+
+            Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
+            Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
+            V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
+            V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
+            PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
+                out float leftShoulderAngle, out float leftElbowAngle);
+            PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
+                out float rightShoulderAngle, out float rightElbowAngle);
+            SetRotation(_leftUpperArmJoint, leftShoulderAngle - (float)pose.Torso);
+            SetRotation(_leftForearmJoint, leftElbowAngle);
+            SetRotation(_rightUpperArmJoint, rightShoulderAngle - (float)pose.Torso);
+            SetRotation(_rightForearmJoint, rightElbowAngle);
+            SetRotation(_leftWristJoint, pose.LeftWrist);
+            SetRotation(_rightWristJoint, pose.RightWrist);
+            _leftFingerJoint.localScale = Vector3.one;
+            _rightFingerJoint.localScale = Vector3.one;
+            _leftPointFinger.gameObject.SetActive(false);
+            _rightPointFinger.gameObject.SetActive(false);
+            SyncSegmentedHandArt();
+            ApplyV2HandShapes(pose.LeftHandShape, pose.RightHandShape);
+
+            ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
+                new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
+            ApplyGroundedLeg(_rightThighJoint, _rightShinJoint, _rightAnkleJoint,
+                new Vector2((float)pose.RightFootX, (float)pose.RightFootY), 1f);
+            SetRotation(_leftAnkleJoint, pose.LeftShoe);
+            SetRotation(_rightAnkleJoint, pose.RightShoe);
+
+            for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
+            float spread = Mathf.Sin(Mathf.Clamp01(progress) * Mathf.PI);
+            _rodDrive[0] = spread * 0.70f;
+            _rodDrive[2] = spread;
+            _rodDrive[4] = spread * 0.12f;
             UpdateRods();
         }
 
