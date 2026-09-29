@@ -52,6 +52,7 @@
 
 ### Git Commit
 
+* `72d666e fix(puppet): refine moon gaze and elbow arc`（仰头与右肘弧线修正提交）。
 * `abfd3c4 feat(puppet): add v2 moon offering gaze`（本工作单位提交）。
 
 ### 风险 / 已知问题
