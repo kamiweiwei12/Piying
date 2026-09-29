@@ -52,6 +52,7 @@
 
 ### Git Commit
 
+* `9d7dbf4 fix(puppet): fully extend wind flag arms`（双臂近全伸展修正提交）。
 * `63bbe3a feat(puppet): add v2 wind flag diagonal`（本工作单位提交）。
 
 ### 风险 / 已知问题
