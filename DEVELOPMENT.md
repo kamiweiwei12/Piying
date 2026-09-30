@@ -37,7 +37,7 @@
 
 ## 2. 當前 Prototype 階段
 
-2026-09-30 新请求：A2-R5 当前动作版 `fceb628` 已以 `archive/puppet-v1-20260928` 标签和经验证的离线 bundle 存档。[皮影 V2 十八式计划](PUPPET_ACTION_V2_PLAN.md) 已获确认。P0–P6 已通过用户验收；P7 已将 V2 成功／漏击语义接入正式曲目与 HUD，并通过 273 项 EditMode 回归，当前为用户验收候选。确认前不进入 P8 Editor／Windows 完整实机验收。
+2026-09-30 新请求：A2-R5 当前动作版 `fceb628` 已以 `archive/puppet-v1-20260928` 标签和经验证的离线 bundle 存档。[皮影 V2 十八式计划](PUPPET_ACTION_V2_PLAN.md) 已获确认。P0–P7 已通过用户验收。P8 本机 Editor／Windows 验收已完成：EditMode 全量 `277 / 277`、Windows x64 建置及启动冒烟通过；仍须用户完整游玩与第二台 Windows 电脑回传，才可标记为最终通过。
 
 | 項目 | 狀態 |
 |---|---|
