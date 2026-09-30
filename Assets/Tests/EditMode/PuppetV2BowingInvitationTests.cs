@@ -56,6 +56,14 @@ namespace YingYun.Rhythm.Tests
                     Is.LessThan(0.003f), $"right wrist at {progress:F4}");
                 Assert.That(presenter.LeftWristPosition.x, Is.LessThan(-0.11f), $"guard hand crossed at {progress:F4}");
                 Assert.That(presenter.RightWristPosition.x, Is.GreaterThan(0.45f), $"inviting hand crossed at {progress:F4}");
+                if (progress >= 0.35f)
+                {
+                    Assert.That(presenter.LeftElbowPosition.x,
+                        Is.LessThan(presenter.LeftWristPosition.x - 0.12f),
+                        $"guard elbow must remain outside the palm at {progress:F4}");
+                    Assert.That(presenter.LeftElbowPosition.x, Is.LessThan(-0.30f),
+                        $"guard elbow entered the torso at {progress:F4}");
+                }
                 Assert.That(Vector3.Distance(presenter.LeftAnklePosition, leftFoot), Is.LessThan(0.002f));
                 Assert.That(Vector3.Distance(presenter.RightAnklePosition, rightFoot), Is.LessThan(0.002f));
                 Assert.That(Vector3.Distance(presenter.LeftElbowPosition, previousLeftElbow), Is.LessThan(0.025f));

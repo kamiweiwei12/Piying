@@ -1137,7 +1137,7 @@ namespace YingYun.Rhythm.View
             V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
             V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
             PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
-                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
                 out float leftShoulderAngle, out float leftElbowAngle);
             PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
                 PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
