@@ -84,6 +84,8 @@ namespace YingYun.Rhythm.Tests
                     Assert.That(presenter.RightElbowPosition.x, Is.LessThan(presenter.RightWristPosition.x - 0.15f));
                     Assert.That(leftHandArt.localScale.x, Is.LessThan(0f), "left palm must face forward");
                     Assert.That(rightHandArt.localScale.x, Is.LessThan(0f), "right palm must face forward");
+                    Assert.That(Quaternion.Angle(leftHandArt.rotation, rightHandArt.rotation),
+                        Is.LessThan(0.01f), "both upright palms must point their fingertips upward together");
                     previousLeftPush = presenter.LeftWristPosition.x;
                     previousRightPush = presenter.RightWristPosition.x;
                 }
