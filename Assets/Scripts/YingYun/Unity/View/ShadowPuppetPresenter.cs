@@ -26,6 +26,7 @@ namespace YingYun.Rhythm.View
         private readonly bool[] _heldRods = new bool[6];
         private PuppetPoseEvaluator _evaluator;
         private DancePlayback _dancePlayback;
+        private PuppetV2Playback _v2Playback;
         private Transform _visualRoot;
         private Transform _pelvisJoint;
         private Transform _torsoJoint;
@@ -199,7 +200,10 @@ namespace YingYun.Rhythm.View
             EnsureInitialized();
             if (_dancePlayback != null)
                 _dancePlayback.StatusChanged -= ForwardDanceStatus;
+            if (_v2Playback != null)
+                _v2Playback.StatusChanged -= ForwardDanceStatus;
             _dancePlayback = null;
+            _v2Playback = null;
             _v2TurnActive = false;
             _v2TurnProgress = 0f;
             DanceStatusChanged?.Invoke(new DancePerformanceStatus(DancePerformanceKind.Waiting, null));
@@ -245,6 +249,14 @@ namespace YingYun.Rhythm.View
             _dancePlayback.StatusChanged += ForwardDanceStatus;
         }
 
+        /// <summary>P7 正式 V2 接线；只复用旧舞句的锚点与歌曲时间，不采样旧动作曲线。</summary>
+        public void BeginV2(DancePhrase[] timingPhrases)
+        {
+            Begin();
+            _v2Playback = new PuppetV2Playback(timingPhrases);
+            _v2Playback.StatusChanged += ForwardDanceStatus;
+        }
+
         private void ForwardDanceStatus(DancePerformanceStatus status) => DanceStatusChanged?.Invoke(status);
 
         public void Tick(double songTimeSec)
@@ -253,6 +265,15 @@ namespace YingYun.Rhythm.View
             double elapsed = double.IsNegativeInfinity(_songTime)
                 ? 0d : System.Math.Max(0d, songTimeSec - _songTime);
             _songTime = songTimeSec;
+            if (_v2Playback != null)
+            {
+                _v2Playback.Evaluate(songTimeSec);
+                ApplyV2Pose(_v2Playback.CurrentPose);
+                UpdateArticulatedDetails(elapsed);
+                UpdateHoldSleeves(elapsed);
+                UpdateRods();
+                return;
+            }
             if (_dancePlayback != null)
             {
                 _dancePlayback.Evaluate(songTimeSec);
@@ -1345,7 +1366,11 @@ namespace YingYun.Rhythm.View
         public void PreviewV2FullSequence(float beat)
         {
             EnsureInitialized();
-            PuppetV2Pose pose = PuppetV2SequenceChoreography.Evaluate(beat);
+            ApplyV2Pose(PuppetV2SequenceChoreography.Evaluate(beat));
+        }
+
+        private void ApplyV2Pose(PuppetV2Pose pose)
+        {
             _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
             SetRotation(_torsoJoint, pose.Torso);
             SetRotation(_headJoint, pose.Head);
@@ -1405,7 +1430,7 @@ namespace YingYun.Rhythm.View
         public void OnInput(HitInput input)
         {
             EnsureInitialized();
-            if (_dancePlayback != null) return;
+            if (_dancePlayback != null || _v2Playback != null) return;
             int laneMask = 1 << input.Lane;
             if (input.Kind == InputKind.Press)
             {
@@ -1420,6 +1445,15 @@ namespace YingYun.Rhythm.View
         public void OnJudged(JudgmentResult result)
         {
             EnsureInitialized();
+            if (_v2Playback != null)
+            {
+                if (result.EventKind == JudgmentEventKind.HoldStarted)
+                    SetHeldRods(result.RequiredLanesMask, true);
+                else if (result.EventKind == JudgmentEventKind.NoteJudged)
+                    SetHeldRods(result.RequiredLanesMask, false);
+                _v2Playback.OnJudged(result, _songTime);
+                return;
+            }
             if (_dancePlayback != null)
             {
                 if (result.EventKind == JudgmentEventKind.HoldStarted)

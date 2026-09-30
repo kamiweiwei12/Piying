@@ -107,29 +107,28 @@ namespace YingYun.Rhythm.View
         public void ShowDanceStatus(DancePerformanceStatus status)
         {
             if (_danceNameText == null) return;
-            DancePhrase performed = status.Performed;
+            string performedName = status.PerformedName;
             switch (status.Kind)
             {
                 case DancePerformanceKind.Pending:
-                    _danceNameText.text = performed == null ? "尚未起势" : $"保持：{performed.Name}";
-                    _danceStateText.text = $"已命中 · 待拍：{status.Cue?.Name}";
+                    _danceNameText.text = string.IsNullOrEmpty(performedName) ? "尚未起势" : $"保持：{performedName}";
+                    _danceStateText.text = $"已命中 · 待拍：{status.CueName}";
                     _danceDetailText.text = "到达拍点后才开始演出";
                     break;
                 case DancePerformanceKind.Performing:
                 case DancePerformanceKind.Closing:
-                    _danceNameText.text = performed.Name;
+                    _danceNameText.text = performedName;
                     _danceStateText.text = status.Kind == DancePerformanceKind.Closing ? "正在收势" : "正在演出";
-                    _danceDetailText.text =
-                        $"第 {performed.StartBeat} 拍 · 持续 {performed.DurationBeats} 拍\n控制：{performed.JointDisplay}";
+                    _danceDetailText.text = $"第 {status.StartBeat} 拍 · 持续 {status.DurationBeats} 拍";
                     break;
                 case DancePerformanceKind.Holding:
-                    _danceNameText.text = $"保持：{performed.Name}";
+                    _danceNameText.text = $"保持：{performedName}";
                     _danceStateText.text = "本式结束";
                     _danceDetailText.text = "等待下一式，不自动起舞";
                     break;
                 case DancePerformanceKind.Interrupted:
-                    _danceNameText.text = performed == null ? "尚未起势" : $"保持：{performed.Name}";
-                    _danceStateText.text = $"漏击：{status.Cue?.Name} 未演";
+                    _danceNameText.text = string.IsNullOrEmpty(performedName) ? "尚未起势" : $"保持：{performedName}";
+                    _danceStateText.text = $"漏击：{status.CueName} 未演";
                     _danceDetailText.text = "皮影停势，等待下一次成功命中";
                     break;
                 default:

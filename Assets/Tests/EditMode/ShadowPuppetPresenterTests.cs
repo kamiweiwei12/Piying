@@ -1131,7 +1131,8 @@ namespace YingYun.Rhythm.Tests
 
             hud.ShowDanceStatus(new DancePerformanceStatus(DancePerformanceKind.Performing, phrases[0]));
             Assert.That(name.text, Is.EqualTo("單山膀"));
-            Assert.That(detail.text, Does.Contain("左肩、左肘"));
+            Assert.That(detail.text, Does.Contain("持续"));
+            Assert.That(detail.text, Does.Not.Contain("控制"));
             hud.ShowDanceStatus(new DancePerformanceStatus(
                 DancePerformanceKind.Interrupted, phrases[0], phrases[1]));
             Assert.That(name.text, Does.Contain("單山膀"));

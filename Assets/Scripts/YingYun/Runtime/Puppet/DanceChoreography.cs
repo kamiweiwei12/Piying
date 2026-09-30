@@ -64,11 +64,31 @@ namespace YingYun.Rhythm.Puppet
             Kind = kind;
             Performed = performed;
             Cue = cue;
+            PerformedName = performed?.Name;
+            CueName = cue?.Name;
+            StartBeat = performed?.StartBeat ?? 0;
+            DurationBeats = performed?.DurationBeats ?? 0;
+        }
+
+        public DancePerformanceStatus(DancePerformanceKind kind, string performedName,
+            int startBeat, int durationBeats, string cueName = null)
+        {
+            Kind = kind;
+            Performed = null;
+            Cue = null;
+            PerformedName = performedName;
+            CueName = cueName;
+            StartBeat = startBeat;
+            DurationBeats = durationBeats;
         }
 
         public DancePerformanceKind Kind { get; }
         public DancePhrase Performed { get; }
         public DancePhrase Cue { get; }
+        public string PerformedName { get; }
+        public string CueName { get; }
+        public int StartBeat { get; }
+        public int DurationBeats { get; }
     }
 
     /// <summary>一段已在載入階段取樣完成的舞句；運行時不再生成動作軌跡。</summary>

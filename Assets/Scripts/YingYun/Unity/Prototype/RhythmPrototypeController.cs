@@ -320,7 +320,7 @@ namespace YingYun.Rhythm.Prototype
             _noteCount = notes.Length;
             _judgment = new JudgmentEngine(notes, TimingConfig.Prototype, _clock);
             _presenter.Begin(notes);
-            _puppet.Begin(dance);
+            _puppet.BeginV2(dance);
             _hud.Begin(notes.Length, DifficultyConfig.Prototype);
             _clock.Schedule(activeMusic,
                 CountdownLeadInSeconds + NoteApproachLeadInSeconds,
