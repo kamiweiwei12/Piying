@@ -1285,6 +1285,62 @@ namespace YingYun.Rhythm.View
             UpdateRods();
         }
 
+        /// <summary>V2-P5-18 回望退场预览；先伸掌告别，再交替后退并收手落定。</summary>
+        public void PreviewV2BackwardFarewell(float progress)
+        {
+            EnsureInitialized();
+            _v2TurnActive = false;
+            PuppetV2Pose pose = BackwardFarewellChoreography.Evaluate(progress);
+            _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
+            SetRotation(_torsoJoint, pose.Torso);
+            SetRotation(_headJoint, pose.Head);
+            _torsoJoint.localScale = Vector3.one;
+            _facingScale = 1f;
+            _pelvisArt.localScale = _pelvisArtBaseScale;
+            RestoreV2LowerArtScale();
+
+            Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
+            Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
+            V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
+            V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
+            PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, 1f,
+                out float leftShoulderAngle, out float leftElbowAngle);
+            PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -1f,
+                out float rightShoulderAngle, out float rightElbowAngle);
+            SetRotation(_leftUpperArmJoint, leftShoulderAngle - (float)pose.Torso);
+            SetRotation(_leftForearmJoint, leftElbowAngle);
+            SetRotation(_rightUpperArmJoint, rightShoulderAngle - (float)pose.Torso);
+            SetRotation(_rightForearmJoint, rightElbowAngle);
+            SetRotation(_leftWristJoint, pose.LeftWrist);
+            SetRotation(_rightWristJoint, pose.RightWrist);
+            _leftFingerJoint.localScale = Vector3.one;
+            _rightFingerJoint.localScale = Vector3.one;
+            _leftPointFinger.gameObject.SetActive(false);
+            _rightPointFinger.gameObject.SetActive(false);
+            SyncSegmentedHandArt();
+            ApplyV2HandShapes(pose.LeftHandShape, pose.RightHandShape);
+
+            ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
+                new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
+            ApplyGroundedLeg(_rightThighJoint, _rightShinJoint, _rightAnkleJoint,
+                new Vector2((float)pose.RightFootX, (float)pose.RightFootY), 1f);
+            SetRotation(_leftAnkleJoint, pose.LeftShoe);
+            SetRotation(_rightAnkleJoint, pose.RightShoe);
+
+            for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
+            float farewell = Mathf.Sin(Mathf.Clamp01(progress / (5f / BackwardFarewellChoreography.Beats)) * Mathf.PI);
+            _rodDrive[2] = farewell;
+            _rodDrive[3] = pose.LeftFootPlanted ? 0f : 1f;
+            _rodDrive[4] = Mathf.Clamp01((progress - (5f / BackwardFarewellChoreography.Beats)) /
+                (5f / BackwardFarewellChoreography.Beats));
+            _rodDrive[5] = pose.RightFootPlanted ? 0f : 1f;
+            if (progress >= 1f)
+                for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
+            UpdateRods();
+        }
+
         /// <summary>每次原始按鍵都立即驅动對應竹桿與關節，與判定結果解耦。</summary>
         public void OnInput(HitInput input)
         {
