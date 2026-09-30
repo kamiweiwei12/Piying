@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using YingYun.Rhythm.Puppet.V2;
@@ -46,6 +47,10 @@ namespace YingYun.Rhythm.Tests
             var root = new GameObject("V2 P5-14 Continuity Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
+            Transform leftHandArt = root.GetComponentsInChildren<Transform>(true)
+                .First(transform => transform.name == "Art Left Hand");
+            Transform rightHandArt = root.GetComponentsInChildren<Transform>(true)
+                .First(transform => transform.name == "Art Right Hand");
             presenter.PreviewV2LungeDoublePalmPush(0f);
             Vector3 rearFoot = presenter.LeftAnklePosition;
             Vector3 plantedFrontFoot = Vector3.zero;
@@ -77,6 +82,8 @@ namespace YingYun.Rhythm.Tests
                     Assert.That(presenter.RightWristPosition.x + 0.0001f, Is.GreaterThanOrEqualTo(previousRightPush));
                     Assert.That(presenter.LeftElbowPosition.x, Is.LessThan(presenter.LeftWristPosition.x - 0.15f));
                     Assert.That(presenter.RightElbowPosition.x, Is.LessThan(presenter.RightWristPosition.x - 0.15f));
+                    Assert.That(leftHandArt.localScale.x, Is.LessThan(0f), "left palm must face forward");
+                    Assert.That(rightHandArt.localScale.x, Is.LessThan(0f), "right palm must face forward");
                     previousLeftPush = presenter.LeftWristPosition.x;
                     previousRightPush = presenter.RightWristPosition.x;
                 }

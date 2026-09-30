@@ -1207,6 +1207,10 @@ namespace YingYun.Rhythm.View
             _rightPointFinger.gameObject.SetActive(false);
             SyncSegmentedHandArt();
             ApplyV2HandShapes(pose.LeftHandShape, pose.RightHandShape);
+            // 双掌同向向角色前方推出；通用左右手型默认互为镜像，
+            // 本动作需将左掌翻到与右掌相同朝向，不能靠扭腕反折手臂。
+            _leftHandArt.localScale = new Vector3(-Mathf.Abs(_leftHandArt.localScale.x),
+                _leftHandArt.localScale.y, _leftHandArt.localScale.z);
 
             ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
                 new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), -1f);
