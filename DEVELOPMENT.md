@@ -37,7 +37,7 @@
 
 ## 2. 當前 Prototype 階段
 
-2026-10-01 状态：[皮影 V2 十八式计划](PUPPET_ACTION_V2_PLAN.md) 的 P0–P7 已通过用户验收。P8 本机 Editor／Windows 验收与手掌比例、静止抖动、低手肘部外折修正已通过图片验收；EditMode 全量 `279 / 279`、Windows x64 建置及启动冒烟通过。仍须用户完整游玩与第二台 Windows 电脑回传，才可标记为最终通过。
+2026-10-01 状态：[皮影 V2 十八式计划](PUPPET_ACTION_V2_PLAN.md) 的 P0–P7 已通过用户验收。P8 本机 Editor／Windows 验收与手掌比例、静止抖动、低手肘部外折修正已通过图片及本机运行验收；EditMode 全量 `279 / 279`、最新 Windows x64 建置及启动冒烟通过。仅剩第二台 Windows 电脑回传，完成后才可标记为最终通过。
 
 | 項目 | 狀態 |
 |---|---|
