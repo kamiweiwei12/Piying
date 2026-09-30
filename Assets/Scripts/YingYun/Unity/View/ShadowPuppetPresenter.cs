@@ -1341,6 +1341,66 @@ namespace YingYun.Rhythm.View
             UpdateRods();
         }
 
+        /// <summary>P6 十八式 168 拍连续预览；只供串联验收，不接正式歌曲。</summary>
+        public void PreviewV2FullSequence(float beat)
+        {
+            EnsureInitialized();
+            PuppetV2Pose pose = PuppetV2SequenceChoreography.Evaluate(beat);
+            _pelvisJoint.localPosition = new Vector3((float)pose.RootX, (float)pose.RootY, 0f);
+            SetRotation(_torsoJoint, pose.Torso);
+            SetRotation(_headJoint, pose.Head);
+            _facingScale = (float)pose.Facing;
+            float facingSign = pose.Facing < 0d ? -1f : 1f;
+            V2VisibleFacing = facingSign * Mathf.Max(0.10f, Mathf.Abs((float)pose.Facing));
+            _v2TurnActive = Mathf.Abs((float)pose.Facing) < 0.999f;
+            _torsoJoint.localScale = new Vector3(V2VisibleFacing, 1f, 1f);
+            _pelvisArt.localScale = MirrorX(_pelvisArtBaseScale, V2VisibleFacing);
+            RestoreV2LowerArtScale();
+            _leftThighArt.localScale = MirrorX(_leftThighArtBaseScale, V2VisibleFacing);
+            _leftShinArt.localScale = MirrorX(_leftShinArtBaseScale, V2VisibleFacing);
+            _leftShoeArt.localScale = MirrorX(_leftShoeArtBaseScale, V2VisibleFacing);
+            _rightThighArt.localScale = MirrorX(_rightThighArtBaseScale, V2VisibleFacing);
+            _rightShinArt.localScale = MirrorX(_rightShinArtBaseScale, V2VisibleFacing);
+            _rightShoeArt.localScale = MirrorX(_rightShoeArtBaseScale, V2VisibleFacing);
+            ApplyV2FacingSorting(pose.Facing < 0d);
+
+            V2LeftHandTarget = new Vector3((float)pose.LeftHandX, (float)pose.LeftHandY, 0f);
+            V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
+            Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
+            Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
+            PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, facingSign,
+                out float leftShoulderAngle, out float leftElbowAngle);
+            PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
+                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -facingSign,
+                out float rightShoulderAngle, out float rightElbowAngle);
+            SetRotation(_leftUpperArmJoint, leftShoulderAngle - (float)pose.Torso);
+            SetRotation(_leftForearmJoint, leftElbowAngle);
+            SetRotation(_rightUpperArmJoint, rightShoulderAngle - (float)pose.Torso);
+            SetRotation(_rightForearmJoint, rightElbowAngle);
+            SetRotation(_leftWristJoint, pose.LeftWrist);
+            SetRotation(_rightWristJoint, pose.RightWrist);
+            _leftFingerJoint.localScale = Vector3.one;
+            _rightFingerJoint.localScale = Vector3.one;
+            _leftPointFinger.gameObject.SetActive(false);
+            _rightPointFinger.gameObject.SetActive(false);
+            SyncSegmentedHandArt();
+            ApplyV2HandShapes(pose.LeftHandShape, pose.RightHandShape);
+
+            ApplyGroundedLeg(_leftThighJoint, _leftShinJoint, _leftAnkleJoint,
+                new Vector2((float)pose.LeftFootX, (float)pose.LeftFootY), facingSign);
+            ApplyGroundedLeg(_rightThighJoint, _rightShinJoint, _rightAnkleJoint,
+                new Vector2((float)pose.RightFootX, (float)pose.RightFootY), -facingSign);
+            SetRotation(_leftAnkleJoint, pose.LeftShoe);
+            SetRotation(_rightAnkleJoint, pose.RightShoe);
+
+            for (int lane = 0; lane < _rodDrive.Length; lane++) _rodDrive[lane] = 0f;
+            _rodDrive[3] = pose.LeftFootPlanted ? 0f : 1f;
+            _rodDrive[4] = Mathf.Clamp01(Mathf.Abs((float)pose.Torso) / 20f);
+            _rodDrive[5] = pose.RightFootPlanted ? 0f : 1f;
+            UpdateRods();
+        }
+
         /// <summary>每次原始按鍵都立即驅动對應竹桿與關節，與判定結果解耦。</summary>
         public void OnInput(HitInput input)
         {
