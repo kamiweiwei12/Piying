@@ -71,6 +71,40 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void P8Correction_V2HandsUseArmProportionAndRemainStableWhilePoseIsHeld()
+        {
+            var root = new GameObject("P8 Hand Stability Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            DancePhrase[] timing = Phrases();
+            presenter.BeginV2(timing);
+            presenter.Tick(timing[0].StartSeconds);
+            presenter.OnJudged(Result(timing[0], JudgmentGrade.Perfect));
+            double heldTime = timing[0].StartSeconds + (timing[0].DurationSeconds * 0.5d);
+            presenter.Tick(heldTime);
+            float leftWrist = presenter.LeftWristRotation;
+            Vector3 leftPosition = presenter.LeftWristPosition;
+
+            for (int i = 1; i <= 120; i++)
+            {
+                presenter.Tick(heldTime);
+                Assert.That(Mathf.DeltaAngle(leftWrist, presenter.LeftWristRotation),
+                    Is.Zero.Within(0.0001f), $"frame {i} wrist");
+                Assert.That(Vector3.Distance(leftPosition, presenter.LeftWristPosition),
+                    Is.Zero.Within(0.0001f), $"frame {i} position");
+            }
+
+            float leftHandExtent = Mathf.Max(presenter.LeftHandVisibleSize.x,
+                presenter.LeftHandVisibleSize.y);
+            float rightHandExtent = Mathf.Max(presenter.RightHandVisibleSize.x,
+                presenter.RightHandVisibleSize.y);
+            Assert.That(leftHandExtent, Is.InRange(0.29f, 0.34f));
+            Assert.That(rightHandExtent, Is.InRange(0.29f, 0.34f));
+            Assert.That(leftHandExtent / PuppetRigV2Calibration.ForearmLength,
+                Is.LessThan(0.48f));
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void P7_RendersFormalSuccessAndMissHudEvidence()
         {
             var puppetRoot = new GameObject("P7 V2 Visual Puppet");

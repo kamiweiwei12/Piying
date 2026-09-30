@@ -91,6 +91,63 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void P8Correction_AllSequenceElbowsFoldAwayFromTheTorso()
+        {
+            var root = new GameObject("V2 P8 Elbow Direction Test");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            for (int i = 0; i <= PuppetV2SequenceChoreography.TotalBeats * 4; i++)
+            {
+                float beat = i / 4f;
+                int turnStart = PuppetV2SequenceChoreography.GetStartBeat(11);
+                // 序列器在动作末尾保留一拍过门，换面侧影直到该过门结束才有稳定外侧。
+                int turnEnd = turnStart + PuppetV2SequenceChoreography.GetBeats(11) + 1;
+                if (beat >= turnStart && beat <= turnEnd) continue;
+                bool inTransition = false;
+                for (int move = 1; move < PuppetV2SequenceChoreography.Count; move++)
+                {
+                    int start = PuppetV2SequenceChoreography.GetStartBeat(move);
+                    if (beat >= start && beat < start + 1f)
+                    {
+                        inTransition = true;
+                        break;
+                    }
+                }
+                if (inTransition) continue;
+                presenter.PreviewV2FullSequence(beat);
+                Vector3 leftShoulder = presenter.LeftShoulderPosition;
+                Vector3 rightShoulder = presenter.RightShoulderPosition;
+                Vector3 leftElbow = presenter.LeftElbowPosition;
+                Vector3 rightElbow = presenter.RightElbowPosition;
+                bool leftIsScreenLeft = leftShoulder.x < rightShoulder.x;
+                // 侧身换面时两肩会在幕面投影中交叉；此时没有稳定的“身体外侧”。
+                if (Mathf.Abs(leftShoulder.x - rightShoulder.x) < 0.5f) continue;
+
+                // 胸前推掌、穿掌等属于明确抬手动作；这里只锁定自然低手／下垂区。
+                bool leftNotRaised = presenter.V2LeftHandTarget.y <= leftShoulder.y - 0.35f;
+                bool rightNotRaised = presenter.V2RightHandTarget.y <= rightShoulder.y - 0.35f;
+                if (leftIsScreenLeft)
+                {
+                    if (leftNotRaised)
+                        Assert.That(leftElbow.x, Is.LessThanOrEqualTo(leftShoulder.x + 0.02f),
+                            $"left elbow folded inward at beat {beat:F2}");
+                    if (rightNotRaised)
+                        Assert.That(rightElbow.x, Is.GreaterThanOrEqualTo(rightShoulder.x - 0.02f),
+                            $"right elbow folded inward at beat {beat:F2}");
+                }
+                else
+                {
+                    if (leftNotRaised)
+                        Assert.That(leftElbow.x, Is.GreaterThanOrEqualTo(leftShoulder.x - 0.02f),
+                            $"left elbow folded inward after turn at beat {beat:F2}");
+                    if (rightNotRaised)
+                        Assert.That(rightElbow.x, Is.LessThanOrEqualTo(rightShoulder.x + 0.02f),
+                            $"right elbow folded inward after turn at beat {beat:F2}");
+                }
+            }
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
         public void P6_RendersActionAndBoundaryEvidenceWithFullSequenceFrames()
         {
             DestroyNamed("V2 P6 Visual Test");

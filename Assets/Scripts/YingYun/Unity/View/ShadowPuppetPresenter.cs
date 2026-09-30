@@ -95,6 +95,7 @@ namespace YingYun.Rhythm.View
         private float _facingScale = 1f;
         private bool _v2TurnActive;
         private float _v2TurnProgress;
+        private const float V2HandArtScale = 0.05f;
 
         public int JointCount => 21;
         public bool UsesSegmentedPuppetArt => _usesSegmentedPuppetArt;
@@ -149,6 +150,10 @@ namespace YingYun.Rhythm.View
             _leftHandArt.GetComponent<SpriteRenderer>().sprite.name;
         public string RightHandSpriteName => _rightHandArt == null ? string.Empty :
             _rightHandArt.GetComponent<SpriteRenderer>().sprite.name;
+        public Vector2 LeftHandVisibleSize => _leftHandArt == null ? Vector2.zero :
+            _leftHandArt.GetComponent<SpriteRenderer>().bounds.size;
+        public Vector2 RightHandVisibleSize => _rightHandArt == null ? Vector2.zero :
+            _rightHandArt.GetComponent<SpriteRenderer>().bounds.size;
 
         /// <summary>读取当前 15 分片的可见边界和末端接触点，供 V2 标定与回归测试使用。</summary>
         public PuppetRigCalibrationSnapshot CaptureV2Calibration()
@@ -269,7 +274,8 @@ namespace YingYun.Rhythm.View
             {
                 _v2Playback.Evaluate(songTimeSec);
                 ApplyV2Pose(_v2Playback.CurrentPose);
-                UpdateArticulatedDetails(elapsed);
+                // V2 已明确给出腕角与手型。旧细节缓动会在同一帧按肘角再次改写腕部，
+                // 与下一帧的 V2 姿态来回争夺，静止时便产生持续抖动与残影。
                 UpdateHoldSleeves(elapsed);
                 UpdateRods();
                 return;
@@ -1393,16 +1399,13 @@ namespace YingYun.Rhythm.View
             V2RightHandTarget = new Vector3((float)pose.RightHandX, (float)pose.RightHandY, 0f);
             Vector2 leftShoulder = _visualRoot.InverseTransformPoint(_leftUpperArmJoint.position);
             Vector2 rightShoulder = _visualRoot.InverseTransformPoint(_rightUpperArmJoint.position);
-            PlanarTwoBoneArmSolver.Solve(leftShoulder, V2LeftHandTarget,
-                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, facingSign,
-                out float leftShoulderAngle, out float leftElbowAngle);
-            PlanarTwoBoneArmSolver.Solve(rightShoulder, V2RightHandTarget,
-                PuppetRigV2Calibration.UpperArmLength, PuppetRigV2Calibration.ForearmLength, -facingSign,
-                out float rightShoulderAngle, out float rightElbowAngle);
-            SetRotation(_leftUpperArmJoint, leftShoulderAngle - (float)pose.Torso);
-            SetRotation(_leftForearmJoint, leftElbowAngle);
-            SetRotation(_rightUpperArmJoint, rightShoulderAngle - (float)pose.Torso);
-            SetRotation(_rightForearmJoint, rightElbowAngle);
+            // 转身、缩面与父级旋转都会改变“逻辑 bendSide”在幕面上的实际方向。
+            // 两个合法 IK 解都现场求值，选择肘点离身体中心更外侧的那个。
+            bool leftIsScreenLeft = leftShoulder.x <= rightShoulder.x;
+            SolveV2ArmOutward(_leftUpperArmJoint, _leftForearmJoint,
+                V2LeftHandTarget, leftIsScreenLeft);
+            SolveV2ArmOutward(_rightUpperArmJoint, _rightForearmJoint,
+                V2RightHandTarget, !leftIsScreenLeft);
             SetRotation(_leftWristJoint, pose.LeftWrist);
             SetRotation(_rightWristJoint, pose.RightWrist);
             _leftFingerJoint.localScale = Vector3.one;
@@ -1424,6 +1427,34 @@ namespace YingYun.Rhythm.View
             _rodDrive[4] = Mathf.Clamp01(Mathf.Abs((float)pose.Torso) / 20f);
             _rodDrive[5] = pose.RightFootPlanted ? 0f : 1f;
             UpdateRods();
+        }
+
+        private void SolveV2ArmOutward(Transform upperArm, Transform forearm,
+            Vector2 stageWrist, bool isScreenLeft)
+        {
+            // IK 必须在肩关节父级空间求解；否则翻面缩放后仍拿舞台坐标当局部角度，
+            // 腕目标和肘方向都会被父级变换第二次翻转。
+            Vector2 shoulder = upperArm.localPosition;
+            Vector3 wristWorld = _visualRoot.TransformPoint(stageWrist);
+            Vector2 wrist = upperArm.parent.InverseTransformPoint(wristWorld);
+            PlanarTwoBoneArmSolver.Solve(shoulder, wrist, PuppetRigV2Calibration.UpperArmLength,
+                PuppetRigV2Calibration.ForearmLength, -1f,
+                out float negativeShoulder, out float negativeElbow);
+            SetRotation(upperArm, negativeShoulder);
+            SetRotation(forearm, negativeElbow);
+            float negativeX = _visualRoot.InverseTransformPoint(forearm.position).x;
+
+            PlanarTwoBoneArmSolver.Solve(shoulder, wrist, PuppetRigV2Calibration.UpperArmLength,
+                PuppetRigV2Calibration.ForearmLength, 1f,
+                out float positiveShoulder, out float positiveElbow);
+            SetRotation(upperArm, positiveShoulder);
+            SetRotation(forearm, positiveElbow);
+            float positiveX = _visualRoot.InverseTransformPoint(forearm.position).x;
+
+            bool useNegative = isScreenLeft ? negativeX <= positiveX : negativeX >= positiveX;
+            if (!useNegative) return;
+            SetRotation(upperArm, negativeShoulder);
+            SetRotation(forearm, negativeElbow);
         }
 
         /// <summary>每次原始按鍵都立即驅动對應竹桿與關節，與判定結果解耦。</summary>
@@ -1924,8 +1955,8 @@ namespace YingYun.Rhythm.View
             _rightHandArt.localRotation = _rightHandArtBaseRotation * _rightFingerJoint.localRotation *
                 Quaternion.Euler(0f, 0f, -90f);
             // 四张图保持同一 PPU 与同一腕铆点，统一比例避免切换手型时掌片跳动。
-            _leftHandArt.localScale = new Vector3(0.08f, 0.08f, 1f);
-            _rightHandArt.localScale = new Vector3(-0.08f, 0.08f, 1f);
+            _leftHandArt.localScale = new Vector3(V2HandArtScale, V2HandArtScale, 1f);
+            _rightHandArt.localScale = new Vector3(-V2HandArtScale, V2HandArtScale, 1f);
         }
 
         private void RestoreDefaultHandSprites()

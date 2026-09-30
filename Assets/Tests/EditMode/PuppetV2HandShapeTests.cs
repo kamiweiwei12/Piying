@@ -75,8 +75,8 @@ namespace YingYun.Rhythm.Tests
             Transform stage = root.transform.Find("M6 Shadow Puppet Stage");
             Transform leftArt = stage.Find("Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Art Left Hand");
             Transform rightArt = stage.Find("Joint Pelvis/Joint Waist/Joint Right Shoulder/Joint Right Elbow/Joint Right Wrist/Art Right Hand");
-            Assert.That(leftArt.localScale.x, Is.EqualTo(0.08f).Within(0.0001f));
-            Assert.That(rightArt.localScale.x, Is.EqualTo(-0.08f).Within(0.0001f));
+            Assert.That(leftArt.localScale.x, Is.EqualTo(0.05f).Within(0.0001f));
+            Assert.That(rightArt.localScale.x, Is.EqualTo(-0.05f).Within(0.0001f));
             Object.DestroyImmediate(root);
         }
 
