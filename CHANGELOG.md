@@ -42,7 +42,7 @@
 ### 测試
 
 * Unity 6000.6.2f1 EditMode 全量回归 `283 / 283`，失败为 0。
-* Windows x64 验证构建成功：320,868,565 bytes、0 error、187 条既有推理 shader 变体 warning。
+* Windows x64 验证构建成功：320,868,565 bytes、0 error；完整构建记录 187 条既有推理 shader 变体 warning，最终增量构建仅余 1 条 Pipeline Runtime 配置 warning。
 * Windows 成品隐藏启动 15 秒成功，正式场景、Input System、诊断、21 关节／6 竹杆初始化正常；日志确认 417 拍自订曲生成 Easy 105／Normal 209／Hard 521。当前环境仍有既有 TLS 证书提示。
 
 ### 驗收結果
@@ -53,6 +53,7 @@
 ### Git Commit
 
 * 实作、资产与测试：`e3aef88 feat(chart): align six-key layout and hard charts`。
+* 按完整拍区间限制单点：`ac4a0d3 fix(chart): cap taps across each beat`。
 * 文件：本条目所在提交。
 
 ### 風險 / 已知問題
