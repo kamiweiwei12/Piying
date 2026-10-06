@@ -127,15 +127,29 @@ namespace YingYun.Rhythm.Tests
         [Test]
         public void Create_HardCoversAllTwelveAllowedTwoLaneChordCombinations()
         {
-            NoteData[] hard = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Hard);
+            NoteData[] hard = PrototypeDanceChart.Create(120d, 48d, PlayDifficulty.Hard);
             int[] chordMasks = hard.Where(x => x.IsChord).Select(x => x.RequiredLanesMask).Distinct().ToArray();
 
             Assert.That(chordMasks.Length, Is.EqualTo(KeyboardChordLayout.AllowedCount));
             Assert.That(chordMasks.All(mask => CountBits(mask) == 2), Is.True);
             Assert.That(chordMasks.All(KeyboardChordLayout.IsAllowed), Is.True);
-            Assert.That(chordMasks.Contains((1 << 1) | (1 << 4)), Is.False, "W+S");
-            Assert.That(chordMasks.Contains((1 << 0) | (1 << 5)), Is.False, "Q+D");
-            Assert.That(chordMasks.Contains((1 << 2) | (1 << 3)), Is.False, "E+A");
+            Assert.That(chordMasks.Contains((1 << 1) | (1 << 4)), Is.False, "Y+H");
+            Assert.That(chordMasks.Contains((1 << 0) | (1 << 5)), Is.False, "T+J");
+            Assert.That(chordMasks.Contains((1 << 2) | (1 << 3)), Is.False, "U+G");
+        }
+
+        [Test]
+        public void Create_HardAlternatesHoldAndChordPhrasesWithinDensityBudget()
+        {
+            const double bpm = 120d;
+            NoteData[] hard = PrototypeDanceChart.Create(bpm, 64d, PlayDifficulty.Hard);
+            var timing = new SongTimingMap(new[] { new SongTimingPoint(0d, 0d, bpm) });
+
+            Assert.DoesNotThrow(() => SongChartValidation.ValidatePlayableLayout(
+                hard,
+                PlayDifficulty.Hard,
+                timing));
+            Assert.That(hard.GroupBy(note => note.SegmentId).All(phrase => phrase.Count() <= 10), Is.True);
         }
 
         [Test]

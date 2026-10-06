@@ -97,7 +97,7 @@ namespace YingYun.Rhythm.Chart
             foreach (PlayDifficulty difficulty in Enum.GetValues(typeof(PlayDifficulty)))
             {
                 SongChartValidation.ValidateNotes(charts[(int)difficulty], playableEndSec, range);
-                SongChartValidation.ValidateDifficultyFeatures(charts[(int)difficulty], difficulty);
+                SongChartValidation.ValidateDifficultyFeatures(charts[(int)difficulty], difficulty, timing);
                 _ = DanceChoreography.CreateAuthored(charts[(int)difficulty], timing, cues);
             }
 
@@ -120,7 +120,7 @@ namespace YingYun.Rhythm.Chart
                 if (beat % interval != 0) continue;
                 notes.Add(CreateBeatNote(timing, difficulty, beat, phraseMotifs, holdLengths, holdEndBeats));
 
-                if (difficulty == PlayDifficulty.Hard && beat < timing.Count - 1 && beat % 2 == 1)
+                if (difficulty == PlayDifficulty.Hard && beat < timing.Count - 1 && beat % 4 == 1)
                 {
                     double ornamentBeat = beat + 0.5d;
                     int preferred = (LaneForBeat(beat, phraseMotifs) + 2 + ((beat / 2) % 3)) % 6;
@@ -166,7 +166,8 @@ namespace YingYun.Rhythm.Chart
                 return new NoteData(id, "hold", lane, timeSec, duration, beat / 8);
             }
 
-            if (difficulty == PlayDifficulty.Hard && beat % 4 == 2)
+            bool chordPhrase = ((beat / 8) & 1) == 1;
+            if (difficulty == PlayDifficulty.Hard && chordPhrase && beat % 4 == 2)
             {
                 int mask = FindChordMask(lane, beat / 4, beat, holdEndBeats);
                 return new NoteData(id, "chord", FirstLane(mask), timeSec, segmentId: beat / 8, requiredLanesMask: mask);

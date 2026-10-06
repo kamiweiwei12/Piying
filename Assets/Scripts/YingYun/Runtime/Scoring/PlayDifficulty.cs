@@ -24,7 +24,7 @@ namespace YingYun.Rhythm.Scoring
             switch (difficulty)
             {
                 case PlayDifficulty.Easy: return "单键点按 · 适合熟悉六根竹杆";
-                case PlayDifficulty.Hard: return "点按长按 · 多键合奏 · 连续操演";
+                case PlayDifficulty.Hard: return "点按长按 · 双键合奏 · 进阶操演";
                 default: return "单键点按与长按 · 标准演出";
             }
         }

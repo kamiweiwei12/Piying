@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using NUnit.Framework;
 using YingYun.Rhythm.Chart;
 using YingYun.Rhythm.Judgment;
@@ -123,9 +124,9 @@ namespace YingYun.Rhythm.Tests
 
             int[] forbiddenMasks =
             {
-                (1 << 1) | (1 << 4), // W+S
-                (1 << 0) | (1 << 5), // Q+D
-                (1 << 2) | (1 << 3), // E+A
+                (1 << 1) | (1 << 4), // Y+H
+                (1 << 0) | (1 << 5), // T+J
+                (1 << 2) | (1 << 3), // U+G
             };
             for (int i = 0; i < forbiddenMasks.Length; i++)
             {
@@ -134,6 +135,57 @@ namespace YingYun.Rhythm.Tests
                 Assert.Throws<ArgumentException>(() => SongChartValidation.ValidateDifficultyFeatures(
                     new[] { tap, hold, chord }, PlayDifficulty.Hard), $"forbidden mask {mask}");
             }
+        }
+
+        [Test]
+        public void LayoutValidation_RejectsDenseMixedAndMechanicalHardPatterns()
+        {
+            var timing = new SongTimingMap(new[] { new SongTimingPoint(0d, 0d, 120d) });
+            int chordMask = (1 << 0) | (1 << 1);
+            var mixed = new[]
+            {
+                new NoteData(1, "tap", 0, 0d, segmentId: 0),
+                new NoteData(2, "hold", 2, 0.5d, 0.5d, segmentId: 0),
+                new NoteData(3, "chord", 0, 1.5d, segmentId: 0, requiredLanesMask: chordMask),
+            };
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidatePlayableLayout(
+                mixed, PlayDifficulty.Hard, timing));
+
+            var sweep = Enumerable.Range(0, 5)
+                .Select(index => new NoteData(10 + index, "tap", index, index * 0.5d, segmentId: 0))
+                .ToArray();
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidatePlayableLayout(
+                sweep, PlayDifficulty.Hard, timing));
+        }
+
+        [Test]
+        public void LayoutValidation_RejectsOverloadedBeatCloseChordsAndDensePhrase()
+        {
+            var timing = new SongTimingMap(new[] { new SongTimingPoint(0d, 0d, 120d) });
+            var overloaded = new[]
+            {
+                new NoteData(1, "tap", 0, 0d, segmentId: 0),
+                new NoteData(2, "tap", 2, 0d, segmentId: 0),
+                new NoteData(3, "tap", 4, 0d, segmentId: 0),
+            };
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidatePlayableLayout(
+                overloaded, PlayDifficulty.Hard, timing));
+
+            int firstMask = (1 << 0) | (1 << 1);
+            int secondMask = (1 << 2) | (1 << 4);
+            var closeChords = new[]
+            {
+                new NoteData(10, "chord", 0, 0d, segmentId: 0, requiredLanesMask: firstMask),
+                new NoteData(11, "chord", 2, 0.5d, segmentId: 1, requiredLanesMask: secondMask),
+            };
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidatePlayableLayout(
+                closeChords, PlayDifficulty.Hard, timing));
+
+            int[] motif = { 0, 2, 4, 1, 5, 3, 1, 4, 0, 5, 2 };
+            NoteData[] densePhrase = motif.Select((lane, index) =>
+                new NoteData(20 + index, "tap", lane, index * 0.5d, segmentId: 0)).ToArray();
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidatePlayableLayout(
+                densePhrase, PlayDifficulty.Hard, timing));
         }
 
         private static int FirstLane(int mask)

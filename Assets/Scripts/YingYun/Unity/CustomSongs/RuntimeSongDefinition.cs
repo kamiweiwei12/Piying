@@ -52,7 +52,7 @@ namespace YingYun.Rhythm.Unity.CustomSongs
             {
                 NoteData[] notes = GetNotes(difficulty);
                 SongChartValidation.ValidateNotes(notes, Music.length, range);
-                SongChartValidation.ValidateDifficultyFeatures(notes, difficulty);
+                SongChartValidation.ValidateDifficultyFeatures(notes, difficulty, timing);
                 DancePhrase[] phrases = DanceChoreography.CreateAuthored(notes, timing, GetDanceCues());
                 if (phrases.Length > 0 &&
                     phrases[phrases.Length - 1].StartSeconds + phrases[phrases.Length - 1].DurationSeconds > PlayableEndSec + 0.001d)

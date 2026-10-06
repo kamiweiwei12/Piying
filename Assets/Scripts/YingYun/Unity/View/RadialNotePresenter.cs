@@ -43,7 +43,7 @@ namespace YingYun.Rhythm.View
 
         private static readonly string[] LaneLabels =
         {
-            "Q  左手", "W  头部", "E  右手", "A  左脚", "S  身体", "D  右脚"
+            "T  左手", "Y  头部", "U  右手", "G  左脚", "H  身体", "J  右脚"
         };
 
         [SerializeField, Min(0.1f)] private float visibleLeadSeconds = 1.75f;

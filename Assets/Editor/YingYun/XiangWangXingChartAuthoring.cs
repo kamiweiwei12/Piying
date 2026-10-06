@@ -15,6 +15,14 @@ namespace YingYun.Rhythm.Editor
     {
         private const int SharedAnchorBase = 100000;
 
+        private static readonly int[][] LaneMotifs =
+        {
+            new[] { 0, 2, 4, 1, 5, 3, 1, 4 },
+            new[] { 3, 1, 5, 2, 0, 4, 2, 5 },
+            new[] { 1, 4, 0, 3, 5, 2, 4, 0 },
+            new[] { 4, 3, 1, 5, 2, 0, 3, 1 },
+        };
+
         // 明確排列起、承、轉、合，避免在執行時輪替十四式。
         private static readonly DanceAction[] Routine =
         {
@@ -92,13 +100,13 @@ namespace YingYun.Rhythm.Editor
                 }
 
                 notes.Add(CreateBeatNote(timing, difficulty, beat));
-                if (difficulty == PlayDifficulty.Hard && beat < timing.Count - 1 && beat % 2 == 1)
+                if (difficulty == PlayDifficulty.Hard && beat < timing.Count - 1 && beat % 4 == 1)
                 {
                     notes.Add(new SongDefinitionAsset.NoteRecord
                     {
                         id = 320000 + (beat * 2) + 1,
                         typeId = "tap",
-                        lane = (beat + 2) % 6,
+                        lane = (LaneForBeat(beat) + 2 + ((beat / 4) % 3)) % 6,
                         timeSec = timing.BeatToSeconds(beat + 0.5d),
                         segmentId = beat / 8,
                     });
@@ -119,7 +127,7 @@ namespace YingYun.Rhythm.Editor
         {
             bool isAnchor = beat % 8 == 0;
             int laneInterval = difficulty == PlayDifficulty.Easy ? 4 : difficulty == PlayDifficulty.Normal ? 2 : 1;
-            int lane = (beat / laneInterval) % 6;
+            int lane = difficulty == PlayDifficulty.Hard ? LaneForBeat(beat) : (beat / laneInterval) % 6;
             var note = new SongDefinitionAsset.NoteRecord
             {
                 id = isAnchor ? SharedAnchorBase + beat : DifficultyId(difficulty, beat),
@@ -142,7 +150,8 @@ namespace YingYun.Rhythm.Editor
                 return note;
             }
 
-            bool useChord = difficulty == PlayDifficulty.Hard && beat % 4 == 2;
+            bool chordPhrase = ((beat / 8) & 1) == 1;
+            bool useChord = difficulty == PlayDifficulty.Hard && chordPhrase && beat % 4 == 2;
             if (useChord)
             {
                 int pairedLane = (lane + 3) % 6;
@@ -158,6 +167,12 @@ namespace YingYun.Rhythm.Editor
             }
 
             return note;
+        }
+
+        private static int LaneForBeat(int beat)
+        {
+            int phrase = beat / 8;
+            return LaneMotifs[phrase % LaneMotifs.Length][beat % 8];
         }
 
         private static int DifficultyId(PlayDifficulty difficulty, int beat)

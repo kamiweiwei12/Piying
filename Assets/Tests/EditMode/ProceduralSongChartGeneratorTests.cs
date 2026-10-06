@@ -156,6 +156,32 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void Generate_HardChartRespectsPhraseDensityAndInputPatterns()
+        {
+            SongTimingMap timing = CreateTiming(192);
+            ProceduralSongContent content = ProceduralSongChartGenerator.Generate(
+                timing,
+                timing.BeatToSeconds(196),
+                20261006);
+            NoteData[] hard = content.GetNotes(PlayDifficulty.Hard);
+
+            Assert.DoesNotThrow(() => SongChartValidation.ValidatePlayableLayout(
+                hard,
+                PlayDifficulty.Hard,
+                timing));
+            Assert.That(hard.GroupBy(note => note.SegmentId).All(phrase => phrase.Count() <= 10), Is.True);
+            Assert.That(hard.GroupBy(note => note.SegmentId).All(phrase =>
+                !phrase.Any(note => note.Kind == NoteKind.Hold) ||
+                !phrase.Any(note => note.IsChord)), Is.True);
+
+            double[] chordBeats = hard.Where(note => note.IsChord)
+                .Select(note => timing.SecondsToBeat(note.TimeSec))
+                .ToArray();
+            Assert.That(chordBeats.Zip(chordBeats.Skip(1),
+                (left, right) => right - left >= 2d - 0.000001d).All(value => value), Is.True);
+        }
+
+        [Test]
         public void Generate_SharesDanceAnchorsAndAvoidsRepeatedPhrases()
         {
             SongTimingMap timing = CreateTiming(128);

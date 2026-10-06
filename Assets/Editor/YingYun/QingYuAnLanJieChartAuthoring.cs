@@ -126,7 +126,7 @@ namespace YingYun.Rhythm.Editor
                 }
 
                 notes.Add(CreateBeatNote(timing, difficulty, beat, holdEndBeats));
-                if (difficulty == PlayDifficulty.Hard && beat < timing.Count - 1 && beat % 2 == 1)
+                if (difficulty == PlayDifficulty.Hard && beat < timing.Count - 1 && beat % 4 == 1)
                 {
                     double ornamentBeat = beat + 0.5d;
                     int preferredLane = (LaneForBeat(beat) + OrnamentOffsets[beat % 8]) % 6;
@@ -182,7 +182,8 @@ namespace YingYun.Rhythm.Editor
                 return note;
             }
 
-            if (difficulty == PlayDifficulty.Hard && beat % 4 == 2)
+            bool chordPhrase = ((beat / 8) & 1) == 1;
+            if (difficulty == PlayDifficulty.Hard && chordPhrase && beat % 4 == 2)
             {
                 int chordMask = FindChordMask(lane, beat / 4, beat, holdEndBeats);
                 note.typeId = "chord";

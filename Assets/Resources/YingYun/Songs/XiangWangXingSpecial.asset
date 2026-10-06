@@ -3733,91 +3733,77 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310002
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 1.28
       durationSec: 0
       segmentId: 0
       requiredLanesMask: 0
     - id: 320003
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 1.48
       durationSec: 0
       segmentId: 0
       requiredLanesMask: 0
     - id: 310004
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 4
       timeSec: 1.68
       durationSec: 0
       segmentId: 0
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310006
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 2.12
-      durationSec: 0
-      segmentId: 0
-      requiredLanesMask: 0
-    - id: 320007
-      typeId: tap
-      lane: 5
-      timeSec: 2.31
       durationSec: 0
       segmentId: 0
       requiredLanesMask: 0
     - id: 310008
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 2.5
       durationSec: 0
       segmentId: 0
       requiredLanesMask: 0
     - id: 310010
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 2.94
       durationSec: 0
       segmentId: 0
       requiredLanesMask: 0
     - id: 320011
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 3.16
       durationSec: 0
       segmentId: 0
       requiredLanesMask: 0
     - id: 310012
       typeId: hold
-      lane: 0
+      lane: 1
       timeSec: 3.38
       durationSec: 0.8600000000000003
       segmentId: 0
       requiredLanesMask: 0
     - id: 310014
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 3.8
-      durationSec: 0
-      segmentId: 0
-      requiredLanesMask: 0
-    - id: 320015
-      typeId: tap
-      lane: 3
-      timeSec: 4.0200000000000005
       durationSec: 0
       segmentId: 0
       requiredLanesMask: 0
     - id: 100008
       typeId: tap
-      lane: 2
+      lane: 3
       timeSec: 4.24
       durationSec: 0
       segmentId: 1
       requiredLanesMask: 0
     - id: 310018
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 4.66
       durationSec: 0
       segmentId: 1
@@ -3831,22 +3817,15 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310020
       typeId: chord
-      lane: 4
+      lane: 5
       timeSec: 5.08
       durationSec: 0
       segmentId: 1
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310022
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 5.5
-      durationSec: 0
-      segmentId: 1
-      requiredLanesMask: 0
-    - id: 320023
-      typeId: tap
-      lane: 1
-      timeSec: 5.71
       durationSec: 0
       segmentId: 1
       requiredLanesMask: 0
@@ -3859,14 +3838,14 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310026
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 6.36
       durationSec: 0
       segmentId: 1
       requiredLanesMask: 0
     - id: 320027
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 6.58
       durationSec: 0
       segmentId: 1
@@ -3880,28 +3859,21 @@ MonoBehaviour:
       requiredLanesMask: 36
     - id: 310030
       typeId: tap
-      lane: 3
-      timeSec: 7.22
-      durationSec: 0
-      segmentId: 1
-      requiredLanesMask: 0
-    - id: 320031
-      typeId: tap
       lane: 5
-      timeSec: 7.44
+      timeSec: 7.22
       durationSec: 0
       segmentId: 1
       requiredLanesMask: 0
     - id: 100016
       typeId: tap
-      lane: 4
+      lane: 1
       timeSec: 7.66
       durationSec: 0
       segmentId: 2
       requiredLanesMask: 0
     - id: 310034
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 8.08
       durationSec: 0
       segmentId: 2
@@ -3914,43 +3886,36 @@ MonoBehaviour:
       segmentId: 2
       requiredLanesMask: 0
     - id: 310036
-      typeId: chord
+      typeId: tap
       lane: 0
       timeSec: 8.5
       durationSec: 0
       segmentId: 2
-      requiredLanesMask: 9
+      requiredLanesMask: 0
     - id: 310038
       typeId: tap
-      lane: 1
-      timeSec: 8.94
-      durationSec: 0
-      segmentId: 2
-      requiredLanesMask: 0
-    - id: 320039
-      typeId: tap
       lane: 3
-      timeSec: 9.149999999999999
+      timeSec: 8.94
       durationSec: 0
       segmentId: 2
       requiredLanesMask: 0
     - id: 310040
       typeId: tap
-      lane: 2
+      lane: 5
       timeSec: 9.36
       durationSec: 0
       segmentId: 2
       requiredLanesMask: 0
     - id: 310042
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 9.8
       durationSec: 0
       segmentId: 2
       requiredLanesMask: 0
     - id: 320043
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 10.010000000000002
       durationSec: 0
       segmentId: 2
@@ -3964,84 +3929,70 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310046
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 10.66
-      durationSec: 0
-      segmentId: 2
-      requiredLanesMask: 0
-    - id: 320047
-      typeId: tap
-      lane: 1
-      timeSec: 10.870000000000001
       durationSec: 0
       segmentId: 2
       requiredLanesMask: 0
     - id: 100024
       typeId: tap
-      lane: 0
+      lane: 4
       timeSec: 11.08
       durationSec: 0
       segmentId: 3
       requiredLanesMask: 0
     - id: 310050
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 11.5
       durationSec: 0
       segmentId: 3
       requiredLanesMask: 0
     - id: 320051
       typeId: tap
-      lane: 3
+      lane: 5
       timeSec: 11.719999999999999
       durationSec: 0
       segmentId: 3
       requiredLanesMask: 0
     - id: 310052
       typeId: chord
-      lane: 2
+      lane: 1
       timeSec: 11.94
       durationSec: 0
       segmentId: 3
-      requiredLanesMask: 36
+      requiredLanesMask: 10
     - id: 310054
       typeId: tap
-      lane: 3
-      timeSec: 12.36
-      durationSec: 0
-      segmentId: 3
-      requiredLanesMask: 0
-    - id: 320055
-      typeId: tap
       lane: 5
-      timeSec: 12.58
+      timeSec: 12.36
       durationSec: 0
       segmentId: 3
       requiredLanesMask: 0
     - id: 310056
       typeId: tap
-      lane: 4
+      lane: 2
       timeSec: 12.8
       durationSec: 0
       segmentId: 3
       requiredLanesMask: 0
     - id: 310058
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 13.22
       durationSec: 0
       segmentId: 3
       requiredLanesMask: 0
     - id: 320059
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 13.440000000000001
       durationSec: 0
       segmentId: 3
       requiredLanesMask: 0
     - id: 310060
       typeId: chord
-      lane: 0
+      lane: 3
       timeSec: 13.66
       durationSec: 0
       segmentId: 3
@@ -4053,167 +4004,139 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 3
       requiredLanesMask: 0
-    - id: 320063
-      typeId: tap
-      lane: 3
-      timeSec: 14.29
-      durationSec: 0
-      segmentId: 3
-      requiredLanesMask: 0
     - id: 100032
       typeId: tap
-      lane: 2
+      lane: 0
       timeSec: 14.5
       durationSec: 0
       segmentId: 4
       requiredLanesMask: 0
     - id: 310066
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 14.94
       durationSec: 0
       segmentId: 4
       requiredLanesMask: 0
     - id: 320067
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 15.149999999999999
       durationSec: 0
       segmentId: 4
       requiredLanesMask: 0
     - id: 310068
-      typeId: chord
+      typeId: tap
       lane: 4
       timeSec: 15.36
       durationSec: 0
       segmentId: 4
-      requiredLanesMask: 17
+      requiredLanesMask: 0
     - id: 310070
       typeId: tap
-      lane: 5
-      timeSec: 15.78
-      durationSec: 0
-      segmentId: 4
-      requiredLanesMask: 0
-    - id: 320071
-      typeId: tap
       lane: 1
-      timeSec: 16
+      timeSec: 15.78
       durationSec: 0
       segmentId: 4
       requiredLanesMask: 0
     - id: 310072
       typeId: tap
-      lane: 0
+      lane: 5
       timeSec: 16.22
       durationSec: 0
       segmentId: 4
       requiredLanesMask: 0
     - id: 310074
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 16.64
       durationSec: 0
       segmentId: 4
       requiredLanesMask: 0
     - id: 320075
       typeId: tap
-      lane: 3
+      lane: 5
       timeSec: 16.86
       durationSec: 0
       segmentId: 4
       requiredLanesMask: 0
     - id: 310076
       typeId: hold
-      lane: 2
+      lane: 1
       timeSec: 17.08
       durationSec: 0.8400000000000034
       segmentId: 4
       requiredLanesMask: 0
     - id: 310078
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 17.5
-      durationSec: 0
-      segmentId: 4
-      requiredLanesMask: 0
-    - id: 320079
-      typeId: tap
-      lane: 5
-      timeSec: 17.71
       durationSec: 0
       segmentId: 4
       requiredLanesMask: 0
     - id: 100040
       typeId: tap
-      lane: 4
+      lane: 3
       timeSec: 17.92
       durationSec: 0
       segmentId: 5
       requiredLanesMask: 0
     - id: 310082
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 18.36
       durationSec: 0
       segmentId: 5
       requiredLanesMask: 0
     - id: 320083
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 18.58
       durationSec: 0
       segmentId: 5
       requiredLanesMask: 0
     - id: 310084
       typeId: chord
-      lane: 0
+      lane: 5
       timeSec: 18.8
       durationSec: 0
       segmentId: 5
-      requiredLanesMask: 9
+      requiredLanesMask: 36
     - id: 310086
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 19.22
-      durationSec: 0
-      segmentId: 5
-      requiredLanesMask: 0
-    - id: 320087
-      typeId: tap
-      lane: 3
-      timeSec: 19.439999999999998
       durationSec: 0
       segmentId: 5
       requiredLanesMask: 0
     - id: 310088
       typeId: tap
-      lane: 2
+      lane: 0
       timeSec: 19.66
       durationSec: 0
       segmentId: 5
       requiredLanesMask: 0
     - id: 310090
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 20.08
       durationSec: 0
       segmentId: 5
       requiredLanesMask: 0
     - id: 320091
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 20.299999999999997
       durationSec: 0
       segmentId: 5
       requiredLanesMask: 0
     - id: 310092
       typeId: chord
-      lane: 4
+      lane: 2
       timeSec: 20.52
       durationSec: 0
       segmentId: 5
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310094
       typeId: tap
       lane: 5
@@ -4221,41 +4144,34 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 5
       requiredLanesMask: 0
-    - id: 320095
-      typeId: tap
-      lane: 1
-      timeSec: 21.15
-      durationSec: 0
-      segmentId: 5
-      requiredLanesMask: 0
     - id: 100048
       typeId: tap
-      lane: 0
+      lane: 1
       timeSec: 21.36
       durationSec: 0
       segmentId: 6
       requiredLanesMask: 0
     - id: 310098
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 21.78
       durationSec: 0
       segmentId: 6
       requiredLanesMask: 0
     - id: 320099
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 22
       durationSec: 0
       segmentId: 6
       requiredLanesMask: 0
     - id: 310100
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 0
       timeSec: 22.22
       durationSec: 0
       segmentId: 6
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310102
       typeId: tap
       lane: 3
@@ -4263,58 +4179,44 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 6
       requiredLanesMask: 0
-    - id: 320103
-      typeId: tap
-      lane: 5
-      timeSec: 22.86
-      durationSec: 0
-      segmentId: 6
-      requiredLanesMask: 0
     - id: 310104
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 23.08
       durationSec: 0
       segmentId: 6
       requiredLanesMask: 0
     - id: 310106
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 23.5
       durationSec: 0
       segmentId: 6
       requiredLanesMask: 0
     - id: 320107
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 23.72
       durationSec: 0
       segmentId: 6
       requiredLanesMask: 0
     - id: 310108
       typeId: hold
-      lane: 0
+      lane: 4
       timeSec: 23.94
       durationSec: 0.8399999999999999
       segmentId: 6
       requiredLanesMask: 0
     - id: 310110
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 24.36
-      durationSec: 0
-      segmentId: 6
-      requiredLanesMask: 0
-    - id: 320111
-      typeId: tap
-      lane: 3
-      timeSec: 24.57
       durationSec: 0
       segmentId: 6
       requiredLanesMask: 0
     - id: 100056
       typeId: tap
-      lane: 2
+      lane: 4
       timeSec: 24.78
       durationSec: 0
       segmentId: 7
@@ -4328,18 +4230,18 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 320115
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 25.43
       durationSec: 0
       segmentId: 7
       requiredLanesMask: 0
     - id: 310116
       typeId: chord
-      lane: 4
+      lane: 1
       timeSec: 25.64
       durationSec: 0
       segmentId: 7
-      requiredLanesMask: 17
+      requiredLanesMask: 10
     - id: 310118
       typeId: tap
       lane: 5
@@ -4347,83 +4249,69 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 7
       requiredLanesMask: 0
-    - id: 320119
-      typeId: tap
-      lane: 1
-      timeSec: 26.29
-      durationSec: 0
-      segmentId: 7
-      requiredLanesMask: 0
     - id: 310120
       typeId: tap
-      lane: 0
+      lane: 2
       timeSec: 26.5
       durationSec: 0
       segmentId: 7
       requiredLanesMask: 0
     - id: 310122
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 26.94
       durationSec: 0
       segmentId: 7
       requiredLanesMask: 0
     - id: 320123
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 27.15
       durationSec: 0
       segmentId: 7
       requiredLanesMask: 0
     - id: 310124
       typeId: chord
-      lane: 2
+      lane: 3
       timeSec: 27.36
       durationSec: 0
       segmentId: 7
-      requiredLanesMask: 36
+      requiredLanesMask: 9
     - id: 310126
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 27.78
-      durationSec: 0
-      segmentId: 7
-      requiredLanesMask: 0
-    - id: 320127
-      typeId: tap
-      lane: 5
-      timeSec: 28
       durationSec: 0
       segmentId: 7
       requiredLanesMask: 0
     - id: 100064
       typeId: tap
-      lane: 4
+      lane: 0
       timeSec: 28.22
       durationSec: 0
       segmentId: 8
       requiredLanesMask: 0
     - id: 310130
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 28.64
       durationSec: 0
       segmentId: 8
       requiredLanesMask: 0
     - id: 320131
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 28.85
       durationSec: 0
       segmentId: 8
       requiredLanesMask: 0
     - id: 310132
-      typeId: chord
-      lane: 0
+      typeId: tap
+      lane: 4
       timeSec: 29.06
       durationSec: 0
       segmentId: 8
-      requiredLanesMask: 9
+      requiredLanesMask: 0
     - id: 310134
       typeId: tap
       lane: 1
@@ -4431,16 +4319,9 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 8
       requiredLanesMask: 0
-    - id: 320135
-      typeId: tap
-      lane: 3
-      timeSec: 29.71
-      durationSec: 0
-      segmentId: 8
-      requiredLanesMask: 0
     - id: 310136
       typeId: tap
-      lane: 2
+      lane: 5
       timeSec: 29.92
       durationSec: 0
       segmentId: 8
@@ -4454,35 +4335,28 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 320139
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 30.57
       durationSec: 0
       segmentId: 8
       requiredLanesMask: 0
     - id: 310140
       typeId: hold
-      lane: 4
+      lane: 1
       timeSec: 30.78
       durationSec: 0.8599999999999994
       segmentId: 8
       requiredLanesMask: 0
     - id: 310142
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 31.22
-      durationSec: 0
-      segmentId: 8
-      requiredLanesMask: 0
-    - id: 320143
-      typeId: tap
-      lane: 1
-      timeSec: 31.43
       durationSec: 0
       segmentId: 8
       requiredLanesMask: 0
     - id: 100072
       typeId: tap
-      lane: 0
+      lane: 3
       timeSec: 31.64
       durationSec: 0
       segmentId: 9
@@ -4503,35 +4377,28 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310148
       typeId: chord
-      lane: 2
+      lane: 5
       timeSec: 32.5
       durationSec: 0
       segmentId: 9
       requiredLanesMask: 36
     - id: 310150
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 32.92
-      durationSec: 0
-      segmentId: 9
-      requiredLanesMask: 0
-    - id: 320151
-      typeId: tap
-      lane: 5
-      timeSec: 33.14
       durationSec: 0
       segmentId: 9
       requiredLanesMask: 0
     - id: 310152
       typeId: tap
-      lane: 4
+      lane: 0
       timeSec: 33.36
       durationSec: 0
       segmentId: 9
       requiredLanesMask: 0
     - id: 310154
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 33.8
       durationSec: 0
       segmentId: 9
@@ -4545,106 +4412,85 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310156
       typeId: chord
-      lane: 0
+      lane: 2
       timeSec: 34.22
       durationSec: 0
       segmentId: 9
-      requiredLanesMask: 9
+      requiredLanesMask: 36
     - id: 310158
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 34.64
-      durationSec: 0
-      segmentId: 9
-      requiredLanesMask: 0
-    - id: 320159
-      typeId: tap
-      lane: 3
-      timeSec: 34.85
       durationSec: 0
       segmentId: 9
       requiredLanesMask: 0
     - id: 100080
       typeId: tap
-      lane: 2
+      lane: 1
       timeSec: 35.06
       durationSec: 0
       segmentId: 10
       requiredLanesMask: 0
     - id: 310162
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 35.5
       durationSec: 0
       segmentId: 10
       requiredLanesMask: 0
     - id: 320163
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 35.72
       durationSec: 0
       segmentId: 10
       requiredLanesMask: 0
     - id: 310164
-      typeId: chord
-      lane: 4
+      typeId: tap
+      lane: 0
       timeSec: 35.94
       durationSec: 0
       segmentId: 10
-      requiredLanesMask: 17
+      requiredLanesMask: 0
     - id: 310166
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 36.36
-      durationSec: 0
-      segmentId: 10
-      requiredLanesMask: 0
-    - id: 320167
-      typeId: tap
-      lane: 1
-      timeSec: 36.57
       durationSec: 0
       segmentId: 10
       requiredLanesMask: 0
     - id: 310168
       typeId: tap
-      lane: 0
+      lane: 5
       timeSec: 36.78
       durationSec: 0
       segmentId: 10
       requiredLanesMask: 0
     - id: 310170
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 37.22
       durationSec: 0
       segmentId: 10
       requiredLanesMask: 0
     - id: 320171
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 37.43
       durationSec: 0
       segmentId: 10
       requiredLanesMask: 0
     - id: 310172
       typeId: hold
-      lane: 2
+      lane: 4
       timeSec: 37.64
       durationSec: 0.8599999999999994
       segmentId: 10
       requiredLanesMask: 0
     - id: 310174
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 38.08
-      durationSec: 0
-      segmentId: 10
-      requiredLanesMask: 0
-    - id: 320175
-      typeId: tap
-      lane: 5
-      timeSec: 38.29
       durationSec: 0
       segmentId: 10
       requiredLanesMask: 0
@@ -4657,36 +4503,29 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310178
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 38.94
       durationSec: 0
       segmentId: 11
       requiredLanesMask: 0
     - id: 320179
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 39.15
       durationSec: 0
       segmentId: 11
       requiredLanesMask: 0
     - id: 310180
       typeId: chord
-      lane: 0
+      lane: 1
       timeSec: 39.36
       durationSec: 0
       segmentId: 11
-      requiredLanesMask: 9
+      requiredLanesMask: 10
     - id: 310182
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 39.78
-      durationSec: 0
-      segmentId: 11
-      requiredLanesMask: 0
-    - id: 320183
-      typeId: tap
-      lane: 3
-      timeSec: 40
       durationSec: 0
       segmentId: 11
       requiredLanesMask: 0
@@ -4699,36 +4538,29 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310186
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 40.66
       durationSec: 0
       segmentId: 11
       requiredLanesMask: 0
     - id: 320187
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 40.87
       durationSec: 0
       segmentId: 11
       requiredLanesMask: 0
     - id: 310188
       typeId: chord
-      lane: 4
+      lane: 3
       timeSec: 41.08
       durationSec: 0
       segmentId: 11
-      requiredLanesMask: 17
+      requiredLanesMask: 9
     - id: 310190
       typeId: tap
-      lane: 5
-      timeSec: 41.5
-      durationSec: 0
-      segmentId: 11
-      requiredLanesMask: 0
-    - id: 320191
-      typeId: tap
       lane: 1
-      timeSec: 41.72
+      timeSec: 41.5
       durationSec: 0
       segmentId: 11
       requiredLanesMask: 0
@@ -4741,91 +4573,77 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310194
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 42.36
       durationSec: 0
       segmentId: 12
       requiredLanesMask: 0
     - id: 320195
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 42.58
       durationSec: 0
       segmentId: 12
       requiredLanesMask: 0
     - id: 310196
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 4
       timeSec: 42.8
       durationSec: 0
       segmentId: 12
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310198
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 43.22
-      durationSec: 0
-      segmentId: 12
-      requiredLanesMask: 0
-    - id: 320199
-      typeId: tap
-      lane: 5
-      timeSec: 43.44
       durationSec: 0
       segmentId: 12
       requiredLanesMask: 0
     - id: 310200
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 43.66
       durationSec: 0
       segmentId: 12
       requiredLanesMask: 0
     - id: 310202
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 44.08
       durationSec: 0
       segmentId: 12
       requiredLanesMask: 0
     - id: 320203
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 44.29
       durationSec: 0
       segmentId: 12
       requiredLanesMask: 0
     - id: 310204
       typeId: hold
-      lane: 0
+      lane: 1
       timeSec: 44.5
       durationSec: 0.8599999999999994
       segmentId: 12
       requiredLanesMask: 0
     - id: 310206
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 44.94
-      durationSec: 0
-      segmentId: 12
-      requiredLanesMask: 0
-    - id: 320207
-      typeId: tap
-      lane: 3
-      timeSec: 45.15
       durationSec: 0
       segmentId: 12
       requiredLanesMask: 0
     - id: 100104
       typeId: tap
-      lane: 2
+      lane: 3
       timeSec: 45.36
       durationSec: 0
       segmentId: 13
       requiredLanesMask: 0
     - id: 310210
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 45.8
       durationSec: 0
       segmentId: 13
@@ -4839,22 +4657,15 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310212
       typeId: chord
-      lane: 4
+      lane: 5
       timeSec: 46.22
       durationSec: 0
       segmentId: 13
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310214
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 46.64
-      durationSec: 0
-      segmentId: 13
-      requiredLanesMask: 0
-    - id: 320215
-      typeId: tap
-      lane: 1
-      timeSec: 46.86
       durationSec: 0
       segmentId: 13
       requiredLanesMask: 0
@@ -4867,14 +4678,14 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310218
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 47.5
       durationSec: 0
       segmentId: 13
       requiredLanesMask: 0
     - id: 320219
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 47.72
       durationSec: 0
       segmentId: 13
@@ -4888,28 +4699,21 @@ MonoBehaviour:
       requiredLanesMask: 36
     - id: 310222
       typeId: tap
-      lane: 3
-      timeSec: 48.36
-      durationSec: 0
-      segmentId: 13
-      requiredLanesMask: 0
-    - id: 320223
-      typeId: tap
       lane: 5
-      timeSec: 48.57
+      timeSec: 48.36
       durationSec: 0
       segmentId: 13
       requiredLanesMask: 0
     - id: 100112
       typeId: tap
-      lane: 4
+      lane: 1
       timeSec: 48.78
       durationSec: 0
       segmentId: 14
       requiredLanesMask: 0
     - id: 310226
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 49.22
       durationSec: 0
       segmentId: 14
@@ -4922,43 +4726,36 @@ MonoBehaviour:
       segmentId: 14
       requiredLanesMask: 0
     - id: 310228
-      typeId: chord
+      typeId: tap
       lane: 0
       timeSec: 49.64
       durationSec: 0
       segmentId: 14
-      requiredLanesMask: 9
+      requiredLanesMask: 0
     - id: 310230
       typeId: tap
-      lane: 1
-      timeSec: 50.08
-      durationSec: 0
-      segmentId: 14
-      requiredLanesMask: 0
-    - id: 320231
-      typeId: tap
       lane: 3
-      timeSec: 50.3
+      timeSec: 50.08
       durationSec: 0
       segmentId: 14
       requiredLanesMask: 0
     - id: 310232
       typeId: tap
-      lane: 2
+      lane: 5
       timeSec: 50.52
       durationSec: 0
       segmentId: 14
       requiredLanesMask: 0
     - id: 310234
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 50.94
       durationSec: 0
       segmentId: 14
       requiredLanesMask: 0
     - id: 320235
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 51.15
       durationSec: 0
       segmentId: 14
@@ -4972,84 +4769,70 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310238
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 51.78
-      durationSec: 0
-      segmentId: 14
-      requiredLanesMask: 0
-    - id: 320239
-      typeId: tap
-      lane: 1
-      timeSec: 52
       durationSec: 0
       segmentId: 14
       requiredLanesMask: 0
     - id: 100120
       typeId: tap
-      lane: 0
+      lane: 4
       timeSec: 52.22
       durationSec: 0
       segmentId: 15
       requiredLanesMask: 0
     - id: 310242
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 52.64
       durationSec: 0
       segmentId: 15
       requiredLanesMask: 0
     - id: 320243
       typeId: tap
-      lane: 3
+      lane: 5
       timeSec: 52.86
       durationSec: 0
       segmentId: 15
       requiredLanesMask: 0
     - id: 310244
       typeId: chord
-      lane: 2
+      lane: 1
       timeSec: 53.08
       durationSec: 0
       segmentId: 15
-      requiredLanesMask: 36
+      requiredLanesMask: 10
     - id: 310246
       typeId: tap
-      lane: 3
-      timeSec: 53.5
-      durationSec: 0
-      segmentId: 15
-      requiredLanesMask: 0
-    - id: 320247
-      typeId: tap
       lane: 5
-      timeSec: 53.72
+      timeSec: 53.5
       durationSec: 0
       segmentId: 15
       requiredLanesMask: 0
     - id: 310248
       typeId: tap
-      lane: 4
+      lane: 2
       timeSec: 53.94
       durationSec: 0
       segmentId: 15
       requiredLanesMask: 0
     - id: 310250
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 54.36
       durationSec: 0
       segmentId: 15
       requiredLanesMask: 0
     - id: 320251
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 54.58
       durationSec: 0
       segmentId: 15
       requiredLanesMask: 0
     - id: 310252
       typeId: chord
-      lane: 0
+      lane: 3
       timeSec: 54.8
       durationSec: 0
       segmentId: 15
@@ -5061,167 +4844,139 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 15
       requiredLanesMask: 0
-    - id: 320255
-      typeId: tap
-      lane: 3
-      timeSec: 55.43
-      durationSec: 0
-      segmentId: 15
-      requiredLanesMask: 0
     - id: 100128
       typeId: tap
-      lane: 2
+      lane: 0
       timeSec: 55.64
       durationSec: 0
       segmentId: 16
       requiredLanesMask: 0
     - id: 310258
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 56.08
       durationSec: 0
       segmentId: 16
       requiredLanesMask: 0
     - id: 320259
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 56.29
       durationSec: 0
       segmentId: 16
       requiredLanesMask: 0
     - id: 310260
-      typeId: chord
+      typeId: tap
       lane: 4
       timeSec: 56.5
       durationSec: 0
       segmentId: 16
-      requiredLanesMask: 17
+      requiredLanesMask: 0
     - id: 310262
       typeId: tap
-      lane: 5
-      timeSec: 56.94
-      durationSec: 0
-      segmentId: 16
-      requiredLanesMask: 0
-    - id: 320263
-      typeId: tap
       lane: 1
-      timeSec: 57.16
+      timeSec: 56.94
       durationSec: 0
       segmentId: 16
       requiredLanesMask: 0
     - id: 310264
       typeId: tap
-      lane: 0
+      lane: 5
       timeSec: 57.38
       durationSec: 0
       segmentId: 16
       requiredLanesMask: 0
     - id: 310266
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 57.78
       durationSec: 0
       segmentId: 16
       requiredLanesMask: 0
     - id: 320267
       typeId: tap
-      lane: 3
+      lane: 5
       timeSec: 58
       durationSec: 0
       segmentId: 16
       requiredLanesMask: 0
     - id: 310268
       typeId: hold
-      lane: 2
+      lane: 1
       timeSec: 58.22
       durationSec: 0.8599999999999994
       segmentId: 16
       requiredLanesMask: 0
     - id: 310270
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 58.64
-      durationSec: 0
-      segmentId: 16
-      requiredLanesMask: 0
-    - id: 320271
-      typeId: tap
-      lane: 5
-      timeSec: 58.86
       durationSec: 0
       segmentId: 16
       requiredLanesMask: 0
     - id: 100136
       typeId: tap
-      lane: 4
+      lane: 3
       timeSec: 59.08
       durationSec: 0
       segmentId: 17
       requiredLanesMask: 0
     - id: 310274
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 59.52
       durationSec: 0
       segmentId: 17
       requiredLanesMask: 0
     - id: 320275
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 59.730000000000004
       durationSec: 0
       segmentId: 17
       requiredLanesMask: 0
     - id: 310276
       typeId: chord
-      lane: 0
+      lane: 5
       timeSec: 59.94
       durationSec: 0
       segmentId: 17
-      requiredLanesMask: 9
+      requiredLanesMask: 36
     - id: 310278
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 60.34
-      durationSec: 0
-      segmentId: 17
-      requiredLanesMask: 0
-    - id: 320279
-      typeId: tap
-      lane: 3
-      timeSec: 60.56
       durationSec: 0
       segmentId: 17
       requiredLanesMask: 0
     - id: 310280
       typeId: tap
-      lane: 2
+      lane: 0
       timeSec: 60.78
       durationSec: 0
       segmentId: 17
       requiredLanesMask: 0
     - id: 310282
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 61.22
       durationSec: 0
       segmentId: 17
       requiredLanesMask: 0
     - id: 320283
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 61.43
       durationSec: 0
       segmentId: 17
       requiredLanesMask: 0
     - id: 310284
       typeId: chord
-      lane: 4
+      lane: 2
       timeSec: 61.64
       durationSec: 0
       segmentId: 17
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310286
       typeId: tap
       lane: 5
@@ -5229,41 +4984,34 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 17
       requiredLanesMask: 0
-    - id: 320287
-      typeId: tap
-      lane: 1
-      timeSec: 62.29
-      durationSec: 0
-      segmentId: 17
-      requiredLanesMask: 0
     - id: 100144
       typeId: tap
-      lane: 0
+      lane: 1
       timeSec: 62.5
       durationSec: 0
       segmentId: 18
       requiredLanesMask: 0
     - id: 310290
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 62.92
       durationSec: 0
       segmentId: 18
       requiredLanesMask: 0
     - id: 320291
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 63.14
       durationSec: 0
       segmentId: 18
       requiredLanesMask: 0
     - id: 310292
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 0
       timeSec: 63.36
       durationSec: 0
       segmentId: 18
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310294
       typeId: tap
       lane: 3
@@ -5271,58 +5019,44 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 18
       requiredLanesMask: 0
-    - id: 320295
-      typeId: tap
-      lane: 5
-      timeSec: 64
-      durationSec: 0
-      segmentId: 18
-      requiredLanesMask: 0
     - id: 310296
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 64.22
       durationSec: 0
       segmentId: 18
       requiredLanesMask: 0
     - id: 310298
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 64.64
       durationSec: 0
       segmentId: 18
       requiredLanesMask: 0
     - id: 320299
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 64.86
       durationSec: 0
       segmentId: 18
       requiredLanesMask: 0
     - id: 310300
       typeId: hold
-      lane: 0
+      lane: 4
       timeSec: 65.08
       durationSec: 0.8400000000000034
       segmentId: 18
       requiredLanesMask: 0
     - id: 310302
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 65.5
-      durationSec: 0
-      segmentId: 18
-      requiredLanesMask: 0
-    - id: 320303
-      typeId: tap
-      lane: 3
-      timeSec: 65.71000000000001
       durationSec: 0
       segmentId: 18
       requiredLanesMask: 0
     - id: 100152
       typeId: tap
-      lane: 2
+      lane: 4
       timeSec: 65.92
       durationSec: 0
       segmentId: 19
@@ -5336,18 +5070,18 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 320307
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 66.57000000000001
       durationSec: 0
       segmentId: 19
       requiredLanesMask: 0
     - id: 310308
       typeId: chord
-      lane: 4
+      lane: 1
       timeSec: 66.78
       durationSec: 0
       segmentId: 19
-      requiredLanesMask: 17
+      requiredLanesMask: 10
     - id: 310310
       typeId: tap
       lane: 5
@@ -5355,83 +5089,69 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 19
       requiredLanesMask: 0
-    - id: 320311
-      typeId: tap
-      lane: 1
-      timeSec: 67.42
-      durationSec: 0
-      segmentId: 19
-      requiredLanesMask: 0
     - id: 310312
       typeId: tap
-      lane: 0
+      lane: 2
       timeSec: 67.64
       durationSec: 0
       segmentId: 19
       requiredLanesMask: 0
     - id: 310314
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 68.08
       durationSec: 0
       segmentId: 19
       requiredLanesMask: 0
     - id: 320315
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 68.29
       durationSec: 0
       segmentId: 19
       requiredLanesMask: 0
     - id: 310316
       typeId: chord
-      lane: 2
+      lane: 3
       timeSec: 68.5
       durationSec: 0
       segmentId: 19
-      requiredLanesMask: 36
+      requiredLanesMask: 9
     - id: 310318
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 68.92
-      durationSec: 0
-      segmentId: 19
-      requiredLanesMask: 0
-    - id: 320319
-      typeId: tap
-      lane: 5
-      timeSec: 69.13000000000001
       durationSec: 0
       segmentId: 19
       requiredLanesMask: 0
     - id: 100160
       typeId: tap
-      lane: 4
+      lane: 0
       timeSec: 69.34
       durationSec: 0
       segmentId: 20
       requiredLanesMask: 0
     - id: 310322
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 69.8
       durationSec: 0
       segmentId: 20
       requiredLanesMask: 0
     - id: 320323
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 70.01
       durationSec: 0
       segmentId: 20
       requiredLanesMask: 0
     - id: 310324
-      typeId: chord
-      lane: 0
+      typeId: tap
+      lane: 4
       timeSec: 70.22
       durationSec: 0
       segmentId: 20
-      requiredLanesMask: 9
+      requiredLanesMask: 0
     - id: 310326
       typeId: tap
       lane: 1
@@ -5439,16 +5159,9 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 20
       requiredLanesMask: 0
-    - id: 320327
-      typeId: tap
-      lane: 3
-      timeSec: 70.86
-      durationSec: 0
-      segmentId: 20
-      requiredLanesMask: 0
     - id: 310328
       typeId: tap
-      lane: 2
+      lane: 5
       timeSec: 71.08
       durationSec: 0
       segmentId: 20
@@ -5462,35 +5175,28 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 320331
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 71.73
       durationSec: 0
       segmentId: 20
       requiredLanesMask: 0
     - id: 310332
       typeId: hold
-      lane: 4
+      lane: 1
       timeSec: 71.94
       durationSec: 0.8599999999999994
       segmentId: 20
       requiredLanesMask: 0
     - id: 310334
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 72.36
-      durationSec: 0
-      segmentId: 20
-      requiredLanesMask: 0
-    - id: 320335
-      typeId: tap
-      lane: 1
-      timeSec: 72.58
       durationSec: 0
       segmentId: 20
       requiredLanesMask: 0
     - id: 100168
       typeId: tap
-      lane: 0
+      lane: 3
       timeSec: 72.8
       durationSec: 0
       segmentId: 21
@@ -5511,35 +5217,28 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310340
       typeId: chord
-      lane: 2
+      lane: 5
       timeSec: 73.66
       durationSec: 0
       segmentId: 21
       requiredLanesMask: 36
     - id: 310342
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 74.08
-      durationSec: 0
-      segmentId: 21
-      requiredLanesMask: 0
-    - id: 320343
-      typeId: tap
-      lane: 5
-      timeSec: 74.3
       durationSec: 0
       segmentId: 21
       requiredLanesMask: 0
     - id: 310344
       typeId: tap
-      lane: 4
+      lane: 0
       timeSec: 74.52
       durationSec: 0
       segmentId: 21
       requiredLanesMask: 0
     - id: 310346
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 74.94
       durationSec: 0
       segmentId: 21
@@ -5553,106 +5252,85 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310348
       typeId: chord
-      lane: 0
+      lane: 2
       timeSec: 75.36
       durationSec: 0
       segmentId: 21
-      requiredLanesMask: 9
+      requiredLanesMask: 36
     - id: 310350
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 75.8
-      durationSec: 0
-      segmentId: 21
-      requiredLanesMask: 0
-    - id: 320351
-      typeId: tap
-      lane: 3
-      timeSec: 76
       durationSec: 0
       segmentId: 21
       requiredLanesMask: 0
     - id: 100176
       typeId: tap
-      lane: 2
+      lane: 1
       timeSec: 76.2
       durationSec: 0
       segmentId: 22
       requiredLanesMask: 0
     - id: 310354
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 76.66
       durationSec: 0
       segmentId: 22
       requiredLanesMask: 0
     - id: 320355
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 76.87
       durationSec: 0
       segmentId: 22
       requiredLanesMask: 0
     - id: 310356
-      typeId: chord
-      lane: 4
+      typeId: tap
+      lane: 0
       timeSec: 77.08
       durationSec: 0
       segmentId: 22
-      requiredLanesMask: 17
+      requiredLanesMask: 0
     - id: 310358
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 77.5
-      durationSec: 0
-      segmentId: 22
-      requiredLanesMask: 0
-    - id: 320359
-      typeId: tap
-      lane: 1
-      timeSec: 77.72
       durationSec: 0
       segmentId: 22
       requiredLanesMask: 0
     - id: 310360
       typeId: tap
-      lane: 0
+      lane: 5
       timeSec: 77.94
       durationSec: 0
       segmentId: 22
       requiredLanesMask: 0
     - id: 310362
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 78.36
       durationSec: 0
       segmentId: 22
       requiredLanesMask: 0
     - id: 320363
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 78.57000000000001
       durationSec: 0
       segmentId: 22
       requiredLanesMask: 0
     - id: 310364
       typeId: hold
-      lane: 2
+      lane: 4
       timeSec: 78.78
       durationSec: 0.8799999999999955
       segmentId: 22
       requiredLanesMask: 0
     - id: 310366
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 79.22
-      durationSec: 0
-      segmentId: 22
-      requiredLanesMask: 0
-    - id: 320367
-      typeId: tap
-      lane: 5
-      timeSec: 79.44
       durationSec: 0
       segmentId: 22
       requiredLanesMask: 0
@@ -5665,36 +5343,29 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310370
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 80.08
       durationSec: 0
       segmentId: 23
       requiredLanesMask: 0
     - id: 320371
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 80.29
       durationSec: 0
       segmentId: 23
       requiredLanesMask: 0
     - id: 310372
       typeId: chord
-      lane: 0
+      lane: 1
       timeSec: 80.5
       durationSec: 0
       segmentId: 23
-      requiredLanesMask: 9
+      requiredLanesMask: 10
     - id: 310374
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 80.94
-      durationSec: 0
-      segmentId: 23
-      requiredLanesMask: 0
-    - id: 320375
-      typeId: tap
-      lane: 3
-      timeSec: 81.15
       durationSec: 0
       segmentId: 23
       requiredLanesMask: 0
@@ -5707,36 +5378,29 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310378
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 81.8
       durationSec: 0
       segmentId: 23
       requiredLanesMask: 0
     - id: 320379
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 82.01
       durationSec: 0
       segmentId: 23
       requiredLanesMask: 0
     - id: 310380
       typeId: chord
-      lane: 4
+      lane: 3
       timeSec: 82.22
       durationSec: 0
       segmentId: 23
-      requiredLanesMask: 17
+      requiredLanesMask: 9
     - id: 310382
       typeId: tap
-      lane: 5
-      timeSec: 82.66
-      durationSec: 0
-      segmentId: 23
-      requiredLanesMask: 0
-    - id: 320383
-      typeId: tap
       lane: 1
-      timeSec: 82.86
+      timeSec: 82.66
       durationSec: 0
       segmentId: 23
       requiredLanesMask: 0
@@ -5749,91 +5413,77 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310386
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 83.5
       durationSec: 0
       segmentId: 24
       requiredLanesMask: 0
     - id: 320387
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 83.71000000000001
       durationSec: 0
       segmentId: 24
       requiredLanesMask: 0
     - id: 310388
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 4
       timeSec: 83.92
       durationSec: 0
       segmentId: 24
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310390
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 84.16
-      durationSec: 0
-      segmentId: 24
-      requiredLanesMask: 0
-    - id: 320391
-      typeId: tap
-      lane: 5
-      timeSec: 84.37
       durationSec: 0
       segmentId: 24
       requiredLanesMask: 0
     - id: 310392
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 84.58
       durationSec: 0
       segmentId: 24
       requiredLanesMask: 0
     - id: 310394
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 84.78
       durationSec: 0
       segmentId: 24
       requiredLanesMask: 0
     - id: 320395
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 84.89
       durationSec: 0
       segmentId: 24
       requiredLanesMask: 0
     - id: 310396
       typeId: hold
-      lane: 0
+      lane: 1
       timeSec: 85
       durationSec: 0.6599999999999966
       segmentId: 24
       requiredLanesMask: 0
     - id: 310398
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 85.44
-      durationSec: 0
-      segmentId: 24
-      requiredLanesMask: 0
-    - id: 320399
-      typeId: tap
-      lane: 3
-      timeSec: 85.55
       durationSec: 0
       segmentId: 24
       requiredLanesMask: 0
     - id: 100200
       typeId: tap
-      lane: 2
+      lane: 3
       timeSec: 85.66
       durationSec: 0
       segmentId: 25
       requiredLanesMask: 0
     - id: 310402
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 85.86
       durationSec: 0
       segmentId: 25
@@ -5847,22 +5497,15 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310404
       typeId: chord
-      lane: 4
+      lane: 5
       timeSec: 86.08
       durationSec: 0
       segmentId: 25
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310406
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 86.3
-      durationSec: 0
-      segmentId: 25
-      requiredLanesMask: 0
-    - id: 320407
-      typeId: tap
-      lane: 1
-      timeSec: 86.4
       durationSec: 0
       segmentId: 25
       requiredLanesMask: 0
@@ -5875,14 +5518,14 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310410
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 86.72
       durationSec: 0
       segmentId: 25
       requiredLanesMask: 0
     - id: 320411
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 86.93
       durationSec: 0
       segmentId: 25
@@ -5896,28 +5539,21 @@ MonoBehaviour:
       requiredLanesMask: 36
     - id: 310414
       typeId: tap
-      lane: 3
-      timeSec: 87.58
-      durationSec: 0
-      segmentId: 25
-      requiredLanesMask: 0
-    - id: 320415
-      typeId: tap
       lane: 5
-      timeSec: 87.79
+      timeSec: 87.58
       durationSec: 0
       segmentId: 25
       requiredLanesMask: 0
     - id: 100208
       typeId: tap
-      lane: 4
+      lane: 1
       timeSec: 88
       durationSec: 0
       segmentId: 26
       requiredLanesMask: 0
     - id: 310418
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 88.42
       durationSec: 0
       segmentId: 26
@@ -5930,43 +5566,36 @@ MonoBehaviour:
       segmentId: 26
       requiredLanesMask: 0
     - id: 310420
-      typeId: chord
+      typeId: tap
       lane: 0
       timeSec: 88.86
       durationSec: 0
       segmentId: 26
-      requiredLanesMask: 9
+      requiredLanesMask: 0
     - id: 310422
       typeId: tap
-      lane: 1
-      timeSec: 89.08
-      durationSec: 0
-      segmentId: 26
-      requiredLanesMask: 0
-    - id: 320423
-      typeId: tap
       lane: 3
-      timeSec: 89.28
+      timeSec: 89.08
       durationSec: 0
       segmentId: 26
       requiredLanesMask: 0
     - id: 310424
       typeId: tap
-      lane: 2
+      lane: 5
       timeSec: 89.48
       durationSec: 0
       segmentId: 26
       requiredLanesMask: 0
     - id: 310426
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 89.92
       durationSec: 0
       segmentId: 26
       requiredLanesMask: 0
     - id: 320427
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 90.14
       durationSec: 0
       segmentId: 26
@@ -5980,84 +5609,70 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310430
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 90.78
-      durationSec: 0
-      segmentId: 26
-      requiredLanesMask: 0
-    - id: 320431
-      typeId: tap
-      lane: 1
-      timeSec: 90.99000000000001
       durationSec: 0
       segmentId: 26
       requiredLanesMask: 0
     - id: 100216
       typeId: tap
-      lane: 0
+      lane: 4
       timeSec: 91.2
       durationSec: 0
       segmentId: 27
       requiredLanesMask: 0
     - id: 310434
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 91.64
       durationSec: 0
       segmentId: 27
       requiredLanesMask: 0
     - id: 320435
       typeId: tap
-      lane: 3
+      lane: 5
       timeSec: 91.86
       durationSec: 0
       segmentId: 27
       requiredLanesMask: 0
     - id: 310436
       typeId: chord
-      lane: 2
+      lane: 1
       timeSec: 92.08
       durationSec: 0
       segmentId: 27
-      requiredLanesMask: 36
+      requiredLanesMask: 10
     - id: 310438
       typeId: tap
-      lane: 3
-      timeSec: 92.5
-      durationSec: 0
-      segmentId: 27
-      requiredLanesMask: 0
-    - id: 320439
-      typeId: tap
       lane: 5
-      timeSec: 92.72
+      timeSec: 92.5
       durationSec: 0
       segmentId: 27
       requiredLanesMask: 0
     - id: 310440
       typeId: tap
-      lane: 4
+      lane: 2
       timeSec: 92.94
       durationSec: 0
       segmentId: 27
       requiredLanesMask: 0
     - id: 310442
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 93.36
       durationSec: 0
       segmentId: 27
       requiredLanesMask: 0
     - id: 320443
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 93.57000000000001
       durationSec: 0
       segmentId: 27
       requiredLanesMask: 0
     - id: 310444
       typeId: chord
-      lane: 0
+      lane: 3
       timeSec: 93.78
       durationSec: 0
       segmentId: 27
@@ -6069,167 +5684,139 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 27
       requiredLanesMask: 0
-    - id: 320447
-      typeId: tap
-      lane: 3
-      timeSec: 94.42
-      durationSec: 0
-      segmentId: 27
-      requiredLanesMask: 0
     - id: 100224
       typeId: tap
-      lane: 2
+      lane: 0
       timeSec: 94.64
       durationSec: 0
       segmentId: 28
       requiredLanesMask: 0
     - id: 310450
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 95.06
       durationSec: 0
       segmentId: 28
       requiredLanesMask: 0
     - id: 320451
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 95.28
       durationSec: 0
       segmentId: 28
       requiredLanesMask: 0
     - id: 310452
-      typeId: chord
+      typeId: tap
       lane: 4
       timeSec: 95.5
       durationSec: 0
       segmentId: 28
-      requiredLanesMask: 17
+      requiredLanesMask: 0
     - id: 310454
       typeId: tap
-      lane: 5
-      timeSec: 95.94
-      durationSec: 0
-      segmentId: 28
-      requiredLanesMask: 0
-    - id: 320455
-      typeId: tap
       lane: 1
-      timeSec: 96.15
+      timeSec: 95.94
       durationSec: 0
       segmentId: 28
       requiredLanesMask: 0
     - id: 310456
       typeId: tap
-      lane: 0
+      lane: 5
       timeSec: 96.36
       durationSec: 0
       segmentId: 28
       requiredLanesMask: 0
     - id: 310458
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 96.78
       durationSec: 0
       segmentId: 28
       requiredLanesMask: 0
     - id: 320459
       typeId: tap
-      lane: 3
+      lane: 5
       timeSec: 97
       durationSec: 0
       segmentId: 28
       requiredLanesMask: 0
     - id: 310460
       typeId: hold
-      lane: 2
+      lane: 1
       timeSec: 97.22
       durationSec: 0.8599999999999994
       segmentId: 28
       requiredLanesMask: 0
     - id: 310462
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 97.64
-      durationSec: 0
-      segmentId: 28
-      requiredLanesMask: 0
-    - id: 320463
-      typeId: tap
-      lane: 5
-      timeSec: 97.86
       durationSec: 0
       segmentId: 28
       requiredLanesMask: 0
     - id: 100232
       typeId: tap
-      lane: 4
+      lane: 3
       timeSec: 98.08
       durationSec: 0
       segmentId: 29
       requiredLanesMask: 0
     - id: 310466
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 98.5
       durationSec: 0
       segmentId: 29
       requiredLanesMask: 0
     - id: 320467
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 98.72
       durationSec: 0
       segmentId: 29
       requiredLanesMask: 0
     - id: 310468
       typeId: chord
-      lane: 0
+      lane: 5
       timeSec: 98.94
       durationSec: 0
       segmentId: 29
-      requiredLanesMask: 9
+      requiredLanesMask: 36
     - id: 310470
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 99.36
-      durationSec: 0
-      segmentId: 29
-      requiredLanesMask: 0
-    - id: 320471
-      typeId: tap
-      lane: 3
-      timeSec: 99.57000000000001
       durationSec: 0
       segmentId: 29
       requiredLanesMask: 0
     - id: 310472
       typeId: tap
-      lane: 2
+      lane: 0
       timeSec: 99.78
       durationSec: 0
       segmentId: 29
       requiredLanesMask: 0
     - id: 310474
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 100.2
       durationSec: 0
       segmentId: 29
       requiredLanesMask: 0
     - id: 320475
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 100.42
       durationSec: 0
       segmentId: 29
       requiredLanesMask: 0
     - id: 310476
       typeId: chord
-      lane: 4
+      lane: 2
       timeSec: 100.64
       durationSec: 0
       segmentId: 29
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310478
       typeId: tap
       lane: 5
@@ -6237,41 +5824,34 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 29
       requiredLanesMask: 0
-    - id: 320479
-      typeId: tap
-      lane: 1
-      timeSec: 101.29
-      durationSec: 0
-      segmentId: 29
-      requiredLanesMask: 0
     - id: 100240
       typeId: tap
-      lane: 0
+      lane: 1
       timeSec: 101.5
       durationSec: 0
       segmentId: 30
       requiredLanesMask: 0
     - id: 310482
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 101.92
       durationSec: 0
       segmentId: 30
       requiredLanesMask: 0
     - id: 320483
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 102.14
       durationSec: 0
       segmentId: 30
       requiredLanesMask: 0
     - id: 310484
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 0
       timeSec: 102.36
       durationSec: 0
       segmentId: 30
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310486
       typeId: tap
       lane: 3
@@ -6279,58 +5859,44 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 30
       requiredLanesMask: 0
-    - id: 320487
-      typeId: tap
-      lane: 5
-      timeSec: 102.99000000000001
-      durationSec: 0
-      segmentId: 30
-      requiredLanesMask: 0
     - id: 310488
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 103.2
       durationSec: 0
       segmentId: 30
       requiredLanesMask: 0
     - id: 310490
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 103.64
       durationSec: 0
       segmentId: 30
       requiredLanesMask: 0
     - id: 320491
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 103.85000000000001
       durationSec: 0
       segmentId: 30
       requiredLanesMask: 0
     - id: 310492
       typeId: hold
-      lane: 0
+      lane: 4
       timeSec: 104.06
       durationSec: 0.8599999999999994
       segmentId: 30
       requiredLanesMask: 0
     - id: 310494
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 104.5
-      durationSec: 0
-      segmentId: 30
-      requiredLanesMask: 0
-    - id: 320495
-      typeId: tap
-      lane: 3
-      timeSec: 104.71000000000001
       durationSec: 0
       segmentId: 30
       requiredLanesMask: 0
     - id: 100248
       typeId: tap
-      lane: 2
+      lane: 4
       timeSec: 104.92
       durationSec: 0
       segmentId: 31
@@ -6344,18 +5910,18 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 320499
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 105.56
       durationSec: 0
       segmentId: 31
       requiredLanesMask: 0
     - id: 310500
       typeId: chord
-      lane: 4
+      lane: 1
       timeSec: 105.78
       durationSec: 0
       segmentId: 31
-      requiredLanesMask: 17
+      requiredLanesMask: 10
     - id: 310502
       typeId: tap
       lane: 5
@@ -6363,83 +5929,69 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 31
       requiredLanesMask: 0
-    - id: 320503
-      typeId: tap
-      lane: 1
-      timeSec: 106.43
-      durationSec: 0
-      segmentId: 31
-      requiredLanesMask: 0
     - id: 310504
       typeId: tap
-      lane: 0
+      lane: 2
       timeSec: 106.64
       durationSec: 0
       segmentId: 31
       requiredLanesMask: 0
     - id: 310506
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 107.08
       durationSec: 0
       segmentId: 31
       requiredLanesMask: 0
     - id: 320507
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 107.29
       durationSec: 0
       segmentId: 31
       requiredLanesMask: 0
     - id: 310508
       typeId: chord
-      lane: 2
+      lane: 3
       timeSec: 107.5
       durationSec: 0
       segmentId: 31
-      requiredLanesMask: 36
+      requiredLanesMask: 9
     - id: 310510
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 107.94
-      durationSec: 0
-      segmentId: 31
-      requiredLanesMask: 0
-    - id: 320511
-      typeId: tap
-      lane: 5
-      timeSec: 108.15
       durationSec: 0
       segmentId: 31
       requiredLanesMask: 0
     - id: 100256
       typeId: tap
-      lane: 4
+      lane: 0
       timeSec: 108.36
       durationSec: 0
       segmentId: 32
       requiredLanesMask: 0
     - id: 310514
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 108.8
       durationSec: 0
       segmentId: 32
       requiredLanesMask: 0
     - id: 320515
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 109
       durationSec: 0
       segmentId: 32
       requiredLanesMask: 0
     - id: 310516
-      typeId: chord
-      lane: 0
+      typeId: tap
+      lane: 4
       timeSec: 109.2
       durationSec: 0
       segmentId: 32
-      requiredLanesMask: 9
+      requiredLanesMask: 0
     - id: 310518
       typeId: tap
       lane: 1
@@ -6447,16 +5999,9 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 32
       requiredLanesMask: 0
-    - id: 320519
-      typeId: tap
-      lane: 3
-      timeSec: 109.86
-      durationSec: 0
-      segmentId: 32
-      requiredLanesMask: 0
     - id: 310520
       typeId: tap
-      lane: 2
+      lane: 5
       timeSec: 110.08
       durationSec: 0
       segmentId: 32
@@ -6470,35 +6015,28 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 320523
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 110.71000000000001
       durationSec: 0
       segmentId: 32
       requiredLanesMask: 0
     - id: 310524
       typeId: hold
-      lane: 4
+      lane: 1
       timeSec: 110.92
       durationSec: 0.8599999999999994
       segmentId: 32
       requiredLanesMask: 0
     - id: 310526
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 111.36
-      durationSec: 0
-      segmentId: 32
-      requiredLanesMask: 0
-    - id: 320527
-      typeId: tap
-      lane: 1
-      timeSec: 111.57000000000001
       durationSec: 0
       segmentId: 32
       requiredLanesMask: 0
     - id: 100264
       typeId: tap
-      lane: 0
+      lane: 3
       timeSec: 111.78
       durationSec: 0
       segmentId: 33
@@ -6519,35 +6057,28 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310532
       typeId: chord
-      lane: 2
+      lane: 5
       timeSec: 112.64
       durationSec: 0
       segmentId: 33
       requiredLanesMask: 36
     - id: 310534
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 113.08
-      durationSec: 0
-      segmentId: 33
-      requiredLanesMask: 0
-    - id: 320535
-      typeId: tap
-      lane: 5
-      timeSec: 113.29
       durationSec: 0
       segmentId: 33
       requiredLanesMask: 0
     - id: 310536
       typeId: tap
-      lane: 4
+      lane: 0
       timeSec: 113.5
       durationSec: 0
       segmentId: 33
       requiredLanesMask: 0
     - id: 310538
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 113.92
       durationSec: 0
       segmentId: 33
@@ -6561,106 +6092,85 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310540
       typeId: chord
-      lane: 0
+      lane: 2
       timeSec: 114.36
       durationSec: 0
       segmentId: 33
-      requiredLanesMask: 9
+      requiredLanesMask: 36
     - id: 310542
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 114.78
-      durationSec: 0
-      segmentId: 33
-      requiredLanesMask: 0
-    - id: 320543
-      typeId: tap
-      lane: 3
-      timeSec: 115
       durationSec: 0
       segmentId: 33
       requiredLanesMask: 0
     - id: 100272
       typeId: tap
-      lane: 2
+      lane: 1
       timeSec: 115.22
       durationSec: 0
       segmentId: 34
       requiredLanesMask: 0
     - id: 310546
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 115.64
       durationSec: 0
       segmentId: 34
       requiredLanesMask: 0
     - id: 320547
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 115.86
       durationSec: 0
       segmentId: 34
       requiredLanesMask: 0
     - id: 310548
-      typeId: chord
-      lane: 4
+      typeId: tap
+      lane: 0
       timeSec: 116.08
       durationSec: 0
       segmentId: 34
-      requiredLanesMask: 17
+      requiredLanesMask: 0
     - id: 310550
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 116.5
-      durationSec: 0
-      segmentId: 34
-      requiredLanesMask: 0
-    - id: 320551
-      typeId: tap
-      lane: 1
-      timeSec: 116.71000000000001
       durationSec: 0
       segmentId: 34
       requiredLanesMask: 0
     - id: 310552
       typeId: tap
-      lane: 0
+      lane: 5
       timeSec: 116.92
       durationSec: 0
       segmentId: 34
       requiredLanesMask: 0
     - id: 310554
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 117.34
       durationSec: 0
       segmentId: 34
       requiredLanesMask: 0
     - id: 320555
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 117.56
       durationSec: 0
       segmentId: 34
       requiredLanesMask: 0
     - id: 310556
       typeId: hold
-      lane: 2
+      lane: 4
       timeSec: 117.78
       durationSec: 0.8599999999999994
       segmentId: 34
       requiredLanesMask: 0
     - id: 310558
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 118.22
-      durationSec: 0
-      segmentId: 34
-      requiredLanesMask: 0
-    - id: 320559
-      typeId: tap
-      lane: 5
-      timeSec: 118.43
       durationSec: 0
       segmentId: 34
       requiredLanesMask: 0
@@ -6673,36 +6183,29 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310562
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 119.06
       durationSec: 0
       segmentId: 35
       requiredLanesMask: 0
     - id: 320563
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 119.27000000000001
       durationSec: 0
       segmentId: 35
       requiredLanesMask: 0
     - id: 310564
       typeId: chord
-      lane: 0
+      lane: 1
       timeSec: 119.48
       durationSec: 0
       segmentId: 35
-      requiredLanesMask: 9
+      requiredLanesMask: 10
     - id: 310566
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 119.94
-      durationSec: 0
-      segmentId: 35
-      requiredLanesMask: 0
-    - id: 320567
-      typeId: tap
-      lane: 3
-      timeSec: 120.15
       durationSec: 0
       segmentId: 35
       requiredLanesMask: 0
@@ -6715,36 +6218,29 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310570
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 120.78
       durationSec: 0
       segmentId: 35
       requiredLanesMask: 0
     - id: 320571
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 121
       durationSec: 0
       segmentId: 35
       requiredLanesMask: 0
     - id: 310572
       typeId: chord
-      lane: 4
+      lane: 3
       timeSec: 121.22
       durationSec: 0
       segmentId: 35
-      requiredLanesMask: 17
+      requiredLanesMask: 9
     - id: 310574
       typeId: tap
-      lane: 5
-      timeSec: 121.66
-      durationSec: 0
-      segmentId: 35
-      requiredLanesMask: 0
-    - id: 320575
-      typeId: tap
       lane: 1
-      timeSec: 121.87
+      timeSec: 121.66
       durationSec: 0
       segmentId: 35
       requiredLanesMask: 0
@@ -6757,91 +6253,77 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310578
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 122.5
       durationSec: 0
       segmentId: 36
       requiredLanesMask: 0
     - id: 320579
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 122.71000000000001
       durationSec: 0
       segmentId: 36
       requiredLanesMask: 0
     - id: 310580
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 4
       timeSec: 122.92
       durationSec: 0
       segmentId: 36
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310582
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 123.36
-      durationSec: 0
-      segmentId: 36
-      requiredLanesMask: 0
-    - id: 320583
-      typeId: tap
-      lane: 5
-      timeSec: 123.57000000000001
       durationSec: 0
       segmentId: 36
       requiredLanesMask: 0
     - id: 310584
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 123.78
       durationSec: 0
       segmentId: 36
       requiredLanesMask: 0
     - id: 310586
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 124.2
       durationSec: 0
       segmentId: 36
       requiredLanesMask: 0
     - id: 320587
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 124.42
       durationSec: 0
       segmentId: 36
       requiredLanesMask: 0
     - id: 310588
       typeId: hold
-      lane: 0
+      lane: 1
       timeSec: 124.64
       durationSec: 0.8599999999999994
       segmentId: 36
       requiredLanesMask: 0
     - id: 310590
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 125.08
-      durationSec: 0
-      segmentId: 36
-      requiredLanesMask: 0
-    - id: 320591
-      typeId: tap
-      lane: 3
-      timeSec: 125.29
       durationSec: 0
       segmentId: 36
       requiredLanesMask: 0
     - id: 100296
       typeId: tap
-      lane: 2
+      lane: 3
       timeSec: 125.5
       durationSec: 0
       segmentId: 37
       requiredLanesMask: 0
     - id: 310594
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 125.92
       durationSec: 0
       segmentId: 37
@@ -6855,22 +6337,15 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310596
       typeId: chord
-      lane: 4
+      lane: 5
       timeSec: 126.36
       durationSec: 0
       segmentId: 37
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310598
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 126.78
-      durationSec: 0
-      segmentId: 37
-      requiredLanesMask: 0
-    - id: 320599
-      typeId: tap
-      lane: 1
-      timeSec: 126.99000000000001
       durationSec: 0
       segmentId: 37
       requiredLanesMask: 0
@@ -6883,14 +6358,14 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310602
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 127.64
       durationSec: 0
       segmentId: 37
       requiredLanesMask: 0
     - id: 320603
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 127.85000000000001
       durationSec: 0
       segmentId: 37
@@ -6904,28 +6379,21 @@ MonoBehaviour:
       requiredLanesMask: 36
     - id: 310606
       typeId: tap
-      lane: 3
-      timeSec: 128.5
-      durationSec: 0
-      segmentId: 37
-      requiredLanesMask: 0
-    - id: 320607
-      typeId: tap
       lane: 5
-      timeSec: 128.70999999999998
+      timeSec: 128.5
       durationSec: 0
       segmentId: 37
       requiredLanesMask: 0
     - id: 100304
       typeId: tap
-      lane: 4
+      lane: 1
       timeSec: 128.92
       durationSec: 0
       segmentId: 38
       requiredLanesMask: 0
     - id: 310610
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 129.36
       durationSec: 0
       segmentId: 38
@@ -6938,43 +6406,36 @@ MonoBehaviour:
       segmentId: 38
       requiredLanesMask: 0
     - id: 310612
-      typeId: chord
+      typeId: tap
       lane: 0
       timeSec: 129.78
       durationSec: 0
       segmentId: 38
-      requiredLanesMask: 9
+      requiredLanesMask: 0
     - id: 310614
       typeId: tap
-      lane: 1
-      timeSec: 130.22
-      durationSec: 0
-      segmentId: 38
-      requiredLanesMask: 0
-    - id: 320615
-      typeId: tap
       lane: 3
-      timeSec: 130.42999999999998
+      timeSec: 130.22
       durationSec: 0
       segmentId: 38
       requiredLanesMask: 0
     - id: 310616
       typeId: tap
-      lane: 2
+      lane: 5
       timeSec: 130.64
       durationSec: 0
       segmentId: 38
       requiredLanesMask: 0
     - id: 310618
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 131.08
       durationSec: 0
       segmentId: 38
       requiredLanesMask: 0
     - id: 320619
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 131.29
       durationSec: 0
       segmentId: 38
@@ -6988,84 +6449,70 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310622
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 131.94
-      durationSec: 0
-      segmentId: 38
-      requiredLanesMask: 0
-    - id: 320623
-      typeId: tap
-      lane: 1
-      timeSec: 132.15
       durationSec: 0
       segmentId: 38
       requiredLanesMask: 0
     - id: 100312
       typeId: tap
-      lane: 0
+      lane: 4
       timeSec: 132.36
       durationSec: 0
       segmentId: 39
       requiredLanesMask: 0
     - id: 310626
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 132.78
       durationSec: 0
       segmentId: 39
       requiredLanesMask: 0
     - id: 320627
       typeId: tap
-      lane: 3
+      lane: 5
       timeSec: 133
       durationSec: 0
       segmentId: 39
       requiredLanesMask: 0
     - id: 310628
       typeId: chord
-      lane: 2
+      lane: 1
       timeSec: 133.22
       durationSec: 0
       segmentId: 39
-      requiredLanesMask: 36
+      requiredLanesMask: 10
     - id: 310630
       typeId: tap
-      lane: 3
-      timeSec: 133.66
-      durationSec: 0
-      segmentId: 39
-      requiredLanesMask: 0
-    - id: 320631
-      typeId: tap
       lane: 5
-      timeSec: 133.87
+      timeSec: 133.66
       durationSec: 0
       segmentId: 39
       requiredLanesMask: 0
     - id: 310632
       typeId: tap
-      lane: 4
+      lane: 2
       timeSec: 134.08
       durationSec: 0
       segmentId: 39
       requiredLanesMask: 0
     - id: 310634
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 134.5
       durationSec: 0
       segmentId: 39
       requiredLanesMask: 0
     - id: 320635
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 134.72
       durationSec: 0
       segmentId: 39
       requiredLanesMask: 0
     - id: 310636
       typeId: chord
-      lane: 0
+      lane: 3
       timeSec: 134.94
       durationSec: 0
       segmentId: 39
@@ -7077,167 +6524,139 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 39
       requiredLanesMask: 0
-    - id: 320639
-      typeId: tap
-      lane: 3
-      timeSec: 135.58
-      durationSec: 0
-      segmentId: 39
-      requiredLanesMask: 0
     - id: 100320
       typeId: tap
-      lane: 2
+      lane: 0
       timeSec: 135.8
       durationSec: 0
       segmentId: 40
       requiredLanesMask: 0
     - id: 310642
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 136.22
       durationSec: 0
       segmentId: 40
       requiredLanesMask: 0
     - id: 320643
       typeId: tap
-      lane: 5
+      lane: 0
       timeSec: 136.42999999999998
       durationSec: 0
       segmentId: 40
       requiredLanesMask: 0
     - id: 310644
-      typeId: chord
+      typeId: tap
       lane: 4
       timeSec: 136.64
       durationSec: 0
       segmentId: 40
-      requiredLanesMask: 17
+      requiredLanesMask: 0
     - id: 310646
       typeId: tap
-      lane: 5
-      timeSec: 137.08
-      durationSec: 0
-      segmentId: 40
-      requiredLanesMask: 0
-    - id: 320647
-      typeId: tap
       lane: 1
-      timeSec: 137.29
+      timeSec: 137.08
       durationSec: 0
       segmentId: 40
       requiredLanesMask: 0
     - id: 310648
       typeId: tap
-      lane: 0
+      lane: 5
       timeSec: 137.5
       durationSec: 0
       segmentId: 40
       requiredLanesMask: 0
     - id: 310650
       typeId: tap
-      lane: 1
+      lane: 3
       timeSec: 137.94
       durationSec: 0
       segmentId: 40
       requiredLanesMask: 0
     - id: 320651
       typeId: tap
-      lane: 3
+      lane: 5
       timeSec: 138.15
       durationSec: 0
       segmentId: 40
       requiredLanesMask: 0
     - id: 310652
       typeId: hold
-      lane: 2
+      lane: 1
       timeSec: 138.36
       durationSec: 0.8599999999999852
       segmentId: 40
       requiredLanesMask: 0
     - id: 310654
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 138.78
-      durationSec: 0
-      segmentId: 40
-      requiredLanesMask: 0
-    - id: 320655
-      typeId: tap
-      lane: 5
-      timeSec: 139
       durationSec: 0
       segmentId: 40
       requiredLanesMask: 0
     - id: 100328
       typeId: tap
-      lane: 4
+      lane: 3
       timeSec: 139.22
       durationSec: 0
       segmentId: 41
       requiredLanesMask: 0
     - id: 310658
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 139.64
       durationSec: 0
       segmentId: 41
       requiredLanesMask: 0
     - id: 320659
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 139.85999999999999
       durationSec: 0
       segmentId: 41
       requiredLanesMask: 0
     - id: 310660
       typeId: chord
-      lane: 0
+      lane: 5
       timeSec: 140.08
       durationSec: 0
       segmentId: 41
-      requiredLanesMask: 9
+      requiredLanesMask: 36
     - id: 310662
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 140.5
-      durationSec: 0
-      segmentId: 41
-      requiredLanesMask: 0
-    - id: 320663
-      typeId: tap
-      lane: 3
-      timeSec: 140.70999999999998
       durationSec: 0
       segmentId: 41
       requiredLanesMask: 0
     - id: 310664
       typeId: tap
-      lane: 2
+      lane: 0
       timeSec: 140.92
       durationSec: 0
       segmentId: 41
       requiredLanesMask: 0
     - id: 310666
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 141.36
       durationSec: 0
       segmentId: 41
       requiredLanesMask: 0
     - id: 320667
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 141.57
       durationSec: 0
       segmentId: 41
       requiredLanesMask: 0
     - id: 310668
       typeId: chord
-      lane: 4
+      lane: 2
       timeSec: 141.78
       durationSec: 0
       segmentId: 41
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310670
       typeId: tap
       lane: 5
@@ -7245,41 +6664,34 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 41
       requiredLanesMask: 0
-    - id: 320671
-      typeId: tap
-      lane: 1
-      timeSec: 142.42999999999998
-      durationSec: 0
-      segmentId: 41
-      requiredLanesMask: 0
     - id: 100336
       typeId: tap
-      lane: 0
+      lane: 1
       timeSec: 142.64
       durationSec: 0
       segmentId: 42
       requiredLanesMask: 0
     - id: 310674
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 143.08
       durationSec: 0
       segmentId: 42
       requiredLanesMask: 0
     - id: 320675
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 143.29
       durationSec: 0
       segmentId: 42
       requiredLanesMask: 0
     - id: 310676
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 0
       timeSec: 143.5
       durationSec: 0
       segmentId: 42
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310678
       typeId: tap
       lane: 3
@@ -7287,58 +6699,44 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 42
       requiredLanesMask: 0
-    - id: 320679
-      typeId: tap
-      lane: 5
-      timeSec: 144.15
-      durationSec: 0
-      segmentId: 42
-      requiredLanesMask: 0
     - id: 310680
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 144.36
       durationSec: 0
       segmentId: 42
       requiredLanesMask: 0
     - id: 310682
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 144.8
       durationSec: 0
       segmentId: 42
       requiredLanesMask: 0
     - id: 320683
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 145.01
       durationSec: 0
       segmentId: 42
       requiredLanesMask: 0
     - id: 310684
       typeId: hold
-      lane: 0
+      lane: 4
       timeSec: 145.22
       durationSec: 0.8600000000000136
       segmentId: 42
       requiredLanesMask: 0
     - id: 310686
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 145.66
-      durationSec: 0
-      segmentId: 42
-      requiredLanesMask: 0
-    - id: 320687
-      typeId: tap
-      lane: 3
-      timeSec: 145.87
       durationSec: 0
       segmentId: 42
       requiredLanesMask: 0
     - id: 100344
       typeId: tap
-      lane: 2
+      lane: 4
       timeSec: 146.08
       durationSec: 0
       segmentId: 43
@@ -7352,18 +6750,18 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 320691
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 146.72
       durationSec: 0
       segmentId: 43
       requiredLanesMask: 0
     - id: 310692
       typeId: chord
-      lane: 4
+      lane: 1
       timeSec: 146.94
       durationSec: 0
       segmentId: 43
-      requiredLanesMask: 17
+      requiredLanesMask: 10
     - id: 310694
       typeId: tap
       lane: 5
@@ -7371,83 +6769,69 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 43
       requiredLanesMask: 0
-    - id: 320695
-      typeId: tap
-      lane: 1
-      timeSec: 147.58
-      durationSec: 0
-      segmentId: 43
-      requiredLanesMask: 0
     - id: 310696
       typeId: tap
-      lane: 0
+      lane: 2
       timeSec: 147.8
       durationSec: 0
       segmentId: 43
       requiredLanesMask: 0
     - id: 310698
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 148.22
       durationSec: 0
       segmentId: 43
       requiredLanesMask: 0
     - id: 320699
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 148.44
       durationSec: 0
       segmentId: 43
       requiredLanesMask: 0
     - id: 310700
       typeId: chord
-      lane: 2
+      lane: 3
       timeSec: 148.66
       durationSec: 0
       segmentId: 43
-      requiredLanesMask: 36
+      requiredLanesMask: 9
     - id: 310702
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 149.08
-      durationSec: 0
-      segmentId: 43
-      requiredLanesMask: 0
-    - id: 320703
-      typeId: tap
-      lane: 5
-      timeSec: 149.29
       durationSec: 0
       segmentId: 43
       requiredLanesMask: 0
     - id: 100352
       typeId: tap
-      lane: 4
+      lane: 0
       timeSec: 149.5
       durationSec: 0
       segmentId: 44
       requiredLanesMask: 0
     - id: 310706
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 149.94
       durationSec: 0
       segmentId: 44
       requiredLanesMask: 0
     - id: 320707
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 150.15
       durationSec: 0
       segmentId: 44
       requiredLanesMask: 0
     - id: 310708
-      typeId: chord
-      lane: 0
+      typeId: tap
+      lane: 4
       timeSec: 150.36
       durationSec: 0
       segmentId: 44
-      requiredLanesMask: 9
+      requiredLanesMask: 0
     - id: 310710
       typeId: tap
       lane: 1
@@ -7455,16 +6839,9 @@ MonoBehaviour:
       durationSec: 0
       segmentId: 44
       requiredLanesMask: 0
-    - id: 320711
-      typeId: tap
-      lane: 3
-      timeSec: 151
-      durationSec: 0
-      segmentId: 44
-      requiredLanesMask: 0
     - id: 310712
       typeId: tap
-      lane: 2
+      lane: 5
       timeSec: 151.22
       durationSec: 0
       segmentId: 44
@@ -7478,35 +6855,28 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 320715
       typeId: tap
-      lane: 5
+      lane: 1
       timeSec: 151.87
       durationSec: 0
       segmentId: 44
       requiredLanesMask: 0
     - id: 310716
       typeId: hold
-      lane: 4
+      lane: 1
       timeSec: 152.08
       durationSec: 0.8599999999999852
       segmentId: 44
       requiredLanesMask: 0
     - id: 310718
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 152.52
-      durationSec: 0
-      segmentId: 44
-      requiredLanesMask: 0
-    - id: 320719
-      typeId: tap
-      lane: 1
-      timeSec: 152.73
       durationSec: 0
       segmentId: 44
       requiredLanesMask: 0
     - id: 100360
       typeId: tap
-      lane: 0
+      lane: 3
       timeSec: 152.94
       durationSec: 0
       segmentId: 45
@@ -7527,35 +6897,28 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310724
       typeId: chord
-      lane: 2
+      lane: 5
       timeSec: 153.8
       durationSec: 0
       segmentId: 45
       requiredLanesMask: 36
     - id: 310726
       typeId: tap
-      lane: 3
+      lane: 2
       timeSec: 154.22
-      durationSec: 0
-      segmentId: 45
-      requiredLanesMask: 0
-    - id: 320727
-      typeId: tap
-      lane: 5
-      timeSec: 154.42999999999998
       durationSec: 0
       segmentId: 45
       requiredLanesMask: 0
     - id: 310728
       typeId: tap
-      lane: 4
+      lane: 0
       timeSec: 154.64
       durationSec: 0
       segmentId: 45
       requiredLanesMask: 0
     - id: 310730
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 155.08
       durationSec: 0
       segmentId: 45
@@ -7569,106 +6932,85 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310732
       typeId: chord
-      lane: 0
+      lane: 2
       timeSec: 155.5
       durationSec: 0
       segmentId: 45
-      requiredLanesMask: 9
+      requiredLanesMask: 36
     - id: 310734
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 155.94
-      durationSec: 0
-      segmentId: 45
-      requiredLanesMask: 0
-    - id: 320735
-      typeId: tap
-      lane: 3
-      timeSec: 156.15
       durationSec: 0
       segmentId: 45
       requiredLanesMask: 0
     - id: 100368
       typeId: tap
-      lane: 2
+      lane: 1
       timeSec: 156.36
       durationSec: 0
       segmentId: 46
       requiredLanesMask: 0
     - id: 310738
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 156.8
       durationSec: 0
       segmentId: 46
       requiredLanesMask: 0
     - id: 320739
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 157.02
       durationSec: 0
       segmentId: 46
       requiredLanesMask: 0
     - id: 310740
-      typeId: chord
-      lane: 4
+      typeId: tap
+      lane: 0
       timeSec: 157.24
       durationSec: 0
       segmentId: 46
-      requiredLanesMask: 17
+      requiredLanesMask: 0
     - id: 310742
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 157.66
-      durationSec: 0
-      segmentId: 46
-      requiredLanesMask: 0
-    - id: 320743
-      typeId: tap
-      lane: 1
-      timeSec: 157.87
       durationSec: 0
       segmentId: 46
       requiredLanesMask: 0
     - id: 310744
       typeId: tap
-      lane: 0
+      lane: 5
       timeSec: 158.08
       durationSec: 0
       segmentId: 46
       requiredLanesMask: 0
     - id: 310746
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 158.5
       durationSec: 0
       segmentId: 46
       requiredLanesMask: 0
     - id: 320747
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 158.72
       durationSec: 0
       segmentId: 46
       requiredLanesMask: 0
     - id: 310748
       typeId: hold
-      lane: 2
+      lane: 4
       timeSec: 158.94
       durationSec: 0.8600000000000136
       segmentId: 46
       requiredLanesMask: 0
     - id: 310750
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 159.38
-      durationSec: 0
-      segmentId: 46
-      requiredLanesMask: 0
-    - id: 320751
-      typeId: tap
-      lane: 5
-      timeSec: 159.59
       durationSec: 0
       segmentId: 46
       requiredLanesMask: 0
@@ -7681,36 +7023,29 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310754
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 160.22
       durationSec: 0
       segmentId: 47
       requiredLanesMask: 0
     - id: 320755
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 160.44
       durationSec: 0
       segmentId: 47
       requiredLanesMask: 0
     - id: 310756
       typeId: chord
-      lane: 0
+      lane: 1
       timeSec: 160.66
       durationSec: 0
       segmentId: 47
-      requiredLanesMask: 9
+      requiredLanesMask: 10
     - id: 310758
       typeId: tap
-      lane: 1
+      lane: 5
       timeSec: 161.08
-      durationSec: 0
-      segmentId: 47
-      requiredLanesMask: 0
-    - id: 320759
-      typeId: tap
-      lane: 3
-      timeSec: 161.3
       durationSec: 0
       segmentId: 47
       requiredLanesMask: 0
@@ -7723,36 +7058,29 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310762
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 161.94
       durationSec: 0
       segmentId: 47
       requiredLanesMask: 0
     - id: 320763
       typeId: tap
-      lane: 5
+      lane: 4
       timeSec: 162.15
       durationSec: 0
       segmentId: 47
       requiredLanesMask: 0
     - id: 310764
       typeId: chord
-      lane: 4
+      lane: 3
       timeSec: 162.36
       durationSec: 0
       segmentId: 47
-      requiredLanesMask: 17
+      requiredLanesMask: 9
     - id: 310766
       typeId: tap
-      lane: 5
-      timeSec: 162.8
-      durationSec: 0
-      segmentId: 47
-      requiredLanesMask: 0
-    - id: 320767
-      typeId: tap
       lane: 1
-      timeSec: 163.01
+      timeSec: 162.8
       durationSec: 0
       segmentId: 47
       requiredLanesMask: 0
@@ -7765,91 +7093,77 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310770
       typeId: tap
-      lane: 1
+      lane: 2
       timeSec: 163.64
       durationSec: 0
       segmentId: 48
       requiredLanesMask: 0
     - id: 320771
       typeId: tap
-      lane: 3
+      lane: 4
       timeSec: 163.85999999999999
       durationSec: 0
       segmentId: 48
       requiredLanesMask: 0
     - id: 310772
-      typeId: chord
-      lane: 2
+      typeId: tap
+      lane: 4
       timeSec: 164.08
       durationSec: 0
       segmentId: 48
-      requiredLanesMask: 36
+      requiredLanesMask: 0
     - id: 310774
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 164.52
-      durationSec: 0
-      segmentId: 48
-      requiredLanesMask: 0
-    - id: 320775
-      typeId: tap
-      lane: 5
-      timeSec: 164.73
       durationSec: 0
       segmentId: 48
       requiredLanesMask: 0
     - id: 310776
       typeId: tap
-      lane: 4
+      lane: 5
       timeSec: 164.94
       durationSec: 0
       segmentId: 48
       requiredLanesMask: 0
     - id: 310778
       typeId: tap
-      lane: 5
+      lane: 3
       timeSec: 165.36
       durationSec: 0
       segmentId: 48
       requiredLanesMask: 0
     - id: 320779
       typeId: tap
-      lane: 1
+      lane: 0
       timeSec: 165.79
       durationSec: 0
       segmentId: 48
       requiredLanesMask: 0
     - id: 310780
       typeId: hold
-      lane: 0
+      lane: 1
       timeSec: 166.22
       durationSec: 0.8600000000000136
       segmentId: 48
       requiredLanesMask: 0
     - id: 310782
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 166.64
-      durationSec: 0
-      segmentId: 48
-      requiredLanesMask: 0
-    - id: 320783
-      typeId: tap
-      lane: 3
-      timeSec: 166.85999999999999
       durationSec: 0
       segmentId: 48
       requiredLanesMask: 0
     - id: 100392
       typeId: tap
-      lane: 2
+      lane: 3
       timeSec: 167.08
       durationSec: 0
       segmentId: 49
       requiredLanesMask: 0
     - id: 310786
       typeId: tap
-      lane: 3
+      lane: 1
       timeSec: 167.52
       durationSec: 0
       segmentId: 49
@@ -7863,22 +7177,15 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310788
       typeId: chord
-      lane: 4
+      lane: 5
       timeSec: 167.94
       durationSec: 0
       segmentId: 49
-      requiredLanesMask: 17
+      requiredLanesMask: 36
     - id: 310790
       typeId: tap
-      lane: 5
+      lane: 2
       timeSec: 168.36
-      durationSec: 0
-      segmentId: 49
-      requiredLanesMask: 0
-    - id: 320791
-      typeId: tap
-      lane: 1
-      timeSec: 168.58
       durationSec: 0
       segmentId: 49
       requiredLanesMask: 0
@@ -7891,14 +7198,14 @@ MonoBehaviour:
       requiredLanesMask: 0
     - id: 310794
       typeId: tap
-      lane: 1
+      lane: 4
       timeSec: 169.66
       durationSec: 0
       segmentId: 49
       requiredLanesMask: 0
     - id: 320795
       typeId: tap
-      lane: 3
+      lane: 0
       timeSec: 170.09
       durationSec: 0
       segmentId: 49

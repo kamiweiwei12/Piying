@@ -150,7 +150,7 @@ namespace YingYun.Rhythm.Unity.Config
                 throw new InvalidOperationException("Music clip is required.");
             }
 
-            CreateTimingMap();
+            SongTimingMap timing = CreateTimingMap();
             double endSec = PlayableEndSec;
             if (endSec > music.length + 0.001d)
             {
@@ -172,7 +172,7 @@ namespace YingYun.Rhythm.Unity.Config
                     runtimeNotes,
                     music.length,
                     playableRange);
-                SongChartValidation.ValidateDifficultyFeatures(runtimeNotes, chart.difficulty);
+                SongChartValidation.ValidateDifficultyFeatures(runtimeNotes, chart.difficulty, timing);
             }
 
             for (int i = 0; i < danceCues.Length; i++)
