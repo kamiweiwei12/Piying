@@ -165,8 +165,8 @@ namespace YingYun.Rhythm.Tests
             var overloaded = new[]
             {
                 new NoteData(1, "tap", 0, 0d, segmentId: 0),
-                new NoteData(2, "tap", 2, 0d, segmentId: 0),
-                new NoteData(3, "tap", 4, 0d, segmentId: 0),
+                new NoteData(2, "tap", 2, 0.1d, segmentId: 0),
+                new NoteData(3, "tap", 4, 0.2d, segmentId: 0),
             };
             Assert.Throws<ArgumentException>(() => SongChartValidation.ValidatePlayableLayout(
                 overloaded, PlayDifficulty.Hard, timing));

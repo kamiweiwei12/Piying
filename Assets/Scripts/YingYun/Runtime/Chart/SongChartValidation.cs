@@ -152,6 +152,21 @@ namespace YingYun.Rhythm.Chart
                 }
             }
 
+            var singleTapsPerBeat = new Dictionary<int, int>();
+            for (int i = 0; i < notes.Count; i++)
+            {
+                if (notes[i].Kind != NoteKind.Tap || notes[i].IsChord) continue;
+                double beat = timing.SecondsToBeat(notes[i].TimeSec);
+                int beatIndex = (int)Math.Floor(beat + tolerance);
+                singleTapsPerBeat.TryGetValue(beatIndex, out int count);
+                count++;
+                if (count > 2)
+                {
+                    throw new ArgumentException("A beat may contain at most two single tap notes.", nameof(notes));
+                }
+                singleTapsPerBeat[beatIndex] = count;
+            }
+
             foreach (IGrouping<int, NoteData> phrase in notes.GroupBy(note => note.SegmentId))
             {
                 bool containsHold = phrase.Any(note => note.Kind == NoteKind.Hold);
