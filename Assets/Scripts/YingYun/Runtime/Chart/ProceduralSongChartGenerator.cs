@@ -40,6 +40,25 @@ namespace YingYun.Rhythm.Chart
             new[] { 0, 4, 1, 5, 3, 2, 0, 5 },
         };
 
+        private static readonly HardPhrasePattern[] AccessibleHardPatterns =
+        {
+            new HardPhrasePattern(HardPhraseKind.Base, new[] { 0d, 1d, 3d, 4d, 5d, 7d }),
+            new HardPhrasePattern(HardPhraseKind.Base, new[] { 0d, 1d, 3d, 4d, 6d }),
+            new HardPhrasePattern(HardPhraseKind.Base, new[] { 0d, 2d, 3d, 5d, 7d }),
+            new HardPhrasePattern(HardPhraseKind.Base, new[] { 0d, 1.5d, 3d, 4d, 6d }),
+            new HardPhrasePattern(HardPhraseKind.Base, new[] { 0d, 2d, 3.5d, 5d, 7d }),
+            new HardPhrasePattern(HardPhraseKind.Base, new[] { 0d, 1d, 3d, 5d, 6d }),
+            new HardPhrasePattern(HardPhraseKind.Base, new[] { 0d, 2d, 4d, 5d, 7d }),
+            new HardPhrasePattern(HardPhraseKind.Base, new[] { 0d, 1d, 4d, 5d, 7d }),
+            new HardPhrasePattern(HardPhraseKind.Chord, new[] { 0d, 1d, 3d, 4d, 7d }, chordIndex: 3),
+            new HardPhrasePattern(HardPhraseKind.Chord, new[] { 0d, 2d, 4d, 6d }, chordIndex: 2),
+            new HardPhrasePattern(HardPhraseKind.Chord, new[] { 0d, 2d, 3d, 4d, 7d }, chordIndex: 3),
+            new HardPhrasePattern(HardPhraseKind.Hold, new[] { 0d, 1d, 3d, 6d }, holdIndex: 2, holdBeats: 2),
+            new HardPhrasePattern(HardPhraseKind.Hold, new[] { 0d, 2d, 4d, 7d }, holdIndex: 2, holdBeats: 2),
+            new HardPhrasePattern(HardPhraseKind.Hold, new[] { 0d, 2d, 3d, 6d }, holdIndex: 2, holdBeats: 3),
+            new HardPhrasePattern(HardPhraseKind.Hold, new[] { 0d, 1d, 4d, 7d }, holdIndex: 1, holdBeats: 3),
+        };
+
         private static readonly DanceAction[] Actions =
         {
             DanceAction.SingleMountainArm, DanceAction.CloudHand, DanceAction.WindFlag,
@@ -90,7 +109,11 @@ namespace YingYun.Rhythm.Chart
             var charts = new NoteData[3][];
             charts[(int)PlayDifficulty.Easy] = CreateChart(timing, PlayDifficulty.Easy, phraseMotifs, holdLengths);
             charts[(int)PlayDifficulty.Normal] = CreateChart(timing, PlayDifficulty.Normal, phraseMotifs, holdLengths);
-            charts[(int)PlayDifficulty.Hard] = CreateChart(timing, PlayDifficulty.Hard, phraseMotifs, holdLengths);
+            charts[(int)PlayDifficulty.Hard] = GenerateAccessibleHardNotes(
+                timing,
+                seed ^ unchecked((int)0x2C9277B5),
+                SharedAnchorBase,
+                900000);
             AuthoredDanceCue[] cues = CreateDanceCues(timing, playableEndSec, seed);
 
             var range = new SongPlayableRange(timing[0].TimeSec, playableEndSec);
@@ -102,6 +125,112 @@ namespace YingYun.Rhythm.Chart
             }
 
             return new ProceduralSongContent(charts, cues);
+        }
+
+        /// <summary>
+        /// Generates the shared six-key "Hard/名角" contract: four-to-six events per
+        /// eight-beat phrase, phrase-level rests, sparse accents, and non-cyclic lanes.
+        /// </summary>
+        public static NoteData[] GenerateAccessibleHardNotes(
+            SongTimingMap timing,
+            int seed,
+            int sharedAnchorBase,
+            int noteIdBase)
+        {
+            if (timing == null) throw new ArgumentNullException(nameof(timing));
+            if (timing.Count < 9) throw new ArgumentException("A Hard chart needs at least nine beats.", nameof(timing));
+
+            int phraseCount = ((timing.Count - 1) / 8) + 1;
+            var random = new StableRandom(seed);
+            var lanePlanner = new AccessibleLanePlanner(seed ^ unchecked((int)0x6D2B79F5));
+            var notes = new List<NoteData>(phraseCount * 6);
+            var recentPatternIds = new Queue<int>(4);
+            var recentChordMasks = new Queue<int>(4);
+            int lastChordPhrase = -2;
+            bool hasChord = false;
+            bool hasHold = false;
+
+            for (int phrase = 0; phrase < phraseCount; phrase++)
+            {
+                int phraseStart = phrase * 8;
+                int remainingBeats = timing.Count - phraseStart;
+                bool fullPhrase = remainingBeats >= 8;
+                HardPhraseKind kind = HardPhraseKind.Base;
+                bool chordAvailable = fullPhrase && phrase - lastChordPhrase >= 2;
+                if (!hasChord && phrase >= 1 && chordAvailable)
+                {
+                    kind = HardPhraseKind.Chord;
+                }
+                else if (!hasHold && phrase >= 2 && fullPhrase)
+                {
+                    kind = HardPhraseKind.Hold;
+                }
+                else if (chordAvailable && random.Next(10) == 0)
+                {
+                    kind = HardPhraseKind.Chord;
+                }
+                else if (fullPhrase && random.Next(5) == 0)
+                {
+                    kind = HardPhraseKind.Hold;
+                }
+
+                int patternId = ChooseHardPattern(kind, recentPatternIds, ref random);
+                HardPhrasePattern pattern = AccessibleHardPatterns[patternId];
+                Remember(recentPatternIds, patternId, 4);
+                if (kind == HardPhraseKind.Chord)
+                {
+                    hasChord = true;
+                    lastChordPhrase = phrase;
+                }
+                else if (kind == HardPhraseKind.Hold)
+                {
+                    hasHold = true;
+                }
+
+                for (int eventIndex = 0; eventIndex < pattern.Beats.Length; eventIndex++)
+                {
+                    double beat = phraseStart + pattern.Beats[eventIndex];
+                    if (beat > timing.Count - 1 + 0.000001d) break;
+
+                    bool isAnchor = eventIndex == 0;
+                    int id = isAnchor
+                        ? sharedAnchorBase + phraseStart
+                        : noteIdBase + (phrase * 16) + eventIndex;
+                    double timeSec = timing.BeatToSeconds(beat);
+                    if (eventIndex == pattern.ChordIndex)
+                    {
+                        int mask = ChooseChordMask(recentChordMasks, ref random);
+                        Remember(recentChordMasks, mask, 4);
+                        notes.Add(new NoteData(
+                            id,
+                            "chord",
+                            FirstLane(mask),
+                            timeSec,
+                            segmentId: phrase,
+                            requiredLanesMask: mask));
+                        continue;
+                    }
+
+                    int lane = lanePlanner.NextLane();
+                    if (eventIndex == pattern.HoldIndex && beat + pattern.HoldBeats <= timing.Count - 1)
+                    {
+                        notes.Add(new NoteData(
+                            id,
+                            "hold",
+                            lane,
+                            timeSec,
+                            timing.BeatToSeconds(beat + pattern.HoldBeats) - timeSec,
+                            phrase));
+                    }
+                    else
+                    {
+                        notes.Add(new NoteData(id, "tap", lane, timeSec, segmentId: phrase));
+                    }
+                }
+            }
+
+            notes.Sort((left, right) => left.TimeSec.CompareTo(right.TimeSec));
+            return notes.ToArray();
         }
 
         private static NoteData[] CreateChart(
@@ -275,6 +404,47 @@ namespace YingYun.Rhythm.Chart
             throw new ArgumentException("Chord mask is empty.", nameof(mask));
         }
 
+        private static int ChooseHardPattern(
+            HardPhraseKind kind,
+            Queue<int> recentPatternIds,
+            ref StableRandom random)
+        {
+            int start = random.Next(AccessibleHardPatterns.Length);
+            for (int offset = 0; offset < AccessibleHardPatterns.Length; offset++)
+            {
+                int index = (start + offset) % AccessibleHardPatterns.Length;
+                if (AccessibleHardPatterns[index].Kind == kind && !recentPatternIds.Contains(index))
+                {
+                    return index;
+                }
+            }
+
+            for (int index = 0; index < AccessibleHardPatterns.Length; index++)
+            {
+                if (AccessibleHardPatterns[index].Kind == kind) return index;
+            }
+
+            throw new InvalidOperationException("No matching Hard phrase pattern exists.");
+        }
+
+        private static int ChooseChordMask(Queue<int> recentChordMasks, ref StableRandom random)
+        {
+            int start = random.Next(KeyboardChordLayout.AllowedCount);
+            for (int offset = 0; offset < KeyboardChordLayout.AllowedCount; offset++)
+            {
+                int mask = KeyboardChordLayout.GetAllowedMask(start + offset);
+                if (!recentChordMasks.Contains(mask)) return mask;
+            }
+
+            throw new InvalidOperationException("No non-repeating chord mask is available.");
+        }
+
+        private static void Remember(Queue<int> values, int value, int capacity)
+        {
+            if (values.Count == capacity) values.Dequeue();
+            values.Enqueue(value);
+        }
+
         private static int DifficultyId(PlayDifficulty difficulty, int beat)
         {
             switch (difficulty)
@@ -312,6 +482,121 @@ namespace YingYun.Rhythm.Chart
                 value ^= value << 5;
                 _state = value;
                 return (int)(value % (uint)maximum);
+            }
+        }
+
+        private enum HardPhraseKind
+        {
+            Base,
+            Chord,
+            Hold,
+        }
+
+        private readonly struct HardPhrasePattern
+        {
+            public HardPhrasePattern(
+                HardPhraseKind kind,
+                double[] beats,
+                int holdIndex = -1,
+                int holdBeats = 0,
+                int chordIndex = -1)
+            {
+                Kind = kind;
+                Beats = beats;
+                HoldIndex = holdIndex;
+                HoldBeats = holdBeats;
+                ChordIndex = chordIndex;
+            }
+
+            public HardPhraseKind Kind { get; }
+            public double[] Beats { get; }
+            public int HoldIndex { get; }
+            public int HoldBeats { get; }
+            public int ChordIndex { get; }
+        }
+
+        private sealed class AccessibleLanePlanner
+        {
+            private readonly List<int> _lanes = new List<int>();
+            private StableRandom _random;
+            private int _readIndex;
+
+            public AccessibleLanePlanner(int seed)
+            {
+                _random = new StableRandom(seed);
+            }
+
+            public int NextLane()
+            {
+                if (_readIndex >= _lanes.Count && !AppendPermutation(new bool[KeyboardChordLayout.LaneCount], 0))
+                {
+                    throw new InvalidOperationException("Unable to build a non-cyclic six-lane permutation.");
+                }
+
+                return _lanes[_readIndex++];
+            }
+
+            private bool AppendPermutation(bool[] used, int depth)
+            {
+                if (depth == KeyboardChordLayout.LaneCount) return true;
+
+                int start = _random.Next(KeyboardChordLayout.LaneCount);
+                for (int offset = 0; offset < KeyboardChordLayout.LaneCount; offset++)
+                {
+                    int lane = (start + offset) % KeyboardChordLayout.LaneCount;
+                    if (used[lane] || !IsValidNext(lane)) continue;
+
+                    used[lane] = true;
+                    _lanes.Add(lane);
+                    if (AppendPermutation(used, depth + 1)) return true;
+                    _lanes.RemoveAt(_lanes.Count - 1);
+                    used[lane] = false;
+                }
+
+                return false;
+            }
+
+            private bool IsValidNext(int lane)
+            {
+                int count = _lanes.Count;
+                if (count > 0 && _lanes[count - 1] == lane) return false;
+                if (count >= 3 && _lanes[count - 3] == _lanes[count - 1] && _lanes[count - 2] == lane)
+                {
+                    return false;
+                }
+
+                if (count >= 2)
+                {
+                    int first = _lanes[count - 2];
+                    int second = _lanes[count - 1];
+                    int start = Math.Max(0, count - 16);
+                    for (int i = start; i <= count - 3; i++)
+                    {
+                        if (_lanes[i] == first && _lanes[i + 1] == second && _lanes[i + 2] == lane)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                int direction = count == 0 ? 0 : AdjacentDirection(_lanes[count - 1], lane);
+                if (direction == 0) return true;
+
+                int sameDirectionSteps = 1;
+                for (int i = count - 1; i >= 1; i--)
+                {
+                    if (AdjacentDirection(_lanes[i - 1], _lanes[i]) != direction) break;
+                    sameDirectionSteps++;
+                }
+
+                return sameDirectionSteps <= 3;
+            }
+
+            private static int AdjacentDirection(int previous, int current)
+            {
+                if (current == (previous + 1) % KeyboardChordLayout.LaneCount) return 1;
+                if (current == (previous + KeyboardChordLayout.LaneCount - 1) % KeyboardChordLayout.LaneCount) return -1;
+                return 0;
             }
         }
     }

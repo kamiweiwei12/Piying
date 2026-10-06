@@ -78,58 +78,19 @@ namespace YingYun.Rhythm.Chart
 
         private static NoteData[] CreateHard(double bpm, double durationSeconds)
         {
-
             double beatDuration = 60d / bpm;
-            double phraseDuration = beatDuration * BeatsPerPhrase;
-            int phraseCount = (int)Math.Floor(durationSeconds / phraseDuration);
-            var notes = new List<NoteData>((phraseCount * 10) + 1);
-            int noteId = 1;
-
-            for (int phrase = 0; phrase < phraseCount; phrase++)
+            int beatCount = (int)Math.Floor(durationSeconds / beatDuration) + 1;
+            var points = new SongTimingPoint[beatCount];
+            for (int beat = 0; beat < beatCount; beat++)
             {
-                double start = phrase * phraseDuration;
-                notes.Add(Tap(noteId++, LeftHandLane, start, phrase));
-                notes.Add(Tap(noteId++, BodyLane, start + (0.5d * beatDuration), phrase));
-                notes.Add(Tap(noteId++, RightHandLane, start + beatDuration, phrase));
-                bool chordPhrase = (phrase & 1) == 1;
-                if (chordPhrase)
-                {
-                    int chordPhraseIndex = phrase / 2;
-                    int firstMask = KeyboardChordLayout.GetAllowedMask(chordPhraseIndex * 2);
-                    notes.Add(Chord(noteId++, FirstLane(firstMask), firstMask, start + (2d * beatDuration), phrase));
-                }
-                else
-                {
-                    notes.Add(Tap(noteId++, LeftFootLane, start + (2d * beatDuration), phrase));
-                }
-                notes.Add(Tap(noteId++, HeadLane, start + (3d * beatDuration), phrase));
-                if (chordPhrase)
-                {
-                    notes.Add(Tap(noteId++, BodyLane, start + (4d * beatDuration), phrase));
-                }
-                else
-                {
-                    notes.Add(Hold(noteId++, BodyLane, start + (4d * beatDuration), HoldBeats * beatDuration, phrase));
-                }
-                notes.Add(Tap(noteId++, phrase % 2 == 0 ? LeftHandLane : RightHandLane,
-                    start + (5d * beatDuration), phrase));
-                notes.Add(Tap(noteId++, LeftFootLane, start + (6d * beatDuration), phrase));
-                if (chordPhrase)
-                {
-                    int chordPhraseIndex = phrase / 2;
-                    int secondMask = KeyboardChordLayout.GetAllowedMask((chordPhraseIndex * 2) + 1);
-                    notes.Add(Chord(noteId++, FirstLane(secondMask), secondMask, start + (6.5d * beatDuration), phrase));
-                }
-                else
-                {
-                    notes.Add(Tap(noteId++, RightHandLane, start + (6.5d * beatDuration), phrase));
-                }
-                notes.Add(Tap(noteId++, RightFootLane, start + (7d * beatDuration), phrase));
+                points[beat] = new SongTimingPoint(beat * beatDuration, beat, bpm, 4);
             }
 
-            notes.Add(Tap(noteId, BodyLane, durationSeconds, phraseCount));
-            notes.Sort((left, right) => left.TimeSec.CompareTo(right.TimeSec));
-            return notes.ToArray();
+            return ProceduralSongChartGenerator.GenerateAccessibleHardNotes(
+                new SongTimingMap(points),
+                unchecked((int)0x54524941) ^ beatCount,
+                100000,
+                1);
         }
 
         private static NoteData[] CreateEasy(double durationSeconds)
@@ -158,28 +119,5 @@ namespace YingYun.Rhythm.Chart
             return new NoteData(id, "hold", lane, timeSec, durationSec, segmentId);
         }
 
-        private static NoteData Chord(int id, int primaryLane, int mask, double timeSec, int segmentId)
-        {
-            return new NoteData(
-                id,
-                "chord",
-                primaryLane,
-                timeSec,
-                segmentId: segmentId,
-                requiredLanesMask: mask);
-        }
-
-        private static int FirstLane(int mask)
-        {
-            for (int lane = 0; lane < 6; lane++)
-            {
-                if ((mask & (1 << lane)) != 0)
-                {
-                    return lane;
-                }
-            }
-
-            throw new ArgumentException("Chord mask must contain at least one lane.", nameof(mask));
-        }
     }
 }

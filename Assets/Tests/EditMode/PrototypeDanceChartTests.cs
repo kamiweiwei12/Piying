@@ -89,14 +89,15 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void Create_DifficultiesIncreaseDensityAndRemainSorted()
+        public void Create_AccessibleHardUsesAdvancedInputsWithoutExcessDensity()
         {
-            NoteData[] easy = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Easy);
-            NoteData[] normal = PrototypeDanceChart.Create(120d, 40d, PlayDifficulty.Normal);
-            NoteData[] hard = PrototypeDanceChart.Create(120d, 64d, PlayDifficulty.Hard);
+            const double duration = 64d;
+            NoteData[] easy = PrototypeDanceChart.Create(120d, duration, PlayDifficulty.Easy);
+            NoteData[] normal = PrototypeDanceChart.Create(120d, duration, PlayDifficulty.Normal);
+            NoteData[] hard = PrototypeDanceChart.Create(120d, duration, PlayDifficulty.Hard);
 
-            Assert.That(easy.Length, Is.LessThan(normal.Length));
-            Assert.That(normal.Length, Is.LessThan(hard.Length));
+            Assert.That(easy.Length, Is.LessThan(hard.Length));
+            Assert.That(hard.Length, Is.LessThan(normal.Length));
             foreach (NoteData[] chart in new[] { easy, normal, hard })
             {
                 Assert.That(chart.Zip(chart.Skip(1), (left, right) => left.TimeSec <= right.TimeSec).All(x => x), Is.True);
@@ -112,7 +113,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void Create_NormalDensityFallsStrictlyBetweenEasyAndHard()
+        public void Create_AccessibleHardDensityFallsBetweenEasyAndNormal()
         {
             const double duration = 180d;
             NoteData[] easy = PrototypeDanceChart.Create(120d, duration, PlayDifficulty.Easy);
@@ -120,36 +121,48 @@ namespace YingYun.Rhythm.Tests
             NoteData[] hard = PrototypeDanceChart.Create(120d, duration, PlayDifficulty.Hard);
 
             Assert.That(easy.Length / duration, Is.EqualTo(1d).Within(0.0001d));
-            Assert.That(normal.Length / duration, Is.GreaterThan(easy.Length / duration));
-            Assert.That(normal.Length / duration, Is.LessThan(hard.Length / duration));
+            Assert.That(hard.Length / duration, Is.GreaterThan(easy.Length / duration));
+            Assert.That(hard.Length / duration, Is.LessThan(normal.Length / duration));
         }
 
         [Test]
-        public void Create_HardCoversAllTwelveAllowedTwoLaneChordCombinations()
+        public void Create_HardUsesAllowedNonRepeatingTwoLaneChordAccents()
         {
             NoteData[] hard = PrototypeDanceChart.Create(120d, 48d, PlayDifficulty.Hard);
-            int[] chordMasks = hard.Where(x => x.IsChord).Select(x => x.RequiredLanesMask).Distinct().ToArray();
+            int[] chordMasks = hard.Where(x => x.IsChord).Select(x => x.RequiredLanesMask).ToArray();
 
-            Assert.That(chordMasks.Length, Is.EqualTo(KeyboardChordLayout.AllowedCount));
+            Assert.That(chordMasks, Is.Not.Empty);
             Assert.That(chordMasks.All(mask => CountBits(mask) == 2), Is.True);
             Assert.That(chordMasks.All(KeyboardChordLayout.IsAllowed), Is.True);
             Assert.That(chordMasks.Contains((1 << 1) | (1 << 4)), Is.False, "Y+H");
             Assert.That(chordMasks.Contains((1 << 0) | (1 << 5)), Is.False, "T+J");
             Assert.That(chordMasks.Contains((1 << 2) | (1 << 3)), Is.False, "U+G");
+            for (int i = 0; i < chordMasks.Length; i++)
+            {
+                Assert.That(
+                    chordMasks.Skip(Math.Max(0, i - 4)).Take(Math.Min(4, i)).Contains(chordMasks[i]),
+                    Is.False);
+            }
         }
 
         [Test]
         public void Create_HardAlternatesHoldAndChordPhrasesWithinDensityBudget()
         {
             const double bpm = 120d;
-            NoteData[] hard = PrototypeDanceChart.Create(bpm, 64d, PlayDifficulty.Hard);
-            var timing = new SongTimingMap(new[] { new SongTimingPoint(0d, 0d, bpm) });
+            const double duration = 64d;
+            NoteData[] hard = PrototypeDanceChart.Create(bpm, duration, PlayDifficulty.Hard);
+            double beatDuration = 60d / bpm;
+            int beatCount = (int)Math.Floor(duration / beatDuration) + 1;
+            var timing = new SongTimingMap(Enumerable.Range(0, beatCount)
+                .Select(beat => new SongTimingPoint(beat * beatDuration, beat, bpm, 4))
+                .ToArray());
 
             Assert.DoesNotThrow(() => SongChartValidation.ValidatePlayableLayout(
                 hard,
                 PlayDifficulty.Hard,
                 timing));
-            Assert.That(hard.GroupBy(note => note.SegmentId).All(phrase => phrase.Count() <= 10), Is.True);
+            Assert.That(hard.GroupBy(note => note.SegmentId).All(phrase =>
+                phrase.Count() <= SongChartValidation.AccessibleHardMaxEventsPerPhrase), Is.True);
         }
 
         [Test]

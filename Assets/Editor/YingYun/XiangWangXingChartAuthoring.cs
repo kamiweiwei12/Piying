@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using YingYun.Rhythm.Chart;
+using YingYun.Rhythm.Judgment;
 using YingYun.Rhythm.Puppet;
 using YingYun.Rhythm.Scoring;
 using YingYun.Rhythm.Unity.Config;
@@ -90,6 +91,11 @@ namespace YingYun.Rhythm.Editor
             SongTimingMap timing,
             PlayDifficulty difficulty)
         {
+            if (difficulty == PlayDifficulty.Hard)
+            {
+                return CreateAccessibleHardChart(timing);
+            }
+
             var notes = new List<SongDefinitionAsset.NoteRecord>(difficulty == PlayDifficulty.Hard ? 600 : 220);
             for (int beat = 0; beat < timing.Count; beat++)
             {
@@ -117,6 +123,36 @@ namespace YingYun.Rhythm.Editor
             {
                 difficulty = difficulty,
                 notes = notes.ToArray(),
+            };
+        }
+
+        private static SongDefinitionAsset.DifficultyChart CreateAccessibleHardChart(SongTimingMap timing)
+        {
+            NoteData[] generated = ProceduralSongChartGenerator.GenerateAccessibleHardNotes(
+                timing,
+                unchecked((int)0x58495758),
+                SharedAnchorBase,
+                310000);
+            var records = new SongDefinitionAsset.NoteRecord[generated.Length];
+            for (int i = 0; i < generated.Length; i++)
+            {
+                NoteData note = generated[i];
+                records[i] = new SongDefinitionAsset.NoteRecord
+                {
+                    id = note.Id,
+                    typeId = note.TypeId,
+                    lane = note.Lane,
+                    timeSec = note.TimeSec,
+                    durationSec = note.DurationSec,
+                    segmentId = note.SegmentId,
+                    requiredLanesMask = note.RequiredLanesMask,
+                };
+            }
+
+            return new SongDefinitionAsset.DifficultyChart
+            {
+                difficulty = PlayDifficulty.Hard,
+                notes = records,
             };
         }
 

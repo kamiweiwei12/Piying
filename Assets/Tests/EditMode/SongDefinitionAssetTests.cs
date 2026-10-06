@@ -97,7 +97,7 @@ namespace YingYun.Rhythm.Tests
 
             Assert.That(easy.Length, Is.EqualTo(100));
             Assert.That(normal.Length, Is.EqualTo(200));
-            Assert.That(hard.Length, Is.EqualTo(499));
+            Assert.That(hard.Length, Is.EqualTo(250));
             Assert.That(easy.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
             Assert.That(normal.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
             Assert.That(hard.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
@@ -156,7 +156,7 @@ namespace YingYun.Rhythm.Tests
 
             Assert.That(easy.Length, Is.EqualTo(96));
             Assert.That(normal.Length, Is.EqualTo(191));
-            Assert.That(hard.Length, Is.EqualTo(477));
+            Assert.That(hard.Length, Is.EqualTo(236));
             Assert.That(easy.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
             Assert.That(normal.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
             Assert.That(hard.Select(note => note.Lane).Distinct().Count(), Is.EqualTo(6));
@@ -192,7 +192,10 @@ namespace YingYun.Rhythm.Tests
                     .OrderBy(length => length)
                     .ToArray();
 
-                Assert.That(holdLengths, Is.EqualTo(new[] { 1, 2, 3, 4 }), difficulty.ToString());
+                int[] expected = difficulty == PlayDifficulty.Normal
+                    ? new[] { 1, 2, 3, 4 }
+                    : new[] { 2, 3 };
+                Assert.That(holdLengths, Is.EqualTo(expected), difficulty.ToString());
                 AssertHoldLanesRemainFree(notes);
             }
 

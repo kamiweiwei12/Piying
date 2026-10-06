@@ -188,6 +188,39 @@ namespace YingYun.Rhythm.Tests
                 densePhrase, PlayDifficulty.Hard, timing));
         }
 
+        [Test]
+        public void AccessibleHardValidation_RejectsTwoLaneLoopsAndRecentRhythmRepeats()
+        {
+            SongTimingMap timing = CreateTiming(24);
+            int[] loopLanes = { 0, 1, 0, 1 };
+            NoteData[] twoLaneLoop = loopLanes.Select((lane, index) =>
+                new NoteData(100 + index, "tap", lane, timing.BeatToSeconds(index * 2), segmentId: 0))
+                .ToArray();
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidatePlayableLayout(
+                twoLaneLoop, PlayDifficulty.Hard, timing));
+
+            int[] lanes = { 0, 2, 4, 1, 3, 5, 0, 2 };
+            NoteData[] repeatedRhythm = lanes.Select((lane, index) =>
+            {
+                int phrase = index / 4;
+                int localEvent = index % 4;
+                int beat = (phrase * 8) + (localEvent * 2);
+                return new NoteData(200 + index, "tap", lane, timing.BeatToSeconds(beat), segmentId: phrase);
+            }).ToArray();
+            Assert.Throws<ArgumentException>(() => SongChartValidation.ValidatePlayableLayout(
+                repeatedRhythm, PlayDifficulty.Hard, timing));
+        }
+
+        private static SongTimingMap CreateTiming(int count)
+        {
+            var points = new SongTimingPoint[count];
+            for (int i = 0; i < points.Length; i++)
+            {
+                points[i] = new SongTimingPoint(i * 0.5d, i, 120d, 4);
+            }
+            return new SongTimingMap(points);
+        }
+
         private static int FirstLane(int mask)
         {
             for (int lane = 0; lane < KeyboardChordLayout.LaneCount; lane++)

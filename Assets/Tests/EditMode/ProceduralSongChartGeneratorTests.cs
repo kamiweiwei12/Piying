@@ -169,7 +169,11 @@ namespace YingYun.Rhythm.Tests
                 hard,
                 PlayDifficulty.Hard,
                 timing));
-            Assert.That(hard.GroupBy(note => note.SegmentId).All(phrase => phrase.Count() <= 10), Is.True);
+            Assert.That(hard.GroupBy(note => note.SegmentId).All(phrase =>
+                phrase.Count() <= SongChartValidation.AccessibleHardMaxEventsPerPhrase), Is.True);
+            Assert.That(hard.GroupBy(note => note.SegmentId)
+                .Where(phrase => (phrase.Key * 8) + 7 < timing.Count)
+                .All(phrase => phrase.Count() >= SongChartValidation.AccessibleHardMinEventsPerFullPhrase), Is.True);
             Assert.That(hard.GroupBy(note => note.SegmentId).All(phrase =>
                 !phrase.Any(note => note.Kind == NoteKind.Hold) ||
                 !phrase.Any(note => note.IsChord)), Is.True);
@@ -178,7 +182,29 @@ namespace YingYun.Rhythm.Tests
                 .Select(note => timing.SecondsToBeat(note.TimeSec))
                 .ToArray();
             Assert.That(chordBeats.Zip(chordBeats.Skip(1),
-                (left, right) => right - left >= 2d - 0.000001d).All(value => value), Is.True);
+                (left, right) => right - left >= 16d - 0.000001d).All(value => value), Is.True);
+
+            string[] rhythms = hard.GroupBy(note => note.SegmentId)
+                .Where(phrase => (phrase.Key * 8) + 7 < timing.Count)
+                .OrderBy(phrase => phrase.Key)
+                .Select(phrase => string.Join(",", phrase.OrderBy(note => note.TimeSec)
+                    .Select(note => (int)Math.Round(
+                        (timing.SecondsToBeat(note.TimeSec) - (phrase.Key * 8)) * 2d))))
+                .ToArray();
+            for (int i = 0; i < rhythms.Length; i++)
+            {
+                Assert.That(
+                    rhythms.Skip(Math.Max(0, i - 4)).Take(Math.Min(4, i)).Contains(rhythms[i]),
+                    Is.False);
+            }
+
+            int[] singleLanes = hard.Where(note => !note.IsChord).Select(note => note.Lane).ToArray();
+            for (int start = 0; start + 18 <= singleLanes.Length; start++)
+            {
+                int[] window = singleLanes.Skip(start).Take(18).ToArray();
+                Assert.That(window.Distinct().Count(), Is.EqualTo(6));
+                Assert.That(window.GroupBy(lane => lane).Max(group => group.Count()), Is.LessThanOrEqualTo(6));
+            }
         }
 
         [Test]
