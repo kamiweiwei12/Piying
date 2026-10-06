@@ -48,7 +48,7 @@ namespace YingYun.Rhythm.View
             new PuppetArtCalibration("puppet_left_upper_arm", "Joint Pelvis/Joint Waist/Joint Left Shoulder/Art Left Upper Arm", 1.03f, -7.2f),
             new PuppetArtCalibration("puppet_left_forearm", "Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Art Left Forearm", 0.89f, 5.8f),
             new PuppetArtCalibration("puppet_left_hand", "Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Art Left Hand", 0.42f, 0f),
-            new PuppetArtCalibration("puppet_right_upper_arm", "Joint Pelvis/Joint Waist/Joint Right Shoulder/Art Right Upper Arm", 1.02f, -1.4f),
+            new PuppetArtCalibration("puppet_left_upper_arm", "Joint Pelvis/Joint Waist/Joint Right Shoulder/Art Right Upper Arm", 1.03f, 7.2f),
             new PuppetArtCalibration("puppet_right_forearm", "Joint Pelvis/Joint Waist/Joint Right Shoulder/Joint Right Elbow/Art Right Forearm", 0.90f, -1.4f),
             new PuppetArtCalibration("puppet_right_hand", "Joint Pelvis/Joint Waist/Joint Right Shoulder/Joint Right Elbow/Joint Right Wrist/Art Right Hand", 0.42f, 0f),
             new PuppetArtCalibration("puppet_left_thigh", "Joint Pelvis/Joint Left Hip/Art Left Thigh", 1.08f, 1.5f),

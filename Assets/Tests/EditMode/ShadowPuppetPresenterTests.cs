@@ -201,17 +201,29 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void SegmentedArt_UsesDedicatedRightUpperArmSprite()
+        public void SegmentedArt_RightUpperArmMirrorsLeftWithoutExtraRivetArtwork()
         {
-            var root = new GameObject("Right Upper Arm Art Binding Test");
+            var root = new GameObject("Mirrored Upper Arm Art Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
             presenter.Begin();
 
-            SpriteRenderer upperArm = root.transform.Find(
-                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Right Shoulder/Art Right Upper Arm")
-                .GetComponent<SpriteRenderer>();
+            Transform leftUpperArm = root.transform.Find(
+                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Art Left Upper Arm");
+            Transform rightUpperArm = root.transform.Find(
+                "M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Right Shoulder/Art Right Upper Arm");
+            SpriteRenderer leftRenderer = leftUpperArm.GetComponent<SpriteRenderer>();
+            SpriteRenderer rightRenderer = rightUpperArm.GetComponent<SpriteRenderer>();
 
-            Assert.That(upperArm.sprite.name, Is.EqualTo("puppet_right_upper_arm"));
+            Assert.That(leftRenderer.sprite.name, Is.EqualTo("puppet_left_upper_arm"));
+            Assert.That(rightRenderer.sprite, Is.SameAs(leftRenderer.sprite));
+            Assert.That(leftUpperArm.localScale.x, Is.GreaterThan(0f));
+            Assert.That(rightUpperArm.localScale.x, Is.LessThan(0f));
+            Assert.That(Mathf.Abs(rightUpperArm.localScale.x),
+                Is.EqualTo(Mathf.Abs(leftUpperArm.localScale.x)).Within(0.0001f));
+            Assert.That(rightUpperArm.localScale.y,
+                Is.EqualTo(leftUpperArm.localScale.y).Within(0.0001f));
+            Assert.That(rightRenderer.sprite.rect.size,
+                Is.EqualTo(new Vector2(159f, 259f)));
             Object.DestroyImmediate(root);
         }
 

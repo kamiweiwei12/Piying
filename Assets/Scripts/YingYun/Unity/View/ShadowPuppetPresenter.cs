@@ -1848,7 +1848,7 @@ namespace YingYun.Rhythm.View
             {
                 "puppet_head", "puppet_torso", "puppet_pelvis",
                 "puppet_left_upper_arm", "puppet_left_forearm", "puppet_left_hand",
-                "puppet_right_upper_arm", "puppet_right_forearm", "puppet_right_hand",
+                "puppet_right_forearm", "puppet_right_hand",
                 "puppet_left_thigh", "puppet_left_shin", "puppet_left_shoe",
                 "puppet_right_thigh", "puppet_right_shin", "puppet_right_shoe"
             };
@@ -1877,7 +1877,11 @@ namespace YingYun.Rhythm.View
                 FindPuppetArt("puppet_left_hand"), 0.42f, 12);
 
             _rightSleeveArt = CreateRigArt("Art Right Upper Arm", _rightUpperArmJoint,
-                FindPuppetArt("puppet_right_upper_arm"), 1.02f, 9, -1.4f);
+                FindPuppetArt("puppet_left_upper_arm"), 1.03f, 9, 7.2f);
+            _rightSleeveArt.localScale = new Vector3(
+                -_rightSleeveArt.localScale.x,
+                _rightSleeveArt.localScale.y,
+                _rightSleeveArt.localScale.z);
             CreateRigArt("Art Right Forearm", _rightForearmJoint,
                 FindPuppetArt("puppet_right_forearm"), 0.90f, 10, -1.4f);
             _rightHandArt = CreateRigArt("Art Right Hand", _rightWristJoint,
