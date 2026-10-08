@@ -165,7 +165,10 @@ namespace YingYun.Rhythm.Tests
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee/Joint Right Ankle/Right Foot Plate"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Bamboo Control Rod 0"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Control String 0"), Is.Null);
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Header"), Is.Not.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Header"), Is.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Left Post"), Is.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Right Post"), Is.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Foot"), Is.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Robe Skirt"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Neck/Crown Wing Left"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Chest Rod Socket"), Is.Not.Null);

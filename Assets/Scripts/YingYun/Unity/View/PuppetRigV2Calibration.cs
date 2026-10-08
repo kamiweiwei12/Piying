@@ -19,7 +19,7 @@ namespace YingYun.Rhythm.View
         public const float LegMinimumReach = ThighLength - ShinLength;
         public const float GroundY = -2.15f;
 
-        // 舞台木框内沿再留 0.08 单位，动作目标必须留在此区域。
+        // 舞台安全边界内再留 0.08 单位，动作目标必须留在此区域。
         public static readonly Rect StageSafetyFrame = Rect.MinMaxRect(-2.54f, -2.86f, 2.54f, 2.86f);
 
         public static readonly PuppetJointCalibration[] Joints =

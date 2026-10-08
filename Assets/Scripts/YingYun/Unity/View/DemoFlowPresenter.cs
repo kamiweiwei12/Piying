@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using YingYun.Rhythm.Scoring;
@@ -23,15 +24,26 @@ namespace YingYun.Rhythm.View
     public sealed class DemoFlowPresenter : MonoBehaviour
     {
         private GameObject _canvasObject;
+        private GameObject _openingPanel;
         private GameObject _menuPanel;
         private GameObject _pausePanel;
         private GameObject _diagnosticsPanel;
+        private CanvasGroup _menuGroup;
+        private CanvasGroup _openingGroup;
         private UnityEngine.UI.Text _calibrationText;
         private UnityEngine.UI.Text _selectedSongText;
         private UnityEngine.UI.Text _songImportStatusText;
         private UnityEngine.UI.Text _songPageText;
         private UnityEngine.UI.Text _diagnosticsText;
         private UnityEngine.UI.Text _diagnosticsStatusText;
+        private UnityEngine.UI.Text _openingPrompt;
+        private UnityEngine.UI.Button _openingButton;
+        private CanvasGroup _openingLaughGroup;
+        private CanvasGroup _openingFinalGroup;
+        private RectTransform _openingLaughRect;
+        private RectTransform _openingFinalRect;
+        private Coroutine _openingRoutine;
+        private bool _openingCanDismiss;
         private Font _runtimeFont;
         private string _selectedSongId = string.Empty;
         private readonly List<SongButton> _songButtons = new List<SongButton>(3);
@@ -49,11 +61,14 @@ namespace YingYun.Rhythm.View
         public event Action DiagnosticsRequested;
         public event Action DiagnosticsCopyRequested;
         public event Action DiagnosticsFolderRequested;
+        public event Action OpeningDismissed;
 
+        public bool IsOpeningVisible => _openingPanel != null && _openingPanel.activeSelf;
         public bool IsMenuVisible => _menuPanel != null && _menuPanel.activeSelf;
         public bool IsPauseVisible => _pausePanel != null && _pausePanel.activeSelf;
         public bool IsDiagnosticsVisible => _diagnosticsPanel != null && _diagnosticsPanel.activeSelf;
         public string SelectedSongId => _selectedSongId;
+        public bool OpeningCanDismiss => _openingCanDismiss;
 
         private sealed class SongButton
         {
@@ -67,9 +82,25 @@ namespace YingYun.Rhythm.View
             Build();
         }
 
+        public void ShowOpening()
+        {
+            _menuPanel.SetActive(false);
+            _openingPanel.SetActive(true);
+            _openingGroup.alpha = 1f;
+            _menuGroup.alpha = 1f;
+            _openingCanDismiss = false;
+            _openingButton.interactable = false;
+            SetTextAlpha(_openingPrompt, 0f);
+            SetOpeningSlide(_openingLaughGroup, _openingLaughRect, 1f, 1.03f, new Vector2(-22f, 4f));
+            SetOpeningSlide(_openingFinalGroup, _openingFinalRect, 0f, 1.12f, new Vector2(76f, -8f));
+            if (_openingRoutine != null) StopCoroutine(_openingRoutine);
+            _openingRoutine = StartCoroutine(PlayOpening());
+        }
+
         public void ShowMenu(double audioOffsetMs, double inputOffsetMs)
         {
             _menuPanel.SetActive(true);
+            _menuGroup.alpha = IsOpeningVisible ? 0f : 1f;
             RefreshCalibration(audioOffsetMs, inputOffsetMs);
         }
 
@@ -219,7 +250,7 @@ namespace YingYun.Rhythm.View
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             scaler.matchWidthOrHeight = 0.5f;
 
-            _menuPanel = new GameObject("选曲与校准", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            _menuPanel = new GameObject("选曲与校准", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(CanvasGroup));
             _menuPanel.transform.SetParent(_canvasObject.transform, false);
             RectTransform panel = (RectTransform)_menuPanel.transform;
             panel.anchorMin = Vector2.zero;
@@ -227,6 +258,7 @@ namespace YingYun.Rhythm.View
             panel.offsetMin = Vector2.zero;
             panel.offsetMax = Vector2.zero;
             _menuPanel.GetComponent<UnityEngine.UI.Image>().color = new Color(0.075f, 0.018f, 0.012f, 0.97f);
+            _menuGroup = _menuPanel.GetComponent<CanvasGroup>();
 
             AddText(panel, "影　韵", 86, new Vector2(0f, 405f), new Vector2(900f, 110f), new Color(1f, 0.76f, 0.23f));
             AddText(panel, "数字皮影操演 · 选择曲目与难度", 30, new Vector2(0f, 330f), new Vector2(900f, 60f), new Color(1f, 0.90f, 0.68f));
@@ -251,8 +283,162 @@ namespace YingYun.Rhythm.View
             AddSmallButton(panel, "输入 -5", new Vector2(105f, -340f), () => CalibrationAdjusted?.Invoke(0d, -5d));
             AddSmallButton(panel, "输入 +5", new Vector2(315f, -340f), () => CalibrationAdjusted?.Invoke(0d, 5d));
             AddText(panel, "快捷键：1 / 2 / 3 选择难度", 21, new Vector2(0f, -430f), new Vector2(1100f, 50f), new Color(0.72f, 0.59f, 0.43f));
+            _menuPanel.SetActive(false);
+            BuildOpeningPanel();
             BuildPausePanel();
             BuildDiagnosticsPanel();
+        }
+
+        private void BuildOpeningPanel()
+        {
+            _openingPanel = new GameObject("开场", typeof(RectTransform), typeof(UnityEngine.UI.Image),
+                typeof(UnityEngine.UI.Button), typeof(CanvasGroup));
+            _openingPanel.transform.SetParent(_canvasObject.transform, false);
+            RectTransform panel = (RectTransform)_openingPanel.transform;
+            panel.anchorMin = Vector2.zero;
+            panel.anchorMax = Vector2.one;
+            panel.offsetMin = Vector2.zero;
+            panel.offsetMax = Vector2.zero;
+            UnityEngine.UI.Image hitArea = _openingPanel.GetComponent<UnityEngine.UI.Image>();
+            hitArea.color = new Color(0f, 0f, 0f, 0f);
+            hitArea.raycastTarget = true;
+            _openingGroup = _openingPanel.GetComponent<CanvasGroup>();
+            _openingButton = _openingPanel.GetComponent<UnityEngine.UI.Button>();
+            _openingButton.transition = UnityEngine.UI.Selectable.Transition.None;
+            _openingButton.interactable = false;
+            _openingButton.onClick.AddListener(DismissOpening);
+
+            _openingLaughGroup = CreateOpeningSlide(panel, "掩嘴笑", "YingYun/UI/Opening/OpeningLaugh", out _openingLaughRect);
+            _openingFinalGroup = CreateOpeningSlide(panel, "落手定格", "YingYun/UI/Opening/OpeningFinal", out _openingFinalRect);
+
+            var promptMask = new GameObject("开场提示底", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            promptMask.transform.SetParent(panel, false);
+            RectTransform promptMaskRect = (RectTransform)promptMask.transform;
+            promptMaskRect.anchorMin = promptMaskRect.anchorMax = new Vector2(0.5f, 0.5f);
+            promptMaskRect.anchoredPosition = new Vector2(0f, -438f);
+            promptMaskRect.sizeDelta = new Vector2(980f, 96f);
+            UnityEngine.UI.Image promptMaskImage = promptMask.GetComponent<UnityEngine.UI.Image>();
+            promptMaskImage.color = new Color(0.93f, 0.895f, 0.81f, 0.97f);
+            promptMaskImage.raycastTarget = false;
+            _openingPrompt = AddText(panel, "点击任意处开始游戏", 34, new Vector2(0f, -438f), new Vector2(900f, 72f), new Color(0.56f, 0.29f, 0.08f, 0f));
+            _openingPanel.SetActive(false);
+        }
+
+        private static CanvasGroup CreateOpeningSlide(
+            RectTransform parent,
+            string name,
+            string resourcePath,
+            out RectTransform rect)
+        {
+            var slideObject = new GameObject(name, typeof(RectTransform), typeof(UnityEngine.UI.RawImage),
+                typeof(UnityEngine.UI.AspectRatioFitter), typeof(CanvasGroup));
+            slideObject.transform.SetParent(parent, false);
+            rect = (RectTransform)slideObject.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            Texture2D texture = Resources.Load<Texture2D>(resourcePath);
+            UnityEngine.UI.RawImage image = slideObject.GetComponent<UnityEngine.UI.RawImage>();
+            image.texture = texture;
+            image.color = Color.white;
+            image.raycastTarget = false;
+            UnityEngine.UI.AspectRatioFitter fitter = slideObject.GetComponent<UnityEngine.UI.AspectRatioFitter>();
+            fitter.aspectMode = UnityEngine.UI.AspectRatioFitter.AspectMode.EnvelopeParent;
+            fitter.aspectRatio = texture == null ? 16f / 9f : (float)texture.width / texture.height;
+            return slideObject.GetComponent<CanvasGroup>();
+        }
+
+        private IEnumerator PlayOpening()
+        {
+            yield return new WaitForSecondsRealtime(0.70f);
+            float elapsed = 0f;
+            const float laughDuration = 1.60f;
+            while (elapsed < laughDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / laughDuration));
+                SetOpeningSlide(_openingLaughGroup, _openingLaughRect, 1f,
+                    Mathf.Lerp(1.03f, 1.11f, t), Vector2.Lerp(new Vector2(-22f, 4f), new Vector2(24f, 14f), t));
+                yield return null;
+            }
+
+            elapsed = 0f;
+            const float transitionDuration = 1.35f;
+            while (elapsed < transitionDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / transitionDuration));
+                SetOpeningSlide(_openingLaughGroup, _openingLaughRect, 1f - t,
+                    Mathf.Lerp(1.11f, 1.16f, t), Vector2.Lerp(new Vector2(24f, 14f), new Vector2(-92f, 5f), t));
+                SetOpeningSlide(_openingFinalGroup, _openingFinalRect, t,
+                    Mathf.Lerp(1.12f, 1f, t), Vector2.Lerp(new Vector2(76f, -8f), Vector2.zero, t));
+                yield return null;
+            }
+
+            SetOpeningSlide(_openingLaughGroup, _openingLaughRect, 0f, 1.16f, new Vector2(-92f, 5f));
+            SetOpeningSlide(_openingFinalGroup, _openingFinalRect, 1f, 1f, Vector2.zero);
+            yield return new WaitForSecondsRealtime(0.45f);
+            float fade = 0f;
+            while (fade < 1f)
+            {
+                fade += Time.unscaledDeltaTime / 0.80f;
+                SetTextAlpha(_openingPrompt, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(fade)));
+                yield return null;
+            }
+
+            SetTextAlpha(_openingPrompt, 1f);
+            _openingCanDismiss = true;
+            _openingButton.interactable = true;
+            _openingRoutine = null;
+        }
+
+        private static void SetOpeningSlide(CanvasGroup group, RectTransform rect, float alpha, float scale, Vector2 position)
+        {
+            if (group != null) group.alpha = alpha;
+            if (rect == null) return;
+            rect.localScale = new Vector3(scale, scale, 1f);
+            rect.anchoredPosition = position;
+        }
+
+        private void DismissOpening()
+        {
+            if (!_openingCanDismiss) return;
+            _openingCanDismiss = false;
+            _openingButton.interactable = false;
+            if (_openingRoutine != null) StopCoroutine(_openingRoutine);
+            _openingRoutine = StartCoroutine(TransitionToMenu());
+        }
+
+        private IEnumerator TransitionToMenu()
+        {
+            OpeningDismissed?.Invoke();
+            float elapsed = 0f;
+            const float duration = 0.75f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+                _openingGroup.alpha = 1f - t;
+                _menuGroup.alpha = t;
+                float scale = Mathf.Lerp(1f, 1.035f, t);
+                _openingFinalRect.localScale = new Vector3(scale, scale, 1f);
+                yield return null;
+            }
+
+            _openingGroup.alpha = 0f;
+            _menuGroup.alpha = 1f;
+            _openingPanel.SetActive(false);
+            _openingGroup.alpha = 1f;
+            _openingRoutine = null;
+        }
+
+        private static void SetTextAlpha(UnityEngine.UI.Text text, float alpha)
+        {
+            Color color = text.color;
+            color.a = alpha;
+            text.color = color;
         }
 
         private void BuildDiagnosticsPanel()
@@ -387,6 +573,7 @@ namespace YingYun.Rhythm.View
 
         private void OnDestroy()
         {
+            if (_openingRoutine != null) StopCoroutine(_openingRoutine);
             if (_runtimeFont != null)
             {
                 ChineseFontProvider.Release(_runtimeFont);

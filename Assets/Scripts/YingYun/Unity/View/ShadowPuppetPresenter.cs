@@ -1549,7 +1549,7 @@ namespace YingYun.Rhythm.View
                 new Color(1f, 0.73f, 0.32f, 0.22f), -7, _circleSprite);
             CreateSprite("Translucent Paper Screen", _visualRoot, Vector3.zero, new Vector2(4.65f, 5.55f),
                 new Color(1f, 0.88f, 0.60f, 0.88f), -6, _circleSprite);
-            BuildStageFrame();
+            BuildStageScenery();
 
             var puppetRoot = new GameObject("Joint Pelvis");
             puppetRoot.transform.SetParent(_visualRoot, false);
@@ -1706,14 +1706,8 @@ namespace YingYun.Rhythm.View
                 AccentColor(), sortingOrder + 1, _circleSprite);
         }
 
-        private void BuildStageFrame()
+        private void BuildStageScenery()
         {
-            Color wood = new Color(0.28f, 0.055f, 0.025f, 0.98f);
-            CreateSprite("Stage Header", _visualRoot, new Vector3(0f, 3.02f, 0f), new Vector2(5.65f, 0.22f), wood, -4, _squareSprite);
-            CreateSprite("Stage Left Post", _visualRoot, new Vector3(-2.72f, 0f, 0f), new Vector2(0.20f, 6.15f), wood, -4, _squareSprite);
-            CreateSprite("Stage Right Post", _visualRoot, new Vector3(2.72f, 0f, 0f), new Vector2(0.20f, 6.15f), wood, -4, _squareSprite);
-            CreateSprite("Stage Foot", _visualRoot, new Vector3(0f, -3.02f, 0f), new Vector2(5.65f, 0.24f), wood, -4, _squareSprite);
-
             Color scenery = new Color(0.30f, 0.075f, 0.035f, 0.22f);
             CreateSprite("Scenery Left Mountain", _visualRoot, new Vector3(-1.72f, -2.25f, 0f), new Vector2(1.75f, 0.52f), scenery, -3, _circleSprite);
             CreateSprite("Scenery Right Mountain", _visualRoot, new Vector3(1.55f, -2.32f, 0f), new Vector2(2.25f, 0.44f), scenery, -3, _circleSprite);

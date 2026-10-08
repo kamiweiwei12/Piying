@@ -1,0 +1,5221 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dd4551de6bac844b9ddc48ce51f2ddd, type: 3}
+  m_Name: ShengLongJue
+  m_EditorClassIdentifier: YingYun.Unity::YingYun.Rhythm.Unity.Config.SongDefinitionAsset
+  dataVersion: 1
+  songId: sheng-long-jue
+  title: "\u5347\u9F99\u8BC0"
+  artist: "\u9ED8\u8BA4\u6B4C\u66F2"
+  music: {fileID: 8300000, guid: 2a2fd42e730009d428d7201d8cc7b540, type: 3}
+  timingStatus: 1
+  firstPlayableSec: 0.48
+  playableEndSec: 148.84800720214844
+  timingPoints:
+  - timeSec: 0.48
+    beat: 0
+    bpm: 136.36363636363635
+    beatsPerBar: 4
+  - timeSec: 0.92
+    beat: 1
+    bpm: 130.43478260869568
+    beatsPerBar: 4
+  - timeSec: 1.38
+    beat: 2
+    bpm: 136.36363636363632
+    beatsPerBar: 4
+  - timeSec: 1.82
+    beat: 3
+    bpm: 142.8571428571428
+    beatsPerBar: 4
+  - timeSec: 2.24
+    beat: 4
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 2.66
+    beat: 5
+    bpm: 136.36363636363637
+    beatsPerBar: 4
+  - timeSec: 3.1
+    beat: 6
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 3.52
+    beat: 7
+    bpm: 136.36363636363637
+    beatsPerBar: 4
+  - timeSec: 3.96
+    beat: 8
+    bpm: 136.36363636363623
+    beatsPerBar: 4
+  - timeSec: 4.4
+    beat: 9
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 4.82
+    beat: 10
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 5.26
+    beat: 11
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 5.68
+    beat: 12
+    bpm: 136.36363636363623
+    beatsPerBar: 4
+  - timeSec: 6.12
+    beat: 13
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 6.54
+    beat: 14
+    bpm: 136.36363636363623
+    beatsPerBar: 4
+  - timeSec: 6.98
+    beat: 15
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 7.4
+    beat: 16
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 7.82
+    beat: 17
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 8.24
+    beat: 18
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 8.68
+    beat: 19
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 9.1
+    beat: 20
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 9.54
+    beat: 21
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 9.96
+    beat: 22
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 10.4
+    beat: 23
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 10.82
+    beat: 24
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 11.24
+    beat: 25
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 11.68
+    beat: 26
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 12.1
+    beat: 27
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 12.54
+    beat: 28
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 12.96
+    beat: 29
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 13.4
+    beat: 30
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 13.82
+    beat: 31
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 14.26
+    beat: 32
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 14.68
+    beat: 33
+    bpm: 142.8571428571429
+    beatsPerBar: 4
+  - timeSec: 15.1
+    beat: 34
+    bpm: 136.36363636363652
+    beatsPerBar: 4
+  - timeSec: 15.54
+    beat: 35
+    bpm: 136.36363636363598
+    beatsPerBar: 4
+  - timeSec: 15.98
+    beat: 36
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 16.4
+    beat: 37
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 16.82
+    beat: 38
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 17.24
+    beat: 39
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 17.68
+    beat: 40
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 18.12
+    beat: 41
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 18.54
+    beat: 42
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 18.96
+    beat: 43
+    bpm: 136.36363636363706
+    beatsPerBar: 8
+  - timeSec: 19.4
+    beat: 44
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 19.82
+    beat: 45
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 20.24
+    beat: 46
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 20.68
+    beat: 47
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 21.12
+    beat: 48
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 21.54
+    beat: 49
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 21.96
+    beat: 50
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 22.38
+    beat: 51
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 22.82
+    beat: 52
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 23.26
+    beat: 53
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 23.68
+    beat: 54
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 24.1
+    beat: 55
+    bpm: 136.36363636363706
+    beatsPerBar: 8
+  - timeSec: 24.54
+    beat: 56
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 24.96
+    beat: 57
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 25.38
+    beat: 58
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 25.82
+    beat: 59
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 26.24
+    beat: 60
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 26.68
+    beat: 61
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 27.1
+    beat: 62
+    bpm: 136.36363636363706
+    beatsPerBar: 8
+  - timeSec: 27.54
+    beat: 63
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 27.96
+    beat: 64
+    bpm: 136.36363636363706
+    beatsPerBar: 8
+  - timeSec: 28.4
+    beat: 65
+    bpm: 142.85714285714226
+    beatsPerBar: 8
+  - timeSec: 28.82
+    beat: 66
+    bpm: 136.36363636363598
+    beatsPerBar: 8
+  - timeSec: 29.26
+    beat: 67
+    bpm: 142.8571428571435
+    beatsPerBar: 8
+  - timeSec: 29.68
+    beat: 68
+    bpm: 136.36363636363598
+    beatsPerBar: 4
+  - timeSec: 30.12
+    beat: 69
+    bpm: 142.8571428571435
+    beatsPerBar: 4
+  - timeSec: 30.54
+    beat: 70
+    bpm: 136.36363636363598
+    beatsPerBar: 4
+  - timeSec: 30.98
+    beat: 71
+    bpm: 142.8571428571435
+    beatsPerBar: 4
+  - timeSec: 31.4
+    beat: 72
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 31.82
+    beat: 73
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 32.26
+    beat: 74
+    bpm: 136.36363636363487
+    beatsPerBar: 4
+  - timeSec: 32.7
+    beat: 75
+    bpm: 142.85714285714468
+    beatsPerBar: 4
+  - timeSec: 33.12
+    beat: 76
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 33.54
+    beat: 77
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 33.98
+    beat: 78
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 34.4
+    beat: 79
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 34.82
+    beat: 80
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 35.26
+    beat: 81
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 35.68
+    beat: 82
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 36.12
+    beat: 83
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 36.54
+    beat: 84
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 36.98
+    beat: 85
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 37.4
+    beat: 86
+    bpm: 136.36363636363487
+    beatsPerBar: 4
+  - timeSec: 37.84
+    beat: 87
+    bpm: 142.85714285714468
+    beatsPerBar: 4
+  - timeSec: 38.26
+    beat: 88
+    bpm: 136.36363636363487
+    beatsPerBar: 4
+  - timeSec: 38.7
+    beat: 89
+    bpm: 142.85714285714468
+    beatsPerBar: 4
+  - timeSec: 39.12
+    beat: 90
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 39.54
+    beat: 91
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 39.96
+    beat: 92
+    bpm: 130.4347826086954
+    beatsPerBar: 4
+  - timeSec: 40.42
+    beat: 93
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 40.84
+    beat: 94
+    bpm: 142.85714285714468
+    beatsPerBar: 4
+  - timeSec: 41.26
+    beat: 95
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 41.68
+    beat: 96
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 42.12
+    beat: 97
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 42.54
+    beat: 98
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 42.96
+    beat: 99
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 43.4
+    beat: 100
+    bpm: 136.36363636363487
+    beatsPerBar: 4
+  - timeSec: 43.84
+    beat: 101
+    bpm: 142.85714285714468
+    beatsPerBar: 4
+  - timeSec: 44.26
+    beat: 102
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 44.68
+    beat: 103
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 45.12
+    beat: 104
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 45.54
+    beat: 105
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 45.98
+    beat: 106
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 46.4
+    beat: 107
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 46.82
+    beat: 108
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 47.26
+    beat: 109
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 47.68
+    beat: 110
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 48.12
+    beat: 111
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 48.54
+    beat: 112
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 48.96
+    beat: 113
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 49.4
+    beat: 114
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 49.82
+    beat: 115
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 50.26
+    beat: 116
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 50.68
+    beat: 117
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 51.12
+    beat: 118
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 51.54
+    beat: 119
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 51.96
+    beat: 120
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 52.4
+    beat: 121
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 52.82
+    beat: 122
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 53.26
+    beat: 123
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 53.68
+    beat: 124
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 54.12
+    beat: 125
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 54.54
+    beat: 126
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 54.98
+    beat: 127
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 55.4
+    beat: 128
+    bpm: 166.66666666666694
+    beatsPerBar: 6
+  - timeSec: 55.76
+    beat: 129
+    bpm: 749.9999999999494
+    beatsPerBar: 6
+  - timeSec: 55.84
+    beat: 130
+    bpm: 176.47058823529605
+    beatsPerBar: 6
+  - timeSec: 56.18
+    beat: 131
+    bpm: 750.000000000016
+    beatsPerBar: 6
+  - timeSec: 56.26
+    beat: 132
+    bpm: 142.85714285714226
+    beatsPerBar: 6
+  - timeSec: 56.68
+    beat: 133
+    bpm: 136.36363636363706
+    beatsPerBar: 6
+  - timeSec: 57.12
+    beat: 134
+    bpm: 136.36363636363487
+    beatsPerBar: 4
+  - timeSec: 57.56
+    beat: 135
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 58
+    beat: 136
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 58.42
+    beat: 137
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 58.84
+    beat: 138
+    bpm: 166.66666666666694
+    beatsPerBar: 5
+  - timeSec: 59.2
+    beat: 139
+    bpm: 750.000000000016
+    beatsPerBar: 5
+  - timeSec: 59.28
+    beat: 140
+    bpm: 150.00000000000054
+    beatsPerBar: 5
+  - timeSec: 59.68
+    beat: 141
+    bpm: 136.36363636363706
+    beatsPerBar: 5
+  - timeSec: 60.12
+    beat: 142
+    bpm: 136.36363636363487
+    beatsPerBar: 5
+  - timeSec: 60.56
+    beat: 143
+    bpm: 142.85714285714468
+    beatsPerBar: 4
+  - timeSec: 60.98
+    beat: 144
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 61.4
+    beat: 145
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 61.82
+    beat: 146
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 62.26
+    beat: 147
+    bpm: 136.36363636363487
+    beatsPerBar: 4
+  - timeSec: 62.7
+    beat: 148
+    bpm: 142.85714285714468
+    beatsPerBar: 4
+  - timeSec: 63.12
+    beat: 149
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 63.54
+    beat: 150
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 63.98
+    beat: 151
+    bpm: 142.85714285713985
+    beatsPerBar: 4
+  - timeSec: 64.4
+    beat: 152
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 64.82
+    beat: 153
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 65.26
+    beat: 154
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 65.68
+    beat: 155
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 66.1
+    beat: 156
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 66.54
+    beat: 157
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 66.96
+    beat: 158
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 67.38
+    beat: 159
+    bpm: 130.43478260869338
+    beatsPerBar: 4
+  - timeSec: 67.84
+    beat: 160
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 68.26
+    beat: 161
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 68.68
+    beat: 162
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 69.12
+    beat: 163
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 69.54
+    beat: 164
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 69.96
+    beat: 165
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 70.4
+    beat: 166
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 70.82
+    beat: 167
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 71.26
+    beat: 168
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 71.68
+    beat: 169
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 72.12
+    beat: 170
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 72.54
+    beat: 171
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 72.98
+    beat: 172
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 73.4
+    beat: 173
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 73.82
+    beat: 174
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 74.26
+    beat: 175
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 74.68
+    beat: 176
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 75.12
+    beat: 177
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 75.54
+    beat: 178
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 75.98
+    beat: 179
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 76.4
+    beat: 180
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 76.82
+    beat: 181
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 77.26
+    beat: 182
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 77.68
+    beat: 183
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 78.12
+    beat: 184
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 78.54
+    beat: 185
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 78.98
+    beat: 186
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 79.4
+    beat: 187
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 79.84
+    beat: 188
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 80.26
+    beat: 189
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 80.68
+    beat: 190
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 81.12
+    beat: 191
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 81.54
+    beat: 192
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 81.96
+    beat: 193
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 82.4
+    beat: 194
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 82.82
+    beat: 195
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 83.26
+    beat: 196
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 83.68
+    beat: 197
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 84.12
+    beat: 198
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 84.54
+    beat: 199
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 84.96
+    beat: 200
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 85.4
+    beat: 201
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 85.82
+    beat: 202
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 86.26
+    beat: 203
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 86.7
+    beat: 204
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 87.12
+    beat: 205
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 87.54
+    beat: 206
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 87.98
+    beat: 207
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 88.4
+    beat: 208
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 88.84
+    beat: 209
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 89.26
+    beat: 210
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 89.68
+    beat: 211
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 90.1
+    beat: 212
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 90.54
+    beat: 213
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 90.96
+    beat: 214
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 91.4
+    beat: 215
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 91.82
+    beat: 216
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 92.26
+    beat: 217
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 92.68
+    beat: 218
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 93.1
+    beat: 219
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 93.54
+    beat: 220
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 93.96
+    beat: 221
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 94.4
+    beat: 222
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 94.82
+    beat: 223
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 95.26
+    beat: 224
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 95.68
+    beat: 225
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 96.1
+    beat: 226
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 96.54
+    beat: 227
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 96.96
+    beat: 228
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 97.4
+    beat: 229
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 97.82
+    beat: 230
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 98.24
+    beat: 231
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 98.68
+    beat: 232
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 99.1
+    beat: 233
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 99.54
+    beat: 234
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 99.96
+    beat: 235
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 100.38
+    beat: 236
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 100.82
+    beat: 237
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 101.24
+    beat: 238
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 101.68
+    beat: 239
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 102.1
+    beat: 240
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 102.54
+    beat: 241
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 102.96
+    beat: 242
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 103.38
+    beat: 243
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 103.82
+    beat: 244
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 104.24
+    beat: 245
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 104.68
+    beat: 246
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 105.1
+    beat: 247
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 105.52
+    beat: 248
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 105.96
+    beat: 249
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 106.38
+    beat: 250
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 106.82
+    beat: 251
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 107.24
+    beat: 252
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 107.68
+    beat: 253
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 108.1
+    beat: 254
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 108.52
+    beat: 255
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 108.96
+    beat: 256
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 109.38
+    beat: 257
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 109.82
+    beat: 258
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 110.24
+    beat: 259
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 110.68
+    beat: 260
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 111.1
+    beat: 261
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 111.54
+    beat: 262
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 111.96
+    beat: 263
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 112.38
+    beat: 264
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 112.82
+    beat: 265
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 113.24
+    beat: 266
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 113.68
+    beat: 267
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 114.1
+    beat: 268
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 114.54
+    beat: 269
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 114.96
+    beat: 270
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 115.4
+    beat: 271
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 115.82
+    beat: 272
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 116.26
+    beat: 273
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 116.68
+    beat: 274
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 117.12
+    beat: 275
+    bpm: 142.85714285714226
+    beatsPerBar: 4
+  - timeSec: 117.54
+    beat: 276
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 117.96
+    beat: 277
+    bpm: 136.36363636363265
+    beatsPerBar: 4
+  - timeSec: 118.4
+    beat: 278
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 118.82
+    beat: 279
+    bpm: 136.36363636363265
+    beatsPerBar: 7
+  - timeSec: 119.26
+    beat: 280
+    bpm: 166.66666666666694
+    beatsPerBar: 7
+  - timeSec: 119.62
+    beat: 281
+    bpm: 750.000000000016
+    beatsPerBar: 7
+  - timeSec: 119.7
+    beat: 282
+    bpm: 176.47058823529235
+    beatsPerBar: 7
+  - timeSec: 120.04
+    beat: 283
+    bpm: 750.000000000016
+    beatsPerBar: 7
+  - timeSec: 120.12
+    beat: 284
+    bpm: 166.66666666666694
+    beatsPerBar: 7
+  - timeSec: 120.48
+    beat: 285
+    bpm: 750.000000000016
+    beatsPerBar: 7
+  - timeSec: 120.56
+    beat: 286
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 120.9
+    beat: 287
+    bpm: 600.0000000000341
+    beatsPerBar: 6
+  - timeSec: 121
+    beat: 288
+    bpm: 149.99999999999787
+    beatsPerBar: 6
+  - timeSec: 121.4
+    beat: 289
+    bpm: 166.66666666666694
+    beatsPerBar: 6
+  - timeSec: 121.76
+    beat: 290
+    bpm: 750.000000000016
+    beatsPerBar: 6
+  - timeSec: 121.84
+    beat: 291
+    bpm: 136.36363636363706
+    beatsPerBar: 6
+  - timeSec: 122.28
+    beat: 292
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 122.62
+    beat: 293
+    bpm: 750.000000000016
+    beatsPerBar: 6
+  - timeSec: 122.7
+    beat: 294
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 123.04
+    beat: 295
+    bpm: 750.000000000016
+    beatsPerBar: 6
+  - timeSec: 123.12
+    beat: 296
+    bpm: 136.36363636363706
+    beatsPerBar: 6
+  - timeSec: 123.56
+    beat: 297
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 123.9
+    beat: 298
+    bpm: 750.000000000016
+    beatsPerBar: 1
+  - timeSec: 123.98
+    beat: 299
+    bpm: 176.47058823529972
+    beatsPerBar: 7
+  - timeSec: 124.32
+    beat: 300
+    bpm: 599.9999999999488
+    beatsPerBar: 7
+  - timeSec: 124.42
+    beat: 301
+    bpm: 176.47058823529235
+    beatsPerBar: 7
+  - timeSec: 124.76
+    beat: 302
+    bpm: 750.000000000016
+    beatsPerBar: 7
+  - timeSec: 124.84
+    beat: 303
+    bpm: 176.47058823529235
+    beatsPerBar: 7
+  - timeSec: 125.18
+    beat: 304
+    bpm: 750.000000000016
+    beatsPerBar: 7
+  - timeSec: 125.26
+    beat: 305
+    bpm: 136.36363636363706
+    beatsPerBar: 7
+  - timeSec: 125.7
+    beat: 306
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 126.04
+    beat: 307
+    bpm: 750.000000000016
+    beatsPerBar: 6
+  - timeSec: 126.12
+    beat: 308
+    bpm: 142.85714285714226
+    beatsPerBar: 6
+  - timeSec: 126.54
+    beat: 309
+    bpm: 166.66666666666694
+    beatsPerBar: 6
+  - timeSec: 126.9
+    beat: 310
+    bpm: 750.000000000016
+    beatsPerBar: 6
+  - timeSec: 126.98
+    beat: 311
+    bpm: 176.47058823529972
+    beatsPerBar: 6
+  - timeSec: 127.32
+    beat: 312
+    bpm: 599.9999999999488
+    beatsPerBar: 1
+  - timeSec: 127.42
+    beat: 313
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 127.76
+    beat: 314
+    bpm: 750.000000000016
+    beatsPerBar: 6
+  - timeSec: 127.84
+    beat: 315
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 128.18
+    beat: 316
+    bpm: 750.0000000001493
+    beatsPerBar: 6
+  - timeSec: 128.26
+    beat: 317
+    bpm: 136.36363636363706
+    beatsPerBar: 6
+  - timeSec: 128.7
+    beat: 318
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 129.04
+    beat: 319
+    bpm: 749.9999999998828
+    beatsPerBar: 1
+  - timeSec: 129.12
+    beat: 320
+    bpm: 136.36363636363706
+    beatsPerBar: 6
+  - timeSec: 129.56
+    beat: 321
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 129.9
+    beat: 322
+    bpm: 750.0000000001493
+    beatsPerBar: 6
+  - timeSec: 129.98
+    beat: 323
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 130.32
+    beat: 324
+    bpm: 749.9999999998828
+    beatsPerBar: 6
+  - timeSec: 130.4
+    beat: 325
+    bpm: 166.6666666666735
+    beatsPerBar: 6
+  - timeSec: 130.76
+    beat: 326
+    bpm: 749.9999999998828
+    beatsPerBar: 1
+  - timeSec: 130.84
+    beat: 327
+    bpm: 176.47058823529235
+    beatsPerBar: 6
+  - timeSec: 131.18
+    beat: 328
+    bpm: 750.0000000001493
+    beatsPerBar: 6
+  - timeSec: 131.26
+    beat: 329
+    bpm: 166.66666666666035
+    beatsPerBar: 6
+  - timeSec: 131.62
+    beat: 330
+    bpm: 750.0000000001493
+    beatsPerBar: 6
+  - timeSec: 131.7
+    beat: 331
+    bpm: 142.85714285713743
+    beatsPerBar: 6
+  - timeSec: 132.12
+    beat: 332
+    bpm: 136.36363636363706
+    beatsPerBar: 6
+  - timeSec: 132.56
+    beat: 333
+    bpm: 176.47058823529235
+    beatsPerBar: 5
+  - timeSec: 132.9
+    beat: 334
+    bpm: 750.0000000001493
+    beatsPerBar: 5
+  - timeSec: 132.98
+    beat: 335
+    bpm: 142.85714285713743
+    beatsPerBar: 5
+  - timeSec: 133.4
+    beat: 336
+    bpm: 136.36363636363706
+    beatsPerBar: 5
+  - timeSec: 133.84
+    beat: 337
+    bpm: 142.85714285714712
+    beatsPerBar: 5
+  - timeSec: 134.26
+    beat: 338
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 134.7
+    beat: 339
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 135.12
+    beat: 340
+    bpm: 149.99999999999787
+    beatsPerBar: 4
+  - timeSec: 135.52
+    beat: 341
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 135.96
+    beat: 342
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 136.4
+    beat: 343
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 136.84
+    beat: 344
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 137.26
+    beat: 345
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 137.68
+    beat: 346
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 138.12
+    beat: 347
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 138.54
+    beat: 348
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 138.98
+    beat: 349
+    bpm: 142.85714285713743
+    beatsPerBar: 4
+  - timeSec: 139.4
+    beat: 350
+    bpm: 142.85714285714712
+    beatsPerBar: 5
+  - timeSec: 139.82
+    beat: 351
+    bpm: 136.36363636363706
+    beatsPerBar: 5
+  - timeSec: 140.26
+    beat: 352
+    bpm: 176.47058823529235
+    beatsPerBar: 5
+  - timeSec: 140.6
+    beat: 353
+    bpm: 749.9999999998828
+    beatsPerBar: 5
+  - timeSec: 140.68
+    beat: 354
+    bpm: 166.6666666666735
+    beatsPerBar: 5
+  - timeSec: 141.04
+    beat: 355
+    bpm: 749.9999999998828
+    beatsPerBar: 1
+  - timeSec: 141.12
+    beat: 356
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 141.56
+    beat: 357
+    bpm: 142.85714285714712
+    beatsPerBar: 4
+  - timeSec: 141.98
+    beat: 358
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 142.42
+    beat: 359
+    bpm: 130.43478260869338
+    beatsPerBar: 4
+  - timeSec: 142.88
+    beat: 360
+    bpm: 124.99999999999527
+    beatsPerBar: 4
+  - timeSec: 143.36
+    beat: 361
+    bpm: 136.36363636363706
+    beatsPerBar: 4
+  - timeSec: 143.8
+    beat: 362
+    bpm: 125.00000000000267
+    beatsPerBar: 4
+  - timeSec: 144.28
+    beat: 363
+    bpm: 68.18181818181853
+    beatsPerBar: 4
+  - timeSec: 145.16
+    beat: 364
+    bpm: 68.18181818181853
+    beatsPerBar: 4
+  charts:
+  - difficulty: 0
+    notes:
+    - id: 700000
+      typeId: tap
+      lane: 4
+      timeSec: 0.48
+      durationSec: 0
+      segmentId: 0
+      requiredLanesMask: 16
+    - id: 800004
+      typeId: tap
+      lane: 1
+      timeSec: 2.24
+      durationSec: 0
+      segmentId: 0
+      requiredLanesMask: 2
+    - id: 700008
+      typeId: tap
+      lane: 2
+      timeSec: 3.96
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 4
+    - id: 800012
+      typeId: tap
+      lane: 3
+      timeSec: 5.68
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 8
+    - id: 700016
+      typeId: tap
+      lane: 2
+      timeSec: 7.4
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 4
+    - id: 800020
+      typeId: tap
+      lane: 4
+      timeSec: 9.1
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 16
+    - id: 700024
+      typeId: tap
+      lane: 1
+      timeSec: 10.82
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 2
+    - id: 800028
+      typeId: tap
+      lane: 2
+      timeSec: 12.54
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 4
+    - id: 700032
+      typeId: tap
+      lane: 3
+      timeSec: 14.26
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 8
+    - id: 800036
+      typeId: tap
+      lane: 4
+      timeSec: 15.98
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 16
+    - id: 700040
+      typeId: tap
+      lane: 2
+      timeSec: 17.68
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 4
+    - id: 800044
+      typeId: tap
+      lane: 4
+      timeSec: 19.4
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 16
+    - id: 700048
+      typeId: tap
+      lane: 5
+      timeSec: 21.12
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 32
+    - id: 800052
+      typeId: tap
+      lane: 2
+      timeSec: 22.82
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 4
+    - id: 700056
+      typeId: tap
+      lane: 3
+      timeSec: 24.54
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 8
+    - id: 800060
+      typeId: tap
+      lane: 4
+      timeSec: 26.24
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 16
+    - id: 700064
+      typeId: tap
+      lane: 5
+      timeSec: 27.96
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 32
+    - id: 800068
+      typeId: tap
+      lane: 1
+      timeSec: 29.68
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 2
+    - id: 700072
+      typeId: tap
+      lane: 4
+      timeSec: 31.4
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 16
+    - id: 800076
+      typeId: tap
+      lane: 1
+      timeSec: 33.12
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 2
+    - id: 700080
+      typeId: tap
+      lane: 3
+      timeSec: 34.82
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 8
+    - id: 800084
+      typeId: tap
+      lane: 0
+      timeSec: 36.54
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 1
+    - id: 700088
+      typeId: tap
+      lane: 1
+      timeSec: 38.26
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 2
+    - id: 800092
+      typeId: tap
+      lane: 2
+      timeSec: 39.96
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 4
+    - id: 700096
+      typeId: tap
+      lane: 3
+      timeSec: 41.68
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 8
+    - id: 800100
+      typeId: tap
+      lane: 4
+      timeSec: 43.4
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 16
+    - id: 700104
+      typeId: tap
+      lane: 0
+      timeSec: 45.12
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 1
+    - id: 800108
+      typeId: tap
+      lane: 3
+      timeSec: 46.82
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 8
+    - id: 700112
+      typeId: tap
+      lane: 5
+      timeSec: 48.54
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 32
+    - id: 800116
+      typeId: tap
+      lane: 1
+      timeSec: 50.26
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 2
+    - id: 700120
+      typeId: tap
+      lane: 4
+      timeSec: 51.96
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 16
+    - id: 800124
+      typeId: tap
+      lane: 1
+      timeSec: 53.68
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 2
+    - id: 700128
+      typeId: tap
+      lane: 5
+      timeSec: 55.4
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 32
+    - id: 800132
+      typeId: tap
+      lane: 1
+      timeSec: 56.26
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 2
+    - id: 700136
+      typeId: tap
+      lane: 3
+      timeSec: 58
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 8
+    - id: 800140
+      typeId: tap
+      lane: 0
+      timeSec: 59.28
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 1
+    - id: 700144
+      typeId: tap
+      lane: 5
+      timeSec: 60.98
+      durationSec: 0
+      segmentId: 18
+      requiredLanesMask: 32
+    - id: 800148
+      typeId: tap
+      lane: 2
+      timeSec: 62.7
+      durationSec: 0
+      segmentId: 18
+      requiredLanesMask: 4
+    - id: 700152
+      typeId: tap
+      lane: 3
+      timeSec: 64.4
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 8
+    - id: 800156
+      typeId: tap
+      lane: 4
+      timeSec: 66.1
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 16
+    - id: 700160
+      typeId: tap
+      lane: 5
+      timeSec: 67.84
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 32
+    - id: 800164
+      typeId: tap
+      lane: 2
+      timeSec: 69.54
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 4
+    - id: 700168
+      typeId: tap
+      lane: 2
+      timeSec: 71.26
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 4
+    - id: 800172
+      typeId: tap
+      lane: 3
+      timeSec: 72.98
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 8
+    - id: 700176
+      typeId: tap
+      lane: 0
+      timeSec: 74.68
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 1
+    - id: 800180
+      typeId: tap
+      lane: 5
+      timeSec: 76.4
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 32
+    - id: 700184
+      typeId: tap
+      lane: 1
+      timeSec: 78.12
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 2
+    - id: 800188
+      typeId: tap
+      lane: 2
+      timeSec: 79.84
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 4
+    - id: 700192
+      typeId: tap
+      lane: 4
+      timeSec: 81.54
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 16
+    - id: 800196
+      typeId: tap
+      lane: 0
+      timeSec: 83.26
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 1
+    - id: 700200
+      typeId: tap
+      lane: 3
+      timeSec: 84.96
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 8
+    - id: 800204
+      typeId: tap
+      lane: 0
+      timeSec: 86.7
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 1
+    - id: 700208
+      typeId: tap
+      lane: 1
+      timeSec: 88.4
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 2
+    - id: 800212
+      typeId: tap
+      lane: 2
+      timeSec: 90.1
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 4
+    - id: 700216
+      typeId: tap
+      lane: 2
+      timeSec: 91.82
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 4
+    - id: 800220
+      typeId: tap
+      lane: 4
+      timeSec: 93.54
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 16
+    - id: 700224
+      typeId: tap
+      lane: 1
+      timeSec: 95.26
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 2
+    - id: 800228
+      typeId: tap
+      lane: 2
+      timeSec: 96.96
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 4
+    - id: 700232
+      typeId: tap
+      lane: 2
+      timeSec: 98.68
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 4
+    - id: 800236
+      typeId: tap
+      lane: 3
+      timeSec: 100.38
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 8
+    - id: 700240
+      typeId: tap
+      lane: 0
+      timeSec: 102.1
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 1
+    - id: 800244
+      typeId: tap
+      lane: 5
+      timeSec: 103.82
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 32
+    - id: 700248
+      typeId: tap
+      lane: 4
+      timeSec: 105.52
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 16
+    - id: 800252
+      typeId: tap
+      lane: 1
+      timeSec: 107.24
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 2
+    - id: 700256
+      typeId: tap
+      lane: 3
+      timeSec: 108.96
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 8
+    - id: 800260
+      typeId: tap
+      lane: 4
+      timeSec: 110.68
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 16
+    - id: 700264
+      typeId: tap
+      lane: 2
+      timeSec: 112.38
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 4
+    - id: 800268
+      typeId: tap
+      lane: 3
+      timeSec: 114.1
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 8
+    - id: 700272
+      typeId: tap
+      lane: 0
+      timeSec: 115.82
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 1
+    - id: 800276
+      typeId: tap
+      lane: 3
+      timeSec: 117.54
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 8
+    - id: 700280
+      typeId: tap
+      lane: 2
+      timeSec: 119.26
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 4
+    - id: 800284
+      typeId: tap
+      lane: 4
+      timeSec: 120.12
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 16
+    - id: 700288
+      typeId: tap
+      lane: 3
+      timeSec: 121
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 8
+    - id: 800292
+      typeId: tap
+      lane: 0
+      timeSec: 122.28
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 1
+    - id: 700296
+      typeId: tap
+      lane: 2
+      timeSec: 123.12
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 4
+    - id: 800300
+      typeId: tap
+      lane: 4
+      timeSec: 124.32
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 16
+    - id: 700304
+      typeId: tap
+      lane: 3
+      timeSec: 125.18
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 8
+    - id: 800308
+      typeId: tap
+      lane: 0
+      timeSec: 126.12
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 1
+    - id: 700312
+      typeId: tap
+      lane: 2
+      timeSec: 127.32
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 4
+    - id: 800316
+      typeId: tap
+      lane: 4
+      timeSec: 128.18
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 16
+    - id: 700320
+      typeId: tap
+      lane: 2
+      timeSec: 129.12
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 4
+    - id: 800324
+      typeId: tap
+      lane: 3
+      timeSec: 130.32
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 8
+    - id: 700328
+      typeId: tap
+      lane: 5
+      timeSec: 131.18
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 32
+    - id: 800332
+      typeId: tap
+      lane: 2
+      timeSec: 132.12
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 4
+    - id: 700336
+      typeId: tap
+      lane: 3
+      timeSec: 133.4
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 8
+    - id: 800340
+      typeId: tap
+      lane: 0
+      timeSec: 135.12
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 1
+    - id: 700344
+      typeId: tap
+      lane: 0
+      timeSec: 136.84
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 1
+    - id: 800348
+      typeId: tap
+      lane: 3
+      timeSec: 138.54
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 8
+    - id: 700352
+      typeId: tap
+      lane: 3
+      timeSec: 140.26
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 8
+    - id: 800356
+      typeId: tap
+      lane: 0
+      timeSec: 141.12
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 1
+    - id: 700360
+      typeId: tap
+      lane: 5
+      timeSec: 142.88
+      durationSec: 0
+      segmentId: 45
+      requiredLanesMask: 32
+    - id: 800364
+      typeId: tap
+      lane: 1
+      timeSec: 145.16
+      durationSec: 0
+      segmentId: 45
+      requiredLanesMask: 2
+  - difficulty: 1
+    notes:
+    - id: 700000
+      typeId: tap
+      lane: 4
+      timeSec: 0.48
+      durationSec: 0
+      segmentId: 0
+      requiredLanesMask: 16
+    - id: 850002
+      typeId: tap
+      lane: 2
+      timeSec: 1.38
+      durationSec: 0
+      segmentId: 0
+      requiredLanesMask: 4
+    - id: 850004
+      typeId: tap
+      lane: 1
+      timeSec: 2.24
+      durationSec: 0
+      segmentId: 0
+      requiredLanesMask: 2
+    - id: 850006
+      typeId: hold
+      lane: 0
+      timeSec: 3.1
+      durationSec: 0.41999999999999993
+      segmentId: 0
+      requiredLanesMask: 1
+    - id: 700008
+      typeId: tap
+      lane: 2
+      timeSec: 3.96
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 4
+    - id: 850010
+      typeId: tap
+      lane: 4
+      timeSec: 4.82
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 16
+    - id: 850012
+      typeId: tap
+      lane: 3
+      timeSec: 5.68
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 8
+    - id: 850014
+      typeId: tap
+      lane: 2
+      timeSec: 6.54
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 4
+    - id: 700016
+      typeId: tap
+      lane: 2
+      timeSec: 7.4
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 4
+    - id: 850018
+      typeId: tap
+      lane: 3
+      timeSec: 8.24
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 8
+    - id: 850020
+      typeId: tap
+      lane: 4
+      timeSec: 9.1
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 16
+    - id: 850022
+      typeId: hold
+      lane: 5
+      timeSec: 9.96
+      durationSec: 0.8599999999999994
+      segmentId: 2
+      requiredLanesMask: 32
+    - id: 700024
+      typeId: tap
+      lane: 1
+      timeSec: 10.82
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 2
+    - id: 850026
+      typeId: tap
+      lane: 5
+      timeSec: 11.68
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 32
+    - id: 850028
+      typeId: tap
+      lane: 2
+      timeSec: 12.54
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 4
+    - id: 850030
+      typeId: tap
+      lane: 1
+      timeSec: 13.4
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 2
+    - id: 700032
+      typeId: tap
+      lane: 3
+      timeSec: 14.26
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 8
+    - id: 850034
+      typeId: tap
+      lane: 0
+      timeSec: 15.1
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 1
+    - id: 850036
+      typeId: tap
+      lane: 4
+      timeSec: 15.98
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 16
+    - id: 850038
+      typeId: hold
+      lane: 3
+      timeSec: 16.82
+      durationSec: 1.3000000000000007
+      segmentId: 4
+      requiredLanesMask: 8
+    - id: 700040
+      typeId: tap
+      lane: 2
+      timeSec: 17.68
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 4
+    - id: 850042
+      typeId: tap
+      lane: 3
+      timeSec: 18.54
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 8
+    - id: 850044
+      typeId: tap
+      lane: 4
+      timeSec: 19.4
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 16
+    - id: 850046
+      typeId: tap
+      lane: 5
+      timeSec: 20.24
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 32
+    - id: 700048
+      typeId: tap
+      lane: 5
+      timeSec: 21.12
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 32
+    - id: 850050
+      typeId: tap
+      lane: 1
+      timeSec: 21.96
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 2
+    - id: 850052
+      typeId: tap
+      lane: 2
+      timeSec: 22.82
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 4
+    - id: 850054
+      typeId: hold
+      lane: 3
+      timeSec: 23.68
+      durationSec: 1.6999999999999993
+      segmentId: 6
+      requiredLanesMask: 8
+    - id: 700056
+      typeId: tap
+      lane: 5
+      timeSec: 24.54
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 32
+    - id: 850058
+      typeId: tap
+      lane: 0
+      timeSec: 25.38
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 1
+    - id: 850060
+      typeId: tap
+      lane: 4
+      timeSec: 26.24
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 16
+    - id: 850062
+      typeId: tap
+      lane: 3
+      timeSec: 27.1
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 8
+    - id: 700064
+      typeId: tap
+      lane: 5
+      timeSec: 27.96
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 32
+    - id: 850066
+      typeId: tap
+      lane: 0
+      timeSec: 28.82
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 1
+    - id: 850068
+      typeId: tap
+      lane: 1
+      timeSec: 29.68
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 2
+    - id: 850070
+      typeId: hold
+      lane: 5
+      timeSec: 30.54
+      durationSec: 1.2800000000000011
+      segmentId: 8
+      requiredLanesMask: 32
+    - id: 700072
+      typeId: tap
+      lane: 4
+      timeSec: 31.4
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 16
+    - id: 850074
+      typeId: tap
+      lane: 2
+      timeSec: 32.26
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 4
+    - id: 850076
+      typeId: tap
+      lane: 1
+      timeSec: 33.12
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 2
+    - id: 850078
+      typeId: tap
+      lane: 0
+      timeSec: 33.98
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 1
+    - id: 700080
+      typeId: tap
+      lane: 3
+      timeSec: 34.82
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 8
+    - id: 850082
+      typeId: tap
+      lane: 5
+      timeSec: 35.68
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 32
+    - id: 850084
+      typeId: tap
+      lane: 0
+      timeSec: 36.54
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 1
+    - id: 850086
+      typeId: hold
+      lane: 2
+      timeSec: 37.4
+      durationSec: 0.44000000000000483
+      segmentId: 10
+      requiredLanesMask: 4
+    - id: 700088
+      typeId: tap
+      lane: 1
+      timeSec: 38.26
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 2
+    - id: 850090
+      typeId: tap
+      lane: 5
+      timeSec: 39.12
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 32
+    - id: 850092
+      typeId: tap
+      lane: 2
+      timeSec: 39.96
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 4
+    - id: 850094
+      typeId: tap
+      lane: 1
+      timeSec: 40.84
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 2
+    - id: 700096
+      typeId: tap
+      lane: 3
+      timeSec: 41.68
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 8
+    - id: 850098
+      typeId: tap
+      lane: 0
+      timeSec: 42.54
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 1
+    - id: 850100
+      typeId: tap
+      lane: 4
+      timeSec: 43.4
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 16
+    - id: 850102
+      typeId: hold
+      lane: 3
+      timeSec: 44.26
+      durationSec: 1.7199999999999989
+      segmentId: 12
+      requiredLanesMask: 8
+    - id: 700104
+      typeId: tap
+      lane: 0
+      timeSec: 45.12
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 1
+    - id: 850106
+      typeId: tap
+      lane: 1
+      timeSec: 45.98
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 2
+    - id: 850108
+      typeId: tap
+      lane: 3
+      timeSec: 46.82
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 8
+    - id: 850110
+      typeId: tap
+      lane: 0
+      timeSec: 47.68
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 1
+    - id: 700112
+      typeId: tap
+      lane: 5
+      timeSec: 48.54
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 32
+    - id: 850114
+      typeId: tap
+      lane: 0
+      timeSec: 49.4
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 1
+    - id: 850116
+      typeId: tap
+      lane: 1
+      timeSec: 50.26
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 2
+    - id: 850118
+      typeId: hold
+      lane: 5
+      timeSec: 51.12
+      durationSec: 0.8400000000000034
+      segmentId: 14
+      requiredLanesMask: 32
+    - id: 700120
+      typeId: tap
+      lane: 4
+      timeSec: 51.96
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 16
+    - id: 850122
+      typeId: tap
+      lane: 2
+      timeSec: 52.82
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 4
+    - id: 850124
+      typeId: tap
+      lane: 1
+      timeSec: 53.68
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 2
+    - id: 850126
+      typeId: tap
+      lane: 0
+      timeSec: 54.54
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 1
+    - id: 700128
+      typeId: tap
+      lane: 5
+      timeSec: 55.4
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 32
+    - id: 850130
+      typeId: tap
+      lane: 0
+      timeSec: 55.84
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 1
+    - id: 850132
+      typeId: tap
+      lane: 1
+      timeSec: 56.26
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 2
+    - id: 850134
+      typeId: hold
+      lane: 5
+      timeSec: 57.12
+      durationSec: 0.44000000000000483
+      segmentId: 16
+      requiredLanesMask: 32
+    - id: 700136
+      typeId: tap
+      lane: 3
+      timeSec: 58
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 8
+    - id: 850138
+      typeId: tap
+      lane: 5
+      timeSec: 58.84
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 32
+    - id: 850140
+      typeId: tap
+      lane: 0
+      timeSec: 59.28
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 1
+    - id: 850142
+      typeId: tap
+      lane: 2
+      timeSec: 60.12
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 4
+    - id: 700144
+      typeId: tap
+      lane: 5
+      timeSec: 60.98
+      durationSec: 0
+      segmentId: 18
+      requiredLanesMask: 32
+    - id: 850146
+      typeId: tap
+      lane: 1
+      timeSec: 61.82
+      durationSec: 0
+      segmentId: 18
+      requiredLanesMask: 2
+    - id: 850148
+      typeId: tap
+      lane: 2
+      timeSec: 62.7
+      durationSec: 0
+      segmentId: 18
+      requiredLanesMask: 4
+    - id: 850150
+      typeId: hold
+      lane: 3
+      timeSec: 63.54
+      durationSec: 1.279999999999994
+      segmentId: 18
+      requiredLanesMask: 8
+    - id: 700152
+      typeId: tap
+      lane: 5
+      timeSec: 64.4
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 32
+    - id: 850154
+      typeId: tap
+      lane: 0
+      timeSec: 65.26
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 1
+    - id: 850156
+      typeId: tap
+      lane: 4
+      timeSec: 66.1
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 16
+    - id: 850158
+      typeId: tap
+      lane: 3
+      timeSec: 66.96
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 8
+    - id: 700160
+      typeId: tap
+      lane: 5
+      timeSec: 67.84
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 32
+    - id: 850162
+      typeId: tap
+      lane: 1
+      timeSec: 68.68
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 2
+    - id: 850164
+      typeId: tap
+      lane: 2
+      timeSec: 69.54
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 4
+    - id: 850166
+      typeId: hold
+      lane: 3
+      timeSec: 70.4
+      durationSec: 1.7199999999999989
+      segmentId: 20
+      requiredLanesMask: 8
+    - id: 700168
+      typeId: tap
+      lane: 2
+      timeSec: 71.26
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 4
+    - id: 850170
+      typeId: tap
+      lane: 4
+      timeSec: 72.12
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 16
+    - id: 850172
+      typeId: tap
+      lane: 3
+      timeSec: 72.98
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 8
+    - id: 850174
+      typeId: tap
+      lane: 2
+      timeSec: 73.82
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 4
+    - id: 700176
+      typeId: tap
+      lane: 0
+      timeSec: 74.68
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 1
+    - id: 850178
+      typeId: tap
+      lane: 4
+      timeSec: 75.54
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 16
+    - id: 850180
+      typeId: tap
+      lane: 5
+      timeSec: 76.4
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 32
+    - id: 850182
+      typeId: hold
+      lane: 1
+      timeSec: 77.26
+      durationSec: 0.8599999999999994
+      segmentId: 22
+      requiredLanesMask: 2
+    - id: 700184
+      typeId: tap
+      lane: 1
+      timeSec: 78.12
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 2
+    - id: 850186
+      typeId: tap
+      lane: 5
+      timeSec: 78.98
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 32
+    - id: 850188
+      typeId: tap
+      lane: 2
+      timeSec: 79.84
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 4
+    - id: 850190
+      typeId: tap
+      lane: 1
+      timeSec: 80.68
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 2
+    - id: 700192
+      typeId: tap
+      lane: 4
+      timeSec: 81.54
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 16
+    - id: 850194
+      typeId: tap
+      lane: 5
+      timeSec: 82.4
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 32
+    - id: 850196
+      typeId: tap
+      lane: 0
+      timeSec: 83.26
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 1
+    - id: 850198
+      typeId: hold
+      lane: 4
+      timeSec: 84.12
+      durationSec: 1.6999999999999886
+      segmentId: 24
+      requiredLanesMask: 16
+    - id: 700200
+      typeId: tap
+      lane: 3
+      timeSec: 84.96
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 8
+    - id: 850202
+      typeId: tap
+      lane: 5
+      timeSec: 85.82
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 32
+    - id: 850204
+      typeId: tap
+      lane: 0
+      timeSec: 86.7
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 1
+    - id: 850206
+      typeId: tap
+      lane: 2
+      timeSec: 87.54
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 4
+    - id: 700208
+      typeId: tap
+      lane: 1
+      timeSec: 88.4
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 2
+    - id: 850210
+      typeId: tap
+      lane: 5
+      timeSec: 89.26
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 32
+    - id: 850212
+      typeId: tap
+      lane: 2
+      timeSec: 90.1
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 4
+    - id: 850214
+      typeId: hold
+      lane: 1
+      timeSec: 90.96
+      durationSec: 1.3000000000000114
+      segmentId: 26
+      requiredLanesMask: 2
+    - id: 700216
+      typeId: tap
+      lane: 2
+      timeSec: 91.82
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 4
+    - id: 850218
+      typeId: tap
+      lane: 3
+      timeSec: 92.68
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 8
+    - id: 850220
+      typeId: tap
+      lane: 4
+      timeSec: 93.54
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 16
+    - id: 850222
+      typeId: tap
+      lane: 5
+      timeSec: 94.4
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 32
+    - id: 700224
+      typeId: tap
+      lane: 1
+      timeSec: 95.26
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 2
+    - id: 850226
+      typeId: tap
+      lane: 5
+      timeSec: 96.1
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 32
+    - id: 850228
+      typeId: tap
+      lane: 2
+      timeSec: 96.96
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 4
+    - id: 850230
+      typeId: hold
+      lane: 1
+      timeSec: 97.82
+      durationSec: 0.8600000000000136
+      segmentId: 28
+      requiredLanesMask: 2
+    - id: 700232
+      typeId: tap
+      lane: 2
+      timeSec: 98.68
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 4
+    - id: 850234
+      typeId: tap
+      lane: 4
+      timeSec: 99.54
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 16
+    - id: 850236
+      typeId: tap
+      lane: 3
+      timeSec: 100.38
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 8
+    - id: 850238
+      typeId: tap
+      lane: 2
+      timeSec: 101.24
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 4
+    - id: 700240
+      typeId: tap
+      lane: 0
+      timeSec: 102.1
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 1
+    - id: 850242
+      typeId: tap
+      lane: 4
+      timeSec: 102.96
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 16
+    - id: 850244
+      typeId: tap
+      lane: 5
+      timeSec: 103.82
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 32
+    - id: 850246
+      typeId: hold
+      lane: 1
+      timeSec: 104.68
+      durationSec: 0.4199999999999875
+      segmentId: 30
+      requiredLanesMask: 2
+    - id: 700248
+      typeId: tap
+      lane: 4
+      timeSec: 105.52
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 16
+    - id: 850250
+      typeId: tap
+      lane: 2
+      timeSec: 106.38
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 4
+    - id: 850252
+      typeId: tap
+      lane: 1
+      timeSec: 107.24
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 2
+    - id: 850254
+      typeId: tap
+      lane: 0
+      timeSec: 108.1
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 1
+    - id: 700256
+      typeId: tap
+      lane: 3
+      timeSec: 108.96
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 8
+    - id: 850258
+      typeId: tap
+      lane: 0
+      timeSec: 109.82
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 1
+    - id: 850260
+      typeId: tap
+      lane: 4
+      timeSec: 110.68
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 16
+    - id: 850262
+      typeId: hold
+      lane: 3
+      timeSec: 111.54
+      durationSec: 1.279999999999987
+      segmentId: 32
+      requiredLanesMask: 8
+    - id: 700264
+      typeId: tap
+      lane: 2
+      timeSec: 112.38
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 4
+    - id: 850266
+      typeId: tap
+      lane: 4
+      timeSec: 113.24
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 16
+    - id: 850268
+      typeId: tap
+      lane: 3
+      timeSec: 114.1
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 8
+    - id: 850270
+      typeId: tap
+      lane: 2
+      timeSec: 114.96
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 4
+    - id: 700272
+      typeId: tap
+      lane: 0
+      timeSec: 115.82
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 1
+    - id: 850274
+      typeId: tap
+      lane: 1
+      timeSec: 116.68
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 2
+    - id: 850276
+      typeId: tap
+      lane: 3
+      timeSec: 117.54
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 8
+    - id: 850278
+      typeId: hold
+      lane: 0
+      timeSec: 118.4
+      durationSec: 1.2999999999999972
+      segmentId: 34
+      requiredLanesMask: 1
+    - id: 700280
+      typeId: tap
+      lane: 2
+      timeSec: 119.26
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 4
+    - id: 850282
+      typeId: tap
+      lane: 3
+      timeSec: 119.7
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 8
+    - id: 850284
+      typeId: tap
+      lane: 4
+      timeSec: 120.12
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 16
+    - id: 850286
+      typeId: tap
+      lane: 5
+      timeSec: 120.56
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 32
+    - id: 700288
+      typeId: tap
+      lane: 3
+      timeSec: 121
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 8
+    - id: 850290
+      typeId: tap
+      lane: 5
+      timeSec: 121.76
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 32
+    - id: 850292
+      typeId: tap
+      lane: 0
+      timeSec: 122.28
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 1
+    - id: 850294
+      typeId: hold
+      lane: 2
+      timeSec: 122.7
+      durationSec: 0.4200000000000017
+      segmentId: 36
+      requiredLanesMask: 4
+    - id: 700296
+      typeId: tap
+      lane: 2
+      timeSec: 123.12
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 4
+    - id: 850298
+      typeId: tap
+      lane: 3
+      timeSec: 123.9
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 8
+    - id: 850300
+      typeId: tap
+      lane: 4
+      timeSec: 124.32
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 16
+    - id: 850302
+      typeId: tap
+      lane: 5
+      timeSec: 124.76
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 32
+    - id: 700304
+      typeId: tap
+      lane: 3
+      timeSec: 125.18
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 8
+    - id: 850306
+      typeId: tap
+      lane: 5
+      timeSec: 125.7
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 32
+    - id: 850308
+      typeId: tap
+      lane: 0
+      timeSec: 126.12
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 1
+    - id: 850310
+      typeId: hold
+      lane: 2
+      timeSec: 126.9
+      durationSec: 0.0799999999999983
+      segmentId: 38
+      requiredLanesMask: 4
+    - id: 700312
+      typeId: tap
+      lane: 2
+      timeSec: 127.32
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 4
+    - id: 850314
+      typeId: tap
+      lane: 3
+      timeSec: 127.76
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 8
+    - id: 850316
+      typeId: tap
+      lane: 4
+      timeSec: 128.18
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 16
+    - id: 850318
+      typeId: tap
+      lane: 5
+      timeSec: 128.7
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 32
+    - id: 700320
+      typeId: tap
+      lane: 2
+      timeSec: 129.12
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 4
+    - id: 850322
+      typeId: tap
+      lane: 4
+      timeSec: 129.9
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 16
+    - id: 850324
+      typeId: tap
+      lane: 3
+      timeSec: 130.32
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 8
+    - id: 850326
+      typeId: hold
+      lane: 2
+      timeSec: 130.76
+      durationSec: 0.0800000000000125
+      segmentId: 40
+      requiredLanesMask: 4
+    - id: 700328
+      typeId: tap
+      lane: 5
+      timeSec: 131.18
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 32
+    - id: 850330
+      typeId: tap
+      lane: 1
+      timeSec: 131.62
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 2
+    - id: 850332
+      typeId: tap
+      lane: 2
+      timeSec: 132.12
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 4
+    - id: 850334
+      typeId: tap
+      lane: 3
+      timeSec: 132.9
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 8
+    - id: 700336
+      typeId: tap
+      lane: 3
+      timeSec: 133.4
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 8
+    - id: 850338
+      typeId: tap
+      lane: 5
+      timeSec: 134.26
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 32
+    - id: 850340
+      typeId: tap
+      lane: 0
+      timeSec: 135.12
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 1
+    - id: 850342
+      typeId: hold
+      lane: 2
+      timeSec: 135.96
+      durationSec: 0.8799999999999955
+      segmentId: 42
+      requiredLanesMask: 4
+    - id: 700344
+      typeId: tap
+      lane: 0
+      timeSec: 136.84
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 1
+    - id: 850346
+      typeId: tap
+      lane: 1
+      timeSec: 137.68
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 2
+    - id: 850348
+      typeId: tap
+      lane: 3
+      timeSec: 138.54
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 8
+    - id: 850350
+      typeId: tap
+      lane: 0
+      timeSec: 139.4
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 1
+    - id: 700352
+      typeId: tap
+      lane: 3
+      timeSec: 140.26
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 8
+    - id: 850354
+      typeId: tap
+      lane: 5
+      timeSec: 140.68
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 32
+    - id: 850356
+      typeId: tap
+      lane: 0
+      timeSec: 141.12
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 1
+    - id: 850358
+      typeId: hold
+      lane: 2
+      timeSec: 141.98
+      durationSec: 1.8200000000000216
+      segmentId: 44
+      requiredLanesMask: 4
+    - id: 700360
+      typeId: tap
+      lane: 5
+      timeSec: 142.88
+      durationSec: 0
+      segmentId: 45
+      requiredLanesMask: 32
+    - id: 850362
+      typeId: tap
+      lane: 0
+      timeSec: 143.8
+      durationSec: 0
+      segmentId: 45
+      requiredLanesMask: 1
+    - id: 850364
+      typeId: tap
+      lane: 1
+      timeSec: 145.16
+      durationSec: 0
+      segmentId: 45
+      requiredLanesMask: 2
+  - difficulty: 2
+    notes:
+    - id: 700000
+      typeId: tap
+      lane: 1
+      timeSec: 0.48
+      durationSec: 0
+      segmentId: 0
+      requiredLanesMask: 2
+    - id: 900001
+      typeId: tap
+      lane: 2
+      timeSec: 0.92
+      durationSec: 0
+      segmentId: 0
+      requiredLanesMask: 4
+    - id: 900002
+      typeId: hold
+      lane: 4
+      timeSec: 1.82
+      durationSec: 0.8400000000000001
+      segmentId: 0
+      requiredLanesMask: 16
+    - id: 900003
+      typeId: tap
+      lane: 3
+      timeSec: 3.1
+      durationSec: 0
+      segmentId: 0
+      requiredLanesMask: 8
+    - id: 700008
+      typeId: tap
+      lane: 0
+      timeSec: 3.96
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 1
+    - id: 900017
+      typeId: tap
+      lane: 5
+      timeSec: 4.4
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 32
+    - id: 900018
+      typeId: tap
+      lane: 0
+      timeSec: 5.26
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 1
+    - id: 900019
+      typeId: chord
+      lane: 1
+      timeSec: 5.68
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 6
+    - id: 900020
+      typeId: tap
+      lane: 1
+      timeSec: 6.98
+      durationSec: 0
+      segmentId: 1
+      requiredLanesMask: 2
+    - id: 700016
+      typeId: tap
+      lane: 2
+      timeSec: 7.4
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 4
+    - id: 900033
+      typeId: tap
+      lane: 5
+      timeSec: 8.24
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 32
+    - id: 900034
+      typeId: tap
+      lane: 3
+      timeSec: 8.89
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 8
+    - id: 900035
+      typeId: tap
+      lane: 4
+      timeSec: 9.54
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 16
+    - id: 900036
+      typeId: tap
+      lane: 1
+      timeSec: 10.4
+      durationSec: 0
+      segmentId: 2
+      requiredLanesMask: 2
+    - id: 700024
+      typeId: tap
+      lane: 2
+      timeSec: 10.82
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 4
+    - id: 900049
+      typeId: tap
+      lane: 3
+      timeSec: 11.68
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 8
+    - id: 900050
+      typeId: chord
+      lane: 4
+      timeSec: 12.54
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 48
+    - id: 900051
+      typeId: tap
+      lane: 4
+      timeSec: 13.4
+      durationSec: 0
+      segmentId: 3
+      requiredLanesMask: 16
+    - id: 700032
+      typeId: tap
+      lane: 0
+      timeSec: 14.26
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 1
+    - id: 900065
+      typeId: tap
+      lane: 5
+      timeSec: 15.1
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 32
+    - id: 900066
+      typeId: tap
+      lane: 3
+      timeSec: 15.98
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 8
+    - id: 900067
+      typeId: tap
+      lane: 5
+      timeSec: 16.4
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 32
+    - id: 900068
+      typeId: tap
+      lane: 4
+      timeSec: 17.24
+      durationSec: 0
+      segmentId: 4
+      requiredLanesMask: 16
+    - id: 700040
+      typeId: tap
+      lane: 2
+      timeSec: 17.68
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 4
+    - id: 900081
+      typeId: tap
+      lane: 0
+      timeSec: 18.12
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 1
+    - id: 900082
+      typeId: tap
+      lane: 1
+      timeSec: 18.96
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 2
+    - id: 900083
+      typeId: tap
+      lane: 3
+      timeSec: 19.4
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 8
+    - id: 900084
+      typeId: tap
+      lane: 4
+      timeSec: 19.82
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 16
+    - id: 900085
+      typeId: tap
+      lane: 5
+      timeSec: 20.68
+      durationSec: 0
+      segmentId: 5
+      requiredLanesMask: 32
+    - id: 700048
+      typeId: tap
+      lane: 0
+      timeSec: 21.12
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 1
+    - id: 900097
+      typeId: tap
+      lane: 2
+      timeSec: 21.54
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 4
+    - id: 900098
+      typeId: tap
+      lane: 1
+      timeSec: 22.38
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 2
+    - id: 900099
+      typeId: chord
+      lane: 0
+      timeSec: 22.82
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 3
+    - id: 900100
+      typeId: tap
+      lane: 4
+      timeSec: 24.1
+      durationSec: 0
+      segmentId: 6
+      requiredLanesMask: 16
+    - id: 700056
+      typeId: tap
+      lane: 5
+      timeSec: 24.54
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 32
+    - id: 900113
+      typeId: tap
+      lane: 3
+      timeSec: 24.96
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 8
+    - id: 900114
+      typeId: tap
+      lane: 0
+      timeSec: 25.82
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 1
+    - id: 900115
+      typeId: tap
+      lane: 1
+      timeSec: 26.24
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 2
+    - id: 900116
+      typeId: tap
+      lane: 2
+      timeSec: 27.1
+      durationSec: 0
+      segmentId: 7
+      requiredLanesMask: 4
+    - id: 700064
+      typeId: tap
+      lane: 4
+      timeSec: 27.96
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 16
+    - id: 900129
+      typeId: tap
+      lane: 1
+      timeSec: 28.82
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 2
+    - id: 900130
+      typeId: tap
+      lane: 3
+      timeSec: 29.26
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 8
+    - id: 900131
+      typeId: tap
+      lane: 2
+      timeSec: 30.12
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 4
+    - id: 900132
+      typeId: tap
+      lane: 5
+      timeSec: 30.98
+      durationSec: 0
+      segmentId: 8
+      requiredLanesMask: 32
+    - id: 700072
+      typeId: tap
+      lane: 0
+      timeSec: 31.4
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 1
+    - id: 900145
+      typeId: tap
+      lane: 4
+      timeSec: 32.04
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 16
+    - id: 900146
+      typeId: tap
+      lane: 5
+      timeSec: 32.7
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 32
+    - id: 900147
+      typeId: tap
+      lane: 0
+      timeSec: 33.12
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 1
+    - id: 900148
+      typeId: tap
+      lane: 2
+      timeSec: 33.98
+      durationSec: 0
+      segmentId: 9
+      requiredLanesMask: 4
+    - id: 700080
+      typeId: tap
+      lane: 1
+      timeSec: 34.82
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 2
+    - id: 900161
+      typeId: tap
+      lane: 3
+      timeSec: 35.26
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 8
+    - id: 900162
+      typeId: tap
+      lane: 5
+      timeSec: 36.12
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 32
+    - id: 900163
+      typeId: tap
+      lane: 0
+      timeSec: 36.54
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 1
+    - id: 900164
+      typeId: tap
+      lane: 3
+      timeSec: 36.98
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 8
+    - id: 900165
+      typeId: tap
+      lane: 4
+      timeSec: 37.84
+      durationSec: 0
+      segmentId: 10
+      requiredLanesMask: 16
+    - id: 700088
+      typeId: tap
+      lane: 2
+      timeSec: 38.26
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 4
+    - id: 900177
+      typeId: tap
+      lane: 1
+      timeSec: 38.7
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 2
+    - id: 900178
+      typeId: tap
+      lane: 4
+      timeSec: 39.54
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 16
+    - id: 900179
+      typeId: chord
+      lane: 0
+      timeSec: 39.96
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 5
+    - id: 900180
+      typeId: tap
+      lane: 5
+      timeSec: 41.26
+      durationSec: 0
+      segmentId: 11
+      requiredLanesMask: 32
+    - id: 700096
+      typeId: tap
+      lane: 1
+      timeSec: 41.68
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 2
+    - id: 900193
+      typeId: tap
+      lane: 0
+      timeSec: 42.12
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 1
+    - id: 900194
+      typeId: tap
+      lane: 2
+      timeSec: 42.96
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 4
+    - id: 900195
+      typeId: tap
+      lane: 3
+      timeSec: 43.4
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 8
+    - id: 900196
+      typeId: tap
+      lane: 1
+      timeSec: 44.26
+      durationSec: 0
+      segmentId: 12
+      requiredLanesMask: 2
+    - id: 700104
+      typeId: tap
+      lane: 2
+      timeSec: 45.12
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 4
+    - id: 900209
+      typeId: tap
+      lane: 3
+      timeSec: 45.54
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 8
+    - id: 900210
+      typeId: hold
+      lane: 0
+      timeSec: 46.4
+      durationSec: 0.8599999999999994
+      segmentId: 13
+      requiredLanesMask: 1
+    - id: 900211
+      typeId: tap
+      lane: 4
+      timeSec: 47.68
+      durationSec: 0
+      segmentId: 13
+      requiredLanesMask: 16
+    - id: 700112
+      typeId: tap
+      lane: 5
+      timeSec: 48.54
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 32
+    - id: 900225
+      typeId: tap
+      lane: 3
+      timeSec: 49.4
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 8
+    - id: 900226
+      typeId: chord
+      lane: 3
+      timeSec: 50.26
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 40
+    - id: 900227
+      typeId: tap
+      lane: 0
+      timeSec: 51.12
+      durationSec: 0
+      segmentId: 14
+      requiredLanesMask: 1
+    - id: 700120
+      typeId: tap
+      lane: 1
+      timeSec: 51.96
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 2
+    - id: 900241
+      typeId: tap
+      lane: 2
+      timeSec: 52.4
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 4
+    - id: 900242
+      typeId: tap
+      lane: 5
+      timeSec: 53.26
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 32
+    - id: 900243
+      typeId: tap
+      lane: 4
+      timeSec: 53.68
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 16
+    - id: 900244
+      typeId: tap
+      lane: 0
+      timeSec: 54.12
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 1
+    - id: 900245
+      typeId: tap
+      lane: 3
+      timeSec: 54.98
+      durationSec: 0
+      segmentId: 15
+      requiredLanesMask: 8
+    - id: 700128
+      typeId: tap
+      lane: 4
+      timeSec: 55.4
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 16
+    - id: 900257
+      typeId: tap
+      lane: 1
+      timeSec: 55.84
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 2
+    - id: 900258
+      typeId: tap
+      lane: 5
+      timeSec: 56.18
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 32
+    - id: 900259
+      typeId: tap
+      lane: 2
+      timeSec: 56.68
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 4
+    - id: 900260
+      typeId: tap
+      lane: 0
+      timeSec: 57.56
+      durationSec: 0
+      segmentId: 16
+      requiredLanesMask: 1
+    - id: 700136
+      typeId: tap
+      lane: 3
+      timeSec: 58
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 8
+    - id: 900273
+      typeId: tap
+      lane: 5
+      timeSec: 58.84
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 32
+    - id: 900274
+      typeId: hold
+      lane: 1
+      timeSec: 59.28
+      durationSec: 0.8399999999999963
+      segmentId: 17
+      requiredLanesMask: 2
+    - id: 900275
+      typeId: tap
+      lane: 2
+      timeSec: 60.56
+      durationSec: 0
+      segmentId: 17
+      requiredLanesMask: 4
+    - id: 700144
+      typeId: tap
+      lane: 4
+      timeSec: 60.98
+      durationSec: 0
+      segmentId: 18
+      requiredLanesMask: 16
+    - id: 900289
+      typeId: hold
+      lane: 3
+      timeSec: 61.4
+      durationSec: 1.3000000000000043
+      segmentId: 18
+      requiredLanesMask: 8
+    - id: 900290
+      typeId: tap
+      lane: 4
+      timeSec: 62.7
+      durationSec: 0
+      segmentId: 18
+      requiredLanesMask: 16
+    - id: 900291
+      typeId: tap
+      lane: 5
+      timeSec: 63.98
+      durationSec: 0
+      segmentId: 18
+      requiredLanesMask: 32
+    - id: 700152
+      typeId: tap
+      lane: 0
+      timeSec: 64.4
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 1
+    - id: 900305
+      typeId: tap
+      lane: 2
+      timeSec: 64.82
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 4
+    - id: 900306
+      typeId: hold
+      lane: 1
+      timeSec: 65.68
+      durationSec: 0.8599999999999994
+      segmentId: 19
+      requiredLanesMask: 2
+    - id: 900307
+      typeId: tap
+      lane: 0
+      timeSec: 66.96
+      durationSec: 0
+      segmentId: 19
+      requiredLanesMask: 1
+    - id: 700160
+      typeId: tap
+      lane: 1
+      timeSec: 67.84
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 2
+    - id: 900321
+      typeId: tap
+      lane: 4
+      timeSec: 68.47000000000001
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 16
+    - id: 900322
+      typeId: tap
+      lane: 5
+      timeSec: 69.12
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 32
+    - id: 900323
+      typeId: tap
+      lane: 2
+      timeSec: 69.54
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 4
+    - id: 900324
+      typeId: tap
+      lane: 3
+      timeSec: 70.4
+      durationSec: 0
+      segmentId: 20
+      requiredLanesMask: 8
+    - id: 700168
+      typeId: tap
+      lane: 4
+      timeSec: 71.26
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 16
+    - id: 900337
+      typeId: tap
+      lane: 0
+      timeSec: 72.12
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 1
+    - id: 900338
+      typeId: hold
+      lane: 3
+      timeSec: 72.54
+      durationSec: 1.279999999999987
+      segmentId: 21
+      requiredLanesMask: 8
+    - id: 900339
+      typeId: tap
+      lane: 2
+      timeSec: 73.82
+      durationSec: 0
+      segmentId: 21
+      requiredLanesMask: 4
+    - id: 700176
+      typeId: tap
+      lane: 5
+      timeSec: 74.68
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 32
+    - id: 900353
+      typeId: tap
+      lane: 1
+      timeSec: 75.54
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 2
+    - id: 900354
+      typeId: tap
+      lane: 3
+      timeSec: 76.19000000000001
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 8
+    - id: 900355
+      typeId: tap
+      lane: 1
+      timeSec: 76.82
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 2
+    - id: 900356
+      typeId: tap
+      lane: 2
+      timeSec: 77.68
+      durationSec: 0
+      segmentId: 22
+      requiredLanesMask: 4
+    - id: 700184
+      typeId: tap
+      lane: 0
+      timeSec: 78.12
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 1
+    - id: 900369
+      typeId: tap
+      lane: 4
+      timeSec: 78.54
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 16
+    - id: 900370
+      typeId: tap
+      lane: 5
+      timeSec: 79.4
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 32
+    - id: 900371
+      typeId: tap
+      lane: 3
+      timeSec: 79.84
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 8
+    - id: 900372
+      typeId: tap
+      lane: 4
+      timeSec: 80.26
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 16
+    - id: 900373
+      typeId: tap
+      lane: 1
+      timeSec: 81.12
+      durationSec: 0
+      segmentId: 23
+      requiredLanesMask: 2
+    - id: 700192
+      typeId: tap
+      lane: 5
+      timeSec: 81.54
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 32
+    - id: 900385
+      typeId: tap
+      lane: 0
+      timeSec: 81.96
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 1
+    - id: 900386
+      typeId: tap
+      lane: 2
+      timeSec: 82.82
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 4
+    - id: 900387
+      typeId: tap
+      lane: 0
+      timeSec: 83.26
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 1
+    - id: 900388
+      typeId: tap
+      lane: 5
+      timeSec: 84.12
+      durationSec: 0
+      segmentId: 24
+      requiredLanesMask: 32
+    - id: 700200
+      typeId: tap
+      lane: 1
+      timeSec: 84.96
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 2
+    - id: 900401
+      typeId: tap
+      lane: 3
+      timeSec: 85.82
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 8
+    - id: 900402
+      typeId: tap
+      lane: 4
+      timeSec: 86.26
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 16
+    - id: 900403
+      typeId: tap
+      lane: 2
+      timeSec: 87.12
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 4
+    - id: 900404
+      typeId: tap
+      lane: 1
+      timeSec: 87.98
+      durationSec: 0
+      segmentId: 25
+      requiredLanesMask: 2
+    - id: 700208
+      typeId: tap
+      lane: 2
+      timeSec: 88.4
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 4
+    - id: 900417
+      typeId: tap
+      lane: 3
+      timeSec: 88.84
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 8
+    - id: 900418
+      typeId: tap
+      lane: 4
+      timeSec: 89.68
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 16
+    - id: 900419
+      typeId: tap
+      lane: 0
+      timeSec: 90.54
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 1
+    - id: 900420
+      typeId: tap
+      lane: 5
+      timeSec: 90.96
+      durationSec: 0
+      segmentId: 26
+      requiredLanesMask: 32
+    - id: 700216
+      typeId: tap
+      lane: 0
+      timeSec: 91.82
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 1
+    - id: 900433
+      typeId: tap
+      lane: 3
+      timeSec: 92.26
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 8
+    - id: 900434
+      typeId: tap
+      lane: 2
+      timeSec: 93.1
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 4
+    - id: 900435
+      typeId: chord
+      lane: 2
+      timeSec: 93.54
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 20
+    - id: 900436
+      typeId: tap
+      lane: 4
+      timeSec: 94.82
+      durationSec: 0
+      segmentId: 27
+      requiredLanesMask: 16
+    - id: 700224
+      typeId: tap
+      lane: 1
+      timeSec: 95.26
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 2
+    - id: 900449
+      typeId: tap
+      lane: 5
+      timeSec: 96.1
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 32
+    - id: 900450
+      typeId: tap
+      lane: 1
+      timeSec: 96.75
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 2
+    - id: 900451
+      typeId: tap
+      lane: 2
+      timeSec: 97.4
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 4
+    - id: 900452
+      typeId: tap
+      lane: 4
+      timeSec: 98.24
+      durationSec: 0
+      segmentId: 28
+      requiredLanesMask: 16
+    - id: 700232
+      typeId: tap
+      lane: 0
+      timeSec: 98.68
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 1
+    - id: 900465
+      typeId: tap
+      lane: 3
+      timeSec: 99.54
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 8
+    - id: 900466
+      typeId: tap
+      lane: 5
+      timeSec: 100.38
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 32
+    - id: 900467
+      typeId: tap
+      lane: 0
+      timeSec: 100.82
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 1
+    - id: 900468
+      typeId: tap
+      lane: 1
+      timeSec: 101.68
+      durationSec: 0
+      segmentId: 29
+      requiredLanesMask: 2
+    - id: 700240
+      typeId: tap
+      lane: 4
+      timeSec: 102.1
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 16
+    - id: 900481
+      typeId: tap
+      lane: 2
+      timeSec: 102.54
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 4
+    - id: 900482
+      typeId: tap
+      lane: 5
+      timeSec: 103.38
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 32
+    - id: 900483
+      typeId: tap
+      lane: 3
+      timeSec: 103.82
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 8
+    - id: 900484
+      typeId: tap
+      lane: 4
+      timeSec: 104.24
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 16
+    - id: 900485
+      typeId: tap
+      lane: 5
+      timeSec: 105.1
+      durationSec: 0
+      segmentId: 30
+      requiredLanesMask: 32
+    - id: 700248
+      typeId: tap
+      lane: 1
+      timeSec: 105.52
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 2
+    - id: 900497
+      typeId: tap
+      lane: 0
+      timeSec: 105.96
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 1
+    - id: 900498
+      typeId: tap
+      lane: 2
+      timeSec: 106.82
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 4
+    - id: 900499
+      typeId: tap
+      lane: 3
+      timeSec: 107.24
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 8
+    - id: 900500
+      typeId: tap
+      lane: 4
+      timeSec: 108.1
+      durationSec: 0
+      segmentId: 31
+      requiredLanesMask: 16
+    - id: 700256
+      typeId: tap
+      lane: 0
+      timeSec: 108.96
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 1
+    - id: 900513
+      typeId: tap
+      lane: 5
+      timeSec: 109.82
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 32
+    - id: 900514
+      typeId: tap
+      lane: 3
+      timeSec: 110.24
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 8
+    - id: 900515
+      typeId: tap
+      lane: 2
+      timeSec: 111.1
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 4
+    - id: 900516
+      typeId: tap
+      lane: 1
+      timeSec: 111.96
+      durationSec: 0
+      segmentId: 32
+      requiredLanesMask: 2
+    - id: 700264
+      typeId: tap
+      lane: 2
+      timeSec: 112.38
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 4
+    - id: 900529
+      typeId: tap
+      lane: 4
+      timeSec: 113.03
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 16
+    - id: 900530
+      typeId: tap
+      lane: 1
+      timeSec: 113.68
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 2
+    - id: 900531
+      typeId: tap
+      lane: 3
+      timeSec: 114.1
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 8
+    - id: 900532
+      typeId: tap
+      lane: 5
+      timeSec: 114.96
+      durationSec: 0
+      segmentId: 33
+      requiredLanesMask: 32
+    - id: 700272
+      typeId: tap
+      lane: 0
+      timeSec: 115.82
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 1
+    - id: 900545
+      typeId: tap
+      lane: 1
+      timeSec: 116.68
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 2
+    - id: 900546
+      typeId: tap
+      lane: 2
+      timeSec: 117.54
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 4
+    - id: 900547
+      typeId: tap
+      lane: 5
+      timeSec: 117.96
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 32
+    - id: 900548
+      typeId: tap
+      lane: 3
+      timeSec: 118.82
+      durationSec: 0
+      segmentId: 34
+      requiredLanesMask: 8
+    - id: 700280
+      typeId: tap
+      lane: 0
+      timeSec: 119.26
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 1
+    - id: 900561
+      typeId: tap
+      lane: 4
+      timeSec: 119.62
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 16
+    - id: 900562
+      typeId: hold
+      lane: 2
+      timeSec: 120.04
+      durationSec: 0.4399999999999977
+      segmentId: 35
+      requiredLanesMask: 4
+    - id: 900563
+      typeId: tap
+      lane: 0
+      timeSec: 120.56
+      durationSec: 0
+      segmentId: 35
+      requiredLanesMask: 1
+    - id: 700288
+      typeId: tap
+      lane: 3
+      timeSec: 121
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 8
+    - id: 900577
+      typeId: tap
+      lane: 1
+      timeSec: 121.4
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 2
+    - id: 900578
+      typeId: tap
+      lane: 4
+      timeSec: 121.84
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 16
+    - id: 900579
+      typeId: chord
+      lane: 0
+      timeSec: 122.28
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 17
+    - id: 900580
+      typeId: tap
+      lane: 5
+      timeSec: 123.04
+      durationSec: 0
+      segmentId: 36
+      requiredLanesMask: 32
+    - id: 700296
+      typeId: tap
+      lane: 4
+      timeSec: 123.12
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 16
+    - id: 900593
+      typeId: tap
+      lane: 0
+      timeSec: 123.9
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 1
+    - id: 900594
+      typeId: tap
+      lane: 1
+      timeSec: 123.98
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 2
+    - id: 900595
+      typeId: tap
+      lane: 5
+      timeSec: 124.42
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 32
+    - id: 900596
+      typeId: tap
+      lane: 2
+      timeSec: 124.84
+      durationSec: 0
+      segmentId: 37
+      requiredLanesMask: 4
+    - id: 700304
+      typeId: tap
+      lane: 3
+      timeSec: 125.18
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 8
+    - id: 900609
+      typeId: tap
+      lane: 1
+      timeSec: 125.7
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 2
+    - id: 900610
+      typeId: chord
+      lane: 2
+      timeSec: 126.12
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 36
+    - id: 900611
+      typeId: tap
+      lane: 5
+      timeSec: 126.9
+      durationSec: 0
+      segmentId: 38
+      requiredLanesMask: 32
+    - id: 700312
+      typeId: tap
+      lane: 3
+      timeSec: 127.32
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 8
+    - id: 900625
+      typeId: tap
+      lane: 4
+      timeSec: 127.42
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 16
+    - id: 900626
+      typeId: tap
+      lane: 0
+      timeSec: 127.84
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 1
+    - id: 900627
+      typeId: tap
+      lane: 2
+      timeSec: 128.18
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 4
+    - id: 900628
+      typeId: tap
+      lane: 3
+      timeSec: 128.26
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 8
+    - id: 900629
+      typeId: tap
+      lane: 5
+      timeSec: 129.04
+      durationSec: 0
+      segmentId: 39
+      requiredLanesMask: 32
+    - id: 700320
+      typeId: tap
+      lane: 4
+      timeSec: 129.12
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 16
+    - id: 900641
+      typeId: tap
+      lane: 1
+      timeSec: 129.56
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 2
+    - id: 900642
+      typeId: tap
+      lane: 0
+      timeSec: 129.98
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 1
+    - id: 900643
+      typeId: tap
+      lane: 2
+      timeSec: 130.32
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 4
+    - id: 900644
+      typeId: tap
+      lane: 4
+      timeSec: 130.76
+      durationSec: 0
+      segmentId: 40
+      requiredLanesMask: 16
+    - id: 700328
+      typeId: tap
+      lane: 2
+      timeSec: 131.18
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 4
+    - id: 900657
+      typeId: tap
+      lane: 0
+      timeSec: 131.26
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 1
+    - id: 900658
+      typeId: tap
+      lane: 5
+      timeSec: 132.12
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 32
+    - id: 900659
+      typeId: tap
+      lane: 1
+      timeSec: 132.56
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 2
+    - id: 900660
+      typeId: tap
+      lane: 3
+      timeSec: 132.98
+      durationSec: 0
+      segmentId: 41
+      requiredLanesMask: 8
+    - id: 700336
+      typeId: tap
+      lane: 1
+      timeSec: 133.4
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 2
+    - id: 900673
+      typeId: tap
+      lane: 2
+      timeSec: 134.26
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 4
+    - id: 900674
+      typeId: tap
+      lane: 0
+      timeSec: 134.7
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 1
+    - id: 900675
+      typeId: tap
+      lane: 3
+      timeSec: 135.52
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 8
+    - id: 900676
+      typeId: tap
+      lane: 4
+      timeSec: 136.4
+      durationSec: 0
+      segmentId: 42
+      requiredLanesMask: 16
+    - id: 700344
+      typeId: tap
+      lane: 5
+      timeSec: 136.84
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 32
+    - id: 900689
+      typeId: tap
+      lane: 0
+      timeSec: 137.47
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 1
+    - id: 900690
+      typeId: tap
+      lane: 3
+      timeSec: 138.12
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 8
+    - id: 900691
+      typeId: tap
+      lane: 5
+      timeSec: 138.54
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 32
+    - id: 900692
+      typeId: tap
+      lane: 2
+      timeSec: 139.4
+      durationSec: 0
+      segmentId: 43
+      requiredLanesMask: 4
+    - id: 700352
+      typeId: tap
+      lane: 4
+      timeSec: 140.26
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 16
+    - id: 900705
+      typeId: tap
+      lane: 1
+      timeSec: 140.6
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 2
+    - id: 900706
+      typeId: tap
+      lane: 4
+      timeSec: 141.04
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 16
+    - id: 900707
+      typeId: tap
+      lane: 0
+      timeSec: 141.12
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 1
+    - id: 900708
+      typeId: tap
+      lane: 2
+      timeSec: 141.56
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 4
+    - id: 900709
+      typeId: tap
+      lane: 1
+      timeSec: 142.42
+      durationSec: 0
+      segmentId: 44
+      requiredLanesMask: 2
+    - id: 700360
+      typeId: tap
+      lane: 3
+      timeSec: 142.88
+      durationSec: 0
+      segmentId: 45
+      requiredLanesMask: 8
+    - id: 900721
+      typeId: tap
+      lane: 5
+      timeSec: 143.8
+      durationSec: 0
+      segmentId: 45
+      requiredLanesMask: 32
+    - id: 900722
+      typeId: tap
+      lane: 1
+      timeSec: 144.72
+      durationSec: 0
+      segmentId: 45
+      requiredLanesMask: 2
+  danceCues:
+  - action: 7
+    startBeat: 0
+    durationBeats: 8
+    anchorNoteId: 700000
+    hasClosing: 1
+  - action: 6
+    startBeat: 8
+    durationBeats: 8
+    anchorNoteId: 700008
+    hasClosing: 1
+  - action: 5
+    startBeat: 16
+    durationBeats: 8
+    anchorNoteId: 700016
+    hasClosing: 1
+  - action: 12
+    startBeat: 24
+    durationBeats: 8
+    anchorNoteId: 700024
+    hasClosing: 1
+  - action: 13
+    startBeat: 32
+    durationBeats: 8
+    anchorNoteId: 700032
+    hasClosing: 1
+  - action: 5
+    startBeat: 40
+    durationBeats: 8
+    anchorNoteId: 700040
+    hasClosing: 1
+  - action: 12
+    startBeat: 48
+    durationBeats: 8
+    anchorNoteId: 700048
+    hasClosing: 1
+  - action: 6
+    startBeat: 56
+    durationBeats: 8
+    anchorNoteId: 700056
+    hasClosing: 1
+  - action: 9
+    startBeat: 64
+    durationBeats: 8
+    anchorNoteId: 700064
+    hasClosing: 1
+  - action: 1
+    startBeat: 72
+    durationBeats: 8
+    anchorNoteId: 700072
+    hasClosing: 1
+  - action: 3
+    startBeat: 80
+    durationBeats: 8
+    anchorNoteId: 700080
+    hasClosing: 0
+  - action: 2
+    startBeat: 88
+    durationBeats: 8
+    anchorNoteId: 700088
+    hasClosing: 0
+  - action: 12
+    startBeat: 96
+    durationBeats: 8
+    anchorNoteId: 700096
+    hasClosing: 1
+  - action: 2
+    startBeat: 104
+    durationBeats: 8
+    anchorNoteId: 700104
+    hasClosing: 0
+  - action: 7
+    startBeat: 112
+    durationBeats: 8
+    anchorNoteId: 700112
+    hasClosing: 1
+  - action: 0
+    startBeat: 120
+    durationBeats: 8
+    anchorNoteId: 700120
+    hasClosing: 0
+  - action: 3
+    startBeat: 128
+    durationBeats: 8
+    anchorNoteId: 700128
+    hasClosing: 0
+  - action: 13
+    startBeat: 136
+    durationBeats: 8
+    anchorNoteId: 700136
+    hasClosing: 1
+  - action: 10
+    startBeat: 144
+    durationBeats: 8
+    anchorNoteId: 700144
+    hasClosing: 0
+  - action: 1
+    startBeat: 152
+    durationBeats: 8
+    anchorNoteId: 700152
+    hasClosing: 1
+  - action: 13
+    startBeat: 160
+    durationBeats: 8
+    anchorNoteId: 700160
+    hasClosing: 1
+  - action: 5
+    startBeat: 168
+    durationBeats: 8
+    anchorNoteId: 700168
+    hasClosing: 1
+  - action: 8
+    startBeat: 176
+    durationBeats: 8
+    anchorNoteId: 700176
+    hasClosing: 0
+  - action: 11
+    startBeat: 184
+    durationBeats: 8
+    anchorNoteId: 700184
+    hasClosing: 1
+  - action: 1
+    startBeat: 192
+    durationBeats: 8
+    anchorNoteId: 700192
+    hasClosing: 1
+  - action: 3
+    startBeat: 200
+    durationBeats: 8
+    anchorNoteId: 700200
+    hasClosing: 0
+  - action: 10
+    startBeat: 208
+    durationBeats: 8
+    anchorNoteId: 700208
+    hasClosing: 0
+  - action: 5
+    startBeat: 216
+    durationBeats: 8
+    anchorNoteId: 700216
+    hasClosing: 1
+  - action: 8
+    startBeat: 224
+    durationBeats: 8
+    anchorNoteId: 700224
+    hasClosing: 0
+  - action: 7
+    startBeat: 232
+    durationBeats: 8
+    anchorNoteId: 700232
+    hasClosing: 1
+  - action: 6
+    startBeat: 240
+    durationBeats: 8
+    anchorNoteId: 700240
+    hasClosing: 1
+  - action: 8
+    startBeat: 248
+    durationBeats: 8
+    anchorNoteId: 700248
+    hasClosing: 0
+  - action: 12
+    startBeat: 256
+    durationBeats: 8
+    anchorNoteId: 700256
+    hasClosing: 1
+  - action: 2
+    startBeat: 264
+    durationBeats: 8
+    anchorNoteId: 700264
+    hasClosing: 0
+  - action: 9
+    startBeat: 272
+    durationBeats: 8
+    anchorNoteId: 700272
+    hasClosing: 1
+  - action: 3
+    startBeat: 280
+    durationBeats: 8
+    anchorNoteId: 700280
+    hasClosing: 0
+  - action: 11
+    startBeat: 288
+    durationBeats: 8
+    anchorNoteId: 700288
+    hasClosing: 1
+  - action: 0
+    startBeat: 296
+    durationBeats: 8
+    anchorNoteId: 700296
+    hasClosing: 0
+  - action: 12
+    startBeat: 304
+    durationBeats: 8
+    anchorNoteId: 700304
+    hasClosing: 1
+  - action: 5
+    startBeat: 312
+    durationBeats: 8
+    anchorNoteId: 700312
+    hasClosing: 1
+  - action: 3
+    startBeat: 320
+    durationBeats: 8
+    anchorNoteId: 700320
+    hasClosing: 0
+  - action: 7
+    startBeat: 328
+    durationBeats: 8
+    anchorNoteId: 700328
+    hasClosing: 1
+  - action: 13
+    startBeat: 336
+    durationBeats: 8
+    anchorNoteId: 700336
+    hasClosing: 1
+  - action: 12
+    startBeat: 344
+    durationBeats: 8
+    anchorNoteId: 700344
+    hasClosing: 1
+  - action: 3
+    startBeat: 352
+    durationBeats: 8
+    anchorNoteId: 700352
+    hasClosing: 0
+  - action: 7
+    startBeat: 360
+    durationBeats: 8
+    anchorNoteId: 700360
+    hasClosing: 1

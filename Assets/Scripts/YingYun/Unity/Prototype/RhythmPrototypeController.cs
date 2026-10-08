@@ -23,6 +23,7 @@ namespace YingYun.Rhythm.Prototype
         private const double NoteApproachLeadInSeconds = 1.75d;
         public const string XiangWangXingSongId = "xiang-wang-xing-special";
         public const string QingYuAnLanJieSongId = "qing-yu-an-lan-jie";
+        public const string ShengLongJueSongId = "sheng-long-jue";
         private const string AudioOffsetPreference = "YingYun.AudioOffsetMs";
         private const string InputOffsetPreference = "YingYun.InputOffsetMs";
 
@@ -134,6 +135,7 @@ namespace YingYun.Rhythm.Prototype
             _flow.DiagnosticsRequested += ShowDiagnostics;
             _flow.DiagnosticsCopyRequested += CopyDiagnostics;
             _flow.DiagnosticsFolderRequested += OpenDiagnosticsFolder;
+            _flow.OpeningDismissed += ShowSongSelection;
             ConfigureSongSelection();
             _customSongs = GetComponent<CustomSongLibrary>();
             if (_customSongs == null) _customSongs = gameObject.AddComponent<CustomSongLibrary>();
@@ -141,12 +143,17 @@ namespace YingYun.Rhythm.Prototype
             _customSongs.StatusChanged += _flow.SetSongImportStatus;
             _flow.SetSongImportStatus($"自定义歌曲文件夹：{_customSongs.UserSongsPath}");
             _customSongs.BeginScan();
-            ShowSongSelection();
+            _flow.ShowOpening();
         }
 
         private void Update()
         {
             if (_clock == null)
+            {
+                return;
+            }
+
+            if (_flow.IsOpeningVisible)
             {
                 return;
             }
@@ -417,6 +424,7 @@ namespace YingYun.Rhythm.Prototype
                 _flow.DiagnosticsRequested -= ShowDiagnostics;
                 _flow.DiagnosticsCopyRequested -= CopyDiagnostics;
                 _flow.DiagnosticsFolderRequested -= OpenDiagnosticsFolder;
+                _flow.OpeningDismissed -= ShowSongSelection;
             }
             if (_customSongs != null)
             {
@@ -531,10 +539,12 @@ namespace YingYun.Rhythm.Prototype
 
             SongDefinitionAsset xiangWangXing = songCatalog.Find(XiangWangXingSongId);
             SongDefinitionAsset qingYuAnLanJie = songCatalog.Find(QingYuAnLanJieSongId);
-            if (xiangWangXing == null || qingYuAnLanJie == null ||
-                !xiangWangXing.HasAuthoredCharts || !qingYuAnLanJie.HasAuthoredCharts)
+            SongDefinitionAsset shengLongJue = songCatalog.Find(ShengLongJueSongId);
+            if (xiangWangXing == null || qingYuAnLanJie == null || shengLongJue == null ||
+                !xiangWangXing.HasAuthoredCharts || !qingYuAnLanJie.HasAuthoredCharts ||
+                !shengLongJue.HasAuthoredCharts)
             {
-                throw new InvalidOperationException("《象王行》与《青玉案》的可玩资料必须存在。");
+                throw new InvalidOperationException("三首默认歌曲的可玩资料必须存在。");
             }
 
             _selectedSong = xiangWangXing;
@@ -543,7 +553,8 @@ namespace YingYun.Rhythm.Prototype
 
         public static bool IsBuiltInDemoSongId(string songId)
         {
-            return songId == XiangWangXingSongId || songId == QingYuAnLanJieSongId;
+            return songId == XiangWangXingSongId || songId == QingYuAnLanJieSongId ||
+                songId == ShengLongJueSongId;
         }
 
         private void RefreshSongSelection()

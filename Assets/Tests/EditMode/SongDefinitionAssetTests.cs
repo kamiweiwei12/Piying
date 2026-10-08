@@ -26,19 +26,20 @@ namespace YingYun.Rhythm.Tests
             {
                 RhythmPrototypeController.XiangWangXingSongId,
                 RhythmPrototypeController.QingYuAnLanJieSongId,
+                RhythmPrototypeController.ShengLongJueSongId,
             }));
             Assert.That(selectable, Does.Not.Contain("trial-light"));
         }
 
         [Test]
-        public void Catalog_ContainsThreeValidUniqueSongs()
+        public void Catalog_ContainsFourValidUniqueAssets()
         {
             SongCatalogAsset catalog = Resources.Load<SongCatalogAsset>("YingYun/SongCatalog");
 
             Assert.That(catalog, Is.Not.Null);
-            Assert.That(catalog.Songs.Count, Is.EqualTo(3));
+            Assert.That(catalog.Songs.Count, Is.EqualTo(4));
             Assert.That(catalog.Songs.All(song => song != null && song.Music != null), Is.True);
-            Assert.That(catalog.Songs.Select(song => song.SongId).Distinct().Count(), Is.EqualTo(3));
+            Assert.That(catalog.Songs.Select(song => song.SongId).Distinct().Count(), Is.EqualTo(4));
             foreach (SongDefinitionAsset song in catalog.Songs)
             {
                 Assert.DoesNotThrow(song.ValidateOrThrow, song.Title);
@@ -59,6 +60,9 @@ namespace YingYun.Rhythm.Tests
             Assert.That(
                 catalog.Find("trial-light").CurrentTimingStatus,
                 Is.EqualTo(SongDefinitionAsset.TimingStatus.Verified));
+            Assert.That(
+                catalog.Find("sheng-long-jue").CurrentTimingStatus,
+                Is.EqualTo(SongDefinitionAsset.TimingStatus.Verified));
         }
 
         [Test]
@@ -67,8 +71,10 @@ namespace YingYun.Rhythm.Tests
             SongCatalogAsset catalog = Resources.Load<SongCatalogAsset>("YingYun/SongCatalog");
             SongDefinitionAsset xiang = catalog.Find("xiang-wang-xing-special");
             SongDefinitionAsset qing = catalog.Find("qing-yu-an-lan-jie");
+            SongDefinitionAsset sheng = catalog.Find("sheng-long-jue");
             SongTimingMap xiangTiming = xiang.CreateTimingMap();
             SongTimingMap qingTiming = qing.CreateTimingMap();
+            SongTimingMap shengTiming = sheng.CreateTimingMap();
 
             Assert.That(xiangTiming.Count, Is.EqualTo(399));
             Assert.That(xiang.FirstPlayableSec, Is.EqualTo(0.86d).Within(0.000001d));
@@ -83,6 +89,10 @@ namespace YingYun.Rhythm.Tests
                 Enumerable.Range(0, qingTiming.Count)
                     .Any(index => qingTiming[index].BeatsPerBar == 8),
                 Is.True);
+
+            Assert.That(shengTiming.Count, Is.EqualTo(365));
+            Assert.That(sheng.FirstPlayableSec, Is.EqualTo(0.48d).Within(0.000001d));
+            Assert.That(sheng.HasAuthoredCharts, Is.True);
         }
 
         [Test]

@@ -4,6 +4,10 @@ using System.Globalization;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
+using YingYun.Rhythm.Chart;
+using YingYun.Rhythm.Judgment;
+using YingYun.Rhythm.Puppet;
+using YingYun.Rhythm.Scoring;
 using YingYun.Rhythm.Unity.Config;
 
 namespace YingYun.Rhythm.Editor
@@ -14,11 +18,13 @@ namespace YingYun.Rhythm.Editor
         private const string CatalogPath = "Assets/Resources/YingYun/SongCatalog.asset";
         private const string XiangWangXingBeats = "Tools/BeatAnalysis/results/xiang-wang-xing.beats";
         private const string QingYuAnBeats = "Tools/BeatAnalysis/results/qing-yu-an-lan-jie.beats";
+        private const string ShengLongJueBeats = "Tools/BeatAnalysis/results/sheng-long-jue.beats";
 
         public static void CreateInitialSongAssets()
         {
             ConfigureStreamingMusic("Assets/Audio/Music/象王行（特别版）.mp3");
             ConfigureStreamingMusic("Assets/Audio/Music/青玉案·兰芥.mp3");
+            ConfigureStreamingMusic("Assets/Audio/Music/升龙诀.mp3");
             EnsureAssetFolder("Assets/Resources");
             EnsureAssetFolder("Assets/Resources/YingYun");
             EnsureAssetFolder(SongDirectory);
@@ -59,6 +65,19 @@ namespace YingYun.Rhythm.Editor
                 SongDefinitionAsset.TimingStatus.AnalysisCandidate);
             QingYuAnLanJieChartAuthoring.Apply(qingYuAn);
 
+            SongDefinitionAsset.TimingPointData[] shengTiming = LoadBeatThisTiming(ShengLongJueBeats);
+
+            SongDefinitionAsset shengLongJue = CreateOrUpdate(
+                "ShengLongJue",
+                "sheng-long-jue",
+                "升龙诀",
+                "默认歌曲",
+                "Assets/Audio/Music/升龙诀.mp3",
+                shengTiming[0].timeSec,
+                shengTiming,
+                SongDefinitionAsset.TimingStatus.AnalysisCandidate);
+            ApplyProceduralChart(shengLongJue, unchecked((int)0x8FC5C5C7));
+
             SongCatalogAsset catalog = AssetDatabase.LoadAssetAtPath<SongCatalogAsset>(CatalogPath);
             if (catalog == null)
             {
@@ -66,7 +85,7 @@ namespace YingYun.Rhythm.Editor
                 AssetDatabase.CreateAsset(catalog, CatalogPath);
             }
 
-            catalog.ConfigureEditor(new[] { trialLight, xiangWangXing, qingYuAn });
+            catalog.ConfigureEditor(new[] { trialLight, xiangWangXing, qingYuAn, shengLongJue });
             EditorUtility.SetDirty(catalog);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
@@ -122,6 +141,59 @@ namespace YingYun.Rhythm.Editor
                     beatsPerBar = 4,
                 },
             };
+        }
+
+        private static void ApplyProceduralChart(SongDefinitionAsset song, int seed)
+        {
+            ProceduralSongContent content = ProceduralSongChartGenerator.Generate(
+                song.CreateTimingMap(),
+                song.PlayableEndSec,
+                seed);
+            var charts = new SongDefinitionAsset.DifficultyChart[3];
+            foreach (PlayDifficulty difficulty in Enum.GetValues(typeof(PlayDifficulty)))
+            {
+                NoteData[] notes = content.GetNotes(difficulty);
+                var records = new SongDefinitionAsset.NoteRecord[notes.Length];
+                for (int i = 0; i < notes.Length; i++)
+                {
+                    NoteData note = notes[i];
+                    records[i] = new SongDefinitionAsset.NoteRecord
+                    {
+                        id = note.Id,
+                        typeId = note.TypeId,
+                        lane = note.Lane,
+                        timeSec = note.TimeSec,
+                        durationSec = note.DurationSec,
+                        segmentId = note.SegmentId,
+                        requiredLanesMask = note.RequiredLanesMask,
+                    };
+                }
+
+                charts[(int)difficulty] = new SongDefinitionAsset.DifficultyChart
+                {
+                    difficulty = difficulty,
+                    notes = records,
+                };
+            }
+
+            AuthoredDanceCue[] generatedCues = content.DanceCues;
+            var cues = new SongDefinitionAsset.DanceCueData[generatedCues.Length];
+            for (int i = 0; i < generatedCues.Length; i++)
+            {
+                AuthoredDanceCue cue = generatedCues[i];
+                cues[i] = new SongDefinitionAsset.DanceCueData
+                {
+                    action = cue.Action,
+                    startBeat = cue.StartBeat,
+                    durationBeats = cue.DurationBeats,
+                    anchorNoteId = cue.AnchorNoteId,
+                    hasClosing = cue.HasClosing,
+                };
+            }
+
+            song.ConfigureAuthoredContentEditor(charts, cues, SongDefinitionAsset.TimingStatus.Verified);
+            song.ValidateOrThrow();
+            EditorUtility.SetDirty(song);
         }
 
         private static SongDefinitionAsset.TimingPointData[] LoadBeatThisTiming(string projectRelativePath)
