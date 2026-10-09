@@ -104,3 +104,10 @@ UpgradeLog*.xml
 !CHANGELOG.md
 !DEVELOPMENT.md
 !.vsconfig
+
+# Unity Test Framework / Connect Share 本機產物
+/Assets/Resources/PerformanceTestRunInfo.json
+/Assets/Resources/PerformanceTestRunInfo.json.meta
+/Assets/Resources/PerformanceTestRunSettings.json
+/Assets/Resources/PerformanceTestRunSettings.json.meta
+/ProjectSettings/Packages/com.unity.connect.share/
