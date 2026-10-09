@@ -24,6 +24,50 @@
 
 ---
 
+## [2026-10-09] P0 开场动画 - 循环视频取代静态定格图
+
+### 新增
+
+* 开场改为循环视频：`Assets/StreamingAssets/YingYun/Opening/OpeningLoop.mp4`（1280×720、5.11 秒、H.264、121 帧、无音轨、1.42 MB），在开场界面循环播放直到点击任意处。
+* `OpeningSlideAssetTests` 新增 `OpeningLoopVideo_IsBundledInStreamingAssets`，确保影片随建置出货。
+
+### 修改
+
+* `Packages/manifest.json` 加回 `com.unity.modules.video`：Web 平台支持 VideoPlayer，但**不支持内嵌 VideoClip**，只能走 StreamingAssets 的 URL。
+* `DemoFlowPresenter`：VideoPlayer 以 URL 载入、渲染到 RenderTexture、`isLooping = true`，叠在原有静态定格图之上并淡入；影片未就绪或载入失败时保持显示原静态图，开场不会开天窗。
+* 重进开场会重新播放；离开开场（淡出到选曲）时停止播放，`OnDestroy` 释放 RenderTexture 与事件订阅。
+* 点击任意处淡出进入选曲、字号、版面与其余玩法规则一律未变。
+
+### 测试
+
+* Unity 6000.6.2f1 EditMode 全量回归 **292 / 292**（新增 1 条），failed=0、skipped=0，duration=83.17 s。
+* 本机静态服务器 + 无头 Chrome 实测 WebGL 产物：影片请求 200/206、开场连续三帧差异 25.5% / 27.7%（确认真的在动）、点击后画面变化 89.8%（确认仍能进入选曲）、Console 无 error。
+* 线上 `https://kamiweiwei12.github.io/Piying/` 复测：`version.json` 与影片均 200、开场帧间差异 20.5%（确认线上在动）、点击进入选曲 89.8%、加载页标题为「皮影声律」、Console 无 error。
+* 线上完整流程回归：加载 30.1 s、开场 → 选曲、左右切歌（两次右 + 两次左后与初始画面差异 **0**，完全还原）、按 1 开演均正常。
+
+### 验收结果
+
+* 本机与线上 WebGL 冒烟全数通过；影片在 Chromium 系浏览器可自动播放。
+* 正式版本号 `P0-202610091025-9757d394` 已发布至 gh-pages；本次同时把上一轮改名带上线（线上标题已为「皮影声律」）。
+
+### Git Commit
+
+* 功能提交 `9757d39`；本条目随后单独提交，不影响已发布产物。
+
+### 风险 / 已知问题
+
+* 影片首尾并非完全对齐（接缝差异 22.8%，与一般运动帧间差异同量级），循环时可能有轻微跳动；若需要，可改成「正放 + 倒放」往返播放。
+* 素材无音轨，`audioOutputMode = None`，不影响游戏音乐。
+* 发布包由 21 档 / 57.40 MiB 增至 22 档 / 58.87 MiB（约 +1.47 MiB，其中影片 1.42 MB），累计约 61.7 MB（十进位）。
+* 影片走 StreamingAssets 且未加版本查询参数（避免破坏 Unity 对副档名的格式判断）；日后换片请直接改文件名（如 `OpeningLoop2.mp4`）以避开 CDN 缓存。
+* 浏览器自动播放政策：本片无音轨，实测 Chromium 系可自动播放；若个别浏览器拦截，画面仍显示原静态定格图。
+
+### 下一步
+
+* 无。等待验收。
+
+---
+
 ## [2026-10-09] P0 更名 - 游戏更名为《皮影声律》
 
 ### 新增
