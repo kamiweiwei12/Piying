@@ -130,19 +130,30 @@ namespace YingYun.Rhythm.Prototype
             _flow.ResumeRequested += ResumePerformance;
             _flow.RestartRequested += RestartFromPause;
             _flow.ReturnRequested += ShowSongSelection;
-            _flow.CustomSongsRefreshRequested += RefreshCustomSongs;
-            _flow.CustomSongsFolderRequested += OpenCustomSongsFolder;
+            bool supportsLocalFileFeatures = DemoFlowPresenter.SupportsLocalFileFeatures(Application.platform);
+            if (supportsLocalFileFeatures)
+            {
+                _flow.CustomSongsRefreshRequested += RefreshCustomSongs;
+                _flow.CustomSongsFolderRequested += OpenCustomSongsFolder;
+            }
             _flow.DiagnosticsRequested += ShowDiagnostics;
             _flow.DiagnosticsCopyRequested += CopyDiagnostics;
             _flow.DiagnosticsFolderRequested += OpenDiagnosticsFolder;
             _flow.OpeningDismissed += ShowSongSelection;
             ConfigureSongSelection();
-            _customSongs = GetComponent<CustomSongLibrary>();
-            if (_customSongs == null) _customSongs = gameObject.AddComponent<CustomSongLibrary>();
-            _customSongs.SongsChanged += RefreshSongSelection;
-            _customSongs.StatusChanged += _flow.SetSongImportStatus;
-            _flow.SetSongImportStatus($"自定义歌曲文件夹：{_customSongs.UserSongsPath}");
-            _customSongs.BeginScan();
+            if (supportsLocalFileFeatures)
+            {
+                _customSongs = GetComponent<CustomSongLibrary>();
+                if (_customSongs == null) _customSongs = gameObject.AddComponent<CustomSongLibrary>();
+                _customSongs.SongsChanged += RefreshSongSelection;
+                _customSongs.StatusChanged += _flow.SetSongImportStatus;
+                _flow.SetSongImportStatus($"自定义歌曲文件夹：{_customSongs.UserSongsPath}");
+                _customSongs.BeginScan();
+            }
+            else
+            {
+                _flow.SetSongImportStatus("网页版比赛 Demo · 三首内置曲目");
+            }
             _flow.ShowOpening();
         }
 

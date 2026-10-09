@@ -28,6 +28,14 @@ namespace YingYun.Rhythm.Tests
 
     public sealed class DemoFlowPresenterUiTests
     {
+        [TestCase(RuntimePlatform.WebGLPlayer, false)]
+        [TestCase(RuntimePlatform.WindowsPlayer, true)]
+        [TestCase(RuntimePlatform.WindowsEditor, true)]
+        public void LocalFileFeatures_AreHiddenOnlyOnWebGL(RuntimePlatform platform, bool expected)
+        {
+            Assert.That(DemoFlowPresenter.SupportsLocalFileFeatures(platform), Is.EqualTo(expected));
+        }
+
         [Test]
         public void SongArrows_SelectAdjacentSongs_AndAllRuntimeUiUsesBrushFont()
         {

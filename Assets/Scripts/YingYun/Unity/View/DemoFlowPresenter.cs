@@ -71,6 +71,12 @@ namespace YingYun.Rhythm.View
         public string SelectedSongId => _selectedSongId;
         public bool OpeningCanDismiss => _openingCanDismiss;
 
+        /// <summary>本機檔案與資料夾入口只在具備桌面檔案系統的版本顯示。</summary>
+        public static bool SupportsLocalFileFeatures(RuntimePlatform platform)
+        {
+            return platform != RuntimePlatform.WebGLPlayer;
+        }
+
         private sealed class SongButton
         {
             public string SongId;
@@ -312,9 +318,16 @@ namespace YingYun.Rhythm.View
             BuildStageFrame(panel);
             AddText(panel, "影　韵", 64, new Vector2(0f, 446f), new Vector2(700f, 82f), LacquerRed);
             AddText(panel, "皮影随乐 · 择曲开演", 24, new Vector2(0f, 394f), new Vector2(760f, 42f), new Color(0.38f, 0.24f, 0.14f, 1f));
-            AddSmallButton(panel, "歌曲文件夹", new Vector2(-245f, 342f), () => CustomSongsFolderRequested?.Invoke());
-            AddSmallButton(panel, "刷新曲目", new Vector2(0f, 342f), () => CustomSongsRefreshRequested?.Invoke());
-            AddSmallButton(panel, "运行日志", new Vector2(245f, 342f), () => DiagnosticsRequested?.Invoke());
+            if (SupportsLocalFileFeatures(Application.platform))
+            {
+                AddSmallButton(panel, "歌曲文件夹", new Vector2(-245f, 342f), () => CustomSongsFolderRequested?.Invoke());
+                AddSmallButton(panel, "刷新曲目", new Vector2(0f, 342f), () => CustomSongsRefreshRequested?.Invoke());
+                AddSmallButton(panel, "运行日志", new Vector2(245f, 342f), () => DiagnosticsRequested?.Invoke());
+            }
+            else
+            {
+                AddSmallButton(panel, "运行日志", new Vector2(0f, 342f), () => DiagnosticsRequested?.Invoke());
+            }
             UnityEngine.UI.Button previousPage = CreateButton(panel, "‹", 34, new Vector2(-800f, 207f), new Vector2(66f, 92f));
             UnityEngine.UI.Button nextPage = CreateButton(panel, "›", 34, new Vector2(800f, 207f), new Vector2(66f, 92f));
             previousPage.onClick.AddListener(() => SelectAdjacentSong(-1));
@@ -539,10 +552,18 @@ namespace YingYun.Rhythm.View
             _diagnosticsText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _diagnosticsText.verticalOverflow = VerticalWrapMode.Truncate;
             _diagnosticsStatusText = AddText(panel, string.Empty, 18, new Vector2(0f, -375f), new Vector2(1600f, 44f), new Color(0.72f, 0.59f, 0.43f));
-            AddSmallButton(panel, "刷新", new Vector2(-310f, -445f), () => DiagnosticsRequested?.Invoke());
-            AddSmallButton(panel, "复制完整日志", new Vector2(-95f, -445f), () => DiagnosticsCopyRequested?.Invoke());
-            AddSmallButton(panel, "打开日志文件夹", new Vector2(135f, -445f), () => DiagnosticsFolderRequested?.Invoke());
-            AddSmallButton(panel, "关闭", new Vector2(350f, -445f), HideDiagnostics);
+            if (SupportsLocalFileFeatures(Application.platform))
+            {
+                AddSmallButton(panel, "刷新", new Vector2(-310f, -445f), () => DiagnosticsRequested?.Invoke());
+                AddSmallButton(panel, "复制完整日志", new Vector2(-95f, -445f), () => DiagnosticsCopyRequested?.Invoke());
+                AddSmallButton(panel, "打开日志文件夹", new Vector2(135f, -445f), () => DiagnosticsFolderRequested?.Invoke());
+                AddSmallButton(panel, "关闭", new Vector2(350f, -445f), HideDiagnostics);
+            }
+            else
+            {
+                AddSmallButton(panel, "刷新", new Vector2(-105f, -445f), () => DiagnosticsRequested?.Invoke());
+                AddSmallButton(panel, "关闭", new Vector2(105f, -445f), HideDiagnostics);
+            }
             _diagnosticsPanel.SetActive(false);
         }
 

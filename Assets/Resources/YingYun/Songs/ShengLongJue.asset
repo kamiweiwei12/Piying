@@ -19,7 +19,7 @@ MonoBehaviour:
   music: {fileID: 8300000, guid: 2a2fd42e730009d428d7201d8cc7b540, type: 3}
   timingStatus: 1
   firstPlayableSec: 0.48
-  playableEndSec: 148.84800720214844
+  playableEndSec: 148.847
   timingPoints:
   - timeSec: 0.48
     beat: 0

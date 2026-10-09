@@ -42,7 +42,9 @@ namespace YingYun.Rhythm.Tests
             Assert.That(catalog.Songs.Select(song => song.SongId).Distinct().Count(), Is.EqualTo(4));
             foreach (SongDefinitionAsset song in catalog.Songs)
             {
-                Assert.DoesNotThrow(song.ValidateOrThrow, song.Title);
+                Assert.DoesNotThrow(
+                    song.ValidateOrThrow,
+                    $"{song.Title} | clip={song.Music.length:F6}s | playableEnd={song.PlayableEndSec:F6}s");
             }
         }
 
