@@ -45,7 +45,10 @@ namespace YingYun.Rhythm.View
         private UnityEngine.UI.RawImage _openingVideoImage;
         private UnityEngine.Video.VideoPlayer _openingVideoPlayer;
         private RenderTexture _openingVideoTexture;
+        private Material _openingVideoMaterial;
         private bool _openingVideoFailed;
+        private bool _openingVideoPreparing;
+        private float _nextOpeningVideoRecoveryTime;
         private RectTransform _pausePlaqueRect;
         private Coroutine _openingRoutine;
         private Coroutine _pauseRoutine;
@@ -63,8 +66,11 @@ namespace YingYun.Rhythm.View
         /// 換片時請直接換檔名（例如 OpeningLoop2.mp4）以避開 CDN 快取。
         /// </summary>
         public const string OpeningVideoRelativePath = "YingYun/Opening/OpeningLoop.mp4";
+        public const string OpeningVideoSharpenShaderPath = "YingYun/UI/Opening/OpeningVideoSharpen";
         private const int OpeningVideoWidth = 1280;
         private const int OpeningVideoHeight = 720;
+        private const float OpeningVideoRecoveryInterval = 0.25f;
+        private const float OpeningVideoSharpness = 0.28f;
 
         public event Action<string, PlayDifficulty> PlayRequested;
         public event Action<double, double> CalibrationAdjusted;
@@ -114,6 +120,33 @@ namespace YingYun.Rhythm.View
         private void Awake()
         {
             Build();
+        }
+
+        private void Update()
+        {
+            if (!Application.isPlaying || Time.unscaledTime < _nextOpeningVideoRecoveryTime)
+            {
+                return;
+            }
+
+            _nextOpeningVideoRecoveryTime = Time.unscaledTime + OpeningVideoRecoveryInterval;
+            ResumeOpeningVideoIfNeeded();
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                _nextOpeningVideoRecoveryTime = 0f;
+            }
+        }
+
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            if (!pauseStatus)
+            {
+                _nextOpeningVideoRecoveryTime = 0f;
+            }
         }
 
         public void ShowOpening()
@@ -498,15 +531,7 @@ namespace YingYun.Rhythm.View
             }
 
             EnsureOpeningVideoPlayer();
-            if (_openingVideoPlayer == null)
-            {
-                return;
-            }
-
-            if (!_openingVideoPlayer.isPlaying)
-            {
-                _openingVideoPlayer.Play();
-            }
+            ResumeOpeningVideoIfNeeded();
         }
 
         private void EnsureOpeningVideoPlayer()
@@ -533,8 +558,23 @@ namespace YingYun.Rhythm.View
             _openingVideoImage.color = Color.white;
 
             _openingVideoTexture = new RenderTexture(OpeningVideoWidth, OpeningVideoHeight, 0, RenderTextureFormat.ARGB32);
+            _openingVideoTexture.filterMode = FilterMode.Bilinear;
+            _openingVideoTexture.wrapMode = TextureWrapMode.Clamp;
+            _openingVideoTexture.useMipMap = false;
+            _openingVideoTexture.autoGenerateMips = false;
             _openingVideoTexture.Create();
             _openingVideoImage.texture = _openingVideoTexture;
+
+            Shader sharpenShader = Resources.Load<Shader>(OpeningVideoSharpenShaderPath);
+            if (sharpenShader != null)
+            {
+                _openingVideoMaterial = new Material(sharpenShader)
+                {
+                    name = "开场循环动画锐化材质"
+                };
+                _openingVideoMaterial.SetFloat("_Sharpness", OpeningVideoSharpness);
+                _openingVideoImage.material = _openingVideoMaterial;
+            }
 
             UnityEngine.UI.AspectRatioFitter fitter = slideObject.AddComponent<UnityEngine.UI.AspectRatioFitter>();
             fitter.aspectMode = UnityEngine.UI.AspectRatioFitter.AspectMode.EnvelopeParent;
@@ -552,6 +592,8 @@ namespace YingYun.Rhythm.View
             _openingVideoPlayer.waitForFirstFrame = true;
             _openingVideoPlayer.errorReceived += OnOpeningVideoError;
             _openingVideoPlayer.prepareCompleted += OnOpeningVideoPrepared;
+            _openingVideoPlayer.loopPointReached += OnOpeningVideoLoopPointReached;
+            _openingVideoPreparing = true;
             _openingVideoPlayer.Prepare();
         }
 
@@ -568,6 +610,7 @@ namespace YingYun.Rhythm.View
 
         private void OnOpeningVideoPrepared(UnityEngine.Video.VideoPlayer source)
         {
+            _openingVideoPreparing = false;
             if (_openingVideoFailed || !IsOpeningVisible)
             {
                 return;
@@ -578,11 +621,12 @@ namespace YingYun.Rhythm.View
                 _openingVideoGroup.alpha = 1f;
             }
 
-            source.Play();
+            ResumeOpeningVideoIfNeeded();
         }
 
         private void OnOpeningVideoError(UnityEngine.Video.VideoPlayer source, string message)
         {
+            _openingVideoPreparing = false;
             _openingVideoFailed = true;
             if (_openingVideoGroup != null)
             {
@@ -592,9 +636,43 @@ namespace YingYun.Rhythm.View
             Debug.LogWarning($"[DemoFlowPresenter] 开场循环动画无法播放，改用静态定格图：{message}");
         }
 
+        private void OnOpeningVideoLoopPointReached(UnityEngine.Video.VideoPlayer source)
+        {
+            if (!_openingVideoFailed && IsOpeningVisible && !source.isPlaying)
+            {
+                source.Play();
+            }
+        }
+
+        private void ResumeOpeningVideoIfNeeded()
+        {
+            if (!IsOpeningVisible || _openingVideoFailed || _openingVideoPlayer == null)
+            {
+                return;
+            }
+
+            _openingVideoPlayer.isLooping = true;
+            if (!_openingVideoPlayer.isPrepared)
+            {
+                if (!_openingVideoPreparing)
+                {
+                    _openingVideoPreparing = true;
+                    _openingVideoPlayer.Prepare();
+                }
+
+                return;
+            }
+
+            if (!_openingVideoPlayer.isPlaying)
+            {
+                _openingVideoPlayer.Play();
+            }
+        }
+
         private void StopOpeningVideo()
         {
-            if (_openingVideoPlayer != null && _openingVideoPlayer.isPlaying)
+            _openingVideoPreparing = false;
+            if (_openingVideoPlayer != null && (_openingVideoPlayer.isPlaying || _openingVideoPlayer.isPaused))
             {
                 _openingVideoPlayer.Stop();
             }
@@ -606,6 +684,7 @@ namespace YingYun.Rhythm.View
             {
                 _openingVideoPlayer.errorReceived -= OnOpeningVideoError;
                 _openingVideoPlayer.prepareCompleted -= OnOpeningVideoPrepared;
+                _openingVideoPlayer.loopPointReached -= OnOpeningVideoLoopPointReached;
                 if (_openingVideoPlayer.targetTexture == _openingVideoTexture)
                 {
                     _openingVideoPlayer.targetTexture = null;
@@ -617,7 +696,14 @@ namespace YingYun.Rhythm.View
             if (_openingVideoImage != null)
             {
                 _openingVideoImage.texture = null;
+                _openingVideoImage.material = null;
                 _openingVideoImage = null;
+            }
+
+            if (_openingVideoMaterial != null)
+            {
+                Destroy(_openingVideoMaterial);
+                _openingVideoMaterial = null;
             }
 
             if (_openingVideoTexture != null)
@@ -629,6 +715,7 @@ namespace YingYun.Rhythm.View
 
             _openingVideoGroup = null;
             _openingVideoRect = null;
+            _openingVideoPreparing = false;
         }
 
         private static CanvasGroup CreateOpeningSlide(

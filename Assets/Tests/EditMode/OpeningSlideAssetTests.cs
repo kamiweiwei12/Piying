@@ -29,5 +29,14 @@ namespace YingYun.Rhythm.Tests
             Assert.That(File.Exists(path), Is.True, $"Missing opening loop video: {path}");
             Assert.That(new FileInfo(path).Length, Is.GreaterThan(0), "Opening loop video is empty.");
         }
+
+        [Test]
+        public void OpeningLoopVideo_SharpenShaderIsBundled()
+        {
+            Shader shader = Resources.Load<Shader>(DemoFlowPresenter.OpeningVideoSharpenShaderPath);
+
+            Assert.That(shader, Is.Not.Null, "Opening video sharpen shader must be available at runtime.");
+            Assert.That(shader.isSupported, Is.True, "Opening video sharpen shader is not supported on this editor.");
+        }
     }
 }
