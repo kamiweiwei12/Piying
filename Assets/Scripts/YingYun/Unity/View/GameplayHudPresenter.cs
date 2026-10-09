@@ -30,6 +30,12 @@ namespace YingYun.Rhythm.View
         private DifficultyConfig _difficulty;
         private bool _wasCountingDown;
 
+        private static readonly Color InkBrown = new Color(0.13f, 0.065f, 0.045f, 1f);
+        private static readonly Color LacquerRed = new Color(0.31f, 0.075f, 0.052f, 1f);
+        private static readonly Color AntiqueGold = new Color(0.68f, 0.49f, 0.22f, 1f);
+        private static readonly Color WarmGold = new Color(0.82f, 0.64f, 0.33f, 1f);
+        private static readonly Color RicePaper = new Color(0.91f, 0.855f, 0.72f, 0.97f);
+
         public bool IsResultVisible => _resultPanel != null && _resultPanel.activeSelf;
         public GameplayStatistics Statistics => _statistics;
 
@@ -177,14 +183,24 @@ namespace YingYun.Rhythm.View
             _safeArea = CreateRect("安全区域", canvasObject.transform);
             ApplySafeArea();
 
-            _comboText = CreateText("连击", _safeArea, "连击　0", 42, TextAnchor.UpperLeft);
-            Anchor(_comboText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(36f, -28f), new Vector2(420f, 90f), new Vector2(0f, 1f));
+            CreateFramedPanel("连击纸牌", _safeArea,
+                new Vector2(0f, 1f), new Vector2(36f, -20f), new Vector2(410f, 76f), new Vector2(0f, 1f),
+                new Color(InkBrown.r, InkBrown.g, InkBrown.b, 0.78f));
+            CreateFramedPanel("准确纸牌", _safeArea,
+                new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(445f, 70f), new Vector2(0.5f, 1f),
+                new Color(InkBrown.r, InkBrown.g, InkBrown.b, 0.78f));
+            CreateFramedPanel("得分纸牌", _safeArea,
+                new Vector2(1f, 1f), new Vector2(-36f, -20f), new Vector2(510f, 76f), new Vector2(1f, 1f),
+                new Color(InkBrown.r, InkBrown.g, InkBrown.b, 0.78f));
 
-            _scoreText = CreateText("得分", _safeArea, "得分　0", 42, TextAnchor.UpperRight);
-            Anchor(_scoreText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-36f, -28f), new Vector2(520f, 90f), new Vector2(1f, 1f));
+            _comboText = CreateText("连击", _safeArea, "连击　0", 36, TextAnchor.MiddleLeft);
+            Anchor(_comboText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(56f, -20f), new Vector2(370f, 76f), new Vector2(0f, 1f));
 
-            _accuracyText = CreateText("准确", _safeArea, "准确　0.00%", 38, TextAnchor.UpperCenter);
-            Anchor(_accuracyText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(460f, 80f), new Vector2(0.5f, 1f));
+            _scoreText = CreateText("得分", _safeArea, "得分　0", 36, TextAnchor.MiddleRight);
+            Anchor(_scoreText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-56f, -20f), new Vector2(470f, 76f), new Vector2(1f, 1f));
+
+            _accuracyText = CreateText("准确", _safeArea, "准确　0.00%", 33, TextAnchor.MiddleCenter);
+            Anchor(_accuracyText.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -20f), new Vector2(420f, 70f), new Vector2(0.5f, 1f));
 
             BuildDancePanel();
             BuildResultPanel();
@@ -199,13 +215,15 @@ namespace YingYun.Rhythm.View
             Anchor(panel, new Vector2(0f, 1f), new Vector2(0f, 1f),
                 new Vector2(36f, -140f), new Vector2(420f, 250f), new Vector2(0f, 1f));
             var background = panelObject.GetComponent<UnityEngine.UI.Image>();
-            background.color = new Color(0.10f, 0.025f, 0.018f, 0.80f);
+            background.color = AntiqueGold;
             background.raycastTarget = false;
+            CreateInsetFace(panel, "解说墨纸", new Color(InkBrown.r, InkBrown.g, InkBrown.b, 0.84f), 6f);
 
             var heading = CreateText("解说标题", panel, "影戏身段", 26, TextAnchor.UpperLeft);
             Anchor(heading.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
                 new Vector2(20f, -16f), new Vector2(380f, 35f), new Vector2(0f, 1f));
-            heading.color = new Color(1f, 0.76f, 0.23f);
+            heading.color = WarmGold;
+            BrushTypography.Apply(heading, 26, heading.color);
 
             _danceNameText = CreateText("当前动作", panel, "尚未起势", 40, TextAnchor.UpperLeft);
             Anchor(_danceNameText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f),
@@ -228,11 +246,13 @@ namespace YingYun.Rhythm.View
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = new Vector2(360f, 260f);
             UnityEngine.UI.Image image = _countdownPanel.GetComponent<UnityEngine.UI.Image>();
-            image.color = new Color(0.10f, 0.022f, 0.014f, 0.88f);
+            image.color = AntiqueGold;
             image.raycastTarget = false;
+            CreateInsetFace(rect, "倒数墨纸", new Color(InkBrown.r, InkBrown.g, InkBrown.b, 0.90f), 7f);
             _countdownText = CreateText("倒数", rect, "3", 118, TextAnchor.MiddleCenter);
             Anchor(_countdownText.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(0.5f, 0.5f));
-            _countdownText.color = new Color(1f, 0.76f, 0.23f);
+            _countdownText.color = WarmGold;
+            BrushTypography.Apply(_countdownText, 118, _countdownText.color);
             _countdownPanel.SetActive(false);
         }
 
@@ -247,15 +267,19 @@ namespace YingYun.Rhythm.View
             rect.sizeDelta = new Vector2(720f, 690f);
             rect.anchoredPosition = Vector2.zero;
             var image = _resultPanel.GetComponent<UnityEngine.UI.Image>();
-            image.color = new Color(0.12f, 0.025f, 0.018f, 0.94f);
+            image.color = AntiqueGold;
             image.raycastTarget = false;
+            CreateInsetFace(rect, "结算宣纸", RicePaper, 8f);
 
             _resultTitle = CreateText("总评", rect, string.Empty, 92, TextAnchor.MiddleCenter);
             Anchor(_resultTitle.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -54f), new Vector2(620f, 130f), new Vector2(0.5f, 1f));
-            _resultTitle.color = new Color(1f, 0.78f, 0.24f);
+            _resultTitle.color = LacquerRed;
+            BrushTypography.Apply(_resultTitle, 92, _resultTitle.color);
 
             _resultDetails = CreateText("明细", rect, string.Empty, 34, TextAnchor.MiddleCenter);
             Anchor(_resultDetails.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -180f), new Vector2(640f, 155f), new Vector2(0.5f, 1f));
+            _resultDetails.color = InkBrown;
+            BrushTypography.Apply(_resultDetails, 34, _resultDetails.color);
 
             CreateResultGradeCell(rect, "契合", 0, new Vector2(-175f, -370f));
             CreateResultGradeCell(rect, "协律", 1, new Vector2(175f, -370f));
@@ -264,6 +288,8 @@ namespace YingYun.Rhythm.View
 
             _resultFooter = CreateText("结算操作", rect, string.Empty, 25, TextAnchor.MiddleCenter);
             Anchor(_resultFooter.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 28f), new Vector2(640f, 82f), new Vector2(0.5f, 0f));
+            _resultFooter.color = new Color(0.35f, 0.24f, 0.15f, 1f);
+            BrushTypography.Apply(_resultFooter, 25, _resultFooter.color);
             _resultPanel.SetActive(false);
         }
 
@@ -294,6 +320,7 @@ namespace YingYun.Rhythm.View
             _resultGradeCounts[index] = CreateText("次数", cell, "0", 38, TextAnchor.MiddleRight);
             Anchor(_resultGradeCounts[index].rectTransform, new Vector2(1f, 0.5f), new Vector2(1f, 0.5f), new Vector2(-8f, 0f), new Vector2(85f, 70f), new Vector2(1f, 0.5f));
             _resultGradeCounts[index].color = JudgmentCalligraphyAtlas.InkColor;
+            BrushTypography.Apply(_resultGradeCounts[index], 38, _resultGradeCounts[index].color);
         }
 
         private UnityEngine.UI.Text CreateText(string name, Transform parent, string value, int size, TextAnchor alignment)
@@ -304,13 +331,48 @@ namespace YingYun.Rhythm.View
             text.font = _runtimeFont;
             text.text = value;
             text.fontSize = size;
-            text.fontStyle = FontStyle.Bold;
             text.alignment = alignment;
-            text.color = new Color(1f, 0.89f, 0.62f);
+            text.color = new Color(0.96f, 0.86f, 0.62f, 1f);
             text.raycastTarget = false;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Overflow;
+            BrushTypography.Apply(text, size, text.color);
             return text;
+        }
+
+        private static RectTransform CreateFramedPanel(
+            string name,
+            Transform parent,
+            Vector2 anchor,
+            Vector2 position,
+            Vector2 size,
+            Vector2 pivot,
+            Color faceColor)
+        {
+            var panelObject = new GameObject(name, typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            panelObject.transform.SetParent(parent, false);
+            RectTransform panel = (RectTransform)panelObject.transform;
+            Anchor(panel, anchor, anchor, position, size, pivot);
+            UnityEngine.UI.Image border = panelObject.GetComponent<UnityEngine.UI.Image>();
+            border.color = AntiqueGold;
+            border.raycastTarget = false;
+            CreateInsetFace(panel, $"{name}内面", faceColor, 4f);
+            return panel;
+        }
+
+        private static RectTransform CreateInsetFace(RectTransform parent, string name, Color color, float inset)
+        {
+            var faceObject = new GameObject(name, typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            faceObject.transform.SetParent(parent, false);
+            RectTransform face = (RectTransform)faceObject.transform;
+            face.anchorMin = Vector2.zero;
+            face.anchorMax = Vector2.one;
+            face.offsetMin = new Vector2(inset, inset);
+            face.offsetMax = new Vector2(-inset, -inset);
+            UnityEngine.UI.Image image = faceObject.GetComponent<UnityEngine.UI.Image>();
+            image.color = color;
+            image.raycastTarget = false;
+            return face;
         }
 
         private void RefreshHud(int combo, int score, double accuracy)

@@ -8,9 +8,9 @@ namespace YingYun.Rhythm.View
     {
         private const int LaneCount = 6;
 
-        public static readonly Color TapColor = new Color(0.90f, 0.24f, 0.12f, 1f);
-        public static readonly Color HoldColor = new Color(0.96f, 0.68f, 0.12f, 1f);
-        public static readonly Color ChordColor = new Color(0.28f, 0.78f, 0.72f, 1f);
+        public static readonly Color TapColor = new Color(0.72f, 0.40f, 0.30f, 1f);
+        public static readonly Color HoldColor = new Color(0.56f, 0.64f, 0.46f, 1f);
+        public static readonly Color ChordColor = new Color(0.58f, 0.68f, 0.62f, 1f);
 
         private readonly SpriteRenderer[] _markers = new SpriteRenderer[LaneCount];
         private readonly Vector2[] _spawnPositions = new Vector2[LaneCount];
@@ -130,12 +130,16 @@ namespace YingYun.Rhythm.View
                 if (activeTapMarker)
                 {
                     _markers[lane].sprite = _tapSprite;
-                    _markers[lane].color = Color.white;
+                    _markers[lane].color = _logicalColor;
                     _markers[lane].transform.localPosition = spawnPositions[lane];
                     _markers[lane].transform.localRotation = Quaternion.identity;
                 }
             }
 
+            _chordBridgeVisual.color = ChordColor;
+            _holdHeadVisual.color = HoldColor;
+            _holdBodyVisual.color = HoldColor;
+            _holdTailVisual.color = HoldColor;
             _chordBridgeVisual.gameObject.SetActive(note.IsChord);
             _holdHeadVisual.gameObject.SetActive(_isHold);
             _holdBodyVisual.gameObject.SetActive(_isHold);

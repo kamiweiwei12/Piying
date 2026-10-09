@@ -146,7 +146,7 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
-        public void Presenter_BuildsJointedShadowFigureAndSixBambooRods()
+        public void Presenter_BuildsJointedShadowFigureAndSixOverheadControlStrings()
         {
             var root = new GameObject("Puppet Test");
             var presenter = root.AddComponent<ShadowPuppetPresenter>();
@@ -163,8 +163,31 @@ namespace YingYun.Rhythm.Tests
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Wrist/Joint Left Finger Fan"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Joint Left Elbow/Joint Left Sleeve Cuff/Joint Left Sleeve Tail"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Right Hip/Joint Right Knee/Joint Right Ankle/Right Foot Plate"), Is.Not.Null);
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Bamboo Control Rod 0"), Is.Not.Null);
-            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Control String 0"), Is.Null);
+            Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Bamboo Control Rod 0"), Is.Null);
+            Transform controlString = root.transform.Find("M6 Shadow Puppet Stage/Control String 0");
+            Assert.That(controlString, Is.Not.Null);
+            Assert.That(controlString.GetComponent<LineRenderer>().positionCount, Is.EqualTo(3));
+            Transform leftPuppeteerHand = root.transform.Find("M6 Shadow Puppet Stage/Left Puppeteer Hand");
+            Assert.That(leftPuppeteerHand, Is.Not.Null);
+            Transform rightPuppeteerHand = root.transform.Find("M6 Shadow Puppet Stage/Right Puppeteer Hand");
+            Assert.That(rightPuppeteerHand, Is.Not.Null);
+            Assert.That(leftPuppeteerHand.Find("Natural Hand Art"), Is.Not.Null);
+            Assert.That(leftPuppeteerHand.Find("Natural Hand Art").GetComponent<MeshRenderer>(), Is.Not.Null);
+            Assert.That(leftPuppeteerHand.Find("Gesture Hand Art"), Is.Null);
+            Assert.That(leftPuppeteerHand.Find("Finger Controller 1"), Is.Not.Null);
+            Assert.That(leftPuppeteerHand.Find("Finger Controller 3"), Is.Not.Null);
+            Assert.That(rightPuppeteerHand.Find("Finger Controller 4"), Is.Not.Null);
+            Assert.That(rightPuppeteerHand.Find("Finger Controller 5"), Is.Not.Null);
+            Transform firstFingerAnchor = leftPuppeteerHand.Find("Finger Controller 0/String Anchor 0");
+            Assert.That(firstFingerAnchor, Is.Not.Null);
+            Transform rightFingerAnchor = rightPuppeteerHand.Find("Finger Controller 2/String Anchor 2");
+            Assert.That(rightFingerAnchor, Is.Not.Null);
+            Assert.That(firstFingerAnchor.position.x, Is.GreaterThan(leftPuppeteerHand.position.x));
+            Assert.That(rightFingerAnchor.position.x, Is.LessThan(rightPuppeteerHand.position.x));
+            Vector3 anchorOnStage = root.transform.Find("M6 Shadow Puppet Stage")
+                .InverseTransformPoint(firstFingerAnchor.position);
+            Assert.That(Vector3.Distance(controlString.GetComponent<LineRenderer>().GetPosition(0), anchorOnStage),
+                Is.LessThan(0.001f));
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Header"), Is.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Left Post"), Is.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Stage Right Post"), Is.Null);
@@ -176,6 +199,53 @@ namespace YingYun.Rhythm.Tests
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Waist/Joint Left Shoulder/Art Left Upper Arm"), Is.Not.Null);
             Assert.That(root.transform.Find("M6 Shadow Puppet Stage/Joint Pelvis/Joint Left Hip/Joint Left Knee/Art Left Shin"), Is.Not.Null);
 
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void Presenter_RendersInwardFacingArticulatedOperatorHandsCloseup()
+        {
+            var root = new GameObject("Operator Hand Closeup Test");
+            var cameraRoot = new GameObject("Operator Hand Closeup Camera");
+            var presenter = root.AddComponent<ShadowPuppetPresenter>();
+            presenter.Begin();
+            presenter.Tick(1d);
+
+            var camera = cameraRoot.AddComponent<Camera>();
+            camera.transform.position = new Vector3(0f, 3.18f, -10f);
+            camera.orthographic = true;
+            camera.orthographicSize = 1.08f;
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(0.84f, 0.79f, 0.66f, 1f);
+            var target = new RenderTexture(1280, 720, 24, RenderTextureFormat.ARGB32);
+            var capture = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            camera.targetTexture = target;
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            camera.Render();
+            RenderTexture.active = target;
+            capture.ReadPixels(new Rect(0f, 0f, capture.width, capture.height), 0, 0);
+            capture.Apply();
+            File.WriteAllBytes(Path.Combine(projectRoot, "Logs", "M11-operator-hands-relaxed.png"),
+                capture.EncodeToPNG());
+
+            presenter.OnInput(new HitInput(1d, 0, InputKind.Press));
+            presenter.OnJudged(new JudgmentResult(JudgmentEventKind.HoldStarted,
+                2, 0, JudgmentGrade.Perfect, 0d, 0, 0, 0d, 1 << 0));
+            for (int frame = 1; frame <= 8; frame++)
+                presenter.Tick(1d + (frame * 0.05d));
+            camera.Render();
+            capture.ReadPixels(new Rect(0f, 0f, capture.width, capture.height), 0, 0);
+            capture.Apply();
+            File.WriteAllBytes(Path.Combine(projectRoot, "Logs", "M11-operator-hands-pulled.png"),
+                capture.EncodeToPNG());
+            File.WriteAllBytes(Path.Combine(projectRoot, "Logs", "M11-operator-hands-closeup.png"),
+                capture.EncodeToPNG());
+
+            RenderTexture.active = null;
+            camera.targetTexture = null;
+            Object.DestroyImmediate(capture);
+            Object.DestroyImmediate(target);
+            Object.DestroyImmediate(cameraRoot);
             Object.DestroyImmediate(root);
         }
 
@@ -458,6 +528,7 @@ namespace YingYun.Rhythm.Tests
             presenter.Tick(3.2d);
             Assert.That(Mathf.DeltaAngle(0f, presenter.LeftUpperArmRotation), Is.GreaterThan(-20f));
             Assert.That(presenter.GetStringTension(0), Is.LessThan(0.05f));
+            Assert.That(presenter.GetStringSag(0), Is.GreaterThan(0.55f));
 
             Object.DestroyImmediate(root);
         }
@@ -484,13 +555,37 @@ namespace YingYun.Rhythm.Tests
             presenter.Tick(1.40d);
             Vector3 firstGrip = presenter.GetRodGripPosition(0);
             float firstForearm = presenter.LeftForearmRotation;
+            Transform finger = root.transform.Find("M6 Shadow Puppet Stage/Left Puppeteer Hand/Finger Controller 0");
+            LineRenderer controlString = root.transform.Find("M6 Shadow Puppet Stage/Control String 0")
+                .GetComponent<LineRenderer>();
+            float firstStartWidth = controlString.startWidth;
+            float firstEndWidth = controlString.endWidth;
+            Color firstStartColor = controlString.startColor;
+            float firstFinger = finger.localEulerAngles.z;
+            float firstSag = presenter.GetStringSag(0);
+            Transform operatorHand = finger.parent;
+            float firstHandHeight = operatorHand.localPosition.y;
             presenter.Tick(1.55d);
             Vector3 secondGrip = presenter.GetRodGripPosition(0);
             float secondForearm = presenter.LeftForearmRotation;
+            float secondFinger = finger.localEulerAngles.z;
+            float secondSag = presenter.GetStringSag(0);
+            Transform anchor = finger.Find("String Anchor 0");
+            Transform stage = root.transform.Find("M6 Shadow Puppet Stage");
 
-            Assert.That(Vector3.Distance(firstGrip, secondGrip), Is.GreaterThan(0.02f));
+            Assert.That(Vector3.Distance(firstGrip, secondGrip), Is.GreaterThan(0.01f));
             Assert.That(Mathf.Abs(Mathf.DeltaAngle(firstForearm, secondForearm)), Is.GreaterThan(0.25f));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(firstFinger, secondFinger)), Is.GreaterThan(0.25f));
+            Assert.That(Mathf.Abs(firstSag - secondSag), Is.GreaterThan(0.005f));
+            Assert.That(secondSag, Is.LessThan(0.15f));
+            Assert.That(operatorHand.localPosition.y, Is.EqualTo(firstHandHeight).Within(0.0001f));
+            Assert.That(Mathf.Abs(Mathf.DeltaAngle(0f, operatorHand.localEulerAngles.z)), Is.LessThan(0.001f));
+            Assert.That(Vector3.Distance(secondGrip, stage.InverseTransformPoint(anchor.position)),
+                Is.LessThan(0.001f));
             Assert.That(presenter.GetRodDrive(0), Is.GreaterThan(0.95f));
+            Assert.That(controlString.startWidth, Is.EqualTo(firstStartWidth).Within(0.0001f));
+            Assert.That(controlString.endWidth, Is.EqualTo(firstEndWidth).Within(0.0001f));
+            Assert.That(controlString.startColor, Is.EqualTo(firstStartColor));
 
             Object.DestroyImmediate(root);
         }

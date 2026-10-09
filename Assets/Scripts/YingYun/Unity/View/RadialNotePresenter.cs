@@ -33,13 +33,15 @@ namespace YingYun.Rhythm.View
 
         private static readonly Color[] LaneColors =
         {
-            new Color(0.50f, 0.18f, 0.10f),
-            new Color(0.50f, 0.18f, 0.10f),
-            new Color(0.50f, 0.18f, 0.10f),
-            new Color(0.50f, 0.18f, 0.10f),
-            new Color(0.50f, 0.18f, 0.10f),
-            new Color(0.50f, 0.18f, 0.10f)
+            new Color(0.55f, 0.22f, 0.14f),
+            new Color(0.69f, 0.51f, 0.24f),
+            new Color(0.55f, 0.22f, 0.14f),
+            new Color(0.20f, 0.36f, 0.31f),
+            new Color(0.69f, 0.51f, 0.24f),
+            new Color(0.20f, 0.36f, 0.31f)
         };
+
+        private static readonly Color HitGold = new Color(0.86f, 0.68f, 0.36f, 1f);
 
         private static readonly string[] LaneLabels =
         {
@@ -197,7 +199,7 @@ namespace YingYun.Rhythm.View
 
                 _sustainedHitEffectMask |= result.RequiredLanesMask;
                 TriggerHitEffects(result.RequiredLanesMask);
-                ShowJudgmentText(JudgmentLabels.HoldHolding, new Color(1f, 0.88f, 0.28f));
+                ShowJudgmentText(JudgmentLabels.HoldHolding, new Color(0.84f, 0.67f, 0.34f));
                 _judgmentTextClearSongTime = double.PositiveInfinity;
                 return;
             }
@@ -298,9 +300,9 @@ namespace YingYun.Rhythm.View
             _judgmentText.alignment = TextAlignment.Center;
             _judgmentText.characterSize = 0.16f;
             _judgmentText.fontSize = 64;
-            _judgmentText.fontStyle = FontStyle.Bold;
             _judgmentText.text = string.Empty;
             ApplyChineseFont(_judgmentText);
+            BrushTypography.Apply(_judgmentText);
             _judgmentText.GetComponent<MeshRenderer>().sortingOrder = 30;
 
             var calligraphyObject = new GameObject("Judgment Calligraphy");
@@ -318,7 +320,7 @@ namespace YingYun.Rhythm.View
             center.transform.SetParent(_visualRoot, false);
             SpriteRenderer stageRenderer = center.AddComponent<SpriteRenderer>();
             stageRenderer.sprite = _noteSprite;
-            stageRenderer.color = new Color(0.28f, 0.06f, 0.04f, 0.16f);
+            stageRenderer.color = new Color(0.35f, 0.19f, 0.10f, 0.12f);
             stageRenderer.sortingOrder = -5;
             center.transform.localScale = new Vector3(2.8f, 4.0f, 1f);
         }
@@ -353,10 +355,10 @@ namespace YingYun.Rhythm.View
             text.alignment = TextAlignment.Center;
             text.characterSize = 0.07f;
             text.fontSize = 48;
-            text.fontStyle = FontStyle.Bold;
             text.color = LaneColors[lane];
             text.text = LaneLabels[lane];
             ApplyChineseFont(text);
+            BrushTypography.Apply(text);
             text.GetComponent<MeshRenderer>().sortingOrder = 15;
         }
 
@@ -395,7 +397,7 @@ namespace YingYun.Rhythm.View
             var renderer = effectObject.AddComponent<SpriteRenderer>();
             renderer.sprite = _hitRingSprite;
             renderer.sortingOrder = 25;
-            renderer.color = Color.white;
+            renderer.color = HitGold;
             effectObject.SetActive(false);
             _hitEffects[lane] = renderer;
             _hitEffectStartTimes[lane] = double.NegativeInfinity;
@@ -409,7 +411,7 @@ namespace YingYun.Rhythm.View
                 _hitEffectStartTimes[lane] = _currentSongTime;
                 _hitEffects[lane].transform.localPosition = ReceptorPositions[lane];
                 _hitEffects[lane].transform.localScale = UniformScaleForMaxSize(_hitRingSprite, 0.10f);
-                _hitEffects[lane].color = Color.white;
+                _hitEffects[lane].color = HitGold;
                 _hitEffects[lane].gameObject.SetActive(true);
             }
         }
@@ -480,7 +482,7 @@ namespace YingYun.Rhythm.View
                 }
 
                 effect.transform.localScale = UniformScaleForMaxSize(_hitRingSprite, targetSize);
-                effect.color = new Color(1f, 1f, 1f, alpha);
+                effect.color = new Color(HitGold.r, HitGold.g, HitGold.b, alpha);
             }
         }
 
@@ -536,13 +538,13 @@ namespace YingYun.Rhythm.View
             switch (grade)
             {
                 case JudgmentGrade.Perfect:
-                    return new Color(1f, 0.86f, 0.25f);
+                    return new Color(0.86f, 0.68f, 0.34f);
                 case JudgmentGrade.Great:
-                    return new Color(1f, 0.55f, 0.20f);
+                    return new Color(0.72f, 0.38f, 0.20f);
                 case JudgmentGrade.Good:
-                    return new Color(0.25f, 0.95f, 0.55f);
+                    return new Color(0.28f, 0.52f, 0.42f);
                 case JudgmentGrade.Miss:
-                    return new Color(1f, 0.25f, 0.25f);
+                    return new Color(0.62f, 0.18f, 0.14f);
                 default:
                     return Color.white;
             }

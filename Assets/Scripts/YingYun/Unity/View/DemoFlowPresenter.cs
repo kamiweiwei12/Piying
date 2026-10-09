@@ -30,19 +30,20 @@ namespace YingYun.Rhythm.View
         private GameObject _diagnosticsPanel;
         private CanvasGroup _menuGroup;
         private CanvasGroup _openingGroup;
+        private CanvasGroup _pauseGroup;
         private UnityEngine.UI.Text _calibrationText;
         private UnityEngine.UI.Text _selectedSongText;
         private UnityEngine.UI.Text _songImportStatusText;
         private UnityEngine.UI.Text _songPageText;
         private UnityEngine.UI.Text _diagnosticsText;
         private UnityEngine.UI.Text _diagnosticsStatusText;
-        private UnityEngine.UI.Text _openingPrompt;
         private UnityEngine.UI.Button _openingButton;
-        private CanvasGroup _openingLaughGroup;
         private CanvasGroup _openingFinalGroup;
-        private RectTransform _openingLaughRect;
         private RectTransform _openingFinalRect;
+        private RectTransform _pausePlaqueRect;
         private Coroutine _openingRoutine;
+        private Coroutine _pauseRoutine;
+        private Coroutine _songCarouselRoutine;
         private bool _openingCanDismiss;
         private Font _runtimeFont;
         private string _selectedSongId = string.Empty;
@@ -75,7 +76,20 @@ namespace YingYun.Rhythm.View
             public string SongId;
             public string DisplayText;
             public UnityEngine.UI.Button Button;
+            public RectTransform Rect;
+            public UnityEngine.UI.Image CardFace;
+            public UnityEngine.UI.Text Title;
+            public UnityEngine.UI.Text Artist;
         }
+
+        private static readonly Color InkBrown = new Color(0.16f, 0.075f, 0.052f, 1f);
+        private static readonly Color LacquerRed = new Color(0.31f, 0.075f, 0.052f, 1f);
+        private static readonly Color Cinnabar = new Color(0.49f, 0.14f, 0.085f, 1f);
+        private static readonly Color AntiqueGold = new Color(0.68f, 0.49f, 0.22f, 1f);
+        private static readonly Color WarmGold = new Color(0.82f, 0.64f, 0.33f, 1f);
+        private static readonly Color RicePaper = new Color(0.91f, 0.855f, 0.72f, 1f);
+        private static readonly Color LightRicePaper = new Color(0.965f, 0.925f, 0.82f, 1f);
+        private static readonly Color MutedJade = new Color(0.15f, 0.27f, 0.23f, 1f);
 
         private void Awake()
         {
@@ -88,13 +102,11 @@ namespace YingYun.Rhythm.View
             _openingPanel.SetActive(true);
             _openingGroup.alpha = 1f;
             _menuGroup.alpha = 1f;
-            _openingCanDismiss = false;
-            _openingButton.interactable = false;
-            SetTextAlpha(_openingPrompt, 0f);
-            SetOpeningSlide(_openingLaughGroup, _openingLaughRect, 1f, 1.03f, new Vector2(-22f, 4f));
-            SetOpeningSlide(_openingFinalGroup, _openingFinalRect, 0f, 1.12f, new Vector2(76f, -8f));
             if (_openingRoutine != null) StopCoroutine(_openingRoutine);
-            _openingRoutine = StartCoroutine(PlayOpening());
+            _openingRoutine = null;
+            SetOpeningSlide(_openingFinalGroup, _openingFinalRect, 1f, 1f, Vector2.zero);
+            _openingCanDismiss = true;
+            _openingButton.interactable = true;
         }
 
         public void ShowMenu(double audioOffsetMs, double inputOffsetMs)
@@ -106,9 +118,29 @@ namespace YingYun.Rhythm.View
 
         public void HideMenu() => _menuPanel.SetActive(false);
 
-        public void ShowPause() => _pausePanel.SetActive(true);
+        public void ShowPause()
+        {
+            _pausePanel.SetActive(true);
+            if (_pauseRoutine != null) StopCoroutine(_pauseRoutine);
+            if (!Application.isPlaying)
+            {
+                SetPauseVisual(1f, 1f, Vector2.zero);
+                return;
+            }
 
-        public void HidePause() => _pausePanel.SetActive(false);
+            _pauseRoutine = StartCoroutine(PlayPauseReveal());
+        }
+
+        public void HidePause()
+        {
+            if (_pauseRoutine != null)
+            {
+                StopCoroutine(_pauseRoutine);
+                _pauseRoutine = null;
+            }
+            _pausePanel.SetActive(false);
+            SetPauseVisual(1f, 1f, Vector2.zero);
+        }
 
         public void ShowDiagnostics(string content, string path)
         {
@@ -179,6 +211,11 @@ namespace YingYun.Rhythm.View
 
         private void RebuildSongPage()
         {
+            if (_songCarouselRoutine != null)
+            {
+                StopCoroutine(_songCarouselRoutine);
+                _songCarouselRoutine = null;
+            }
             for (int i = 0; i < _songButtons.Count; i++)
             {
                 if (_songButtons[i].Button != null) Destroy(_songButtons[i].Button.gameObject);
@@ -186,39 +223,51 @@ namespace YingYun.Rhythm.View
             _songButtons.Clear();
 
             RectTransform panel = (RectTransform)_menuPanel.transform;
-            float spacing = 500f;
             int first = _songPage * SongsPerPage;
             int visibleCount = Math.Min(SongsPerPage, _songEntries.Count - first);
-            float startX = -((visibleCount - 1) * spacing) * 0.5f;
             for (int i = 0; i < visibleCount; i++)
             {
                 SongMenuEntry entry = _songEntries[first + i];
-                UnityEngine.UI.Button button = CreateButton(
-                    panel,
-                    entry.Title,
-                    27,
-                    new Vector2(startX + (i * spacing), 220f),
-                    new Vector2(450f, 78f));
+                SongButton songButton = CreateSongCard(panel, entry, i, visibleCount);
                 string songId = entry.SongId;
-                button.onClick.AddListener(() => SelectSong(songId));
-                _songButtons.Add(new SongButton
-                {
-                    SongId = songId,
-                    DisplayText = $"当前：{entry.Title}　{entry.Artist}",
-                    Button = button,
-                });
+                songButton.Button.onClick.AddListener(() => SelectSong(songId));
+                _songButtons.Add(songButton);
             }
 
             int pageCount = Math.Max(1, (_songEntries.Count + SongsPerPage - 1) / SongsPerPage);
             if (_songPageText != null) _songPageText.text = $"{_songPage + 1} / {pageCount}";
-            RefreshSongButtonColors();
+            RefreshSongButtonColors(false);
         }
 
-        private void ChangeSongPage(int delta)
+        private void SelectAdjacentSong(int delta)
         {
-            int pageCount = Math.Max(1, (_songEntries.Count + SongsPerPage - 1) / SongsPerPage);
-            _songPage = (_songPage + delta + pageCount) % pageCount;
-            RebuildSongPage();
+            if (_songEntries.Count == 0) return;
+
+            int selectedIndex = 0;
+            for (int i = 0; i < _songEntries.Count; i++)
+            {
+                if (_songEntries[i].SongId == _selectedSongId)
+                {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            int nextIndex = (selectedIndex + delta + _songEntries.Count) % _songEntries.Count;
+            SongMenuEntry next = _songEntries[nextIndex];
+            _selectedSongId = next.SongId;
+            int nextPage = nextIndex / SongsPerPage;
+            if (nextPage != _songPage)
+            {
+                _songPage = nextPage;
+                RebuildSongPage();
+            }
+            else
+            {
+                RefreshSongButtonColors(true);
+            }
+
+            _selectedSongText.text = $"当前：{next.Title}　{next.Artist}";
         }
 
         public void SelectSong(string songId)
@@ -228,7 +277,7 @@ namespace YingYun.Rhythm.View
                 if (_songButtons[i].SongId == songId)
                 {
                     _selectedSongId = songId;
-                    RefreshSongButtonColors();
+                    RefreshSongButtonColors(true);
                     _selectedSongText.text = _songButtons[i].DisplayText;
                     return;
                 }
@@ -257,36 +306,133 @@ namespace YingYun.Rhythm.View
             panel.anchorMax = Vector2.one;
             panel.offsetMin = Vector2.zero;
             panel.offsetMax = Vector2.zero;
-            _menuPanel.GetComponent<UnityEngine.UI.Image>().color = new Color(0.075f, 0.018f, 0.012f, 0.97f);
+            _menuPanel.GetComponent<UnityEngine.UI.Image>().color = InkBrown;
             _menuGroup = _menuPanel.GetComponent<CanvasGroup>();
 
-            AddText(panel, "影　韵", 86, new Vector2(0f, 405f), new Vector2(900f, 110f), new Color(1f, 0.76f, 0.23f));
-            AddText(panel, "数字皮影操演 · 选择曲目与难度", 30, new Vector2(0f, 330f), new Vector2(900f, 60f), new Color(1f, 0.90f, 0.68f));
-            AddSmallButton(panel, "打开歌曲文件夹", new Vector2(-130f, 280f), () => CustomSongsFolderRequested?.Invoke());
-            AddSmallButton(panel, "刷新歌曲", new Vector2(130f, 280f), () => CustomSongsRefreshRequested?.Invoke());
-            AddSmallButton(panel, "运行日志", new Vector2(390f, 280f), () => DiagnosticsRequested?.Invoke());
-            UnityEngine.UI.Button previousPage = CreateButton(panel, "‹", 34, new Vector2(-780f, 220f), new Vector2(72f, 72f));
-            UnityEngine.UI.Button nextPage = CreateButton(panel, "›", 34, new Vector2(780f, 220f), new Vector2(72f, 72f));
-            previousPage.onClick.AddListener(() => ChangeSongPage(-1));
-            nextPage.onClick.AddListener(() => ChangeSongPage(1));
-            _songPageText = AddText(panel, string.Empty, 20, new Vector2(0f, 275f), new Vector2(100f, 40f), new Color(0.72f, 0.59f, 0.43f));
-            _selectedSongText = AddText(panel, string.Empty, 25, new Vector2(0f, 150f), new Vector2(1200f, 50f), new Color(0.93f, 0.80f, 0.58f));
-            _songImportStatusText = AddText(panel, string.Empty, 19, new Vector2(0f, 112f), new Vector2(1300f, 38f), new Color(0.72f, 0.59f, 0.43f));
+            BuildStageFrame(panel);
+            AddText(panel, "影　韵", 64, new Vector2(0f, 446f), new Vector2(700f, 82f), LacquerRed);
+            AddText(panel, "皮影随乐 · 择曲开演", 24, new Vector2(0f, 394f), new Vector2(760f, 42f), new Color(0.38f, 0.24f, 0.14f, 1f));
+            AddSmallButton(panel, "歌曲文件夹", new Vector2(-245f, 342f), () => CustomSongsFolderRequested?.Invoke());
+            AddSmallButton(panel, "刷新曲目", new Vector2(0f, 342f), () => CustomSongsRefreshRequested?.Invoke());
+            AddSmallButton(panel, "运行日志", new Vector2(245f, 342f), () => DiagnosticsRequested?.Invoke());
+            UnityEngine.UI.Button previousPage = CreateButton(panel, "‹", 34, new Vector2(-800f, 207f), new Vector2(66f, 92f));
+            UnityEngine.UI.Button nextPage = CreateButton(panel, "›", 34, new Vector2(800f, 207f), new Vector2(66f, 92f));
+            previousPage.onClick.AddListener(() => SelectAdjacentSong(-1));
+            nextPage.onClick.AddListener(() => SelectAdjacentSong(1));
+            _songPageText = AddText(panel, string.Empty, 18, new Vector2(0f, 303f), new Vector2(120f, 34f), AntiqueGold);
+            _selectedSongText = AddText(panel, string.Empty, 25, new Vector2(0f, 92f), new Vector2(1250f, 46f), LacquerRed);
+            _songImportStatusText = AddText(panel, string.Empty, 17, new Vector2(0f, 62f), new Vector2(1300f, 32f), new Color(0.42f, 0.31f, 0.20f, 1f));
 
-            AddDifficultyButton(panel, PlayDifficulty.Easy, 42f);
-            AddDifficultyButton(panel, PlayDifficulty.Normal, -74f);
-            AddDifficultyButton(panel, PlayDifficulty.Hard, -190f);
+            AddText(panel, "择　难　度", 22, new Vector2(0f, 22f), new Vector2(300f, 38f), AntiqueGold);
+            AddDifficultyButton(panel, PlayDifficulty.Easy, new Vector2(-390f, -48f));
+            AddDifficultyButton(panel, PlayDifficulty.Normal, new Vector2(0f, -48f));
+            AddDifficultyButton(panel, PlayDifficulty.Hard, new Vector2(390f, -48f));
 
-            _calibrationText = AddText(panel, string.Empty, 25, new Vector2(0f, -270f), new Vector2(900f, 55f), new Color(0.93f, 0.80f, 0.58f));
-            AddSmallButton(panel, "音频 -5", new Vector2(-315f, -340f), () => CalibrationAdjusted?.Invoke(-5d, 0d));
-            AddSmallButton(panel, "音频 +5", new Vector2(-105f, -340f), () => CalibrationAdjusted?.Invoke(5d, 0d));
-            AddSmallButton(panel, "输入 -5", new Vector2(105f, -340f), () => CalibrationAdjusted?.Invoke(0d, -5d));
-            AddSmallButton(panel, "输入 +5", new Vector2(315f, -340f), () => CalibrationAdjusted?.Invoke(0d, 5d));
-            AddText(panel, "快捷键：1 / 2 / 3 选择难度", 21, new Vector2(0f, -430f), new Vector2(1100f, 50f), new Color(0.72f, 0.59f, 0.43f));
+            _calibrationText = AddText(panel, string.Empty, 22, new Vector2(0f, -145f), new Vector2(900f, 46f), new Color(0.34f, 0.23f, 0.14f, 1f));
+            AddSmallButton(panel, "音频 -5", new Vector2(-315f, -205f), () => CalibrationAdjusted?.Invoke(-5d, 0d));
+            AddSmallButton(panel, "音频 +5", new Vector2(-105f, -205f), () => CalibrationAdjusted?.Invoke(5d, 0d));
+            AddSmallButton(panel, "输入 -5", new Vector2(105f, -205f), () => CalibrationAdjusted?.Invoke(0d, -5d));
+            AddSmallButton(panel, "输入 +5", new Vector2(315f, -205f), () => CalibrationAdjusted?.Invoke(0d, 5d));
+            AddText(panel, "按 1 / 2 / 3 选择难度并开演", 19, new Vector2(0f, -275f), new Vector2(1100f, 42f), new Color(0.43f, 0.32f, 0.22f, 1f));
             _menuPanel.SetActive(false);
             BuildOpeningPanel();
             BuildPausePanel();
             BuildDiagnosticsPanel();
+        }
+
+        private void BuildStageFrame(RectTransform parent)
+        {
+            AddPanel(parent, "宣纸幕", Vector2.zero, new Vector2(1740f, 1000f), RicePaper);
+            AddPanel(parent, "内层宣纸", new Vector2(0f, -4f), new Vector2(1650f, 944f), LightRicePaper);
+            AddPanel(parent, "上檐", new Vector2(0f, 505f), new Vector2(1920f, 70f), LacquerRed);
+            AddPanel(parent, "下檐", new Vector2(0f, -505f), new Vector2(1920f, 70f), LacquerRed);
+            AddPanel(parent, "左戏台边", new Vector2(-905f, 0f), new Vector2(110f, 1080f), LacquerRed);
+            AddPanel(parent, "右戏台边", new Vector2(905f, 0f), new Vector2(110f, 1080f), LacquerRed);
+            AddPanel(parent, "上金线", new Vector2(0f, 472f), new Vector2(1710f, 4f), WarmGold);
+            AddPanel(parent, "下金线", new Vector2(0f, -472f), new Vector2(1710f, 4f), AntiqueGold);
+            AddPanel(parent, "左金线", new Vector2(-850f, 0f), new Vector2(4f, 944f), AntiqueGold);
+            AddPanel(parent, "右金线", new Vector2(850f, 0f), new Vector2(4f, 944f), AntiqueGold);
+
+            AddCornerOrnament(parent, new Vector2(-806f, 428f), 1f);
+            AddCornerOrnament(parent, new Vector2(806f, 428f), -1f);
+            AddCornerOrnament(parent, new Vector2(-806f, -428f), 1f);
+            AddCornerOrnament(parent, new Vector2(806f, -428f), -1f);
+        }
+
+        private SongButton CreateSongCard(RectTransform parent, SongMenuEntry entry, int index, int visibleCount)
+        {
+            float startX = -((visibleCount - 1) * 500f) * 0.5f;
+            var cardObject = new GameObject($"曲目卡片 {entry.Title}", typeof(RectTransform),
+                typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.Button), typeof(CanvasGroup));
+            cardObject.transform.SetParent(parent, false);
+            RectTransform rect = (RectTransform)cardObject.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(startX + (index * 500f), 200f);
+            rect.sizeDelta = new Vector2(450f, 176f);
+
+            UnityEngine.UI.Image border = cardObject.GetComponent<UnityEngine.UI.Image>();
+            border.color = AntiqueGold;
+            UnityEngine.UI.Button button = cardObject.GetComponent<UnityEngine.UI.Button>();
+            button.targetGraphic = border;
+            button.transition = UnityEngine.UI.Selectable.Transition.ColorTint;
+            UnityEngine.UI.ColorBlock colors = button.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1f, 0.94f, 0.78f, 1f);
+            colors.pressedColor = new Color(0.78f, 0.60f, 0.35f, 1f);
+            colors.selectedColor = Color.white;
+            colors.fadeDuration = 0.12f;
+            button.colors = colors;
+
+            RectTransform faceRect = AddPanel(rect, "宣纸卡面", Vector2.zero, new Vector2(438f, 164f), RicePaper);
+            UnityEngine.UI.Image face = faceRect.GetComponent<UnityEngine.UI.Image>();
+            AddPanel(faceRect, "上饰线", new Vector2(0f, 65f), new Vector2(370f, 2f), AntiqueGold);
+            AddPanel(faceRect, "下饰线", new Vector2(0f, -65f), new Vector2(370f, 2f), AntiqueGold);
+            AddPanel(faceRect, "左印", new Vector2(-182f, 0f), new Vector2(8f, 88f), Cinnabar);
+            RectTransform knot = AddPanel(faceRect, "曲目菱印", new Vector2(181f, 0f), new Vector2(16f, 16f), Cinnabar);
+            knot.localRotation = Quaternion.Euler(0f, 0f, 45f);
+            UnityEngine.UI.Text title = AddText(faceRect, entry.Title, 30, new Vector2(8f, 24f), new Vector2(380f, 56f), LacquerRed);
+            UnityEngine.UI.Text artist = AddText(faceRect,
+                string.IsNullOrWhiteSpace(entry.Artist) ? "佚名" : entry.Artist,
+                19,
+                new Vector2(8f, -30f),
+                new Vector2(380f, 40f),
+                new Color(0.34f, 0.25f, 0.17f, 1f));
+            title.raycastTarget = false;
+            artist.raycastTarget = false;
+
+            return new SongButton
+            {
+                SongId = entry.SongId,
+                DisplayText = $"当前：{entry.Title}　{entry.Artist}",
+                Button = button,
+                Rect = rect,
+                CardFace = face,
+                Title = title,
+                Artist = artist,
+            };
+        }
+
+        private RectTransform AddPanel(RectTransform parent, string name, Vector2 position, Vector2 dimensions, Color color)
+        {
+            var panelObject = new GameObject(name, typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            panelObject.transform.SetParent(parent, false);
+            RectTransform rect = (RectTransform)panelObject.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = position;
+            rect.sizeDelta = dimensions;
+            UnityEngine.UI.Image image = panelObject.GetComponent<UnityEngine.UI.Image>();
+            image.color = color;
+            image.raycastTarget = false;
+            return rect;
+        }
+
+        private void AddCornerOrnament(RectTransform parent, Vector2 position, float direction)
+        {
+            RectTransform horizontal = AddPanel(parent, "回纹横饰", position, new Vector2(76f, 6f), AntiqueGold);
+            horizontal.localScale = new Vector3(direction, 1f, 1f);
+            AddPanel(horizontal, "回纹短线", new Vector2(31f, -18f), new Vector2(6f, 42f), AntiqueGold);
+            RectTransform diamond = AddPanel(horizontal, "菱花", new Vector2(7f, 0f), new Vector2(20f, 20f), Cinnabar);
+            diamond.localRotation = Quaternion.Euler(0f, 0f, 45f);
         }
 
         private void BuildOpeningPanel()
@@ -308,19 +454,7 @@ namespace YingYun.Rhythm.View
             _openingButton.interactable = false;
             _openingButton.onClick.AddListener(DismissOpening);
 
-            _openingLaughGroup = CreateOpeningSlide(panel, "掩嘴笑", "YingYun/UI/Opening/OpeningLaugh", out _openingLaughRect);
             _openingFinalGroup = CreateOpeningSlide(panel, "落手定格", "YingYun/UI/Opening/OpeningFinal", out _openingFinalRect);
-
-            var promptMask = new GameObject("开场提示底", typeof(RectTransform), typeof(UnityEngine.UI.Image));
-            promptMask.transform.SetParent(panel, false);
-            RectTransform promptMaskRect = (RectTransform)promptMask.transform;
-            promptMaskRect.anchorMin = promptMaskRect.anchorMax = new Vector2(0.5f, 0.5f);
-            promptMaskRect.anchoredPosition = new Vector2(0f, -438f);
-            promptMaskRect.sizeDelta = new Vector2(980f, 96f);
-            UnityEngine.UI.Image promptMaskImage = promptMask.GetComponent<UnityEngine.UI.Image>();
-            promptMaskImage.color = new Color(0.93f, 0.895f, 0.81f, 0.97f);
-            promptMaskImage.raycastTarget = false;
-            _openingPrompt = AddText(panel, "点击任意处开始游戏", 34, new Vector2(0f, -438f), new Vector2(900f, 72f), new Color(0.56f, 0.29f, 0.08f, 0f));
             _openingPanel.SetActive(false);
         }
 
@@ -348,50 +482,6 @@ namespace YingYun.Rhythm.View
             fitter.aspectMode = UnityEngine.UI.AspectRatioFitter.AspectMode.EnvelopeParent;
             fitter.aspectRatio = texture == null ? 16f / 9f : (float)texture.width / texture.height;
             return slideObject.GetComponent<CanvasGroup>();
-        }
-
-        private IEnumerator PlayOpening()
-        {
-            yield return new WaitForSecondsRealtime(0.70f);
-            float elapsed = 0f;
-            const float laughDuration = 1.60f;
-            while (elapsed < laughDuration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / laughDuration));
-                SetOpeningSlide(_openingLaughGroup, _openingLaughRect, 1f,
-                    Mathf.Lerp(1.03f, 1.11f, t), Vector2.Lerp(new Vector2(-22f, 4f), new Vector2(24f, 14f), t));
-                yield return null;
-            }
-
-            elapsed = 0f;
-            const float transitionDuration = 1.35f;
-            while (elapsed < transitionDuration)
-            {
-                elapsed += Time.unscaledDeltaTime;
-                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / transitionDuration));
-                SetOpeningSlide(_openingLaughGroup, _openingLaughRect, 1f - t,
-                    Mathf.Lerp(1.11f, 1.16f, t), Vector2.Lerp(new Vector2(24f, 14f), new Vector2(-92f, 5f), t));
-                SetOpeningSlide(_openingFinalGroup, _openingFinalRect, t,
-                    Mathf.Lerp(1.12f, 1f, t), Vector2.Lerp(new Vector2(76f, -8f), Vector2.zero, t));
-                yield return null;
-            }
-
-            SetOpeningSlide(_openingLaughGroup, _openingLaughRect, 0f, 1.16f, new Vector2(-92f, 5f));
-            SetOpeningSlide(_openingFinalGroup, _openingFinalRect, 1f, 1f, Vector2.zero);
-            yield return new WaitForSecondsRealtime(0.45f);
-            float fade = 0f;
-            while (fade < 1f)
-            {
-                fade += Time.unscaledDeltaTime / 0.80f;
-                SetTextAlpha(_openingPrompt, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(fade)));
-                yield return null;
-            }
-
-            SetTextAlpha(_openingPrompt, 1f);
-            _openingCanDismiss = true;
-            _openingButton.interactable = true;
-            _openingRoutine = null;
         }
 
         private static void SetOpeningSlide(CanvasGroup group, RectTransform rect, float alpha, float scale, Vector2 position)
@@ -422,8 +512,6 @@ namespace YingYun.Rhythm.View
                 float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
                 _openingGroup.alpha = 1f - t;
                 _menuGroup.alpha = t;
-                float scale = Mathf.Lerp(1f, 1.035f, t);
-                _openingFinalRect.localScale = new Vector3(scale, scale, 1f);
                 yield return null;
             }
 
@@ -432,13 +520,6 @@ namespace YingYun.Rhythm.View
             _openingPanel.SetActive(false);
             _openingGroup.alpha = 1f;
             _openingRoutine = null;
-        }
-
-        private static void SetTextAlpha(UnityEngine.UI.Text text, float alpha)
-        {
-            Color color = text.color;
-            color.a = alpha;
-            text.color = color;
         }
 
         private void BuildDiagnosticsPanel()
@@ -467,30 +548,38 @@ namespace YingYun.Rhythm.View
 
         private void BuildPausePanel()
         {
-            _pausePanel = new GameObject("暂停菜单", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+            _pausePanel = new GameObject("暂停菜单", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(CanvasGroup));
             _pausePanel.transform.SetParent(_canvasObject.transform, false);
             RectTransform panel = (RectTransform)_pausePanel.transform;
             panel.anchorMin = Vector2.zero;
             panel.anchorMax = Vector2.one;
             panel.offsetMin = Vector2.zero;
             panel.offsetMax = Vector2.zero;
-            _pausePanel.GetComponent<UnityEngine.UI.Image>().color = new Color(0.045f, 0.01f, 0.008f, 0.88f);
+            _pausePanel.GetComponent<UnityEngine.UI.Image>().color = new Color(0.055f, 0.028f, 0.022f, 0.82f);
+            _pauseGroup = _pausePanel.GetComponent<CanvasGroup>();
 
-            AddText(panel, "演出暂停", 78, new Vector2(0f, 235f), new Vector2(800f, 110f), new Color(1f, 0.76f, 0.23f));
-            UnityEngine.UI.Button resume = CreateButton(panel, "继续演出", 34, new Vector2(0f, 80f), new Vector2(560f, 92f));
-            UnityEngine.UI.Button restart = CreateButton(panel, "重新开始", 34, new Vector2(0f, -40f), new Vector2(560f, 92f));
-            UnityEngine.UI.Button back = CreateButton(panel, "返回选曲", 34, new Vector2(0f, -160f), new Vector2(560f, 92f));
+            RectTransform plaqueBorder = AddPanel(panel, "暂停牌匾金边", new Vector2(0f, 0f), new Vector2(680f, 760f), AntiqueGold);
+            _pausePlaqueRect = plaqueBorder;
+            RectTransform plaque = AddPanel(plaqueBorder, "暂停牌匾宣纸", Vector2.zero, new Vector2(664f, 744f), new Color(0.91f, 0.85f, 0.70f, 0.98f));
+            AddPanel(plaque, "牌匾顶饰", new Vector2(0f, 324f), new Vector2(360f, 3f), AntiqueGold);
+            RectTransform seal = AddPanel(plaque, "暂停印章", new Vector2(0f, 268f), new Vector2(42f, 42f), Cinnabar);
+            seal.localRotation = Quaternion.Euler(0f, 0f, 45f);
+            AddText(panel, "演出暂停", 62, new Vector2(0f, 220f), new Vector2(580f, 92f), LacquerRed);
+            AddText(panel, "幕间稍歇", 21, new Vector2(0f, 164f), new Vector2(360f, 40f), new Color(0.38f, 0.27f, 0.17f, 1f));
+            UnityEngine.UI.Button resume = CreateButton(panel, "继续演出", 30, new Vector2(0f, 65f), new Vector2(470f, 78f));
+            UnityEngine.UI.Button restart = CreateButton(panel, "重新开始", 30, new Vector2(0f, -42f), new Vector2(470f, 78f));
+            UnityEngine.UI.Button back = CreateButton(panel, "返回选曲", 30, new Vector2(0f, -149f), new Vector2(470f, 78f));
             resume.onClick.AddListener(() => ResumeRequested?.Invoke());
             restart.onClick.AddListener(() => RestartRequested?.Invoke());
             back.onClick.AddListener(() => ReturnRequested?.Invoke());
-            AddText(panel, "P / Esc 继续", 23, new Vector2(0f, -285f), new Vector2(600f, 50f), new Color(0.72f, 0.59f, 0.43f));
+            AddText(panel, "P / Esc 继续", 20, new Vector2(0f, -276f), new Vector2(500f, 44f), new Color(0.38f, 0.27f, 0.17f, 1f));
             _pausePanel.SetActive(false);
         }
 
-        private void AddDifficultyButton(RectTransform parent, PlayDifficulty difficulty, float y)
+        private void AddDifficultyButton(RectTransform parent, PlayDifficulty difficulty, Vector2 position)
         {
             string label = $"{PlayDifficultyInfo.DisplayName(difficulty)}　{PlayDifficultyInfo.Description(difficulty)}";
-            UnityEngine.UI.Button button = CreateButton(parent, label, 30, new Vector2(0f, y), new Vector2(900f, 108f));
+            UnityEngine.UI.Button button = CreateButton(parent, label, 24, position, new Vector2(350f, 76f));
             button.onClick.AddListener(() => PlayRequested?.Invoke(_selectedSongId, difficulty));
         }
 
@@ -508,10 +597,21 @@ namespace YingYun.Rhythm.View
             rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = position;
             rect.sizeDelta = dimensions;
-            buttonObject.GetComponent<UnityEngine.UI.Image>().color = new Color(0.34f, 0.085f, 0.045f, 0.96f);
-            UnityEngine.UI.Text text = AddText(rect, label, size, Vector2.zero, dimensions - new Vector2(28f, 12f), new Color(1f, 0.89f, 0.62f));
+            UnityEngine.UI.Image border = buttonObject.GetComponent<UnityEngine.UI.Image>();
+            border.color = AntiqueGold;
+            RectTransform face = AddPanel(rect, "按钮宣纸", Vector2.zero, dimensions - new Vector2(8f, 8f), new Color(0.37f, 0.095f, 0.06f, 0.98f));
+            UnityEngine.UI.Text text = AddText(face, label, size, Vector2.zero, dimensions - new Vector2(30f, 14f), new Color(0.96f, 0.85f, 0.58f, 1f));
             text.raycastTarget = false;
-            return buttonObject.GetComponent<UnityEngine.UI.Button>();
+            UnityEngine.UI.Button button = buttonObject.GetComponent<UnityEngine.UI.Button>();
+            button.targetGraphic = border;
+            UnityEngine.UI.ColorBlock colors = button.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(1f, 0.90f, 0.62f, 1f);
+            colors.pressedColor = new Color(0.72f, 0.48f, 0.23f, 1f);
+            colors.selectedColor = Color.white;
+            colors.fadeDuration = 0.10f;
+            button.colors = colors;
+            return button;
         }
 
         private void RefreshSongSelection(IReadOnlyList<SongMenuEntry> songs)
@@ -525,18 +625,118 @@ namespace YingYun.Rhythm.View
                 }
             }
 
-            RefreshSongButtonColors();
+            RefreshSongButtonColors(false);
         }
 
-        private void RefreshSongButtonColors()
+        private void RefreshSongButtonColors(bool animate)
         {
+            int selectedIndex = 0;
+            for (int i = 0; i < _songButtons.Count; i++)
+            {
+                if (_songButtons[i].SongId == _selectedSongId) selectedIndex = i;
+            }
+
+            var targetPositions = new Vector2[_songButtons.Count];
+            var targetScales = new Vector3[_songButtons.Count];
+            var targetAlphas = new float[_songButtons.Count];
             for (int i = 0; i < _songButtons.Count; i++)
             {
                 bool selected = _songButtons[i].SongId == _selectedSongId;
-                _songButtons[i].Button.GetComponent<UnityEngine.UI.Image>().color = selected
-                    ? new Color(0.68f, 0.22f, 0.07f, 1f)
-                    : new Color(0.34f, 0.085f, 0.045f, 0.96f);
+                int visualOffset = i - selectedIndex;
+                int half = _songButtons.Count / 2;
+                if (visualOffset > half) visualOffset -= _songButtons.Count;
+                if (visualOffset < -half) visualOffset += _songButtons.Count;
+                targetPositions[i] = new Vector2(visualOffset * 500f, 200f);
+                targetScales[i] = selected ? Vector3.one * 1.06f : Vector3.one * 0.90f;
+                targetAlphas[i] = selected ? 1f : 0.72f;
+                _songButtons[i].Button.GetComponent<UnityEngine.UI.Image>().color = selected ? WarmGold : AntiqueGold;
+                _songButtons[i].CardFace.color = selected ? LightRicePaper : RicePaper;
+                _songButtons[i].Title.color = selected ? LacquerRed : new Color(0.25f, 0.18f, 0.13f, 1f);
+                _songButtons[i].Artist.color = selected
+                    ? MutedJade
+                    : new Color(0.36f, 0.30f, 0.23f, 1f);
             }
+
+            if (_songCarouselRoutine != null)
+            {
+                StopCoroutine(_songCarouselRoutine);
+                _songCarouselRoutine = null;
+            }
+
+            if (animate && Application.isPlaying && isActiveAndEnabled)
+            {
+                _songCarouselRoutine = StartCoroutine(AnimateSongCards(targetPositions, targetScales, targetAlphas));
+                return;
+            }
+
+            ApplySongCardTargets(targetPositions, targetScales, targetAlphas);
+        }
+
+        private IEnumerator AnimateSongCards(Vector2[] targetPositions, Vector3[] targetScales, float[] targetAlphas)
+        {
+            int count = _songButtons.Count;
+            var startPositions = new Vector2[count];
+            var startScales = new Vector3[count];
+            var startAlphas = new float[count];
+            for (int i = 0; i < count; i++)
+            {
+                startPositions[i] = _songButtons[i].Rect.anchoredPosition;
+                startScales[i] = _songButtons[i].Rect.localScale;
+                startAlphas[i] = _songButtons[i].Button.GetComponent<CanvasGroup>().alpha;
+            }
+
+            float elapsed = 0f;
+            const float duration = 0.24f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+                for (int i = 0; i < count; i++)
+                {
+                    _songButtons[i].Rect.anchoredPosition = Vector2.LerpUnclamped(startPositions[i], targetPositions[i], t);
+                    _songButtons[i].Rect.localScale = Vector3.LerpUnclamped(startScales[i], targetScales[i], t);
+                    _songButtons[i].Button.GetComponent<CanvasGroup>().alpha = Mathf.Lerp(startAlphas[i], targetAlphas[i], t);
+                }
+                yield return null;
+            }
+
+            ApplySongCardTargets(targetPositions, targetScales, targetAlphas);
+            _songCarouselRoutine = null;
+        }
+
+        private void ApplySongCardTargets(Vector2[] targetPositions, Vector3[] targetScales, float[] targetAlphas)
+        {
+            for (int i = 0; i < _songButtons.Count; i++)
+            {
+                _songButtons[i].Rect.anchoredPosition = targetPositions[i];
+                _songButtons[i].Rect.localScale = targetScales[i];
+                _songButtons[i].Button.GetComponent<CanvasGroup>().alpha = targetAlphas[i];
+            }
+        }
+
+        private IEnumerator PlayPauseReveal()
+        {
+            SetPauseVisual(0f, 0.94f, new Vector2(0f, -12f));
+            float elapsed = 0f;
+            const float duration = 0.22f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+                SetPauseVisual(t, Mathf.Lerp(0.94f, 1f, t), Vector2.Lerp(new Vector2(0f, -12f), Vector2.zero, t));
+                yield return null;
+            }
+
+            SetPauseVisual(1f, 1f, Vector2.zero);
+            _pauseRoutine = null;
+        }
+
+        private void SetPauseVisual(float alpha, float scale, Vector2 position)
+        {
+            if (_pauseGroup != null) _pauseGroup.alpha = alpha;
+            if (_pausePlaqueRect == null) return;
+            _pausePlaqueRect.localScale = new Vector3(scale, scale, 1f);
+            _pausePlaqueRect.anchoredPosition = position;
         }
 
         private UnityEngine.UI.Text AddText(RectTransform parent, string value, int size, Vector2 position, Vector2 dimensions, Color color)
@@ -551,10 +751,10 @@ namespace YingYun.Rhythm.View
             text.font = _runtimeFont;
             text.text = value;
             text.fontSize = size;
-            text.fontStyle = FontStyle.Bold;
             text.alignment = TextAnchor.MiddleCenter;
             text.color = color;
             text.raycastTarget = false;
+            BrushTypography.Apply(text, size, color);
             return text;
         }
 
@@ -574,6 +774,8 @@ namespace YingYun.Rhythm.View
         private void OnDestroy()
         {
             if (_openingRoutine != null) StopCoroutine(_openingRoutine);
+            if (_pauseRoutine != null) StopCoroutine(_pauseRoutine);
+            if (_songCarouselRoutine != null) StopCoroutine(_songCarouselRoutine);
             if (_runtimeFont != null)
             {
                 ChineseFontProvider.Release(_runtimeFont);

@@ -83,6 +83,21 @@ namespace YingYun.Rhythm.Puppet.V2
             }
         }
 
+        /// <summary>只读预览未来姿势，供操偶装置提前牵引；不会推进播放或发送状态事件。</summary>
+        public PuppetV2Pose PreviewPose(double songTimeSeconds)
+        {
+            if (_activeIndex < 0) return CurrentPose;
+            DancePhrase timing = _timingPhrases[_activeIndex];
+            double progress = Math.Max(0d, Math.Min(1d,
+                (songTimeSeconds - timing.StartSeconds) / timing.DurationSeconds));
+            int moveIndex = _activeIndex % PuppetV2SequenceChoreography.Count;
+            double moveBeat = PuppetV2SequenceChoreography.GetStartBeat(moveIndex) +
+                (PuppetV2SequenceChoreography.GetBeats(moveIndex) * progress);
+            PuppetV2Pose target = PuppetV2SequenceChoreography.Evaluate(moveBeat);
+            double recovery = Smooth(Math.Min(1d, progress * timing.DurationBeats));
+            return Blend(_entryPose, target, recovery);
+        }
+
         private void Start(int index)
         {
             _entryPose = CurrentPose;

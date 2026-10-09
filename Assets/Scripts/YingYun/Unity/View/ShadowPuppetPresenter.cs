@@ -6,24 +6,45 @@ using YingYun.Rhythm.Puppet.V2;
 
 namespace YingYun.Rhythm.View
 {
-    /// <summary>以分片皮影、鉚釘關節與剛性竹製操縱桿呈現操演；不參與判定。</summary>
+    /// <summary>以分片皮影、鉚釘關節與上方操偶手牽線呈現操演；不參與判定。</summary>
     public sealed class ShadowPuppetPresenter : MonoBehaviour
     {
-        private static readonly Vector2[] RodGripPoints =
+        private static readonly int[] StringHandIndices = { 0, 0, 1, 0, 1, 1 };
+        private static readonly Vector2[] OperatorFingerTipUv =
         {
-            new Vector2(-3.45f, 1.35f),
-            new Vector2(-2.75f, 2.75f),
-            new Vector2(3.45f, 1.35f),
-            new Vector2(-3.10f, -2.65f),
-            new Vector2(0.55f, -3.05f),
-            new Vector2(3.10f, -2.65f)
+            new Vector2(0.07f, 0.12f),
+            new Vector2(0.015f, 0.78f),
+            new Vector2(0.07f, 0.12f),
+            new Vector2(0.10f, 0.34f),
+            new Vector2(0.015f, 0.78f),
+            new Vector2(0.10f, 0.34f)
+        };
+        private static readonly Vector3[] OperatorHandRestPositions =
+        {
+            new Vector3(-1.58f, 3.18f, 0f),
+            new Vector3(1.58f, 3.18f, 0f)
         };
 
         private readonly LineRenderer[] _rods = new LineRenderer[6];
-        private readonly SpriteRenderer[] _rodGrips = new SpriteRenderer[6];
         private readonly Transform[] _rodTargets = new Transform[6];
+        private readonly Transform[] _stringAnchors = new Transform[6];
+        private readonly Transform[] _operatorHands = new Transform[2];
+        private readonly Transform[] _operatorFingerRoots = new Transform[6];
+        private readonly Mesh[] _operatorHandMeshes = new Mesh[2];
+        private readonly Vector3[][] _operatorHandBaseVertices = new Vector3[2][];
+        private readonly Vector3[][] _operatorHandDeformedVertices = new Vector3[2][];
+        private readonly Vector2[] _operatorHandBoundsMin = new Vector2[2];
+        private readonly Vector2[] _operatorHandBoundsMax = new Vector2[2];
+        private readonly float[] _operatorFingerPull = new float[6];
+        private readonly Vector3[] _stringTargetRest = new Vector3[6];
+        private readonly Vector3[] _stringTargetPrevious = new Vector3[6];
+        private readonly Vector3[] _stringTargetVelocity = new Vector3[6];
+        private readonly Vector3[] _stringTargetSamples = new Vector3[6];
+        private readonly Vector3[] _stringAnticipatedTargets = new Vector3[6];
         private readonly float[] _rodDrive = new float[6];
         private readonly bool[] _heldRods = new bool[6];
+        private readonly float[] _stringSlack = new float[6];
+        private readonly float[] _stringSlackVelocity = new float[6];
         private PuppetPoseEvaluator _evaluator;
         private DancePlayback _dancePlayback;
         private PuppetV2Playback _v2Playback;
@@ -92,9 +113,12 @@ namespace YingYun.Rhythm.View
         private Texture2D _circleTexture;
         private Material _lineMaterial;
         private double _songTime;
+        private double _lastControlRigTime = double.NegativeInfinity;
+        private double _lastStringSpringTime = double.NegativeInfinity;
         private float _facingScale = 1f;
         private bool _v2TurnActive;
         private float _v2TurnProgress;
+        private float _anticipatedPuppetHorizontalShift;
         private const float V2HandArtScale = 0.05f;
 
         public int JointCount => 21;
@@ -120,6 +144,7 @@ namespace YingYun.Rhythm.View
         public float GetRodDrive(int lane) => _rodDrive[lane];
         public Vector3 GetRodGripPosition(int lane) => _rods[lane] == null ? Vector3.zero : _rods[lane].GetPosition(0);
         public float GetStringTension(int lane) => GetRodDrive(lane);
+        public float GetStringSag(int lane) => _stringSlack[lane];
         public int GetRodSortingOrder(int lane) => _rods[lane] == null ? 0 : _rods[lane].sortingOrder;
         public float FacingScale => _facingScale;
         public float LowerBodyFacingScale => _facingScale;
@@ -245,6 +270,8 @@ namespace YingYun.Rhythm.View
             SyncSegmentedHandArt();
             _pelvisJoint.localPosition = new Vector3(0f, -0.55f, 0f);
             ApplyGroundedLegs(new Vector2(-0.34f, -2.08f), new Vector2(0.34f, -2.08f));
+            ResetOperatorHandPrediction();
+            UpdateRods();
         }
 
         public void Begin(DancePhrase[] phrases)
@@ -1717,26 +1744,182 @@ namespace YingYun.Rhythm.View
 
         private void BuildRods()
         {
+            _operatorHands[0] = BuildOperatorHand("Left Puppeteer Hand", OperatorHandRestPositions[0], 0);
+            _operatorHands[1] = BuildOperatorHand("Right Puppeteer Hand", OperatorHandRestPositions[1], 1);
             for (int lane = 0; lane < _rods.Length; lane++)
             {
-                var lineObject = new GameObject($"Bamboo Control Rod {lane}");
+                var lineObject = new GameObject($"Control String {lane}");
                 lineObject.transform.SetParent(_visualRoot, false);
                 var line = lineObject.AddComponent<LineRenderer>();
                 line.useWorldSpace = false;
-                line.positionCount = 2;
-                bool principalRod = lane == 0 || lane == 2 || lane == 4;
-                line.startWidth = principalRod ? 0.075f : 0.043f;
-                line.endWidth = principalRod ? 0.055f : 0.032f;
+                line.positionCount = 3;
+                line.startWidth = 0.018f;
+                line.endWidth = 0.012f;
+                line.startColor = new Color(0.22f, 0.055f, 0.025f, 0.62f);
+                line.endColor = line.startColor;
                 line.material = _lineMaterial;
-                line.sortingOrder = 9;
+                line.sortingOrder = 12;
                 _rods[lane] = line;
-
-                Transform grip = CreateSprite($"Bamboo Grip {lane}", _visualRoot, RodGripPoints[lane], new Vector2(0.46f, 0.12f),
-                    new Color(0.38f, 0.16f, 0.055f, principalRod ? 0.98f : 0.58f), 10, _circleSprite);
-                _rodGrips[lane] = grip.GetComponent<SpriteRenderer>();
             }
 
+            ResetOperatorHandPrediction();
             UpdateRods();
+        }
+
+        private Transform BuildOperatorHand(string name, Vector3 position, int handIndex)
+        {
+            var rootObject = new GameObject(name);
+            Transform root = rootObject.transform;
+            root.SetParent(_visualRoot, false);
+            root.localPosition = position;
+            Sprite natural = FindV2HandArt(PuppetHandShape.NaturalPalm);
+            if (natural != null)
+            {
+                // 只使用素材库的自然手掌。掌心保持朝下不换图，网格仅弯曲三根手指区域。
+                BuildDeformableOperatorHand(root, natural, handIndex);
+            }
+            else
+            {
+                CreateSprite("Hand Art Fallback", root, Vector3.zero, new Vector2(0.72f, 0.42f),
+                    ShadowColor(), 14, _circleSprite);
+            }
+            for (int lane = 0; lane < _rods.Length; lane++)
+            {
+                if (StringHandIndices[lane] == handIndex)
+                    BuildOperatorFingerController(root, lane);
+            }
+            return root;
+        }
+
+        private void BuildOperatorFingerController(Transform hand, int lane)
+        {
+            Vector2 tip = GetOperatorFingerTipPosition(lane, 0f);
+            Transform finger = CreateJoint($"Finger Controller {lane}", hand,
+                new Vector3(tip.x, tip.y, 0f));
+            _operatorFingerRoots[lane] = finger;
+            Transform anchor = CreateJoint($"String Anchor {lane}", finger, Vector3.zero);
+            _stringAnchors[lane] = anchor;
+        }
+
+        private void BuildDeformableOperatorHand(Transform parent, Sprite sprite, int handIndex)
+        {
+            const int columns = 32;
+            const int rows = 18;
+            var visual = new GameObject("Natural Hand Art");
+            visual.transform.SetParent(parent, false);
+
+            Bounds bounds = sprite.bounds;
+            var vertices = new Vector3[(columns + 1) * (rows + 1)];
+            var uv = new Vector2[vertices.Length];
+            var triangles = new int[columns * rows * 6];
+            Rect textureRect = sprite.textureRect;
+            int vertex = 0;
+            for (int y = 0; y <= rows; y++)
+            {
+                float v = y / (float)rows;
+                for (int x = 0; x <= columns; x++)
+                {
+                    float u = x / (float)columns;
+                    vertices[vertex] = new Vector3(
+                        Mathf.Lerp(bounds.min.x, bounds.max.x, u),
+                        Mathf.Lerp(bounds.min.y, bounds.max.y, v), 0f);
+                    uv[vertex] = new Vector2(
+                        (textureRect.x + (textureRect.width * u)) / sprite.texture.width,
+                        (textureRect.y + (textureRect.height * v)) / sprite.texture.height);
+                    vertex++;
+                }
+            }
+
+            int triangle = 0;
+            for (int y = 0; y < rows; y++)
+            {
+                for (int x = 0; x < columns; x++)
+                {
+                    int lowerLeft = (y * (columns + 1)) + x;
+                    int upperLeft = lowerLeft + columns + 1;
+                    triangles[triangle++] = lowerLeft;
+                    triangles[triangle++] = upperLeft;
+                    triangles[triangle++] = lowerLeft + 1;
+                    triangles[triangle++] = lowerLeft + 1;
+                    triangles[triangle++] = upperLeft;
+                    triangles[triangle++] = upperLeft + 1;
+                }
+            }
+
+            var mesh = new Mesh { name = $"Operator Hand {handIndex} Deformable Mesh" };
+            mesh.vertices = vertices;
+            mesh.uv = uv;
+            mesh.triangles = triangles;
+            mesh.RecalculateBounds();
+            visual.AddComponent<MeshFilter>().sharedMesh = mesh;
+            var renderer = visual.AddComponent<MeshRenderer>();
+            var material = new Material(Shader.Find("Sprites/Default"))
+            {
+                mainTexture = sprite.texture,
+                color = Color.white
+            };
+            renderer.sharedMaterial = material;
+            renderer.sortingOrder = 14;
+
+            float scale = 1.12f / Mathf.Max(0.001f, bounds.size.x);
+            visual.transform.localScale = new Vector3(handIndex == 0 ? -scale : scale, scale, 1f);
+            _operatorHandMeshes[handIndex] = mesh;
+            _operatorHandBaseVertices[handIndex] = vertices;
+            _operatorHandDeformedVertices[handIndex] = (Vector3[])vertices.Clone();
+            _operatorHandBoundsMin[handIndex] = bounds.min;
+            _operatorHandBoundsMax[handIndex] = bounds.max;
+        }
+
+        private void UpdateOperatorHandMesh(int handIndex)
+        {
+            Mesh mesh = _operatorHandMeshes[handIndex];
+            Vector3[] source = _operatorHandBaseVertices[handIndex];
+            Vector3[] output = _operatorHandDeformedVertices[handIndex];
+            if (mesh == null || source == null || output == null) return;
+
+            int middleLane = handIndex == 0 ? 0 : 2;
+            int indexLane = handIndex == 0 ? 1 : 4;
+            int thumbLane = handIndex == 0 ? 3 : 5;
+            Vector2 min = _operatorHandBoundsMin[handIndex];
+            Vector2 max = _operatorHandBoundsMax[handIndex];
+            for (int i = 0; i < source.Length; i++)
+            {
+                Vector3 point = source[i];
+                float u = Mathf.InverseLerp(min.x, max.x, point.x);
+                float v = Mathf.InverseLerp(min.y, max.y, point.y);
+                // 腕与掌心（右侧约 42%）完全不变，只有伸向内侧的指部参与弯曲。
+                float reach = 1f - Mathf.SmoothStep(0.38f, 0.68f, u);
+                if (reach > 0.001f)
+                {
+                    float indexWeight = Mathf.SmoothStep(0.60f, 0.72f, v);
+                    float middleWeight = 1f - Mathf.SmoothStep(0.18f, 0.32f, v);
+                    float thumbWeight = Mathf.Clamp01(1f - indexWeight - middleWeight);
+                    point = BendOperatorFinger(point, min, max,
+                        new Vector2(0.62f, 0.69f), -34f * _operatorFingerPull[indexLane] * reach * indexWeight);
+                    point = BendOperatorFinger(point, min, max,
+                        new Vector2(0.64f, 0.22f), -32f * _operatorFingerPull[middleLane] * reach * middleWeight);
+                    point = BendOperatorFinger(point, min, max,
+                        new Vector2(0.63f, 0.45f), -28f * _operatorFingerPull[thumbLane] * reach * thumbWeight);
+                }
+                output[i] = point;
+            }
+
+            mesh.vertices = output;
+            mesh.RecalculateBounds();
+        }
+
+        private static Vector3 BendOperatorFinger(Vector3 point, Vector2 min, Vector2 max,
+            Vector2 normalizedPivot, float degrees)
+        {
+            if (Mathf.Abs(degrees) < 0.001f) return point;
+            Vector2 pivot = new Vector2(
+                Mathf.Lerp(min.x, max.x, normalizedPivot.x),
+                Mathf.Lerp(min.y, max.y, normalizedPivot.y));
+            Vector3 relative = new Vector3(point.x - pivot.x, point.y - pivot.y, 0f);
+            Vector3 rotated = Quaternion.Euler(0f, 0f, degrees) * relative;
+            point.x = pivot.x + rotated.x;
+            point.y = pivot.y + rotated.y;
+            return point;
         }
 
         private void ApplyPose(PuppetPose pose)
@@ -2112,42 +2295,225 @@ namespace YingYun.Rhythm.View
 
             for (int lane = 0; lane < _rods.Length; lane++)
             {
-                Vector3 restGrip = RodGripPoints[lane];
-                bool bodyRodBehind = _v2TurnActive && lane == 4 &&
-                    _v2TurnProgress > 0.16f && _v2TurnProgress < 0.84f;
-                if (_v2TurnActive && lane == 4)
-                {
-                    // 主杆握端绕角色背面走一整圈投影：右侧起、左后方通过、回到右侧。
-                    float orbit = _v2TurnProgress * Mathf.PI * 2f;
-                    restGrip = new Vector3(0.55f * Mathf.Cos(orbit),
-                        -3.05f + (0.18f * Mathf.Sin(orbit)), 0f);
-                }
-                Vector3 target = _visualRoot.InverseTransformPoint(_rodTargets[lane].position);
-                Vector3 direction = (target - restGrip).normalized;
-                Vector3 normal = new Vector3(-direction.y, direction.x, 0f);
-                float holdPulse = _heldRods[lane]
-                    ? (_dancePlayback != null ? 0.06f
-                        : 0.10f * Mathf.Sin((float)(_songTime * Mathf.PI * 5.0d) + lane))
-                    : 0f;
-                Vector3 grip = restGrip + (direction * ((_rodDrive[lane] * 0.18f) + holdPulse));
-                grip += normal * (holdPulse * 0.35f);
-                _rods[lane].SetPosition(0, grip);
-                _rods[lane].SetPosition(1, target);
-                _rods[lane].sortingOrder = bodyRodBehind ? 1 : 9;
-                if (_rodGrips[lane] != null)
-                {
-                    if (lane == 4)
-                        _rodGrips[lane].transform.localPosition = _v2TurnActive ? grip : RodGripPoints[lane];
-                    _rodGrips[lane].sortingOrder = bodyRodBehind ? 1 : 10;
-                }
-                bool principalRod = lane == 0 || lane == 2 || lane == 4;
-                Color color = Color.Lerp(new Color(0.30f, 0.13f, 0.045f, principalRod ? 0.48f : 0.27f),
-                    new Color(0.78f, 0.34f, 0.07f, principalRod ? 1f : 0.68f), _rodDrive[lane]);
-                _rods[lane].startColor = color;
-                _rods[lane].endColor = color;
-                _rods[lane].startWidth = Mathf.Lerp(principalRod ? 0.065f : 0.038f,
-                    principalRod ? 0.095f : 0.056f, _rodDrive[lane]) + (_heldRods[lane] ? 0.012f : 0f);
+                _stringTargetSamples[lane] = _visualRoot.InverseTransformPoint(_rodTargets[lane].position);
             }
+            UpdateOperatorHands();
+
+            double rawStringDelta = double.IsNegativeInfinity(_lastStringSpringTime)
+                ? 0d : _songTime - _lastStringSpringTime;
+            float stringDelta = rawStringDelta > 0.25d
+                ? -1f
+                : rawStringDelta > 0.0001d ? (float)rawStringDelta : 0f;
+
+            for (int lane = 0; lane < _rods.Length; lane++)
+            {
+                Vector3 target = _stringTargetSamples[lane];
+                Vector3 grip = _visualRoot.InverseTransformPoint(_stringAnchors[lane].position);
+                float heldBreath = _heldRods[lane]
+                    ? Mathf.Sin((float)(_songTime * Mathf.PI * 4d) + (lane * 0.72f)) * 0.055f
+                    : 0f;
+                float targetSlack = Mathf.Lerp(0.68f, 0.025f,
+                    Mathf.SmoothStep(0f, 1f, _rodDrive[lane])) + heldBreath;
+                UpdateStringSpring(lane, targetSlack, stringDelta);
+                float snap = Mathf.Clamp(_stringSlackVelocity[lane] * 0.024f, -0.10f, 0.10f) *
+                    ((lane & 1) == 0 ? -1f : 1f);
+                Vector3 middle = Vector3.Lerp(grip, target, 0.5f) +
+                    (Vector3.down * _stringSlack[lane]) + (Vector3.right * snap);
+                _rods[lane].SetPosition(0, grip);
+                _rods[lane].SetPosition(1, middle);
+                _rods[lane].SetPosition(2, target);
+                _rods[lane].sortingOrder = 12;
+                // 操偶线只改变松紧和路径，不用变红、变粗来提示输入。
+                Color stringColor = new Color(0.22f, 0.055f, 0.025f, 0.62f);
+                _rods[lane].startColor = stringColor;
+                _rods[lane].endColor = stringColor;
+                _rods[lane].startWidth = 0.018f;
+                _rods[lane].endWidth = 0.012f;
+            }
+            _lastStringSpringTime = _songTime;
+        }
+
+        private void UpdateStringSpring(int lane, float targetSlack, float deltaSeconds)
+        {
+            targetSlack = Mathf.Clamp(targetSlack, 0.015f, 0.78f);
+            if (deltaSeconds < 0f)
+            {
+                _stringSlack[lane] = targetSlack;
+                _stringSlackVelocity[lane] = 0f;
+                return;
+            }
+            if (deltaSeconds <= 0f)
+            {
+                if (double.IsNegativeInfinity(_lastStringSpringTime))
+                    _stringSlack[lane] = targetSlack;
+                return;
+            }
+
+            // 欠阻尼弹簧：收紧会越过目标后回弹，放松会先坠下再恢复，形成真实绳感。
+            const float stiffness = 105f;
+            const float damping = 8.5f;
+            int steps = Mathf.Max(1, Mathf.CeilToInt(deltaSeconds / (1f / 60f)));
+            float step = deltaSeconds / steps;
+            for (int i = 0; i < steps; i++)
+            {
+                float acceleration = (targetSlack - _stringSlack[lane]) * stiffness;
+                _stringSlackVelocity[lane] += acceleration * step;
+                _stringSlackVelocity[lane] *= Mathf.Exp(-damping * step);
+                _stringSlack[lane] += _stringSlackVelocity[lane] * step;
+            }
+            _stringSlack[lane] = Mathf.Clamp(_stringSlack[lane], 0.015f, 0.82f);
+        }
+
+        private void ResetOperatorHandPrediction()
+        {
+            if (_visualRoot == null) return;
+            for (int hand = 0; hand < _operatorHands.Length; hand++)
+            {
+                if (_operatorHands[hand] == null) continue;
+                _operatorHands[hand].localPosition = OperatorHandRestPositions[hand];
+                _operatorHands[hand].localRotation = Quaternion.identity;
+            }
+            _anticipatedPuppetHorizontalShift = 0f;
+            for (int lane = 0; lane < _rodTargets.Length; lane++)
+            {
+                if (_rodTargets[lane] == null) continue;
+                Vector3 target = _visualRoot.InverseTransformPoint(_rodTargets[lane].position);
+                _stringTargetRest[lane] = target;
+                _stringTargetPrevious[lane] = target;
+                _stringTargetVelocity[lane] = Vector3.zero;
+                _operatorFingerPull[lane] = 0f;
+                _stringSlack[lane] = 0.68f;
+                _stringSlackVelocity[lane] = 0f;
+                ApplyOperatorFingerPose(lane, 0f);
+            }
+            _lastControlRigTime = double.NegativeInfinity;
+            _lastStringSpringTime = double.NegativeInfinity;
+        }
+
+        private void UpdateOperatorHands()
+        {
+            double deltaSeconds = double.IsNegativeInfinity(_lastControlRigTime)
+                ? 0d : _songTime - _lastControlRigTime;
+            bool continuousTime = deltaSeconds > 0.0001d && deltaSeconds <= 0.25d;
+            float velocityBlend = continuousTime
+                ? 1f - Mathf.Exp(-12f * (float)deltaSeconds) : 1f;
+            for (int lane = 0; lane < _rodTargets.Length; lane++)
+            {
+                Vector3 measuredVelocity = continuousTime
+                    ? (_stringTargetSamples[lane] - _stringTargetPrevious[lane]) / (float)deltaSeconds
+                    : Vector3.zero;
+                _stringTargetVelocity[lane] = Vector3.Lerp(
+                    _stringTargetVelocity[lane], measuredVelocity, velocityBlend);
+                _stringTargetPrevious[lane] = _stringTargetSamples[lane];
+                _stringAnticipatedTargets[lane] = _stringTargetSamples[lane] +
+                    (_stringTargetVelocity[lane] * 0.16f);
+            }
+            _anticipatedPuppetHorizontalShift = 0f;
+            ApplyV2StringForecast();
+            _lastControlRigTime = _songTime;
+
+            float fingerMotionBlend = continuousTime
+                ? 1f - Mathf.Exp(-22f * (float)deltaSeconds) : 1f;
+            for (int lane = 0; lane < _rodTargets.Length; lane++)
+            {
+                Vector3 lead = _stringAnticipatedTargets[lane] - _stringTargetSamples[lane];
+                Vector3 displacement = _stringAnticipatedTargets[lane] - _stringTargetRest[lane];
+                float pulse = _heldRods[lane]
+                    ? Mathf.Sin((float)(_songTime * Mathf.PI * 4d) + lane) : 0f;
+                float desiredPull = 0.06f + (_rodDrive[lane] * 0.68f) +
+                    Mathf.Clamp(lead.y * 3.2f, -0.30f, 0.42f) +
+                    Mathf.Clamp(lead.magnitude * 1.15f, 0f, 0.30f) +
+                    Mathf.Clamp(displacement.y * 0.14f, -0.14f, 0.20f) + (pulse * 0.16f);
+                _operatorFingerPull[lane] = Mathf.Lerp(_operatorFingerPull[lane],
+                    Mathf.Clamp01(desiredPull), fingerMotionBlend);
+                ApplyOperatorFingerPose(lane, _operatorFingerPull[lane]);
+            }
+
+            UpdateOperatorHandMesh(0);
+            UpdateOperatorHandMesh(1);
+
+            for (int hand = 0; hand < _operatorHands.Length; hand++)
+            {
+                if (_operatorHands[hand] == null) continue;
+                Vector3 anticipatedDelta = Vector3.zero;
+                int count = 0;
+                for (int lane = 0; lane < _rodTargets.Length; lane++)
+                {
+                    if (StringHandIndices[lane] != hand) continue;
+                    anticipatedDelta += _stringAnticipatedTargets[lane] - _stringTargetRest[lane];
+                    count++;
+                }
+
+                anticipatedDelta /= Mathf.Max(1, count);
+                Vector3 desired = OperatorHandRestPositions[hand] + new Vector3(
+                    Mathf.Clamp((_anticipatedPuppetHorizontalShift * 1.35f) +
+                        (anticipatedDelta.x * 0.18f), -0.42f, 0.42f),
+                    0f,
+                    0f);
+                float motionBlend = continuousTime
+                    ? 1f - Mathf.Exp(-16f * (float)deltaSeconds) : 1f;
+                _operatorHands[hand].localPosition = Vector3.Lerp(
+                    _operatorHands[hand].localPosition, desired, motionBlend);
+                _operatorHands[hand].localRotation = Quaternion.identity;
+            }
+        }
+
+        private void ApplyOperatorFingerPose(int lane, float pull)
+        {
+            if (_operatorFingerRoots[lane] == null) return;
+            float inward = StringHandIndices[lane] == 0 ? 1f : -1f;
+            Vector2 tip = GetOperatorFingerTipPosition(lane, pull);
+            _operatorFingerRoots[lane].localPosition = new Vector3(tip.x, tip.y, 0f);
+            _operatorFingerRoots[lane].localRotation = Quaternion.Euler(
+                0f, 0f, inward * Mathf.Lerp(-8f, 32f, pull));
+        }
+
+        private Vector2 GetOperatorFingerTipPosition(int lane, float pull)
+        {
+            int handIndex = StringHandIndices[lane];
+            Vector2 min = _operatorHandBoundsMin[handIndex];
+            Vector2 max = _operatorHandBoundsMax[handIndex];
+            Vector2 uv = OperatorFingerTipUv[lane];
+            Vector3 point = new Vector3(
+                Mathf.Lerp(min.x, max.x, uv.x),
+                Mathf.Lerp(min.y, max.y, uv.y), 0f);
+            if (lane == 1 || lane == 4)
+                point = BendOperatorFinger(point, min, max,
+                    new Vector2(0.62f, 0.69f), -34f * pull);
+            else if (lane == 0 || lane == 2)
+                point = BendOperatorFinger(point, min, max,
+                    new Vector2(0.64f, 0.22f), -32f * pull);
+            else
+                point = BendOperatorFinger(point, min, max,
+                    new Vector2(0.63f, 0.45f), -28f * pull);
+
+            float scale = 1.12f / Mathf.Max(0.001f, max.x - min.x);
+            point.x *= handIndex == 0 ? -scale : scale;
+            point.y *= scale;
+            return new Vector2(point.x, point.y);
+        }
+
+        private void ApplyV2StringForecast()
+        {
+            if (_v2Playback == null || double.IsInfinity(_songTime) || double.IsNaN(_songTime)) return;
+            PuppetV2Pose current = _v2Playback.CurrentPose;
+            PuppetV2Pose future = _v2Playback.PreviewPose(_songTime + 0.16d);
+            Vector3 rootDelta = new Vector3(
+                (float)(future.RootX - current.RootX),
+                (float)(future.RootY - current.RootY), 0f);
+            _anticipatedPuppetHorizontalShift = rootDelta.x;
+            _stringAnticipatedTargets[0] = new Vector3(
+                (float)future.LeftHandX, (float)future.LeftHandY, 0f);
+            _stringAnticipatedTargets[1] += rootDelta + new Vector3(
+                (float)((future.Head - current.Head) * -0.006d), 0f, 0f);
+            _stringAnticipatedTargets[2] = new Vector3(
+                (float)future.RightHandX, (float)future.RightHandY, 0f);
+            _stringAnticipatedTargets[3] = new Vector3(
+                (float)future.LeftFootX, (float)future.LeftFootY, 0f);
+            _stringAnticipatedTargets[4] += rootDelta + new Vector3(
+                (float)((future.Torso - current.Torso) * -0.008d), 0f, 0f);
+            _stringAnticipatedTargets[5] = new Vector3(
+                (float)future.RightFootX, (float)future.RightFootY, 0f);
         }
 
         private void SetHeldRods(int lanesMask, bool held)

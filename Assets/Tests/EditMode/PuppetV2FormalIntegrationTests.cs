@@ -40,6 +40,22 @@ namespace YingYun.Rhythm.Tests
         }
 
         [Test]
+        public void P7_FuturePosePreviewLeadsTheRigWithoutAdvancingCurrentDancePose()
+        {
+            DancePhrase[] timing = Phrases();
+            var playback = new PuppetV2Playback(timing);
+            playback.Evaluate(timing[0].StartSeconds);
+            playback.OnJudged(Result(timing[0], JudgmentGrade.Perfect), timing[0].StartSeconds);
+            PuppetV2Pose current = playback.CurrentPose;
+
+            PuppetV2Pose anticipated = playback.PreviewPose(timing[0].StartSeconds + 0.16d);
+
+            Assert.That(System.Math.Abs(anticipated.Head - current.Head), Is.GreaterThan(0.01d));
+            Assert.That(playback.CurrentPose.RootX, Is.EqualTo(current.RootX).Within(0.000001d));
+            Assert.That(playback.CurrentPose.LeftHandX, Is.EqualTo(current.LeftHandX).Within(0.000001d));
+        }
+
+        [Test]
         public void P7_PresenterUsesV2PlaybackAndHudShowsOnlyLargeMoveMetadata()
         {
             var puppetRoot = new GameObject("P7 V2 Presenter Test");

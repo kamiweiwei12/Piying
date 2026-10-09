@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.660 -2.680 3.233 5.675">
+<desc>《影韵》皮影角色分片装配图。每个 &lt;g&gt; 的 id 对应 ShadowPuppetPresenter 里的 GameObject 名称，圆心／矩形中心即世界坐标，也是美术图的 pivot。</desc>
+<g id="Character" fill="none" stroke="#1a0f0a" stroke-width="0.012">
+  <g id="Torso" data-layer="3" data-cn="躯干" transform="translate(0.0000, 0.1300)">
+    <ellipse cx="0" cy="0" rx="0.4600" ry="0.7400"/>
+  </g>
+  <g id="Robe Skirt" data-layer="3" data-cn="下裳" transform="translate(0.0000, -0.8300)">
+    <ellipse cx="0" cy="0" rx="0.6400" ry="0.3600"/>
+  </g>
+  <g id="Left Thigh" data-layer="3" data-cn="大腿" transform="translate(-0.2700, -0.9100)">
+    <ellipse cx="0" cy="0" rx="0.1200" ry="0.4400"/>
+  </g>
+  <g id="Waist Ornament" data-layer="4" data-cn="腰饰" transform="translate(0.0000, -0.4300)">
+    <rect x="-0.5100" y="-0.1000" width="1.0200" height="0.2000"/>
+  </g>
+  <g id="Robe Front Trim" data-layer="4" data-cn="下裳前襟" transform="translate(0.3600, -0.8600)">
+    <rect x="-0.0750" y="-0.1850" width="0.1500" height="0.3700"/>
+  </g>
+  <g id="Robe Hem" data-layer="4" data-cn="下裳摆边" transform="translate(0.0000, -1.1300)">
+    <rect x="-0.6800" y="-0.0700" width="1.3600" height="0.1400"/>
+  </g>
+  <g id="Chest Cutout" data-layer="4" data-cn="胸口镂空" transform="translate(0.0000, 0.2300)">
+    <ellipse cx="0" cy="0" rx="0.2400" ry="0.0900"/>
+  </g>
+  <g id="Left Flowing Sleeve" data-layer="4" data-cn="肩袖（大片）" transform="translate(-0.6000, 0.0900)">
+    <ellipse cx="0" cy="0" rx="0.2400" ry="0.4100"/>
+  </g>
+  <g id="Left Shin" data-layer="4" data-cn="小腿" transform="translate(-0.3400, -1.7600)">
+    <ellipse cx="0" cy="0" rx="0.0950" ry="0.4100"/>
+  </g>
+  <g id="Head" data-layer="5" data-cn="头" transform="translate(0.0000, 1.2100)">
+    <ellipse cx="0" cy="0" rx="0.3100" ry="0.3600"/>
+  </g>
+  <g id="Left Upper Arm" data-layer="5" data-cn="上臂" transform="translate(-0.4800, 0.1600)">
+    <ellipse cx="0" cy="0" rx="0.1000" ry="0.4100"/>
+  </g>
+  <g id="Profile Nose" data-layer="6" data-cn="侧脸鼻" transform="translate(0.3300, 1.2300)">
+    <ellipse cx="0" cy="0" rx="0.1100" ry="0.0800"/>
+  </g>
+  <g id="Head Crown" data-layer="6" data-cn="头冠" transform="translate(0.0000, 1.6300)">
+    <rect x="-0.3900" y="-0.0900" width="0.7800" height="0.1800"/>
+  </g>
+  <g id="Crown Wing Left" data-layer="6" data-cn="冠翅（左）" transform="translate(-0.4300, 1.7100) rotate(-12.000)">
+    <rect x="-0.3400" y="-0.0500" width="0.6800" height="0.1000"/>
+  </g>
+  <g id="Crown Wing Right" data-layer="6" data-cn="冠翅（右）" transform="translate(0.4300, 1.7100) rotate(12.000)">
+    <rect x="-0.3400" y="-0.0500" width="0.6800" height="0.1000"/>
+  </g>
+  <g id="Left Forearm" data-layer="6" data-cn="前臂" transform="translate(-0.4800, -0.6100)">
+    <ellipse cx="0" cy="0" rx="0.0850" ry="0.3600"/>
+  </g>
+  <g id="Left Foot Plate" data-layer="6" data-cn="脚板" transform="translate(-0.5300, -2.1200)">
+    <ellipse cx="0" cy="0" rx="0.2400" ry="0.0750"/>
+  </g>
+  <g id="Profile Eye" data-layer="7" data-cn="侧脸眼" transform="translate(0.1900, 1.3100)">
+    <ellipse cx="0" cy="0" rx="0.0500" ry="0.0300"/>
+  </g>
+  <g id="Crown Jewel" data-layer="7" data-cn="冠珠" transform="translate(0.0000, 1.7900)">
+    <ellipse cx="0" cy="0" rx="0.0900" ry="0.0900"/>
+  </g>
+  <g id="Sleeve Cuff Plate" data-layer="7" data-cn="袖口片" transform="translate(-0.6000, -0.7100)">
+    <ellipse cx="0" cy="0" rx="0.2600" ry="0.1900"/>
+  </g>
+  <g id="Trailing Water Sleeve" data-layer="8" data-cn="水袖拖尾" transform="translate(-0.6400, -1.0700)">
+    <ellipse cx="0" cy="0" rx="0.1550" ry="0.3500"/>
+  </g>
+  <g id="Left Palm Plate" data-layer="8" data-cn="手掌片" transform="translate(-0.5600, -1.0900)">
+    <ellipse cx="0" cy="0" rx="0.1150" ry="0.1350"/>
+  </g>
+  <g id="Finger Silhouette" data-layer="8" data-cn="并指手型" transform="translate(-0.6800, -1.3100)">
+    <ellipse cx="0" cy="0" rx="0.0600" ry="0.1500"/>
+  </g>
+  <g id="Sleeve Tail Cutwork" data-layer="9" data-cn="水袖镂花" transform="translate(-0.6400, -1.3100)">
+    <ellipse cx="0" cy="0" rx="0.0950" ry="0.0450"/>
+  </g>
+  <g id="Single Finger Silhouette" data-layer="9" data-cn="单指（剑指）手型" transform="translate(-0.7000, -1.2700)">
+    <ellipse cx="0" cy="0" rx="0.0375" ry="0.2600"/>
+  </g>
+</g>
+<g id="Joints" fill="#ffd54a" stroke="#1a0f0a" stroke-width="0.01">
+  <circle id="Joint Pelvis" data-cn="骨盆（根）" cx="0.0000" cy="-0.5500" r="0.07"/>
+  <circle id="Joint Waist" data-cn="腰" cx="0.0000" cy="-0.4000" r="0.07"/>
+  <circle id="Joint Neck" data-cn="颈" cx="0.0000" cy="0.9300" r="0.07"/>
+  <circle id="Chest Rod Socket" data-cn="胸前杆座" cx="0.0000" cy="0.4500" r="0.07"/>
+  <circle id="Joint Left Shoulder" data-cn="左肩" cx="-0.4800" cy="0.5700" r="0.07"/>
+  <circle id="Joint Left Elbow" data-cn="左肘" cx="-0.4800" cy="-0.2500" r="0.07"/>
+  <circle id="Joint Left Wrist" data-cn="左腕" cx="-0.4800" cy="-0.9700" r="0.07"/>
+  <circle id="Joint Left Finger Fan" data-cn="左手掌扇" cx="-0.6000" cy="-1.1900" r="0.07"/>
+  <circle id="Joint Left Sleeve Cuff" data-cn="左袖口" cx="-0.6000" cy="-0.5500" r="0.07"/>
+  <circle id="Joint Left Sleeve Tail" data-cn="左袖尾" cx="-0.6000" cy="-0.8400" r="0.07"/>
+  <circle id="Joint Right Shoulder" data-cn="右肩" cx="0.4800" cy="0.5700" r="0.07"/>
+  <circle id="Joint Right Elbow" data-cn="右肘" cx="0.4800" cy="-0.2500" r="0.07"/>
+  <circle id="Joint Right Wrist" data-cn="右腕" cx="0.4800" cy="-0.9700" r="0.07"/>
+  <circle id="Joint Right Finger Fan" data-cn="右手掌扇" cx="0.6000" cy="-1.1900" r="0.07"/>
+  <circle id="Joint Right Sleeve Cuff" data-cn="右袖口" cx="0.6000" cy="-0.5500" r="0.07"/>
+  <circle id="Joint Right Sleeve Tail" data-cn="右袖尾" cx="0.6000" cy="-0.8400" r="0.07"/>
+  <circle id="Joint Left Hip" data-cn="左髋" cx="-0.2700" cy="-0.4700" r="0.07"/>
+  <circle id="Joint Left Knee" data-cn="左膝" cx="-0.3400" cy="-1.3500" r="0.07"/>
+  <circle id="Joint Left Ankle" data-cn="左踝" cx="-0.3400" cy="-2.0800" r="0.07"/>
+  <circle id="Joint Right Hip" data-cn="右髋" cx="0.2700" cy="-0.4700" r="0.07"/>
+  <circle id="Joint Right Knee" data-cn="右膝" cx="0.3400" cy="-1.3500" r="0.07"/>
+  <circle id="Joint Right Ankle" data-cn="右踝" cx="0.3400" cy="-2.0800" r="0.07"/>
+</g>
+</svg>

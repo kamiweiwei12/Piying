@@ -33,7 +33,7 @@ namespace YingYun.Rhythm.Tests
             presenter.PreviewV2TurnBackSetPose(0f);
             Vector3 leftFoot = presenter.LeftAnklePosition;
             Vector3 rightFoot = presenter.RightAnklePosition;
-            Vector3 bodyRodStart = presenter.GetRodGripPosition(4);
+            Vector3 bodyStringStart = presenter.GetRodGripPosition(4);
             Transform stage = root.transform.Find("M6 Shadow Puppet Stage");
             SpriteRenderer leftArm = stage.Find("Joint Pelvis/Joint Waist/Joint Left Shoulder/Art Left Upper Arm")
                 .GetComponent<SpriteRenderer>();
@@ -56,11 +56,11 @@ namespace YingYun.Rhythm.Tests
             Assert.That(narrowSamples, Is.LessThan(45));
             Assert.That(presenter.FacingScale, Is.LessThan(-0.99f));
             Assert.That(leftArm.sortingOrder, Is.LessThan(rightArm.sortingOrder));
-            Vector3 bodyRodEnd = presenter.GetRodGripPosition(4);
-            Assert.That(Vector3.Distance(bodyRodStart, bodyRodEnd), Is.LessThan(0.002f));
+            Vector3 bodyStringEnd = presenter.GetRodGripPosition(4);
+            Assert.That(Vector3.Distance(bodyStringStart, bodyStringEnd), Is.LessThan(0.25f));
             presenter.PreviewV2TurnBackSetPose(0.5f);
-            Assert.That(presenter.GetRodGripPosition(4).x, Is.LessThan(-0.45f));
-            Assert.That(presenter.GetRodSortingOrder(4), Is.LessThan(6));
+            Assert.That(presenter.GetRodGripPosition(4).y, Is.GreaterThan(3f));
+            Assert.That(presenter.GetRodSortingOrder(4), Is.GreaterThan(6));
             presenter.PreviewV2TurnBackSetPose(0f);
             Assert.That(presenter.GetRodSortingOrder(4), Is.GreaterThan(6));
             Object.DestroyImmediate(root);
