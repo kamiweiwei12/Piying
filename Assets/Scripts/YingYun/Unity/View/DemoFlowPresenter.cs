@@ -40,6 +40,12 @@ namespace YingYun.Rhythm.View
         private UnityEngine.UI.Button _openingButton;
         private CanvasGroup _openingFinalGroup;
         private RectTransform _openingFinalRect;
+        private RectTransform _openingVideoRect;
+        private CanvasGroup _openingVideoGroup;
+        private UnityEngine.UI.RawImage _openingVideoImage;
+        private UnityEngine.Video.VideoPlayer _openingVideoPlayer;
+        private RenderTexture _openingVideoTexture;
+        private bool _openingVideoFailed;
         private RectTransform _pausePlaqueRect;
         private Coroutine _openingRoutine;
         private Coroutine _pauseRoutine;
@@ -51,6 +57,14 @@ namespace YingYun.Rhythm.View
         private readonly List<SongMenuEntry> _songEntries = new List<SongMenuEntry>();
         private int _songPage;
         private const int SongsPerPage = 3;
+
+        /// <summary>
+        /// 開場循環動畫。Web 平台不支援內嵌 VideoClip，只能走 StreamingAssets 的 URL；
+        /// 換片時請直接換檔名（例如 OpeningLoop2.mp4）以避開 CDN 快取。
+        /// </summary>
+        public const string OpeningVideoRelativePath = "YingYun/Opening/OpeningLoop.mp4";
+        private const int OpeningVideoWidth = 1280;
+        private const int OpeningVideoHeight = 720;
 
         public event Action<string, PlayDifficulty> PlayRequested;
         public event Action<double, double> CalibrationAdjusted;
@@ -113,6 +127,7 @@ namespace YingYun.Rhythm.View
             SetOpeningSlide(_openingFinalGroup, _openingFinalRect, 1f, 1f, Vector2.zero);
             _openingCanDismiss = true;
             _openingButton.interactable = true;
+            StartOpeningVideo();
         }
 
         public void ShowMenu(double audioOffsetMs, double inputOffsetMs)
@@ -471,6 +486,151 @@ namespace YingYun.Rhythm.View
             _openingPanel.SetActive(false);
         }
 
+        /// <summary>
+        /// 開場動畫用 StreamingAssets 的影片循環播放，疊在舊的靜態定格圖之上；
+        /// 影片尚未就緒或載入失敗時，畫面上仍是原本的靜態圖，開場不會開天窗。
+        /// </summary>
+        private void StartOpeningVideo()
+        {
+            if (!Application.isPlaying || _openingVideoFailed)
+            {
+                return;
+            }
+
+            EnsureOpeningVideoPlayer();
+            if (_openingVideoPlayer == null)
+            {
+                return;
+            }
+
+            if (!_openingVideoPlayer.isPlaying)
+            {
+                _openingVideoPlayer.Play();
+            }
+        }
+
+        private void EnsureOpeningVideoPlayer()
+        {
+            if (_openingVideoPlayer != null)
+            {
+                return;
+            }
+
+            var slideObject = new GameObject("开场循环动画", typeof(RectTransform),
+                typeof(UnityEngine.UI.RawImage), typeof(CanvasGroup));
+            slideObject.transform.SetParent(_openingPanel.transform, false);
+            _openingVideoRect = (RectTransform)slideObject.transform;
+            _openingVideoRect.anchorMin = Vector2.zero;
+            _openingVideoRect.anchorMax = Vector2.one;
+            _openingVideoRect.offsetMin = Vector2.zero;
+            _openingVideoRect.offsetMax = Vector2.zero;
+
+            _openingVideoGroup = slideObject.GetComponent<CanvasGroup>();
+            _openingVideoGroup.alpha = 0f;
+
+            _openingVideoImage = slideObject.GetComponent<UnityEngine.UI.RawImage>();
+            _openingVideoImage.raycastTarget = false;
+            _openingVideoImage.color = Color.white;
+
+            _openingVideoTexture = new RenderTexture(OpeningVideoWidth, OpeningVideoHeight, 0, RenderTextureFormat.ARGB32);
+            _openingVideoTexture.Create();
+            _openingVideoImage.texture = _openingVideoTexture;
+
+            UnityEngine.UI.AspectRatioFitter fitter = slideObject.AddComponent<UnityEngine.UI.AspectRatioFitter>();
+            fitter.aspectMode = UnityEngine.UI.AspectRatioFitter.AspectMode.EnvelopeParent;
+            fitter.aspectRatio = (float)OpeningVideoWidth / OpeningVideoHeight;
+
+            _openingVideoPlayer = slideObject.AddComponent<UnityEngine.Video.VideoPlayer>();
+            _openingVideoPlayer.playOnAwake = false;
+            _openingVideoPlayer.isLooping = true;
+            _openingVideoPlayer.source = UnityEngine.Video.VideoSource.Url;
+            _openingVideoPlayer.url = BuildOpeningVideoUrl();
+            _openingVideoPlayer.renderMode = UnityEngine.Video.VideoRenderMode.RenderTexture;
+            _openingVideoPlayer.targetTexture = _openingVideoTexture;
+            _openingVideoPlayer.audioOutputMode = UnityEngine.Video.VideoAudioOutputMode.None;
+            _openingVideoPlayer.skipOnDrop = true;
+            _openingVideoPlayer.waitForFirstFrame = true;
+            _openingVideoPlayer.errorReceived += OnOpeningVideoError;
+            _openingVideoPlayer.prepareCompleted += OnOpeningVideoPrepared;
+            _openingVideoPlayer.Prepare();
+        }
+
+        private static string BuildOpeningVideoUrl()
+        {
+            string root = Application.streamingAssetsPath;
+            if (string.IsNullOrEmpty(root))
+            {
+                return OpeningVideoRelativePath;
+            }
+
+            return root.Replace('\\', '/').TrimEnd('/') + "/" + OpeningVideoRelativePath;
+        }
+
+        private void OnOpeningVideoPrepared(UnityEngine.Video.VideoPlayer source)
+        {
+            if (_openingVideoFailed || !IsOpeningVisible)
+            {
+                return;
+            }
+
+            if (_openingVideoGroup != null)
+            {
+                _openingVideoGroup.alpha = 1f;
+            }
+
+            source.Play();
+        }
+
+        private void OnOpeningVideoError(UnityEngine.Video.VideoPlayer source, string message)
+        {
+            _openingVideoFailed = true;
+            if (_openingVideoGroup != null)
+            {
+                _openingVideoGroup.alpha = 0f;
+            }
+
+            Debug.LogWarning($"[DemoFlowPresenter] 开场循环动画无法播放，改用静态定格图：{message}");
+        }
+
+        private void StopOpeningVideo()
+        {
+            if (_openingVideoPlayer != null && _openingVideoPlayer.isPlaying)
+            {
+                _openingVideoPlayer.Stop();
+            }
+        }
+
+        private void ReleaseOpeningVideo()
+        {
+            if (_openingVideoPlayer != null)
+            {
+                _openingVideoPlayer.errorReceived -= OnOpeningVideoError;
+                _openingVideoPlayer.prepareCompleted -= OnOpeningVideoPrepared;
+                if (_openingVideoPlayer.targetTexture == _openingVideoTexture)
+                {
+                    _openingVideoPlayer.targetTexture = null;
+                }
+
+                _openingVideoPlayer = null;
+            }
+
+            if (_openingVideoImage != null)
+            {
+                _openingVideoImage.texture = null;
+                _openingVideoImage = null;
+            }
+
+            if (_openingVideoTexture != null)
+            {
+                _openingVideoTexture.Release();
+                Destroy(_openingVideoTexture);
+                _openingVideoTexture = null;
+            }
+
+            _openingVideoGroup = null;
+            _openingVideoRect = null;
+        }
+
         private static CanvasGroup CreateOpeningSlide(
             RectTransform parent,
             string name,
@@ -531,6 +691,7 @@ namespace YingYun.Rhythm.View
             _openingGroup.alpha = 0f;
             _menuGroup.alpha = 1f;
             _openingPanel.SetActive(false);
+            StopOpeningVideo();
             _openingGroup.alpha = 1f;
             _openingRoutine = null;
         }
@@ -797,6 +958,7 @@ namespace YingYun.Rhythm.View
             if (_openingRoutine != null) StopCoroutine(_openingRoutine);
             if (_pauseRoutine != null) StopCoroutine(_pauseRoutine);
             if (_songCarouselRoutine != null) StopCoroutine(_songCarouselRoutine);
+            ReleaseOpeningVideo();
             if (_runtimeFont != null)
             {
                 ChineseFontProvider.Release(_runtimeFont);
