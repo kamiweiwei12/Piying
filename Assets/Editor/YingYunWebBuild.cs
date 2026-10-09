@@ -11,6 +11,9 @@ namespace YingYun.EditorTools
     /// <summary>Builds a broadly compatible WebGL competition demo for ordinary static hosting.</summary>
     public static class YingYunWebBuild
     {
+        private const string WebPageBackgroundSource = "Assets/Editor/WebGL/WebPageBackground.jpg";
+        private const string WebPageBackgroundFileName = "yingyun-page-background.jpg";
+
         public static void BuildCompetitionDemo()
         {
             string buildVersion = CreateBuildVersion();
@@ -126,6 +129,22 @@ namespace YingYun.EditorTools
         private static void PatchWebShell(string outputPath, string indexPath, string buildVersion)
         {
             string escapedVersion = buildVersion.Replace("\\", string.Empty).Replace("\"", string.Empty);
+            string backgroundSourcePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                WebPageBackgroundSource.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(backgroundSourcePath))
+            {
+                throw new FileNotFoundException(
+                    "WebGL page background is missing.",
+                    backgroundSourcePath);
+            }
+
+            string backgroundDestinationPath = Path.Combine(
+                outputPath,
+                "TemplateData",
+                WebPageBackgroundFileName);
+            File.Copy(backgroundSourcePath, backgroundDestinationPath, true);
+
             const string loadingMarkup =
                 "<div id=\"yingyun-loading-title\">皮影声律</div>" +
                 "<div id=\"yingyun-loading-status\">首次加载约需十几秒，请勿关闭页面</div>" +
@@ -167,7 +186,18 @@ namespace YingYun.EditorTools
             string stylePath = Path.Combine(outputPath, "TemplateData", "style.css");
             if (File.Exists(stylePath))
             {
-                const string competitionStyles = @"
+                string competitionStyles = @"
+body {
+  min-height: 100vh;
+  background-color: #f1eee6;
+  background-image: url('__YINGYUN_PAGE_BACKGROUND__');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+#unity-container.unity-desktop { filter: drop-shadow(0 18px 38px rgba(55, 27, 18, .24)); }
+#unity-footer { background: rgba(249, 246, 236, .94); }
 #unity-loading-container { display: block; background: radial-gradient(circle at center, rgba(89,30,20,.82), rgba(24,10,8,.96)); backdrop-filter: none; }
 #unity-loading-bar { width: 360px; color: #f2d68c; text-align: center; font-family: 'Microsoft YaHei', 'Noto Sans SC', sans-serif; }
 #unity-logo { display: none; }
@@ -177,7 +207,9 @@ namespace YingYun.EditorTools
 #unity-progress-bar-empty { width: 320px; height: 12px; margin: 18px auto 0; border: 1px solid #bd8a3d; background: rgba(23,8,6,.72); box-sizing: border-box; }
 #unity-progress-bar-full { width: 0%; height: 10px; margin: 0; background: linear-gradient(90deg, #85301f, #e2b75d); transition: width .12s linear; }
 #unity-warning { z-index: 20; width: min(760px, 86%); color: #f7e5b8; font-family: 'Microsoft YaHei', sans-serif; }
-";
+".Replace(
+                    "__YINGYUN_PAGE_BACKGROUND__",
+                    $"{WebPageBackgroundFileName}?v={escapedVersion}");
                 File.AppendAllText(stylePath, competitionStyles, new UTF8Encoding(false));
             }
 
