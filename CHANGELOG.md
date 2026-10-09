@@ -1,6 +1,6 @@
 # CHANGELOG
 
-《影韵》（Unity 2D 皮影戲題材節奏遊戲）專案更新日誌。
+《皮影声律》（Unity 2D 皮影戲題材節奏遊戲）專案更新日誌。
 
 ## 使用規則（重要）
 
@@ -21,6 +21,50 @@
 ```
 
 最新條目置於最上方。
+
+---
+
+## [2026-10-09] P0 更名 - 游戏更名为《皮影声律》
+
+### 新增
+
+* 无。
+
+### 修改
+
+* 游戏更名为**《皮影声律》**（原名《影韵》）。改动范围限于考官在网页 Demo 中可见的文字与本专案文档，未触及玩法、判定、谱面、舞句、皮影动作或任何美术资产。
+* 选曲舞台大标题由「影　韵」改为「皮影声律」；字号 64、框 700×82、位置与配色一律未变。
+* WebGL 页面标题、加载页标题、页脚署名与 `companyName`／`productName` 一并更名；副标题由「影韵 · 皮影节奏游戏」调整为「皮影声律 · 节奏游戏」，避免「皮影」重复。
+* 运行期诊断日志抬头改为「=== 皮影声律 Demo 运行诊断 ===」，并同步更新对应测试断言。
+* 中文字型覆盖测试的必备字符表改以新名称开头，并补上「入韵」（评级文字「入韵」仍需要该字形，故不能随旧名一并移除）。
+* 文档更名：`CHANGELOG.md`、`DEVELOPMENT.md`、`DELIVERY.md`、`Docs/PuppetArtSpec/README.md`。
+
+### 测试
+
+* Unity 6000.6.2f1 EditMode 全量回归 **291 / 291**，failed=0、skipped=0、inconclusive=0，duration=100.45 s；报告 `Logs/Rename/full-editmode-results.xml`（未进版控）。
+* 事前直接解析内嵌 TTF 的 cmap 表，确认 MaShanZheng 与 NotoSansSC 均覆盖「皮影声律」全部字形，因此字型无需更换、也无需改动资产。
+* 按现有字号实测版面：舞台标题 4 字约 256 px（框宽 700 px）、网页加载标题约 192 px（容器宽 360 px），均不溢出，故字号与字距保持原样。
+* 用户可见文本已全数核对，`Assets` 内除两条抛弃式量测工具注释外不再出现旧名。
+
+### 验收结果
+
+* 文字更名与相关测试断言已一致，EditMode 全量回归通过，字号格式风格未变。
+* 依使用者决定，本轮**只提交代码，暂不重新建置 WebGL、暂不推送 gh-pages**：线上 `https://kamiweiwei12.github.io/Piying/` 仍显示旧名称与 `P0-202610090820-b202fe33`，待后续发布。
+
+### Git Commit
+
+* 本条目所在提交。
+
+### 风险 / 已知问题
+
+* 依使用者决定（“考官只看网页版 demo，只改看得到的地方”），以下**刻意未动**：`ProjectSettings.asset` 的 `productName`／`companyName`（Windows 版窗口名仍为 `My project`）、`Tools/BuildCompetitionDemo.ps1` 的 `YingYunDemo.exe` 套件名、内部命名空间与文件夹（`YingYun.Rhythm.*`、`Assets/Scripts/YingYun`）、asmdef 名、`Resources/YingYun` 资源路径、场景文件名 `YingYun_Gameplay.unity`、`StreamingAssets/YingYunBeatAnalyzer`。
+* `Assets/Scripts/M0/ClockProbe.cs`、`Assets/Scripts/M0/SampleCounterFilter.cs` 两条注释仍写《影韵》；这两个是抛弃式量测工具，考官不可见，未纳入本轮。
+* 网页加载标题的元素 id 仍为 `yingyun-loading-title`（连同其 CSS 选择器）：属于不可见的内部标识，未改以免牵动样式与脚本，如需一并更名请另行指示。
+* 本轮未重新建置，`Builds/WebGL-Demo` 仍是旧名称产物；下次构建后线上与本地才会反映新名。
+
+### 下一步
+
+* 待使用者决定何时重新建置 WebGL 并推送 gh-pages，使线上版本同步新名称。
 
 ---
 

@@ -147,7 +147,7 @@ namespace YingYun.Rhythm.Unity.Diagnostics
 
         private void WriteSessionHeader()
         {
-            _writer.WriteLine("=== 影韵 Demo 运行诊断 ===");
+            _writer.WriteLine("=== 皮影声律 Demo 运行诊断 ===");
             _writer.WriteLine($"启动时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss zzz}");
             _writer.WriteLine($"游戏版本: {Application.version}");
             _writer.WriteLine($"Unity版本: {Application.unityVersion}");

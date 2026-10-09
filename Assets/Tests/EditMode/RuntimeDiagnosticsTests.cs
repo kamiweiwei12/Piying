@@ -21,7 +21,7 @@ namespace YingYun.Rhythm.Tests
                 Debug.Log(marker);
 
                 string content = diagnostics.GetShareableText();
-                Assert.That(content, Does.Contain("=== 影韵 Demo 运行诊断 ==="));
+                Assert.That(content, Does.Contain("=== 皮影声律 Demo 运行诊断 ==="));
                 Assert.That(content, Does.Contain("操作系统:"));
                 Assert.That(content, Does.Contain(marker));
             }

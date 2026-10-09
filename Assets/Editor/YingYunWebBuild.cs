@@ -127,17 +127,17 @@ namespace YingYun.EditorTools
         {
             string escapedVersion = buildVersion.Replace("\\", string.Empty).Replace("\"", string.Empty);
             const string loadingMarkup =
-                "<div id=\"yingyun-loading-title\">影　韵</div>" +
+                "<div id=\"yingyun-loading-title\">皮影声律</div>" +
                 "<div id=\"yingyun-loading-status\">首次加载约需十几秒，请勿关闭页面</div>" +
                 "<div id=\"yingyun-loading-percent\">0%</div>";
 
             string index = File.ReadAllText(indexPath)
                 .Replace("<html lang=\"en-us\">", "<html lang=\"zh-CN\">")
-                .Replace("Unity Web Player | My project", "影韵 · 皮影节奏游戏")
+                .Replace("Unity Web Player | My project", "皮影声律 · 节奏游戏")
                 .Replace("<link rel=\"stylesheet\" href=\"TemplateData/style.css\">",
                     $"<link rel=\"stylesheet\" href=\"TemplateData/style.css?v={escapedVersion}\">")
                 .Replace("<div id=\"unity-build-title\">My project</div>",
-                    $"<div id=\"unity-build-title\">影韵 · 皮影节奏游戏　{escapedVersion}</div>")
+                    $"<div id=\"unity-build-title\">皮影声律 · 节奏游戏　{escapedVersion}</div>")
                 .Replace("<div id=\"unity-loading-bar\">",
                     $"<div id=\"unity-loading-bar\">{loadingMarkup}")
                 .Replace("var loaderUrl = buildUrl + \"/WebGL-Demo.loader.js\";",
@@ -145,8 +145,8 @@ namespace YingYun.EditorTools
                 .Replace("/WebGL-Demo.data.unityweb\"", $"/WebGL-Demo.data.unityweb?v={escapedVersion}\"")
                 .Replace("/WebGL-Demo.framework.js.unityweb\"", $"/WebGL-Demo.framework.js.unityweb?v={escapedVersion}\"")
                 .Replace("/WebGL-Demo.wasm.unityweb\"", $"/WebGL-Demo.wasm.unityweb?v={escapedVersion}\"")
-                .Replace("companyName: \"DefaultCompany\"", "companyName: \"影韵\"")
-                .Replace("productName: \"My project\"", "productName: \"影韵 · 皮影节奏游戏\"")
+                .Replace("companyName: \"DefaultCompany\"", "companyName: \"皮影声律\"")
+                .Replace("productName: \"My project\"", "productName: \"皮影声律 · 节奏游戏\"")
                 .Replace("const progressBarFull = document.querySelector(\"#unity-progress-bar-full\");",
                     "const progressBarFull = document.querySelector(\"#unity-progress-bar-full\");\n" +
                     "        const loadingPercent = document.querySelector(\"#yingyun-loading-percent\");\n" +

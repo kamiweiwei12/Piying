@@ -1,4 +1,4 @@
-# 《影韵》皮影角色与戏台 · 美术加工需求
+# 《皮影声律》皮影角色与戏台 · 美术加工需求
 
 这份资料把目前**程序生成的灰盒皮影**转成可交给美工的图。所有数字都是从代码里量出来的
 真实比例（`Assets/Scripts/YingYun/Unity/View/ShadowPuppetPresenter.cs` 的

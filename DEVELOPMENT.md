@@ -1,4 +1,4 @@
-# 《影韵》開發規範（DEVELOPMENT.md）
+# 《皮影声律》開發規範（DEVELOPMENT.md）
 
 > 本文件是本專案的**長期開發契約**。每次工作開始前必須重新閱讀（見附錄 A STEP 4）。
 > 分工：**事實**以 `.clinerules/01-project-context.md` 為準；**已完成工作**記於 `CHANGELOG.md`；**流程與里程碑條件**記於本檔。
@@ -18,7 +18,7 @@
 
 ## 1. 專案目標
 
-- **《影韵》**：**2D 中國皮影戲題材節奏音樂遊戲**，PC / 鍵盤操作，最終目標為**比賽 Demo**。
+- **《皮影声律》**：**2D 中國皮影戲題材節奏音樂遊戲**，PC / 鍵盤操作，最終目標為**比賽 Demo**。
 - 核心體驗一句話：**「音樂給予節奏，音符給予指令，鍵盤模擬操偶，皮影完成舞蹈。」**
 - 現階段唯一目標：證明核心玩法成立 ——
   `音樂 → 音符 → 玩家輸入 → 時間判定 → 得分/連擊 → 遊戲回饋`。
@@ -586,7 +586,7 @@ git --no-pager log --oneline -10
 | F4 | 新增 asmdef：`YingYun.Runtime` / `YingYun.Unity` / `YingYun.Tests` | 隔離純 C# 核心、Unity 執行期與 EditMode 測試 | **已批准並完成（M1／M2）** |
 | F5 | `.gitattributes`（`* text=auto`、LF 規範） | 避免跨平台換行造成 diff 噪音 | 建議採用，等待批准 |
 | F6 | 包内 CJK 字型資產（中文 UI） | 讓既有 uGUI `Text`／`TextMesh` 不依賴系統字型 | **已批准並完成（M7.3）** |
-| F7 | `ProjectSettings` 調整（產品名《影韵》、解析度 1920×1080、`runInBackground`） | 影響 PC 節奏遊戲體驗 | 等待批准 |
+| F7 | `ProjectSettings` 調整（產品名《皮影声律》、解析度 1920×1080、`runInBackground`） | 影響 PC 節奏遊戲體驗 | 等待批准 |
 | F8 | 切換 URP Renderer → Renderer2D（啟用 Light2D） | 影響渲染設定 | **建議延後**，M6 先用 Sprite/材質/粒子替代 |
 | F9 | 清除無用的 Platformer 程式 / 資產 | 專案乾淨度 | 需先提出清單，等待批准 |
 | F10 | 新增 `.clinerules/00-development-workflow.md` | 讓 STEP 0–7 每次自動生效 | **已批准並完成** |

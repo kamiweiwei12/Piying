@@ -316,7 +316,7 @@ namespace YingYun.Rhythm.View
             _menuGroup = _menuPanel.GetComponent<CanvasGroup>();
 
             BuildStageFrame(panel);
-            AddText(panel, "影　韵", 64, new Vector2(0f, 446f), new Vector2(700f, 82f), LacquerRed);
+            AddText(panel, "皮影声律", 64, new Vector2(0f, 446f), new Vector2(700f, 82f), LacquerRed);
             AddText(panel, "皮影随乐 · 择曲开演", 24, new Vector2(0f, 394f), new Vector2(760f, 42f), new Color(0.38f, 0.24f, 0.14f, 1f));
             if (SupportsLocalFileFeatures(Application.platform))
             {
