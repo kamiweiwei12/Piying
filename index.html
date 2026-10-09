@@ -5,14 +5,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>影韵 · 皮影节奏游戏</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
+    <link rel="stylesheet" href="TemplateData/style.css?v=P0-202610090820-b202fe33">
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
       <div id="unity-fullscreen-container">
         <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
         <div id="unity-loading-container">
-          <div id="unity-loading-bar">
+          <div id="unity-loading-bar"><div id="yingyun-loading-title">影　韵</div><div id="yingyun-loading-status">首次加载约需十几秒，请勿关闭页面</div><div id="yingyun-loading-percent">0%</div>
             <div id="unity-logo"></div>
             <div id="unity-progress-bar-empty">
               <div id="unity-progress-bar-full"></div>
@@ -24,7 +24,7 @@
       <div id="unity-footer">
         <div id="unity-logo-title-footer"></div>
         <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">影韵 · 皮影节奏游戏</div>
+        <div id="unity-build-title">影韵 · 皮影节奏游戏　P0-202610090820-b202fe33</div>
       </div>
     </div>
     <script>
@@ -45,7 +45,7 @@
         var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        if (type == 'error') div.style = 'background: #641b13; color: #f7e5b8; padding: 14px 18px; border: 1px solid #c99c4b;';
         else {
           if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
           setTimeout(function() {
@@ -57,12 +57,12 @@
       }
 
       var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/WebGL-Demo.loader.js";
+      var loaderUrl = buildUrl + "/WebGL-Demo.loader.js?v=P0-202610090820-b202fe33";
       var config = {
         arguments: [],
-        dataUrl: buildUrl + "/WebGL-Demo.data.unityweb",
-        frameworkUrl: buildUrl + "/WebGL-Demo.framework.js.unityweb",
-        codeUrl: buildUrl + "/WebGL-Demo.wasm.unityweb",
+        dataUrl: buildUrl + "/WebGL-Demo.data.unityweb?v=P0-202610090820-b202fe33",
+        frameworkUrl: buildUrl + "/WebGL-Demo.framework.js.unityweb?v=P0-202610090820-b202fe33",
+        codeUrl: buildUrl + "/WebGL-Demo.wasm.unityweb?v=P0-202610090820-b202fe33",
         streamingAssetsUrl: "StreamingAssets",
 
         // If you have a custom web site structure, or want to place multiple Unity build instances on the same page,
@@ -125,12 +125,16 @@
       script.onload = () => {
         const loadingContainer = document.querySelector("#unity-loading-container");
         const progressBarFull = document.querySelector("#unity-progress-bar-full");
+        const loadingPercent = document.querySelector("#yingyun-loading-percent");
+        const loadingStatus = document.querySelector("#yingyun-loading-status");
 
         createUnityInstance(canvas, config, (progress) => {
           if (progress < 1) {
             loadingContainer.style.display = "block";
             progressBarFull.style.width = 100 * progress + "%";
+            loadingPercent.textContent = Math.round(100 * progress) + "%";
           } else {
+            loadingStatus.textContent = "戏台已就绪，正在开幕";
             loadingContainer.style.display = "none";
           }
         }).then((unityInstance) => {
@@ -139,7 +143,8 @@
                 };
 
               }).catch((message) => {
-                alert(message);
+                loadingStatus.textContent = "加载失败，请刷新页面重试";
+                unityShowBanner("加载失败。请刷新页面；若仍失败，请使用最新版 Chrome 或 Edge。<br>" + message, 'error');
               });
             };
 
