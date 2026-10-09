@@ -65,12 +65,12 @@ namespace YingYun.Rhythm.View
         /// 開場循環動畫。Web 平台不支援內嵌 VideoClip，只能走 StreamingAssets 的 URL；
         /// 換片時請直接換檔名（例如 OpeningLoop2.mp4）以避開 CDN 快取。
         /// </summary>
-        public const string OpeningVideoRelativePath = "YingYun/Opening/OpeningLoop.mp4";
+        public const string OpeningVideoRelativePath = "YingYun/Opening/OpeningLoop2.mp4";
         public const string OpeningVideoSharpenShaderPath = "YingYun/UI/Opening/OpeningVideoSharpen";
-        private const int OpeningVideoWidth = 1280;
-        private const int OpeningVideoHeight = 720;
+        private const int OpeningVideoWidth = 2560;
+        private const int OpeningVideoHeight = 1440;
         private const float OpeningVideoRecoveryInterval = 0.25f;
-        private const float OpeningVideoSharpness = 0.28f;
+        private const float OpeningVideoSharpness = 0.12f;
 
         public event Action<string, PlayDifficulty> PlayRequested;
         public event Action<double, double> CalibrationAdjusted;

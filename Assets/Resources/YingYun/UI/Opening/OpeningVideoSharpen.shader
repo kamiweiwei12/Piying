@@ -4,7 +4,7 @@ Shader "YingYun/UI/OpeningVideoSharpen"
     {
         [PerRendererData] _MainTex ("Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1,1,1,1)
-        _Sharpness ("Sharpness", Range(0, 0.6)) = 0.28
+        _Sharpness ("Sharpness", Range(0, 0.6)) = 0.12
     }
 
     SubShader
